@@ -1,0 +1,355 @@
+#!/usr/bin/perl
+use warnings; use strict;
+
+package main;
+use YAML;
+use Carp;
+
+use Getopt::Long qw{};
+
+use Elive;
+use Elive::Entity;
+use Elive::Util;
+use Term::ReadLine;
+
+local $SIG{__DIE__};
+
+our $version = ${Elive::VERSION};
+our $entities = Elive::Entity->entities;
+our $term = new Term::ReadLine 'elive shell';
+our $is_tty = -t STDIN;
+
+foreach (keys %$entities) {
+    #
+    # Just want database entities. Omit simple structs
+    #
+    delete $entities->{$_}
+    unless ($entities->{$_}->isa('Elive::Entity'));
+}
+
+my $prompt = "elive> ";
+
+my ($url, $usage, %options) = _getopt();
+
+our $debug = $options{debug};
+Elive->debug( $debug );
+
+our $connection;
+
+if ($url) {
+
+    _connect($url, %options);
+
+}
+
+print "Elive query $version - type 'help' for help\n"
+    if $is_tty;
+
+while (defined (my $cmd = $is_tty? $term->readline($prompt): <STDIN>)) {
+
+    $term->addhistory($cmd);
+    #
+    # strip leading white-space & trailing white-space + semicolon
+    #
+    $cmd =~ s{^ \s* (.*?) \s* ;? \s* $}{$1}x;
+
+    if ($cmd =~ m{\S}) {
+
+	if (my ($keyw, $args) = ($cmd =~ m{^ (\w+) \s* (.*)? $}x)) {
+
+	    if (lc($keyw) eq substr('help',0, length($keyw))) {
+		print "Elive query $version help:\n\n";
+		print "connect url [user] - connect to an elluminate server\n";
+		print "show [entity_name] - list/show entities\n";
+		print "debug = 0[1|2|3] - set debugging level\n";
+		print "select *|prop[,prop] from entity [where exp]\n";
+	    }
+	    elsif ($keyw  =~ m{^(connect)$}i) {
+		my ($url, $user) = split(m{\s+}, $args);
+
+		if ($url) {
+		    _connect($url,
+			     username => $user,
+			     %options);
+		}
+		else {
+		    print STDERR "usage: connect url [user]\n";
+		}
+	    }
+	    elsif ($keyw  =~ m{^(debug)$}i) {
+		my ($level) = ($args =~ m{^\s* = \s* ([0-9])}x);
+
+		if (defined $level) {
+		    print "Debugging level set to $level\n";
+		    $level = $level + 0;
+
+		    $SIG{__WARN__} = $level > 1
+			? \&Carp::cluck
+			: undef;
+
+		    $SIG{__DIE__} = $level
+			? \&Carp::confess
+			: undef;
+
+		    Elive->debug($level);
+		}
+		else {
+		    print STDERR "usage: debug = 0..9";
+		}
+	    }
+	    elsif ($keyw =~ m{^(show)$}i) {
+
+		if (my ($entity_name) = ($args =~ m{^ \s* (\w+) \s* $}x)) {
+		    _show($entity_name);
+		    }
+		else {
+		    print 'usage: show '.join('|', sort keys %$entities)."\n";
+		}
+	    }
+	    elsif (lc($keyw) eq 'select') {
+
+		warn "args: $args\n"
+		    if (Elive->debug);
+
+		my $valid;
+
+		if ($args =~ m{^
+                          (.+?) \s+
+                          from \s+ (\w+)?
+                          (\s+ where \s+ (.*?))?
+                          $}ix) {
+
+		    $valid = 1;
+
+		    my @props = split(m{\s* , \s*}x, $1);
+		    my $entity = $2;
+		    my $filter = $4;
+
+		    my $entity_class = $entities->{$entity};
+
+		    if (!$entity_class) {
+			print STDERR "Unknown entity: $entity\n";
+			$valid = 0;
+		    }
+		    else {
+			if (@props == 1 && $props[0] eq '*') {
+			    #
+			    # '*' selection
+			    #
+			    @props = $entity_class->properties;
+			}
+			else {
+			    foreach (@props) {
+				$valid = 0 unless m{^ [a-zA-Z_-]+ $}x;
+			    }
+			}
+		    }
+
+
+		    if ($valid) {
+			warn "entity: $entity, filter: $filter, props: @props"
+			    if (Elive->debug);
+
+			unless ($connection) {
+			    print STDERR "not connected\n";
+			}
+			else {
+			    _select($entity_class,$filter, @props); 
+			}
+		    }
+		}
+
+		unless ($valid) {
+		    print STDERR  "usage: select props|* from entity [where filter|id=val];\n";
+		}
+	    }
+	    else {
+	    print STDERR "unrecognised command: $keyw\n";
+	    }
+	}
+	else {
+	    print STDERR "unrecognised command\n";
+	}
+    }
+}
+
+Elive->disconnect;
+
+if (Elive->debug) {
+    my @living = grep {$Elive::Entity::Elive_Objects->{$_}}
+      (keys %Elive::Entity::Elive_Objects);
+
+    print STDERR "about to shutdown, live objects: @living\n";
+}
+
+exit(0);
+
+########################################################################
+
+sub _show {
+
+    my ($entity_name, $nesting, $entity_class) = @_;
+
+    $nesting ||= 0;
+    my $sp = ' ' x ($nesting * 4);
+
+    $entity_class ||= $entities->{$entity_name}
+        or do {
+	    print STDERR "${sp}Unknown entity: $entity_name\n";
+	    return;
+	};
+
+    my $property_types = $entity_class->property_types;
+    my $property_doco = $entity_class->property_doco;
+
+    print "${sp}$entity_name: $entity_class:\n"
+	unless $nesting;
+
+    foreach my $property ($entity_class->properties) {
+
+	my ($type, $is_array, $is_entity, $is_primary) 
+	    = Elive::Util::parse_type($property_types->{$property});
+
+	my $primary_str = $is_primary? 'pkey ': '';
+	my $array_str = $is_array? ' []': '';
+
+	print "${sp}  $property: ${primary_str}${type}${array_str}";
+	for ($property_doco->{$property}) {
+	    print "\t-- $_" if $_;
+	}
+	print "\n";
+
+	if ($is_entity) {
+	    _show($property, $nesting + 1, $type);
+	}
+
+    }
+}
+
+sub _select {
+
+    my ($entity_class, $filter, @props) = @_;
+
+    my $property_types = $entity_class->property_types;
+    my $entity_name = $entity_class->entity_name;
+
+    foreach (@props) {
+	
+	unless (exists $property_types->{$_}) {
+	    print STDERR "unknown $entity_name property: $_\n";
+	    return;
+	}
+    }
+
+    #
+    # See if our filter is in the format: keyprop=val
+    #
+    $filter ||= '';
+
+    warn "filter=$filter"
+	if (Elive->debug);
+
+    warn "entity: $entity_name, class: $entity_class"
+	if (Elive->debug);
+    warn join(' ', 'properties:',  $entity_class->properties)
+	if (Elive->debug);
+
+    #
+    # Possible fetch on primary key or alternative key.
+    # Detect and trap this as a simple fetch.
+    #
+    my $id;
+
+    if (my ($fld, $val) = ($filter =~ m{^ (\w+) \s* = \s* ([\w_\-\@\!\#\$\%\^\&\.\+]+) \s* $}x)) {
+	my $type = $property_types->{$fld} || '';
+	warn "field fetch: $fld, value: $val, type: $type";
+
+	if ($type =~ m{pkey}i) {
+	    $id = $val;
+	}
+    }
+
+    print join('|', @props)."\n";
+
+    my $rows;
+
+    eval {
+	if ($id) {
+	    $rows =  $entity_class->retrieve_all([$id]);
+	}
+	else {
+	    $rows = $entity_class->list(filter => $filter);						     
+	}
+    };
+
+    if ($@) {
+	print "error:$@";
+    }
+    else {
+	foreach my $row (@$rows) {
+	    
+	    output_row(\@props,$row);
+	}
+    }
+}
+
+sub output_row {
+    my $props = shift;
+    my $row = shift;
+
+    my @vals = map {
+	my $val = $row->$_;
+	#
+	# rely on stringification to display sub entities
+	#
+	ref($val) eq 'ARRAY'
+	    ? join(';', @$val)
+	    : (defined $val? $val: '(undef)');
+
+    } @$props;
+
+    print join('|', @vals)."\n";
+}
+
+sub _getopt {
+    my ($more_usage,@more_options) = @_;
+
+    my $usage = "usage: $0 url -username user -password pass -id value -debug 1|2|3 "
+	.($more_usage || '');
+
+    my %options;
+
+    Getopt::Long::GetOptions(\%options,
+			      'username|user=s',
+			      'password|pass=s',
+			      'id=i',
+			      'debug=i',
+			      @more_options,
+     ) or die $usage;
+
+    my $url = shift(@ARGV);
+
+    return ($url, $usage, %options);
+}
+
+sub _connect {
+
+    my $url = shift;
+    my %options = @_;
+
+    my $username = $options{username};
+    my $password = $options{password};
+
+    $username ||= Elive::Util::prompt('Username: ');
+
+    $password ||= Elive::Util::prompt('Password: ', password => 1);
+
+    ($username && $password)
+	or die $usage;
+
+    print STDERR "connecting to $url...";
+    $connection = Elive->connect($url,
+				 $username, $password);
+    print STDERR "done\n";
+
+}

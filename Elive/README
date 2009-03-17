@@ -1,0 +1,51 @@
+Elive is a set of Perl modules for access to Elluminate Live virtual
+classroom server.
+
+You can, for example, use it to query or add users, create sessions, assign
+users as class participants and change server settings.
+
+This package has been tested against Elluminate Live versions 8.0 and 9.0.
+
+INSTALLATION
+
+To install this module, run the following commands:
+
+	perl Makefile.PL
+	make
+	make test
+	make install
+
+SUPPORT AND DOCUMENTATION
+
+See the Elluminate Live documentation. In particular, this package
+follows the entities and relationships described in DatabaseSchema.pdf.
+
+You will find a copy on the installation disk. Or if you have access to the
+server, you will will typically find this in /opt/Elluminate/documentation. 
+
+After installing, you can find documentation for this module with the
+perldoc command.
+
+    perldoc Elive
+
+You can also look for information at:
+
+    RT, CPAN's request tracker
+        http://rt.cpan.org/NoAuth/Bugs.html?Dist=Elive
+
+    AnnoCPAN, Annotated CPAN documentation
+        http://annocpan.org/dist/Elive
+
+    CPAN Ratings
+        http://cpanratings.perl.org/d/Elive
+
+    Search CPAN
+        http://search.cpan.org/dist/Elive/
+
+
+COPYRIGHT AND LICENCE
+
+Copyright (C) 2009 David Warring
+
+This program is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.

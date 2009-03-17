@@ -1,0 +1,187 @@
+#!/usr/bin/perl
+use warnings;
+use strict;
+
+use Getopt::Long;
+use Elive::Util;
+use Elive::Entity;
+use DateTime::Format::ISO8601;
+
+my $username;
+my $password
+;
+my $debug;
+my $facilitator;
+my $start_str;
+my $end_str;
+my $meeting_name = 'test meeting';
+my $meeting_password;
+my $max_talkers;
+my $raise_hands;
+##my $private; seems to be ignored with Elluminate 9.x
+
+local($SIG{__WARN__});
+local($SIG{__DIE__});
+
+use Carp;
+
+GetOptions('username|user=s' => \$username,
+	   'password|pass=s' => \$password,
+	   'facilitator=s' => \$facilitator,
+	   'start=s' => \$start_str,
+	   'end=s' => \$end_str,
+	   'name=s' => \$meeting_name,
+	   'meeting_password|meeting_pass=s' => \$meeting_password,
+	   'max_talkers=i' => \$max_talkers,
+	   'raise_hands' => \$raise_hands,
+##	   'private' => \$private,
+	   'debug=i' => \$debug,
+    )
+    && (my $url = shift @ARGV)
+    or die "usage; $0 url -user username -pass password -meeting_pass pass2 -facilator username -name meeting_name -max_talkers n -private userid[=role] [userid[=role]...]";
+
+my @participant_opts = @ARGV;
+
+Elive->debug($debug);
+
+if ($debug) {
+    $SIG{__WARN__} = \&Carp::cluck;
+    $SIG{__DIE__} = \&Carp::confess;
+}
+
+our $connection = Elive->connect(
+    $url || Elive::Util::prompt('Elluminate Server Web Address: '),
+    $username || Elive::Util::prompt('Username: '),
+    $password || Elive::Util::prompt('Password: '),
+    );
+
+do {
+
+    my $start = $start_str
+	? DateTime::Format::ISO8601->parse_datetime($start_str)
+	: DateTime->now->clone->add(minutes => 15);
+
+    my $end = $end_str
+	? DateTime::Format::ISO8601->parse_datetime($end_str,
+						    base_datetime => $start)
+	: $start->clone->add(minutes => 30);
+
+    die "end time must be later than start time"
+	unless ($end->epoch > $start->epoch);
+
+    my $facilitator_obj = $facilitator
+	? _get_user($facilitator)
+	: Elive->_login;
+
+    my @participants;
+
+    foreach my $spec (@participant_opts) {
+
+	my $user_spec;
+	my $role;
+
+	if (($user_spec,$role) = ($spec =~ m{^([^=]+)=([^=]+)$}x)) {
+	    die "non-numeric role: $spec"
+		unless $role =~ m{^\d+$};
+	}
+	else {
+	    $user_spec = $spec;
+	}
+
+	$role = 3 if (!defined $role);
+
+	die "role ($role) not in range 0-3: $spec"
+	    unless ($role >= 0 && $role <= 3);
+
+	die "null username: $spec"
+	    if ($user_spec eq '');
+
+	my $user_obj = _get_user($user_spec);
+
+	die "duplicate user: $user_spec"
+	    if (grep {$_->{user} eq $user_obj} @participants); 
+
+	push (@participants, 
+	      Elive::Entity::Participant->construct({
+		  user => $user_obj,
+		  role => {roleId => $role},
+	      }),
+	    );
+    }
+
+    my $meeting = Elive::Entity::Meeting->insert
+	({
+	    name => $meeting_name,
+	    password => $meeting_password,
+	    facilitatorId => "${facilitator_obj}",
+##	    privateMeeting => $private,
+	    start => $start->epoch * 1000,
+	    end => $end->epoch * 1000,
+	 });
+
+    print "created meeting: ".$meeting->name." with id ".$meeting->meetingId."\n";
+
+    if (defined $max_talkers || defined $raise_hands) {
+
+	my $meeting_parameters
+	    = Elive::Entity::MeetingParameters->retrieve([$meeting->meetingId])
+	    or die "Unable to retrieve meeting parameters for this meeting";
+
+	$meeting_parameters->maxTalkers($max_talkers)
+	    if (defined $max_talkers);
+
+	$meeting_parameters->raiseHandOnEnter($raise_hands)
+	    if (defined $raise_hands);
+
+	$meeting_parameters->update;
+    }
+
+    if (@participants) {
+
+	#
+	# Create an empty paticipant list
+	#
+	my $participants_str = join(';', @participants);
+	print "participants: $participants_str\n";
+
+	my $participant_list = Elive::Entity::ParticipantList
+	    ->insert({meetingId => $meeting->meetingId,
+		      participants => \@participants,
+		     });
+    }
+    else {
+	print "no participants\n";
+    }
+};
+
+Elive->disconnect;
+
+exit(0);
+
+########################################################################
+
+sub _get_user {
+    my $user_spec = shift;
+
+    die 'usage: _get_user($user_name_or_id)'
+	unless (defined $user_spec && $user_spec ne '');
+    #
+    # Try by username
+    #
+    my $user;
+
+    #
+    # Numeric id. Could be a user id
+    #
+    if ($user_spec =~ m{^\d+$}) {
+	$user =  Elive::Entity::User->retrieve([$user_spec]);
+    }
+    else {
+	$user = Elive::Entity::User->get_by_loginName($user_spec);
+    }
+
+    die "unkown user: $user_spec"
+	unless ($user);
+
+    return $user;
+}

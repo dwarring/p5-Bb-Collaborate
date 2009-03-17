@@ -1,0 +1,17 @@
+# Subversion
+\B\.svn\b
+# Makemaker generated files and dirs.
+^MANIFEST\.
+^Makefile$
+Makefile.old
+^blib/
+# Temp, old and emacs backup files.
+~$
+.*#$
+\.#
+.log$
+#
+# Elluminate init scripts has an annoying habit of creating files
+# named '1' and '2 when you start the server.
+^1$
+^2$

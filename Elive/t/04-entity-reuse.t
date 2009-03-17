@@ -1,0 +1,104 @@
+#!perl -T
+use warnings; use strict;
+use Test::More tests => 6;
+use Test::Warn;
+
+package Elive::Connection::TestStub;
+
+sub url {return 'http://elive.test.org/test'};
+
+########################################################################
+
+package main;
+
+BEGIN {
+	use_ok( 'Elive::Entity::Group' );
+	use_ok( 'Elive::Entity::ParticipantList' );
+};
+
+use Scalar::Util;
+
+my $connection_stub = bless {}, 'Elive::Connection::TestStub';
+
+my $group = Elive::Entity::Group->construct(
+    {
+	groupId => 111111,
+	members => [
+	    123456, 112233
+	    ]
+    },
+    connection => $connection_stub,
+    );
+
+isa_ok($group, 'Elive::Entity::Group', 'group');
+ok($group->members->[1] == 112233, 'can access group members');
+
+my $user1 =  Elive::Entity::User->construct(
+    {userId => 11111,
+     loginName => 'pete'},
+    connection => $connection_stub,
+    );
+
+my $user1_again = Elive::Entity::User->retrieve([11111],
+    connection => $connection_stub,
+    reuse => 1);
+
+ok(_same_ref($user1, $user1_again), 'basic entity reuse');
+
+my $user2 =  Elive::Entity::User->construct(
+    {userId => 22222,
+     loginName => 'pete'},
+    connection => $connection_stub,
+    );
+
+_dump_objs();
+
+my $participant_list = Elive::Entity::ParticipantList->construct(
+    {
+	meetingId => 9999,
+	participants => [
+	    {
+		user => {userId => 22222,
+			 loginName => 'repeat',
+		},
+		role => {roleId => 2},
+	    },
+	    {
+		user => {userId => 33333,
+			 loginName => 'test_user3',
+		},
+		role => {roleId => 3},
+	    }
+	    
+	    ],
+    },
+    connection => $connection_stub,
+    );
+
+_dump_objs();
+
+my $user2_again = $participant_list->participants->[0]{user};
+
+ok(_same_ref($user2, $user2_again), 'nested reuse');
+
+########################################################################
+
+sub _dump_objs {
+    my $live_objects = \%Elive::Entity::Elive_Objects;
+
+    print "Elive Objects:\n";
+    foreach (keys %$live_objects) {
+	my $o = $live_objects->{$_};
+	print "\t$_ = ".Scalar::Util::refaddr($o)."\n"
+	    if ($o);
+    }
+    print "\n";
+}
+
+sub _same_ref {
+    my $a1 = Scalar::Util::refaddr(shift);
+    my $a2 = Scalar::Util::refaddr(shift);
+
+    return $a1 && $a1 eq $a2
+}
+
