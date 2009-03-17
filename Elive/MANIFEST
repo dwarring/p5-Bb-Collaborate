@@ -1,7 +1,6 @@
 .cvsignore
 Changes
 Debian_CPANTS.txt
-Elive-0.01_0.tar.gz
 inc/Module/Install.pm
 inc/Module/Install/Base.pm
 inc/Module/Install/Can.pm
@@ -28,9 +27,7 @@ lib/Elive/Util.pm
 Makefile.PL
 MANIFEST			This list of files
 META.yml
-properties
 README
-script/elive_add_test_users
 script/elive_query
 script/elive_raise_meeting
 t/00-load.t
