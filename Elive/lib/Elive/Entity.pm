@@ -40,7 +40,7 @@ sub _freeze {
 	die "unknown property: $_: expected: @properties"
 	    unless exists $property_types->{$_};
 
-	my ($type, $is_array, $is_entity) = Elive::Util::parse_type($property_types->{$_});
+	my ($type, $is_array, $is_entity) = Entity::Util::parse_type($property_types->{$_});
 
 	for ($db_data{$_}) {
 
@@ -131,7 +131,7 @@ sub _thaw {
 
     foreach my $col (grep {exists $data{ $_ }} @properties) {
 
-	my ($type, $expect_array, $is_entity) = Elive::Util::parse_type($property_types->{$col});
+	my ($type, $expect_array, $is_entity) = Entity::Util::parse_type($property_types->{$col});
 
 	for my $val ($data{$col}) {
 

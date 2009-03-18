@@ -13,29 +13,6 @@ Elive::Util - utility functions for Elive
 
 =cut
 
-=head2 parse_type
-
-   my $user_types = Elive::Entity::User->property_types
-
-   my ($type,
-       $is_array,
-       $is_entity,
-       $is_pkey) = Elive::Util::parse_type($user_types->{role})
-
-   if ($is_entity) {
-       my $sub_types = $type->property_types
-       ...
-    }
-
-Analyses an entity property type.
-
-=cut
-
-sub parse_type {
-    warn "obsolete";
-    Entity::Util::parse_type(@_);
-}
-
 =head2 prompt
 
     my $password = Elive::Util::prompt('Password: ', password =>1)
