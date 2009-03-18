@@ -1,21 +1,14 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 13;
+use Test::More tests => 14;
 use Test::Warn;
 
-package Elive::Connection::TestStub;
-
-sub url {return 'http://elive.test.org/test'};
-
-########################################################################
-
-package main;
-
 BEGIN {
-	use_ok( 'Elive::Entity::ParticipantList' );
+    use_ok( 'Entity::Repository' );
+    use_ok( 'Elive::Entity::ParticipantList' );
 };
 
-my $connection_stub = bless {}, 'Elive::Connection::TestStub';
+Elive->connection(Entity::Repository->new('http://test.org'));
 
 my $participant_list = Elive::Entity::ParticipantList->construct(
     {
@@ -36,7 +29,6 @@ my $participant_list = Elive::Entity::ParticipantList->construct(
 	    
 	    ],
     },
-    connection => $connection_stub,
     );
 
 isa_ok($participant_list, 'Elive::Entity::ParticipantList', 'participant');

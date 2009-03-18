@@ -1,11 +1,11 @@
 package Elive::Connection;
 use warnings; use strict;
 
-use base qw{ Class::Accessor };
+use base qw{ Entity::Repository Class::Accessor };
 
 =head1 NAME
 
-Elive::Connection -  Maintain a SOAP/XML connection with an Elluinate Server.
+Elive::Store -  Manage an Elluminate Store via SOAP/XML.
 
 =cut
 
@@ -14,13 +14,13 @@ use URI;
 use File::Spec;
 use HTML::Entities;
 
-__PACKAGE__->mk_accessors( qw{ url user pass soap } );
+__PACKAGE__->mk_accessors( qw{ user pass soap } );
 
 =head2 new
 
-    my $ec = Elive::Connection->new ('http://someserver.com/test',
-                                     'user1', 'pass1',
-                                     debug => 1)
+    my $ec = Elive::Store->new ('http://someserver.com/test',
+                                'user1', 'pass1',
+                                 debug => 1)
 
 =cut
 
@@ -32,7 +32,7 @@ sub new {
     my @path = File::Spec->splitdir( $uri->path );
 
     push (@path, 'webservice.event')
-	unless (@path && $path[ -1 ] eq 'webservice.event');
+	unless (@path && $path[-1] eq 'webservice.event');
 
     $uri->path( File::Spec->catdir(@path) );
 
@@ -40,13 +40,13 @@ sub new {
 	if ($opt{debug});
 
     my $soap = SOAP::Lite->new( proxy => $uri->as_string );
-    
-    my $self = bless {
-	url => $uri->as_string,
-	user => $user,
-	pass => $pass,
-	soap => $soap,
-    }, $class;
+
+    my $self = $class->SUPER::new($url);
+    bless $self, $class;
+
+    $self->user($user);
+    $self->pass($pass);
+    $self->soap($soap);
 
     return $self
 }

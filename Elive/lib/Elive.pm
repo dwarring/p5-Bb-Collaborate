@@ -58,7 +58,6 @@ use base qw{Class::Data::Inheritable };
 
 use Elive::Connection;
 
-__PACKAGE__->mk_classdata('_last_connection');
 __PACKAGE__->mk_classdata('_login');
 __PACKAGE__->mk_classdata('adapter' => 'default');
 
@@ -94,7 +93,7 @@ sub connect {
 	debug => $class->debug,
 	);
 
-    $class->_last_connection( $connection );
+    $class->connection( $connection );
 
     #
     # The login name should be a valid user in the database
@@ -123,11 +122,7 @@ sub connect {
 
 =cut
 
-sub connection {
-    my $class = shift;
-
-    return $class->_last_connection;
-}
+__PACKAGE__->mk_classdata('connection');
 
 =head2 login
 
@@ -150,7 +145,7 @@ exiting your program
 sub disconnect {
     my $class = shift;
 
-    $class->_last_connection(undef);
+    $class->_connection(undef);
     $class->_login(undef);
 }
 
@@ -265,7 +260,7 @@ releases.
 
 =head1 SEE ALSO
 
-  Elive::Connection - SOAP/XML Connection
+  Elive::Conneciton - SOAP/XML connection to Elluminate
 
   Elive::Entity - The base class for all elive entities
 

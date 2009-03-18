@@ -1,22 +1,16 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 19;
+use Test::More tests => 20;
 use Test::Warn;
 
-package Elive::Connection::TestStub;
-
-sub url {return 'http://elive.test.org/test'};
-
-########################################################################
-
-package main;
-
 BEGIN {
-	use_ok( 'Elive::Entity::User' );
-	use_ok( 'Elive::Entity::Group' );
+    use_ok( 'Entity::Repository' );
+    use_ok( 'Elive::Entity::User' );
+    use_ok( 'Elive::Entity::Group' );
 }
 
-my $connection_stub = bless {}, 'Elive::Connection::TestStub';
+Elive->connection(Entity::Repository->new('http://test.org'));
+
 my @base_members = (100, 101, 102);
 
 my %user_props = (map {$_ => 1} Elive::Entity::User->properties);
@@ -31,7 +25,6 @@ my $user1 = Elive::Entity::User->construct({
 	loginName => 'someuser',
 	loginPassword => 'somepass'
      },
-     connection => $connection_stub,
     );
 isa_ok($user1, 'Elive::Entity::User');
 
@@ -47,9 +40,7 @@ my $group1 = Elive::Entity::Group->construct({
 	name => 'group_with_several_members',
 	members => [ @base_members ],
      },
-     connection => $connection_stub,
     );
-
 
 isa_ok($group1, 'Elive::Entity::Group');
 
@@ -82,7 +73,6 @@ my $group2 = Elive::Entity::Group->construct({
 	name => 'group_with_no_members',
 	members => [],
      },
-     connection => $connection_stub,
     );
 
 ok(!$group2->is_changed, 'is_changed returns false before change');

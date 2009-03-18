@@ -19,7 +19,7 @@ BEGIN {
 
 my $connection_stub = bless {}, 'Elive::Connection::TestStub';
 
-Elive->_last_connection($connection_stub);
+Elive->connection($connection_stub);
 
 dies_ok(
     sub {

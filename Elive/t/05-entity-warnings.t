@@ -1,25 +1,16 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 5;
+use Test::More tests => 6;
 use Test::Warn;
 
-package Elive::Connection::TestStub;
-
-sub url {return 'http://elive.test.org/test'};
-
-########################################################################
-
-package main;
-
 BEGIN {
-	use_ok( 'Elive' );
-	use_ok( 'Elive::Entity' );
-	use_ok( 'Elive::Entity::User' );
+    use_ok( 'Entity::Repository' );
+    use_ok( 'Elive' );
+    use_ok( 'Elive::Entity' );
+    use_ok( 'Elive::Entity::User' );
 }
 
-my $connection_stub = bless {}, 'Elive::Connection::TestStub';
-
-Elive->_last_connection($connection_stub);
+Elive->connection(Entity::Repository->new('http://test.org'));
 
 warning_like (\&do_unsaved_update,
 	      qr{destroyed without saving changes},

@@ -23,6 +23,28 @@ It provides a simple mapping from the objects to database entities.
 
 =cut
 
+=head2 construct
+
+
+
+=cut
+
+sub construct {
+    my $class = shift;
+    my $data = shift;
+    my %opt = @_;
+
+    unless ($opt{copy}) {
+	my $repository = (delete $opt{connection}
+			  || $class->connection);
+
+	$opt{repository} = $repository
+	    if $repository;
+    }
+
+    $class->SUPER::construct($data, %opt);
+}
+
 sub _freeze {
     #
     # _freeze - construct name/value pairs for database inserts or updates
@@ -461,7 +483,7 @@ sub _insert_class {
 	unless (Elive::Util::_reftype($insert_data) eq 'HASH');
 
     my $connection = ($opt{connection}
-		      || $class->_last_connection);
+		      || $class->connection);
 
     my $db_data = $class->_freeze($insert_data, mode => 'insert');
 
@@ -484,7 +506,7 @@ sub _insert_class {
     my $rows =  $class->_process_results( $results );
     $class->_readback_check($insert_data, $rows);
 
-    my $self = $class->construct( $rows->[0], connection => $connection );
+    my $self = $class->construct( $rows->[0], repository => $connection );
     return $self;
 }
 
@@ -596,7 +618,7 @@ sub list {
     push (@params, adapter => $class->adapter || 'default');
 
     my $connection = ($opt{connection}
-		      || $class->_last_connection
+		      || $class->connection
 	)
 	or die "no connection active";
 
@@ -614,7 +636,7 @@ sub list {
     my $rows =  $class->_process_results( $results );
 
     return [
-	map { $class->construct( $_, connection => $connection) }
+	map { $class->construct( $_, respository => $connection) }
 	@$rows
 	];
 }
@@ -627,7 +649,7 @@ sub _fetch {
     die "usage: ${class}->_fetch( \\%query )"
 	unless (Elive::Util::_reftype($db_query) eq 'HASH');
 
-    my $connection = $opt{connection} || $class->_last_connection
+    my $connection = $opt{connection} || $class->connection
 	or die "no connection active";
 
     my $adapter = $opt{adapter} || 'get'.$class->entity_name;
@@ -657,7 +679,7 @@ sub _fetch {
     #
     # Got one!!
     #
-    return [map {$class->construct( $_, connection => $connection )} @$rows];
+    return [map {$class->construct( $_, repository => $connection )} @$rows];
 }
 
 =head2 retrieve
@@ -686,7 +708,7 @@ sub retrieve {
 	    unless defined ($vals->[$n]);
     }
 
-    my $connection = $opt{connection} || $class->_last_connection
+    my $connection = $opt{connection} || $class->connection
 	or die "no connected";
 
     if ($opt{reuse}) {
