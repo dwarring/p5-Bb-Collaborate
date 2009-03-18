@@ -2,6 +2,7 @@
 use warnings; use strict;
 use Test::More;
 
-eval { require Test::Kwalitee; Test::Kwalitee->import() };
+my $kwalitee = join('::', qw(Test Kwalitee));
 
-plan( skip_all => 'Test::Kwalitee not installed; skipping' ) if $@;
+eval "require $kwalitee; $kwalitee->import()";
+plan( skip_all => "$kwalitee not installed; skipping" ) if $@;

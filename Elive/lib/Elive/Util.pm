@@ -5,6 +5,7 @@ use Term::ReadKey;
 use Term::ReadLine;
 use Scalar::Util;
 use Storable;
+use Entity::Util;
 
 =head1 NAME
 
@@ -31,20 +32,8 @@ Analyses an entity property type.
 =cut
 
 sub parse_type {
-    my $type = shift;
-
-    my $is_array = ($type =~ s{^ArrayRef\[(.*?)\]$}{$1});
-    #
-    # Note: Elive::Entity is a subclass of Elive::Struct
-    #
-    my $is_entity = UNIVERSAL::isa($type, 'Elive::Struct')
-	||  UNIVERSAL::isa($type, 'Elive::Array');
-
-    my $is_pkey = ($type =~ s{^pkey}{}i);
-
-    $type = 'Int' if ($is_pkey && $type eq '');
-
-    return ($type, $is_array, $is_entity, $is_pkey);
+    warn "obsolete";
+    Entity::Util::parse_type(@_);
 }
 
 =head2 prompt

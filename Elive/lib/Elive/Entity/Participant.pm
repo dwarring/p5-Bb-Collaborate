@@ -3,7 +3,7 @@ use warnings; use strict;
 
 use Moose;
 
-use base qw{Elive::Struct};
+use base qw{Entity::Struct};
 
 use Elive::Entity::User;
 use Elive::Entity::Role;

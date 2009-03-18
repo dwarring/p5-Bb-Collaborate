@@ -4,7 +4,7 @@ use Moose;
 
 use warnings; use strict;
 
-use base qw{Elive::Struct};
+use base qw{Elive Entity};
 use Elive::Util;
 
 use YAML;
@@ -22,56 +22,6 @@ This is an abstract class that is inherited by all Elive Entity instances.
 It provides a simple mapping from the objects to database entities.
 
 =cut
-
-our %Elive_Objects;
-
-#
-# create inside-out accessors for meta properties. keep our
-# object struct clean so that it only contains database information
-#
-our %Meta_Data;
-
-foreach my $accessor (qw/_connection _db_data _deleted/) {
-
-    no strict 'refs';
-
-    *{__PACKAGE__.'::'.$accessor} = sub {
-	my $self = shift;
-	my $ref = $self->_refaddr;
-
-	$Meta_Data{ $ref }{ $accessor } = $_[0]
-	    if @_;
-
-	return $Meta_Data{ $ref }{ $accessor };
-    }
-}
-
-sub _url {
-        my $class = shift;
-	my $connection = shift || $class->_last_connection;
-	my $path = shift;
-
-        return ($connection->url
-		. '/'
-		. $class->entity_name
-		.'/'.
-		$path);
-}
-
-=head2 url
-
-    my $url = $user->url
-
-Return a restful url for an object instance. This will include both
-the url of the connection scring and the entity class name. It is used
-internally to uniquely identify and cache objects across connections.
-
-=cut
-
-sub url {
-    my $self = shift;
-    return $self->_url($self->connection, $self->stringify_self);
-}
 
 sub _freeze {
     #
@@ -98,7 +48,7 @@ sub _freeze {
 
 		if ($is_entity) {
 
-		    if (Elive::Struct::_refaddr($_)) {
+		    if (Scalar::Util::refaddr($_)) {
 
 			$_ = $type->construct(Elive::Util::_clone($_),
 			    copy => 1)
@@ -194,7 +144,7 @@ sub _thaw {
 		unless ($val_type eq 'ARRAY') {
 		    #
 		    # A single value will be returned singly. Convert it to
-		    # a single element array
+		    # a one element array
 		    #
 		    $val = [$val];
 		    warn "thawing $class coerced element into array for $col"
@@ -461,50 +411,13 @@ sub _readback_check {
 		    if ($class->debug);
 
 		foreach ($read_val, $write_val) {
-		    bless $_, 'Elive::Array'  # gives a nice stringified digest
+		    bless $_, 'Entity::Array'  # gives a nice stringified digest
 			if (Elive::Util::_reftype($_) eq 'ARRAY');
 		}
 		die "Update consistancy check failed on $_. Wrote:$write_val, read-back:$read_val, column: $_"
 	    }
 	}
     }
-}
-
-=head2 is_changed
-
-    Return  a list of properties that have uncommited changes.
-
-=cut
-
-sub is_changed {
-
-    my $self = shift;
-
-    my @updated_properties;
-    my $db_data = $self->_db_data;
-
-    #
-    # not mapped to the database. either a scratch object or
-    # sub entity.
-    #
-    return unless ($db_data);
-
-    foreach my $col ($self->properties) {
-
-	my $new = $self->$col;
-	my $old = $db_data->$col;
-	if (defined ($new) != defined ($old)
-	    || Elive::Util::_reftype($new) ne Elive::Util::_reftype($old)
-	    || $self->_cmp_col($col,$new,$old)) {
-
-	    warn $self->entity_name."#".$self->id." column $col updated from $old to $new"
-		if $self->debug;
-
-	    push (@updated_properties, $col);
-	}
-    }
-
-    return @updated_properties;
 }
 
 =head2 insert
@@ -662,148 +575,6 @@ sub update {
     return $self;
 }
 
-=head2 set
-
-    $obj->set(col1 => val1, col2 => val2 [,...])
-
-Assign values to entity object columns.
-
-=cut
-
-sub set {
-    my $self = shift;
-    my %data = @_;
-
-    die "attempted to modify  data in a deleted record"
-	if ($self->_deleted);
-
-    my %entity_column = map {$_ => 1} ($self->properties);
-    my %primary_key = map {$_ => 1} ($self->primary_key);
-
-    foreach (keys %data) {
-
-	if ($entity_column{$_}) {
-
-	    if (exists $primary_key{ $_ }) {
-
-		my $old_val = $self->{$_};
-
-		if (defined $old_val && !defined $data{$_}) {
-		    die "attempt to delete primary key";
-		}
-		elsif ($self->_cmp_col($old_val, $data{$_})) {
-		    die "attempt to update primary key";
-		}
-	    }
-
-	    $self->{$_} = $data{$_};
-	}
-	else {
-	    die "no such column: $_";
-	}
-    }
-
-    return $self;
-}
-
-=head2 construct
-
-    my $user = Elive::Entity::User->construct(
-            {userId = 123456,
-             loginName => 'demo_user',
-             role => {
-                roleId => 1
-             });
-
-Construct an entity from data.
-
-=cut
-
-sub construct {
-    my $class = shift;
-    my $data = shift;
-    my %opt = @_;
-
-    die "usage: ${class}->construct( \\%data )"
-	unless (Elive::Util::_reftype($data) eq 'HASH');
-
-    my $connection = ($opt{connection} ||= $class->_last_connection);
-
-    $data = $class->SUPER::construct(Elive::Util::_clone($data),
-				     %opt);
-
-    #
-    # just want a lightweight struct - not a full blown entity
-    #
-    return $data if ($opt{copy});
-
-    #
-    # Retain one copy of the data for this connection
-    #
-
-    die "can't construct objects without a connection"
-	unless $connection;
-
-    my %primary_key_data = map {$_ => $data->{ $_ }} ($class->primary_key);
-
-    foreach (keys %primary_key_data) {
-	unless (defined $primary_key_data{ $_ }) {
-	    warn YAML::Dump($data)
-		if($class->debug);
-	    die "can't construct $class without value for primary key field: $_";
-	}
-    }
-    
-    my @pkey = (
-	map {$primary_key_data{ $_ }}
-	($class->primary_key)
-	);
-
-    my $obj_url = $class->_url(
-	$connection,
-	$class->_stringify(@pkey)
-	);
-
-    warn"$class key is $obj_url" if ($class->debug);
-
-    my $self;
-
-    if (my $cached = $Elive_Objects{ $obj_url }) {
-
-	#
-	# Reuse the cached copy
-	#
-	die "attempted overwrite of object with unsaved changes ($obj_url)"
-	    if $cached->is_changed;
-
-	%{$cached} = %{$data};
-	$self = $cached;
-    }
-    else {
-	$self = $data;
-	weaken ($Elive_Objects{$obj_url} = $self);
-    }
-
-    my $data_copy = Elive::Util::_clone($data);
-
-    $class->SUPER::construct($data_copy, copy => 1);
-    $self->_db_data( $data_copy );
-
-    $self->connection( $connection ) if ($connection);		   
-
-    #
-    # Save original data, as read from the database
-    #
-
-    warn YAML::Dump({
-	construct => {$class => $data},
-	self => $self,
-		    })
-	if ($class->debug);
-
-    return $self;
-}
-
 =head2 list
 
     Elive::SomeClass->list(filter => ...)
@@ -928,7 +699,7 @@ sub retrieve {
 	    $class->_stringify(@$vals)
 	    );
 
-	my $cached = $Elive_Objects{$obj_url};
+	my $cached = $Entity::Entity_Objects{$obj_url};
 	return $cached if $cached;
     }
 
@@ -1024,69 +795,6 @@ sub delete {
 	if (@$rows > 1);
 
     $self->_deleted(1);
-}
-
-=head2 revert
-
-    $user->revert                        # revert entire entity
-    $user->revert(qw/loginName email/);  # revert selected properties
-
-Revert an entity to its last constructed value.
-
-=cut
-
-sub revert {
-    my $self = shift;
-    my @props = @_;
-
-    my $db_data = $self->_db_data
-	|| die "object doesn't have db-data!? - can't cope";
-
-    if (@props) {
-	$self->{$_} = $db_data->{$_} for (@props);
-    }
-    else {
-	%{ $self } = %{ $db_data };
-    }
-
-    return $self;
-}
-
-=head2 DEMOLISH
-
-Moose object Destructor
-
-=cut
-
-sub DEMOLISH {
-
-    my ($self) = shift;
-
-    warn "demolish ".$self->entity_name."#$self = ".$self->_refaddr
-	if (Elive->debug >= 2);
-
-    if (my @changed = $self->is_changed) {
-	my $class = ref($self);
-	warn("$class $self destroyed without saving changes to "
-	     . join(', ', @changed));
-    }
-
-    delete $Meta_Data{ $self->_refaddr };
-
-    $self->SUPER::DEMOLISH
-	if $self->can('SUPER::DEMOLISH');
-}
-
-END {
-
-    foreach (values %Elive_Objects) {
-	next unless $_;
-	my $db_data = $_->_db_data;
-	$_->DEMOLISH if $_;
-	$db_data->DEMOLISH if $db_data;
-	$_ = undef;
-    }
-
 }
 
 #
