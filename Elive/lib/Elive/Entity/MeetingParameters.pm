@@ -27,8 +27,31 @@ Elive::Entity::MeetingParameters - meeting parameters entity class
 
 =head1 DESCRIPTION
 
-This class contains additional meeting information. Note that this entity
-is automatically created when you create a meeting.
+This class contains additional meeting information.
+
+=back
+
+=head2 create
+
+The create method is not applicable. The meeting parameters table is
+automatically created when you create a table.
+
+=back
+
+=cut
+
+sub create {die "not applicable to meeting parameters"};
+
+=head2 list
+
+The list method is not available for meeting parameters. You'll need
+to retrieve on a meeting id.
+
+=back
+
+=cut
+
+sub list {die "not available for meeting parameters"};
 
 =head1 See Also
 

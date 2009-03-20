@@ -61,7 +61,7 @@ while (defined (my $cmd = $is_tty? $term->readline($prompt): <STDIN>)) {
 		print "Elive query $version help:\n\n";
 		print "connect url [user] - connect to an elluminate server\n";
 		print "show [entity_name] - list/show entities\n";
-		print "debug = 0[1|2|3] - set debugging level\n";
+		print "debug = [0|1|2|3] - set debugging level\n";
 		print "select *|prop[,prop] from entity [where exp]\n";
 	    }
 	    elsif ($keyw  =~ m{^(connect)$}i) {
@@ -151,7 +151,7 @@ while (defined (my $cmd = $is_tty? $term->readline($prompt): <STDIN>)) {
 			    if (Elive->debug);
 
 			unless ($connection) {
-			    print STDERR "not connected\n";
+			    print STDERR "you'll need to connect first - see help connect\n";
 			}
 			else {
 			    _select($entity_class,$filter, @props); 

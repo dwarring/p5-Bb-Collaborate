@@ -148,8 +148,8 @@ exiting your program
 sub disconnect {
     my $class = shift;
 
-    $class->_connection(undef);
-    $class->_login(undef);
+    $class->connection(undef);
+    $class->login(undef);
 }
 
 =head2 debug

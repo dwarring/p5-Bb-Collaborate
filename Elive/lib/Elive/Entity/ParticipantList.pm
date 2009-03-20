@@ -172,9 +172,8 @@ sub __handle_response {
     my $expected_participants;
     #
     # sometimes get back an empty response from setPartipcantList
-    # if this happens abort the standard readback and reimplement
-    # our by re-retrieving the record and comparing against the
-    # the saved values.
+    # if this happens abort the standard readback. Re-retreive the
+    # to complete the readback.
     # 
     if ($meeting_id && $err =~ m{unexpected soap response}i) {
 	warn "warning: $err";
@@ -193,4 +192,14 @@ sub __handle_response {
     }
 }
 
+=head2 list
+
+The list method is not available for participant lists. You'll need
+to retrieve on a meeting id.
+
+=back
+
+=cut
+
+sub list {die "not available for participant lists"};
 1;

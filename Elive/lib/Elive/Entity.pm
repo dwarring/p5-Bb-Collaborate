@@ -13,7 +13,7 @@ use YAML;
 use Scalar::Util qw{weaken};
 use UNIVERSAL;
 
-__PACKAGE__->has_entity_metadata('_deleted');
+__PACKAGE__->has_metadata('_deleted');
 
 =head1 NAME
 
@@ -134,9 +134,9 @@ sub _thaw {
     my @properties = $class->properties;
 
     #
-    # Use this table to fix up a couple of anomolies with the fetched
-    # data versus the documented schema and the operation of the rest
-    # of the system (inserts, updates, querys):
+    # Fix up a couple of anomolies with the fetched data versus the
+    # documented schema and the operation of the rest of the system
+    # (inserts, updates, querys):
     # 1. Entity names returned capitalised: 'LoginName' => 'loginName
     # 2. Primary key returned as Id, rather than <entity_name>Id
     #
@@ -261,7 +261,7 @@ sub _unpack_results {
     }
     elsif ($results_type eq 'HASH') {
 	#
-	# Convert some SOAP/XML constructs to their perl equvalent
+	# Convert some SOAP/XML constructs to their perl equvalents
 	#
 	foreach my $key (keys %$results) {
 	    my $value = $results->{$key};
@@ -276,7 +276,7 @@ sub _unpack_results {
 		    $value = [];
 		}
 		#
-		# Throw away our parse of this struct it only exists to
+		# Throw away our parse of this struct. It only exists to
 		# house this collection
 		#
 		return $class->_unpack_results($value);
@@ -289,8 +289,9 @@ sub _unpack_results {
 
 			$value =  $value->{Entry};
 			#
-			# Key, Value pairs.
-			# We're just interested in the value's anyway
+			# Looks like we've got Key, Value pairs.
+			# Throw array the key and reference the value,
+			# that's all we're interested in.
 			#
 			if (Elive::Util::_reftype ($value) eq 'ARRAY') {
 		    
@@ -396,8 +397,10 @@ sub _process_results {
     my $class = shift;
     my $soap_results = shift;
 
-    #  Dereference Adapters. Construct arrays from Collections
-    #  and Maps.
+    #
+    # Thaw our returned SOAP responses to reconstruct the data
+    # image.
+    #
 
     my @rows;
 
@@ -415,6 +418,12 @@ sub _readback_check {
     my $class = shift;
     my $updates = shift;
     my $rows = shift;
+
+    #
+    # Create and upate responses generally return a copy of the
+    # record, after applying the updates. This routine may be
+    # run to check that the expected updates have been applied
+    #
 
     die "Didn't receive a response for ".$class->entity_name
 	unless @$rows;
@@ -450,7 +459,7 @@ sub _readback_check {
 
     $obj->set(prop1 => val1, prop2 => val2 [,...])
 
-Set entity properties
+Set entity properties.
 
 =cut
 
@@ -465,22 +474,22 @@ sub set {
 
 =head2 insert
 
-You can insert newly constructed entities:
-
+   # Construct object, then insert.
+   #
    my $new_user = Elive::Entity::User->construct({userId => 12345, 
                                  loginName => 'demo_user',
                                  role => {roleId => 1},
                                });
    $new_user->insert;
 
-Or you can construct and insert the new entity directly:
-
-    my $new_user = Elive::Entity::User->insert({userId => 12345, 
+   # Construct and insert in one go
+   #
+   my $new_user = Elive::Entity::User->insert({userId => 12345, 
                                  loginName => 'demo_user',
                                  role => {roleId => 1},
                                });
 
-Adds a new record to the database.
+Adds a new record to the Elluminate database.
 
 =cut
 
@@ -537,9 +546,9 @@ sub _insert_class {
 
 =head2 update
 
-    Apply our updates to the server. This call will commit outstanding
-    changes to the object and also apply any further updates passed
-    as parameters.
+Apply our updates to the server. This call will commit outstanding
+changes to the object and also apply any further updates passed
+as parameters.
 
 =head3 examples
 
@@ -624,9 +633,14 @@ sub update {
 
 =head2 list
 
-    Elive::SomeClass->list(filter => ...)
+    my $users = Elive::Entity::Users->list(filter => 'surname = smith')
 
 Retrieve a list of objects from a table.
+
+Note: this method is not applicable to Elive::Entity::MeetingParameters
+or Elive::Entity::ParticipantList.
+
+Note that 
 
 =cut
 
@@ -711,7 +725,7 @@ sub _fetch {
 
     my $user = Elive::Entity::User->retrieve($user_id)
 
-    Retrieve a single entity objects by primary key.
+Retrieve a single entity objects by primary key.
 
 =cut
 
@@ -768,7 +782,7 @@ sub retrieve {
     my $participants
           = Elive::Entity::ParticpiantList->retrieve_all($meeting_id)
 
-    Retrieve entity objects by partial primary key.
+Retrieve entity objects by partial primary key.
 
 =cut
 
@@ -801,9 +815,9 @@ sub retrieve_all {
 
 =head2 delete
 
-    Delete an entity from the datase.
-
     $user_obj->delete;
+
+Delete an entity from the datase.
 
 =cut
 
