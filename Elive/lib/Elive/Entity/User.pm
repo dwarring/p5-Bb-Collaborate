@@ -1,5 +1,7 @@
 package Elive::Entity::User;
+
 use Moose;
+use Elive::Entity;
 use base qw{ Elive::Entity };
 
 __PACKAGE__->entity_name('User');

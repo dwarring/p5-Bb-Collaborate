@@ -1,8 +1,8 @@
 package Elive::Entity::ServerDetails;
-use warnings; use strict;
 
-use base qw{ Elive::Entity };
 use Moose;
+use Elive::Entity;
+use base qw{ Elive::Entity };
 use Scalar::Util;
 
 =head1 NAME

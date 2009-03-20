@@ -1,8 +1,8 @@
 package Elive::Entity::Role;
-use warnings; use strict;
 
-use base qw{Elive::Struct};
 use Moose;
+use Elive::Struct;
+use base qw{Elive::Struct};
 
 =head1 NAME
 

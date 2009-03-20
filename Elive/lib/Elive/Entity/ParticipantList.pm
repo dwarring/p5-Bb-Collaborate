@@ -1,8 +1,8 @@
 package Elive::Entity::ParticipantList;
-use warnings; use strict;
 
-use base qw{ Elive::Entity };
 use Moose;
+use Elive::Entity;
+use base qw{ Elive::Entity };
 
 use Elive::Entity::Participant;
 use Elive::Util;

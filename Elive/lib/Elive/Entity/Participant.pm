@@ -1,8 +1,7 @@
 package Elive::Entity::Participant;
-use warnings; use strict;
 
 use Moose;
-
+use Elive::Struct;
 use base qw{Elive::Struct};
 
 use Elive::Entity::User;

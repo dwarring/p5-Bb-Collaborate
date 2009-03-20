@@ -1,8 +1,8 @@
 package Elive::Entity::Meeting;
-use warnings; use strict;
 
-use base qw{ Elive::Entity };
 use Moose;
+use Elive::Entity;
+use base qw{ Elive::Entity };
 
 =head1 NAME
 

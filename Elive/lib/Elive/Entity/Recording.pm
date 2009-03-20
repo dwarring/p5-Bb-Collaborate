@@ -1,8 +1,8 @@
 package Elive::Entity::Recording;
-use warnings; use strict;
 
-use base qw{ Elive::Entity };
 use Moose;
+use Elive::Entity;
+use base qw{ Elive::Entity };
 
 __PACKAGE__->entity_name('Recording');
 __PACKAGE__->collection_name('Recordings');

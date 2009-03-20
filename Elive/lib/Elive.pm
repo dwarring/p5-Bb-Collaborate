@@ -15,6 +15,13 @@ Version 0.02
 
 our $VERSION = '0.02';
 
+use Moose;
+
+use Class::Data::Inheritable;
+use base qw{Class::Data::Inheritable};
+
+use Elive::Connection;
+
 =head1 SYNOPSIS
 
     use Elive;
@@ -34,10 +41,12 @@ our $VERSION = '0.02';
 
     }
 
+    Elive->disconnect;
+
 =head1 DESCRIPTION
 
-This module provides class and object bindings to Elluminate Live
-SOAP/XML commands.
+This module provides class and object bindings to Elluminate Live server
+database via the SOAP/XML command interace.
 
 It enables basic create/read/update and delete of Users, User Lists,
 Meetings and Meeting Participants.
@@ -51,12 +60,6 @@ language independant SOAP/XML layer. This package implements perl bindings
 for this.
 
 =cut
-
-use Moose;
-
-use base qw{Class::Data::Inheritable };
-
-use Elive::Connection;
 
 __PACKAGE__->mk_classdata('_login');
 __PACKAGE__->mk_classdata('adapter' => 'default');
@@ -126,7 +129,7 @@ __PACKAGE__->mk_classdata('connection');
 
 =head2 login
 
-return the connected user entity
+return the user entity used to connect to the server
 
 =cut
 
@@ -179,10 +182,10 @@ sub debug {
     return $DEBUG || 0;
 }
 
-=head1 EXAMPLES
+=head1 SCRIPTS
 
-elive_query is an installed script the Elive distribution. It is a simple
-program for querying entities and executing queries to an Elluminate server.
+elive_query is an example script included in the Elive distribution. It is a
+simple program for listing and retrieving entities.
 
 	% elive_query http://myserver.com/test -username serversupport
         Password: ********
@@ -209,11 +212,8 @@ program for querying entities and executing queries to an Elluminate server.
 	462298303857|0||sally.smith|sally@smith.id.au|3|Sally|Smith
 	elive>
 
-=head2 elive_query Restrictions
-
-elive_query does not attempt parse or interpret where clauses, but simply
-passes them through as filter parameters on SOAP calls to the elluminate
-server.
+elive_query is simply passing where clauses, but through to the Elluminate
+server as filters on SOAP calls.
 
 For example, for the statement
 
@@ -237,63 +237,100 @@ be careful the include a where clauses to limit the amount of data returned
 for larger tables. 
 
 As a final note, elive_query doesn't support updates or deletes with the
-initial release of Elive 0.1. This may be implemented in the next few
+initial release of Elive 0.2. This may be implemented in the next few
 releases.
-
-=head1 BUGS AND LIMITATIONS
-
-(*) Elluminate SOAP/XML interface doesn't locking or transactional control
-    and cannot match the robustness of a native database. 
-    It's probably a good idea to design your application architecture and
-    database updates to minimise the changes of contention. Eg. audit trails
-    and/or master copies of the data. Also consider Elluminate Live's backup
-    facilties.
-
-(*) The Elluminate server installs with the Mckoi JDBC database, but can
-    also connect to other databases that support JDBC and can be readily
-    accessed via the Perl DBI. E.g. SQL Server or Oracle. See the Elluminate
-    Live advanced adminstration guide.
-
-(*) Elluminate Live can also be configured to use an LDAP respository for
-    user authentication.  Users can still be retrieved or listed. However
-    updates and deletes are not supported via Elluminate Live or Elive.
 
 =head1 SEE ALSO
 
-  Elive::Conneciton - SOAP/XML connection to Elluminate
+Perl Modules:
 
-  Elive::Entity - The base class for all elive entities
+=over 4
 
-  Elive::Entity::Group
-  Elive::Entity::Meeting
-  Elive::Entity::MeetingParameters
-  Elive::Entity::ParticipantList
-  Elive::Entity::Recording
-  Elive::Entity::ServerDetails
-  Elive::Entity::User
+=item Elive::Connection - SOAP/XML connection to Elluminate
 
-  elive_query - simple interactive queries on Elive entities
-  elive_raise_meeting - sample script that create meetings via one-liners
+=item Elive::Entity - The base class for all elive entities
+
+=item Entity - Pure Entity base class
+
+=item Elive::Entity::Group
+
+=item Elive::Entity::Meeting
+
+=item Elive::Entity::MeetingParameters
+
+=item Elive::Entity::ParticipantList
+
+=item Elive::Entity::Recording
+
+=item Elive::Entity::ServerDetails
+
+=item Elive::Entity::User
+
+=back
+
+Scripts:
+
+=over 4
+
+=item elive_query - simple interactive queries on Elive entities
+
+=item elive_raise_meeting - sample script that create meetings via one-liners
+
+=back
 
 The Elluminate Dcoumentation Suite, including:
 
-  ELM2.5_SDK.pdf      - Elive interfaces with the SOAP/XML bindings
-                        described in section 4 - the command toolkit.
-  DatabaseSchema.pdf  - Elluminate Database Schema Documentation.
-  InstanceManager.pdf - Describes setting up multiple instances. You'll
-                        probably at least want to set up a test instance!
+=over 4
+
+=item ELM2.5_SDK.pdf
+
+Elive interfaces with the SOAP/XML bindings described in section 4 - the
+command toolkit.
+
+=item DatabaseSchema.pdf
+
+Elluminate Database Schema Documentation.
+
+=item InstanceManager.pdf
+
+Describes setting up multiple instances.
+
+=back
 
 =head1 AUTHOR
 
 David Warring, C<< <david.warring at gmail.com> >>
 
-=head1 BUGS
+=head1 BUGS AND LIMITATIONS
 
-The initial v0.01 Elive release:
+=over 4
 
--- has been tested against Elluminate 9.0 and 9.1 only
--- doesn't implement all SOAP calls. I will try to build this up
-   over time. Please let me know your priorities.
+=item The Elive 0.2 release:
+
+has only been tested against Elluminate 9.0 and 9.1 and implements a subset
+of all documented SOAP/XML calls.
+
+=item Transactional control
+
+Elluminate SOAP/XML interface doesn't provide for locking or transactional
+control. It's probably a good idea to design your application architecture
+and database updates to minimise the changes of contention. Eg. audit trails
+and/or master copies of the data.
+
+=item Database Support
+
+The Elluminate server installs with the Mckoi JDBC database, but can
+also connect to other databases that support JDBC and can be readily
+accessed via the Perl DBI. E.g. SQL Server or Oracle. See the Elluminate
+Live advanced adminstration guide.
+
+=item LDAP Authentication
+
+Elluminate Live can also be configured to use an LDAP respository for
+user authentication.  Users can still be retrieved or listed. However
+updates and deletes are not supported via Elluminate Live or Elive.
+
+=back
 
 Please report any bugs or feature requests to C<bug-elive at rt.cpan.org>,
 or through the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Elive>.
@@ -330,8 +367,8 @@ L<http://search.cpan.org/dist/Elive/>
 
 =head1 ACKNOWLEDGEMENTS
 
-Thanks to Lex Lucas and to Simon Haidley their support and direction
-with the consrtuction of this module.
+Thanks to Lex Lucas and Simon Haidley for their support and direction
+with the construction of this module.
 
 =head1 COPYRIGHT & LICENSE
 
@@ -339,7 +376,6 @@ Copyright 2009 David Warring, all rights reserved.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
-
 
 =cut
 

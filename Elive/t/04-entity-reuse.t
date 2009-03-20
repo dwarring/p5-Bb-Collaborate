@@ -74,7 +74,7 @@ ok(_same_ref($user2, $user2_again), 'nested reuse');
 ########################################################################
 
 sub _dump_objs {
-    my $live_objects = \%Elive::Entity::Elive_Objects;
+    my $live_objects = Entity::Unique->live_entities;
 
     print "Elive Objects:\n";
     foreach (keys %$live_objects) {

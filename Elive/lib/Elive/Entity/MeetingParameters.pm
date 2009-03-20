@@ -1,8 +1,8 @@
 package Elive::Entity::MeetingParameters;
-use warnings; use strict;
 
-use base qw{ Elive::Entity };
 use Moose;
+use Elive::Entity;
+use base qw{ Elive::Entity };
 
 __PACKAGE__->entity_name('MeetingParameters');
 

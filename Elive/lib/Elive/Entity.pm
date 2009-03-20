@@ -4,12 +4,16 @@ use Moose;
 
 use warnings; use strict;
 
-use base qw{Elive Entity};
+use Elive;
+use Entity::Mappable; 
+use base qw{Elive Entity::Mappable};
 use Elive::Util;
 
 use YAML;
 use Scalar::Util qw{weaken};
 use UNIVERSAL;
+
+__PACKAGE__->has_entity_metadata('_deleted');
 
 =head1 NAME
 
@@ -25,7 +29,7 @@ It provides a simple mapping from the objects to database entities.
 
 =head2 construct
 
-
+Construct an Elive entity.
 
 =cut
 
@@ -442,6 +446,23 @@ sub _readback_check {
     }
 }
 
+=head2 set
+
+    $obj->set(prop1 => val1, prop2 => val2 [,...])
+
+Set entity properties
+
+=cut
+
+sub set {
+    my $self = shift;
+
+    die "attempted to modify  data in a deleted record"
+	if ($self->_deleted);
+
+    return $self->SUPER::set(@_);
+}
+
 =head2 insert
 
 You can insert newly constructed entities:
@@ -468,6 +489,10 @@ sub insert {
 
     if (ref($class)) {
 	my $self  = $class;
+	#
+	# Undo any prior deletion
+	#
+	$self->_deleted(0);
 	return $self->_insert_class($self,@_);
     }
 
@@ -714,14 +739,14 @@ sub retrieve {
     if ($opt{reuse}) {
 
 	#
-	# Have we  already got the object loaded? if so return it
+	# Have we already got the object loaded? if so return it
 	#
 	my $obj_url = $class->_url(
 	    $connection,
 	    $class->_stringify(@$vals)
 	    );
 
-	my $cached = $Entity::Entity_Objects{$obj_url};
+	my $cached = $class->live_entity($obj_url);
 	return $cached if $cached;
     }
 
@@ -788,7 +813,7 @@ sub delete {
     my @primary_key = $self->primary_key;
     my @id = $self->id;
 
-    die "can't delete singleton record"
+    die "entity lacks a primary key - can't delete"
 	unless (@primary_key > 0);
 
     my @params = map {
@@ -832,71 +857,9 @@ use Elive::Entity::Role;
 use Elive::Entity::ServerDetails;
 use Elive::Entity::User;
 
-=head1 ADVANCED
-
-=head2 Object Reuse
-
-A single unique object is mained for each entity instance. if you re-retrieve
-or re-construct the object, any other copies of the object are also upated.
-
-    my $user = Elive::Entity::User->retrieve([11223344]);
-    #
-    # returns another reference to user, but refetches from the database
-    #
-    my $user_copy = Elive::Entity::User->retrieve([11223344]);
-    #
-    # same as above, however don't refetch if we already have a copy
-    #
-    my $user_copy2 = Elive::Entity::User->retrieve([11223344], reuse => 1);
-
-=head2 Entity Manipulation
-
-Through the magic of inside-out objects, all objects are simply blessed
-structures that contain data and nothing else. You may choose to use the
-accessors, or work directly with the object data.
-
-The following are all equivalent, and all ok:
-
-    my $p_list = Elive::Entity::ParticipantList->retrieve([98765]);
-    my $user = Elive::Entity::User->retrieve([11223344]);
-
-    $p_list->participants->add($user);
-    push (@{ $p_list->participants        }, $user);
-    push (@{ $p_list->{participants}      }, $user);
-    push (@{ $p_list->get('participants') }, $user);
-
-=head2 Stringification
-
-Database entities evalute to their primary key, when used in a string
-context.
-
-    if ($user_obj eq "11223344") {
-        ....
-    }
-
-Arrays of sub-items evaluated, in a string context, to a semi-colon seperated
-string of the individual values sorted.
-
-    my $group = Elive::Entity::Group->retrieve([98765]);
-    if ($group->members eq "11223344;2222222") {
-         ....
-    }
-
-In particular meeting participants stringify to userId=role, eg
-
-    my $participant_list = Elive::Entity::ParticipantList->retrieve([98765]);
-    if ($participant_list->participants eq "11223344;2222222") {
-         ....
-    }
-
-=head2 Extending and Subclassing Entities
-
-Entity instance classes are simply Moose objects that use this class
-(Elive::Entity) as base. It should be quite possible to extend existing
-entity classes, or to create your own Moose class based on Elive::Entity
-
 =head1 SEE ALSO
 
+ Entity
  Moose
  overload
 
