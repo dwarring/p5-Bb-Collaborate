@@ -5,8 +5,8 @@ use Moose;
 use warnings; use strict;
 
 use Elive;
-use Entity::Mappable; 
-use base qw{Elive Entity::Mappable};
+use Data::Entity::Stored;
+use base qw{Elive Data::Entity::Stored};
 use Elive::Util;
 
 use YAML;

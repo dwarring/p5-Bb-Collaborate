@@ -6,14 +6,14 @@ use Test::Warn;
 package main;
 
 BEGIN {
-    use_ok( 'Entity::Repository' );
+    use_ok( 'Data::Entity::Repository' );
     use_ok( 'Elive::Entity::Group' );
     use_ok( 'Elive::Entity::ParticipantList' );
 };
 
 use Scalar::Util;
 
-Elive->connection(Entity::Repository->new('http://test.org'));
+Elive->connection(Data::Entity::Repository->new('http://test.org'));
 
 my $group = Elive::Entity::Group->construct(
     {
