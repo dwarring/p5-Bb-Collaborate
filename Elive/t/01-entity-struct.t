@@ -38,7 +38,7 @@ can_ok($participant_list, 'meetingId');
 can_ok($participant_list, 'participants');
 
 my $participants = $participant_list->participants;
-isa_ok($participants, 'Entity::Array');
+isa_ok($participants, 'Data::Entity::Array');
 
 ok(@$participants == 2, 'all particpiants constructed');
 isa_ok($participants->[0], 'Elive::Entity::Participant');

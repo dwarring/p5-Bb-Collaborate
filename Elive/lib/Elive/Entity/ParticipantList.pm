@@ -197,9 +197,8 @@ sub __handle_response {
 The list method is not available for participant lists. You'll need
 to retrieve on a meeting id.
 
-=back
-
 =cut
 
-sub list {die "not available for participant lists"};
+sub list {shift->_not_available}
+
 1;

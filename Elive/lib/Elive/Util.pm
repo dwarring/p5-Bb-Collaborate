@@ -5,7 +5,6 @@ use Term::ReadKey;
 use Term::ReadLine;
 use Scalar::Util;
 use Storable;
-use Entity::Util;
 
 =head1 NAME
 
