@@ -16,7 +16,7 @@ install_script ('elive_query', 'elive_raise_meeting');
 
 requires(
     'Class::Data::Inheritable'     => 0,
-    'Data::Entity'                 => 0,
+    'Data::Class'                 => 0,
     'File::Spec'                   => 0,
     'Getopt::Long'                 => 0,
     'HTML::Entities'               => 0,

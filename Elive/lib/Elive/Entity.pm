@@ -5,8 +5,8 @@ use Moose;
 use warnings; use strict;
 
 use Elive;
-use Data::Entity::Stored;
-use base qw{Elive Data::Entity::Stored};
+use Data::Class::Stored;
+use base qw{Elive Data::Class::Stored};
 use Elive::Util;
 
 use YAML;
@@ -66,7 +66,7 @@ sub _freeze {
 	die "unknown property: $_: expected: @properties"
 	    unless exists $property_types->{$_};
 
-	my ($type, $is_array, $is_entity) = Data::Entity::Util::parse_type($property_types->{$_});
+	my ($type, $is_array, $is_entity) = Data::Class::Util::parse_type($property_types->{$_});
 
 	for ($db_data{$_}) {
 
@@ -157,7 +157,7 @@ sub _thaw {
 
     foreach my $col (grep {exists $data{ $_ }} @properties) {
 
-	my ($type, $expect_array, $is_entity) = Data::Entity::Util::parse_type($property_types->{$col});
+	my ($type, $expect_array, $is_entity) = Data::Class::Util::parse_type($property_types->{$col});
 
 	for my $val ($data{$col}) {
 
@@ -446,7 +446,7 @@ sub _readback_check {
 		    if ($class->debug);
 
 		foreach ($read_val, $write_val) {
-		    bless $_, 'Data::Entity::Array'  # gives a nice stringified digest
+		    bless $_, 'Data::Class::Array'  # gives a nice stringified digest
 			if (Elive::Util::_reftype($_) eq 'ARRAY');
 		}
 		die "Update consistancy check failed on $_. Wrote:$write_val, read-back:$read_val, column: $_"

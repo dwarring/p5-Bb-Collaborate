@@ -6,14 +6,14 @@ use Test::Warn;
 package main;
 
 BEGIN {
-    use_ok( 'Data::Entity::Repository' );
+    use_ok( 'Data::Class::Repository' );
     use_ok( 'Elive::Entity::Group' );
     use_ok( 'Elive::Entity::ParticipantList' );
 };
 
 use Scalar::Util;
 
-Elive->connection(Data::Entity::Repository->new('http://test.org'));
+Elive->connection(Data::Class::Repository->new('http://test.org'));
 
 my $group = Elive::Entity::Group->construct(
     {
@@ -74,7 +74,7 @@ ok(_same_ref($user2, $user2_again), 'nested reuse');
 ########################################################################
 
 sub _dump_objs {
-    my $live_objects = Data::Entity::Stored->live_entities;
+    my $live_objects = Data::Class::Stored->live_entities;
 
     print "Elive Objects:\n";
     foreach (keys %$live_objects) {

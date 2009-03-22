@@ -208,7 +208,7 @@ sub _show {
     foreach my $property ($entity_class->properties) {
 
 	my ($type, $is_array, $is_entity, $is_primary) 
-	    = Data::Entity::Util::parse_type($property_types->{$property});
+	    = Data::Class::Util::parse_type($property_types->{$property});
 
 	my $primary_str = $is_primary? 'pkey ': '';
 	my $array_str = $is_array? ' []': '';

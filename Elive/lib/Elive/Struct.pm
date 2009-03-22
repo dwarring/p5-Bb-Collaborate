@@ -2,7 +2,7 @@ package Elive::Struct;
 
 use Moose;
 use Elive;
-use Data::Entity::Struct;
-use base qw{Elive Data::Entity::Struct};
+use Data::Class::Struct;
+use base qw{Elive Data::Class::Struct};
 
 1;
