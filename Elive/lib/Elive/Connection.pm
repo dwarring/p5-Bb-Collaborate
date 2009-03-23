@@ -1,9 +1,9 @@
 package Elive::Connection;
 use warnings; use strict;
 
-use Data::Entity::Repository;
+use Data::Def::Repository;
 use Class::Accessor;
-use base qw{ Data::Entity::Repository Class::Accessor };
+use base qw{ Data::Def::Repository Class::Accessor };
 
 =head1 NAME
 

@@ -210,7 +210,7 @@ sub _show {
     foreach my $property ($entity_class->properties) {
 
 	my ($type, $is_array, $is_entity) 
-	    = Data::Entity::Util::parse_type($property_types->{$property});
+	    = Data::Def::Util::parse_type($property_types->{$property});
 
 	my $is_primary = exists $primary_key{$property};
 
