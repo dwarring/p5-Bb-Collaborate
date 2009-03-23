@@ -4,11 +4,11 @@ use Test::More tests => 14;
 use Test::Warn;
 
 BEGIN {
-    use_ok( 'Data::Class::Repository' );
+    use_ok( 'Data::Entity::Repository' );
     use_ok( 'Elive::Entity::ParticipantList' );
 };
 
-Elive->connection(Data::Class::Repository->new('http://test.org'));
+Elive->connection(Data::Entity::Repository->new('http://test.org'));
 
 my $participant_list = Elive::Entity::ParticipantList->construct(
     {
@@ -38,7 +38,7 @@ can_ok($participant_list, 'meetingId');
 can_ok($participant_list, 'participants');
 
 my $participants = $participant_list->participants;
-isa_ok($participants, 'Data::Class::Array');
+isa_ok($participants, 'Data::Entity::Array');
 
 ok(@$participants == 2, 'all particpiants constructed');
 isa_ok($participants->[0], 'Elive::Entity::Participant');

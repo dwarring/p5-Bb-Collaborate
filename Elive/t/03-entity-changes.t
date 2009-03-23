@@ -4,12 +4,12 @@ use Test::More tests => 20;
 use Test::Warn;
 
 BEGIN {
-    use_ok( 'Data::Class::Repository' );
+    use_ok( 'Data::Entity::Repository' );
     use_ok( 'Elive::Entity::User' );
     use_ok( 'Elive::Entity::Group' );
 }
 
-Elive->connection(Data::Class::Repository->new('http://test.org'));
+Elive->connection(Data::Entity::Repository->new('http://test.org'));
 
 my @base_members = (100, 101, 102);
 
