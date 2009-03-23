@@ -20,7 +20,8 @@ try to set it the readback check may fail.
 __PACKAGE__->entity_name('Meeting');
 __PACKAGE__->collection_name('Meetings');
 
-has 'meetingId' => (is => 'rw', isa => 'Pkey', required => 1);
+has 'meetingId' => (is => 'rw', isa => 'Int', required => 1);
+__PACKAGE__->primary_key('meetingId');
 
 has 'password' => (is => 'rw', isa => 'Str',
 		   documentation => 'optional meeting password');

@@ -7,7 +7,8 @@ use base qw{ Elive::Entity };
 __PACKAGE__->entity_name('Group');
 __PACKAGE__->collection_name('Groups');
 
-has 'groupId' => (is => 'rw', isa => 'Pkey', required => 1);
+has 'groupId' => (is => 'rw', isa => 'Int', required => 1);
+__PACKAGE__->primary_key('groupId');
 
 has 'name' => (is => 'rw', isa => 'Str', required => 1,
 	       documentation => 'name of the group');

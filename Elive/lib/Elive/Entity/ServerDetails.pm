@@ -13,7 +13,9 @@ Elive::Entity::ServerDetails - Server Details entity class
 
 __PACKAGE__->entity_name('ServerDetails');
 
-has 'serverDetailsId' => (is => 'rw', isa => 'PkeyStr', required => 1);
+has 'serverDetailsId' => (is => 'rw', isa => 'Str', required => 1);
+__PACKAGE__->primary_key('serverDetailsId');
+
 has 'address' => (is => 'rw', isa => 'Str');
 has 'alive' => (is => 'rw', isa => 'Bool');
 has 'codebase' => (is => 'rw', isa => 'Str');

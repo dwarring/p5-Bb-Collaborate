@@ -1,9 +1,5 @@
 package Elive::Entity;
 
-use Moose;
-
-use warnings; use strict;
-
 use Elive;
 use Data::Class::Stored;
 use base qw{Elive Data::Class::Stored};

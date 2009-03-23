@@ -202,13 +202,17 @@ sub _show {
     my $property_types = $entity_class->property_types;
     my $property_doco = $entity_class->property_doco;
 
+    my %primary_key = map {$_ => 1} $entity_class->primary_key;
+
     print "${sp}$entity_name: $entity_class:\n"
 	unless $nesting;
 
     foreach my $property ($entity_class->properties) {
 
-	my ($type, $is_array, $is_entity, $is_primary) 
+	my ($type, $is_array, $is_entity) 
 	    = Data::Class::Util::parse_type($property_types->{$property});
+
+	my $is_primary = exists $primary_key{$property};
 
 	my $primary_str = $is_primary? 'pkey ': '';
 	my $array_str = $is_array? ' []': '';

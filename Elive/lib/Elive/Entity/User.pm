@@ -1,14 +1,15 @@
 package Elive::Entity::User;
-
 use Moose;
+
 use Elive::Entity;
 use base qw{ Elive::Entity };
 
 __PACKAGE__->entity_name('User');
 __PACKAGE__->collection_name('Users');
 
-has 'userId' => (is => 'rw', isa => 'Pkey', required => 1,
+has 'userId' => (is => 'rw', isa => 'Int', required => 1,
 		 documentation => 'numeric identifier');
+__PACKAGE__->primary_key('userId');
 
 has 'deleted' => (is => 'rw', isa => 'Bool');
 

@@ -16,7 +16,8 @@ This is a structural class for Elive roles.
 
 __PACKAGE__->entity_name('Role');
 
-has 'roleId' => (is => 'rw', isa => 'Pkey', required => 1);
+has 'roleId' => (is => 'rw', isa => 'Int', required => 1);
+__PACKAGE__->primary_key('roleId');
 
 sub _destringify {
     my $class = shift;

@@ -9,7 +9,9 @@ use Elive::Util;
 
 __PACKAGE__->entity_name('ParticipantList');
 
-has 'meetingId' => (is => 'rw', isa => 'Pkey', required => 1);
+has 'meetingId' => (is => 'rw', isa => 'Int', required => 1);
+__PACKAGE__->primary_key('meetingId');
+
 has 'participants' => (is => 'rw', isa => 'ArrayRef[Elive::Entity::Participant]');
 
 =head1 NAME

@@ -17,6 +17,18 @@ warning_like (\&do_unsaved_update,
 	      'unsaved change gives warning'
     );
 
+warnings_like(
+    \&construct_unknown_property,
+    qr{unknown property},
+    'constructing unknown property gives warning',
+    );
+
+
+diag "exiting";
+exit(0);
+
+########################################################################
+
 sub do_unsaved_update {
 
     my $user = Elive::Entity::User->construct
@@ -31,14 +43,12 @@ sub do_unsaved_update {
     $user = undef;
 }
 
-warnings_like(
-    sub {
-	Elive::Entity::User->construct
-	    ({  userId => 1234,
-		loginName => 'user',
-		loginPassword => 'pass',
-		junk => 'abc',
-	     })},
-    qr{unknown property},
-    );
+sub construct_unknown_property {
+    Elive::Entity::User->construct
+	({  userId => 1234,
+	    loginName => 'user',
+	    loginPassword => 'pass',
+	    junk => 'abc',
+	 });
+}
 
