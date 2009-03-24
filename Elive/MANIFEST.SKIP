@@ -12,6 +12,10 @@ Makefile.old
 \.#
 .log$
 #
+# kwalitee.t junk
+#
+^Debian_CPANTS\.txt
+#
 # Elluminate init scripts has an annoying habit of creating files
 # named '1' and '2 when you start the server.
 ^1$
