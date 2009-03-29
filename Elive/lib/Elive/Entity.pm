@@ -76,7 +76,7 @@ sub _freeze {
 			    copy => 1)
 			    unless (Scalar::Util::blessed($_));
 
-			$_ = $_->_stringify_self;
+			$_ = $_->stringify;
 		    }
 		}
 		elsif ($type =~ m{Bool}i) {
@@ -753,7 +753,7 @@ sub retrieve {
 	#
 	my $obj_url = $class->_url(
 	    $connection,
-	    $class->_stringify(@$vals)
+	    $class->stringify(@$vals)
 	    );
 
 	my $cached = $class->live_entity($obj_url);

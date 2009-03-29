@@ -2,7 +2,7 @@ package Elive::Entity::ParticipantList;
 
 use Moose;
 use Elive::Entity;
-use base qw{ Elive::Entity };
+use base qw{Elive::Entity};
 
 use Elive::Entity::Participant;
 use Elive::Util;
@@ -67,8 +67,8 @@ sub _freeze {
 	    unless (Elive::Util::_reftype($participants) eq 'ARRAY');
 
 	my @users = map {
-	    my $str = UNIVERSAL::can($_,'_stringify_self')
-		? $_->_stringify_self
+	    my $str = UNIVERSAL::can($_,'stringify')
+		? $_->stringify
 		: $_;
 	} @$participants;
 
@@ -111,7 +111,7 @@ sub insert {
 	Elive::Util::_clone($data, copy => 1),
 	);
  
-    my $expected_participants = $data_image->participants->_stringify_self;
+    my $expected_participants = $data_image->participants->stringify;
     $data_image = undef;
 
     eval {
@@ -148,7 +148,7 @@ sub update {
     my %opt = @_;
 
     my $meeting_id = $self->meetingId;
-    my $expected_participants = $self->participants->_stringify_self;
+    my $expected_participants = $self->participants->stringify;
     my $participant_list;
 
     eval {
@@ -184,7 +184,7 @@ sub __handle_response {
 	die "unable to retrieve $class/$meeting_id"
 	    unless $self;
 
-	my $actual_participants = $self->participants->_stringify_self;
+	my $actual_participants = $self->participants->stringify;
 	die "readback failed on participants:\nexpected $expected_participants\nactual: $actual_participants"
 	    unless $expected_participants eq $actual_participants;
 

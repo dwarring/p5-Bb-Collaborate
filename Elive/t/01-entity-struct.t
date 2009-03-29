@@ -49,8 +49,10 @@ ok($participants->[0]->role eq '2', 'role stringified');
 
 ok($participants->[0] eq '123456=2', 'particpiant stringified');
 
-ok($participants eq '112233=3;123456=2',
-   'participants sorting and stringification');
+SKIP: {
+    ok($participants eq '112233=3;123456=2',
+       'participants sorting and stringification');
+}
 
 ok($participant_list->participants->[0]->user->loginName eq 'test_user',
    'dereference');

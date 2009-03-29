@@ -30,7 +30,7 @@ Elive::Entity::ParticpiantList
 
 =cut
 
-sub _stringify_self {
+sub stringify {
 
     my $self = shift;
 
@@ -41,7 +41,7 @@ sub _stringify_self {
     return $self->user.'='.$self->role;
 }
 
-sub _destringify {
+sub destringify {
     my $class = shift;
 
     #

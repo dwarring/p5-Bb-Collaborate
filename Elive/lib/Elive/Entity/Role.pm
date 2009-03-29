@@ -19,7 +19,7 @@ __PACKAGE__->entity_name('Role');
 has 'roleId' => (is => 'rw', isa => 'Int', required => 1);
 __PACKAGE__->primary_key('roleId');
 
-sub _destringify {
+sub destringify {
     my $class = shift;
     my $role_id = shift;
 

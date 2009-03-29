@@ -60,7 +60,6 @@ language independant SOAP/XML layer. This package implements perl bindings
 for this.
 
 =cut
-
 __PACKAGE__->mk_classdata('_login');
 __PACKAGE__->mk_classdata('adapter' => 'default');
 
