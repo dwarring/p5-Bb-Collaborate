@@ -147,11 +147,8 @@ exiting your program
 sub disconnect {
     my $class = shift;
 
-    print STDERR "disconnecting...\n";
-
     $class->connection(undef);
     $class->login(undef);
-    print STDERR "disconnected...\n";
 }
 
 =head2 debug

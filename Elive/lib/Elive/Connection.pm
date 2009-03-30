@@ -7,7 +7,7 @@ use base qw{ Data::Def::Repository Class::Accessor };
 
 =head1 NAME
 
-Elive::Store -  Manage an Elluminate Store via SOAP/XML.
+Elive::Connection -  Manage an Elluminate SOAP/XML Connection
 
 =cut
 
