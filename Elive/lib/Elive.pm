@@ -15,7 +15,7 @@ Version 0.02
 
 our $VERSION = '0.02';
 
-use Moose;
+use Mouse;
 
 use Class::Data::Inheritable;
 use base qw{Class::Data::Inheritable};

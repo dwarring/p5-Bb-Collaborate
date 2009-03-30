@@ -1,5 +1,5 @@
 package Elive::Entity::User;
-use Moose;
+use Mouse;
 
 use Elive::Entity;
 use base qw{ Elive::Entity };

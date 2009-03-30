@@ -1,6 +1,6 @@
 package Elive::Entity::ParticipantList;
 
-use Moose;
+use Mouse;
 use Elive::Entity;
 use base qw{Elive::Entity};
 

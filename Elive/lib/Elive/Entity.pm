@@ -876,7 +876,7 @@ use Elive::Entity::User;
 =head1 SEE ALSO
 
  Entity
- Moose
+ Mouse
  overload
 
 =cut

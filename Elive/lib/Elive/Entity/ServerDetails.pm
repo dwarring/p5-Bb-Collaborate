@@ -1,6 +1,6 @@
 package Elive::Entity::ServerDetails;
 
-use Moose;
+use Mouse;
 use Elive::Entity;
 use base qw{ Elive::Entity };
 use Scalar::Util;

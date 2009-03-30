@@ -1,6 +1,6 @@
 package Elive::Entity::Participant;
 
-use Moose;
+use Mouse;
 use Elive::Struct;
 use base qw{Elive::Struct};
 
