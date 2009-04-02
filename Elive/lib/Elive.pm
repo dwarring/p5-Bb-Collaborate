@@ -1,7 +1,5 @@
 package Elive;
-
-use warnings;
-use strict;
+use warnings; use strict;
 
 =head1 NAME
 

@@ -38,7 +38,7 @@ can_ok($participant_list, 'meetingId');
 can_ok($participant_list, 'participants');
 
 my $participants = $participant_list->participants;
-isa_ok($participants, 'Data::Def::Array');
+isa_ok($participants, 'Elive::Array');
 
 ok(@$participants == 2, 'all particpiants constructed');
 isa_ok($participants->[0], 'Elive::Entity::Participant');
@@ -53,6 +53,8 @@ SKIP: {
     ok($participants eq '112233=3;123456=2',
        'participants sorting and stringification');
 }
+
+diag "participants: $participants";
 
 ok($participant_list->participants->[0]->user->loginName eq 'test_user',
    'dereference');

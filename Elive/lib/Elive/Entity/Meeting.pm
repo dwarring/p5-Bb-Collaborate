@@ -1,6 +1,6 @@
 package Elive::Entity::Meeting;
-
 use Mouse;
+
 use Elive::Entity;
 use base qw{ Elive::Entity };
 

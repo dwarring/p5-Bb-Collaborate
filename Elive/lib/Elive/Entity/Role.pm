@@ -1,6 +1,6 @@
 package Elive::Entity::Role;
-
 use Mouse;
+
 use Elive::Struct;
 use base qw{Elive::Struct};
 

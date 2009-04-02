@@ -3,12 +3,19 @@ package Elive::Entity;
 use Elive;
 use Data::Def::Struct::Stored;
 use base qw{Elive Data::Def::Struct::Stored};
+
 use Elive::Util;
 
 use YAML;
 use Scalar::Util qw{weaken};
 use UNIVERSAL;
 
+use overload
+    '""' =>
+    sub {shift->stringify}, fallback => 1;
+
+use Elive::Array;
+__PACKAGE__->array_class('Elive::Array');
 __PACKAGE__->has_metadata('_deleted');
 
 =head1 NAME
