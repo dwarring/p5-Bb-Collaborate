@@ -35,6 +35,7 @@ requires(
 recommends(
     'DateTime'                     => 0,  # for elive_raise_meeting
     'DateTime::Format::ISO8601'    => 0,  # for elive_raise_meeting
+    'Pod::Usage'                   => 0,  # for elive_raise_meeting
     'Carp'                         => 0,  # for elive_XXX
     );
 

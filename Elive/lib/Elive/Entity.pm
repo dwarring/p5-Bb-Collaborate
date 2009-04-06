@@ -12,10 +12,6 @@ use YAML;
 use Scalar::Util qw{weaken};
 use UNIVERSAL;
 
-use overload
-    '""' =>
-    sub {shift->stringify}, fallback => 1;
-
 use Elive::Array;
 __PACKAGE__->array_class('Elive::Array');
 __PACKAGE__->has_metadata('_deleted');
@@ -30,7 +26,38 @@ This is an abstract class that is inherited by all Elive Entity instances.
 
 It provides a simple mapping from the objects to database entities.
 
+=head2 Stringification
+
+Database entities evalute to their primary key, when used in a string
+context.
+
+    if ($user_obj eq "11223344") {
+        ....
+    }
+
+Arrays of sub-items evaluated, in a string context, to a semi-colon seperated
+string of the individual values sorted.
+
+    my $group = Data::Def::Group->retrieve([98765]);
+    if ($group->members eq "11223344;2222222") {
+         ....
+    }
+
+In particular meeting participants stringify to userId=role, eg
+
+    my $participant_list = Data::Def::ParticipantList->retrieve([98765]);
+    if ($participant_list->participants eq "11223344;2222222") {
+         ....
+    }
+
 =cut
+
+use overload
+    '""' =>
+    sub {shift->stringify}, fallback => 1;
+
+
+=head1 METHODS
 
 =head2 construct
 
@@ -174,8 +201,8 @@ sub _thaw {
 
 		unless ($val_type eq 'ARRAY') {
 		    #
-		    # A single value will be returned singly. Convert it to
-		    # a one element array
+		    # A single value will be deserialise to a simple
+		    # struct. Convert it to a one element array
 		    #
 		    $val = [$val];
 		    warn "thawing $class coerced element into array for $col"
@@ -429,7 +456,6 @@ sub _readback_check {
     # record, after applying the updates. This routine may be
     # run to check that the expected updates have been applied
     #
-
     die "Didn't receive a response for ".$class->entity_name
 	unless @$rows;
 
@@ -776,7 +802,6 @@ sub retrieve {
     # We've supplied a full primary key, so can expect 0 or 1 values
     # to be returned.
     #
-
     return $all->[0];
 }
 

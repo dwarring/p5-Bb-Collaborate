@@ -43,15 +43,15 @@ use Elive::Connection;
 
 =head1 DESCRIPTION
 
-This module provides class and object bindings to Elluminate Live server
-database via the SOAP/XML command interace.
-
-It enables basic create/read/update and delete of Users, User Lists,
-Meetings and Meeting Participants.
-
 Elluminate Live (c) is a virtual classroom portal largely written in Java.
 Session particpants join the meeting via a Java portal back to a central
 server.
+
+This module provides class and object bindings to Elluminate Live server
+via the SOAP/XML command interace.
+
+It enables basic create/read/update and delete of Users, User Lists,
+Meetings and Meeting Participants.
 
 Elluminate installs with a built-in pure Java database (Mckoi) and provides
 language independant SOAP/XML layer. This package implements perl bindings
@@ -146,7 +146,7 @@ sub disconnect {
     my $class = shift;
 
     $class->connection(undef);
-    $class->login(undef);
+    $class->_login(undef);
 }
 
 =head2 debug
@@ -265,6 +265,14 @@ As a final note, elive_query doesn't support updates or deletes with the
 initial release of Elive 0.2. This may be implemented in the next few
 releases.
 
+=head2 elive_raise_meeting
+
+This is a demonastration script to create a meeting, set options, assign
+participants and upload meeting preloads (whiteboard and media files to be
+used to used for the meeting.
+
+For more information, type the command: elive_raise_meeting --help
+
 =head1 SEE ALSO
 
 Perl Modules:
@@ -275,7 +283,7 @@ Perl Modules:
 
 =item Elive::Entity - The base class for all elive entities
 
-=item Entity - Pure Entity base class
+=item Entity - Entity base class
 
 =item Elive::Entity::Group
 
@@ -284,6 +292,8 @@ Perl Modules:
 =item Elive::Entity::MeetingParameters
 
 =item Elive::Entity::ParticipantList
+
+=item Elive::Entity::Preload
 
 =item Elive::Entity::Recording
 
@@ -393,7 +403,7 @@ L<http://search.cpan.org/dist/Elive/>
 =head1 ACKNOWLEDGEMENTS
 
 Thanks to Lex Lucas and Simon Haidley for their support and direction
-with the construction of this module.
+during the construction of this module.
 
 =head1 COPYRIGHT & LICENSE
 

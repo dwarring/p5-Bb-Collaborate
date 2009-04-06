@@ -19,7 +19,7 @@ has 'preloadId' => (is => 'rw', isa => 'Int', required => 1);
 __PACKAGE__->primary_key('preloadId');
 
 has 'type' => (is => 'rw', isa => 'Str', required => 1,
-	       documentation => 'preload extension',
+	       documentation => 'media or blackboard(?)',
     );
 
 has 'name' => (is => 'rw', isa => 'Str', required => 1,
