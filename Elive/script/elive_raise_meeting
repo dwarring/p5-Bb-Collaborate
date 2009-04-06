@@ -6,41 +6,77 @@ use Getopt::Long;
 use Elive::Util;
 use Elive::Entity;
 use DateTime::Format::ISO8601;
+use Pod::Usage;
 
-my $username;
-my $password
+use Carp;
+$SIG{__DIE__} = sub {warn "error: $_[0]"};;
+
+my $username = 'serversupport';
+my $password;
 ;
 my $debug;
 my $facilitator;
 my $start_str;
 my $end_str;
-my $meeting_name = 'test meeting';
+my $meeting_name = 'elive test meeting';
 my $meeting_password;
 my $max_talkers;
 my $raise_hands;
-##my $private; seems to be ignored with Elluminate 9.x
-
-local($SIG{__WARN__});
-local($SIG{__DIE__});
+my $preload;
+my $url;
+my @participant_opts;
 
 use Carp;
 
-GetOptions('username|user=s' => \$username,
-	   'password|pass=s' => \$password,
-	   'facilitator=s' => \$facilitator,
-	   'start=s' => \$start_str,
-	   'end=s' => \$end_str,
-	   'name=s' => \$meeting_name,
-	   'meeting_password|meeting_pass=s' => \$meeting_password,
-	   'max_talkers=i' => \$max_talkers,
-	   'raise_hands' => \$raise_hands,
-##	   'private' => \$private,
-	   'debug=i' => \$debug,
-    )
-    && (my $url = shift @ARGV)
-    or die "usage; $0 url -user username -pass password -meeting_pass pass2 -facilator username -name meeting_name -max_talkers n -private userid[=role] [userid[=role]...]";
+=head1 NAME
 
-my @participant_opts = @ARGV;
+elive_raise_meeting
+
+=head1 SYNOPSIS
+
+elive_raise_meeting url
+
+    -participants participant[=roleId] ....
+    -facilitator userId
+    -name 'my meeting name'
+    -url http://my_server.com/my_instance (default http://localhost)
+    -user someuser              # server login user
+    -pass somepass              # server login password
+    -meeting_pass otherpass     # meeting password
+    -preload path               # local file to use as preload
+    -start  'YYYY-MM-DD HH:MM'  # start time
+    -end '[YYYY-MM-DD] HH::MM'  # end time
+    -max_talkers                # max no. of simultaneous talkers
+
+=head1 DESCRIPTION
+
+Sample elive script. Creates an Elluminate meeting on an Elluminate
+server
+
+=head1 SEE ALSO
+
+    perldoc Elive
+    http://search.cpan/org?Elive
+
+=cut
+
+GetOptions(
+    'name|meeting_name=s' => \$meeting_name,
+    'username|user=s' => \$username,
+    'password|pass=s' => \$password,
+    'facilitator|moderator=s' => \$facilitator,
+    'start=s' => \$start_str,
+    'end=s' => \$end_str,
+    'meeting_password|meeting_pass=s' => \$meeting_password,
+    'max_talkers=i' => \$max_talkers,
+    'raise_hands' => \$raise_hands,
+##	   'private' => \$private,
+    'debug=i' => \$debug,
+    'participants|users=s{,}' => \@participant_opts,
+    )
+    && ($url = shift @ARGV)
+    && (!@ARGV)
+    or die pod2usage(1);
 
 Elive->debug($debug);
 
@@ -50,9 +86,9 @@ if ($debug) {
 }
 
 our $connection = Elive->connect(
-    $url || Elive::Util::prompt('Elluminate Server Web Address: '),
-    $username || Elive::Util::prompt('Username: '),
-    $password || Elive::Util::prompt('Password: '),
+    $url      ||= Elive::Util::prompt('Elluminate Server: '),
+    $username ||= Elive::Util::prompt('Username: '),
+    $password ||= Elive::Util::prompt('Password: '),
     );
 
 do {
@@ -118,15 +154,15 @@ do {
 	    start => $start->epoch * 1000,
 	    end => $end->epoch * 1000,
 	 });
-
+    
     print "created meeting: ".$meeting->name." with id ".$meeting->meetingId."\n";
 
     if (defined $max_talkers || defined $raise_hands) {
-
+	
 	my $meeting_parameters
 	    = Elive::Entity::MeetingParameters->retrieve([$meeting->meetingId])
 	    or die "Unable to retrieve meeting parameters for this meeting";
-
+	
 	$meeting_parameters->maxTalkers($max_talkers)
 	    if (defined $max_talkers);
 
@@ -137,13 +173,13 @@ do {
     }
 
     if (@participants) {
-
+	
 	#
 	# Create an empty paticipant list
 	#
 	my $participants_str = join(';', @participants);
 	print "participants: $participants_str\n";
-
+	    
 	my $participant_list = Elive::Entity::ParticipantList
 	    ->insert({meetingId => $meeting->meetingId,
 		      participants => \@participants,

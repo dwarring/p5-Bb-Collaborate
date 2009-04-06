@@ -201,8 +201,7 @@ sub _show {
 
     my $property_types = $entity_class->property_types;
     my $property_doco = $entity_class->property_doco;
-
-    my %primary_key = map {$_ => 1} $entity_class->primary_key;
+    my ($pkey) = $entity_class->primary_key;
 
     print "${sp}$entity_name: $entity_class:\n"
 	unless $nesting;
@@ -212,7 +211,7 @@ sub _show {
 	my ($type, $is_array, $is_entity) 
 	    = Data::Def::Util::parse_type($property_types->{$property});
 
-	my $is_primary = exists $primary_key{$property};
+	my $is_primary = $property eq $pkey;
 
 	my $primary_str = $is_primary? 'pkey ': '';
 	my $array_str = $is_array? ' []': '';
@@ -236,6 +235,7 @@ sub _select {
 
     my $property_types = $entity_class->property_types;
     my $entity_name = $entity_class->entity_name;
+    my ($pkey) = $entity_class->primary_key;
 
     foreach (@props) {
 	
@@ -268,7 +268,7 @@ sub _select {
 	my $type = $property_types->{$fld} || '';
 	warn "field fetch: $fld, value: $val, type: $type";
 
-	if ($type =~ m{pkey}i) {
+	if ($fld eq $pkey) {
 	    $id = $val;
 	}
     }

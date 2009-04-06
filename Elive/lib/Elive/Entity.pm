@@ -1,4 +1,6 @@
 package Elive::Entity;
+use warnings; use strict;
+use Mouse;
 
 use Elive;
 use Data::Def::Struct::Stored;
@@ -264,7 +266,7 @@ sub _unpack_results {
     }
     elsif ($results_type eq 'HASH') {
 	#
-	# Convert some SOAP/XML constructs to their perl equvalents
+	# Convert some SOAP/XML constructs to their perl equivalents
 	#
 	foreach my $key (keys %$results) {
 	    my $value = $results->{$key};
@@ -643,8 +645,6 @@ Retrieve a list of objects from a table.
 Note: this method is not applicable to Elive::Entity::MeetingParameters
 or Elive::Entity::ParticipantList.
 
-Note that 
-
 =cut
 
 sub list {
@@ -875,6 +875,7 @@ use Elive::Entity::Meeting;
 use Elive::Entity::MeetingParameters;
 use Elive::Entity::Participant;
 use Elive::Entity::ParticipantList;
+use Elive::Entity::Preload;
 use Elive::Entity::Recording;
 use Elive::Entity::Role;
 use Elive::Entity::ServerDetails;

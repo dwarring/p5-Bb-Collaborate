@@ -179,7 +179,35 @@ sub debug {
     return $DEBUG || 0;
 }
 
-=head1 SCRIPTS
+=head1 ERROR MESSAGES
+
+Elluminate Services Errors:
+
+=over 4
+
+=item   "Unable to determine a command for the key : listXxxx"
+
+This indicates that the particular command is not available for your site
+instance. The method may just need to be registers in your adapter configuration
+your adapter configuration file
+
+  1. stop elluminate services
+  2. cd /opt/ElluminateLive/manager/tomcat/webapps/<site>/WEB-INF/resources
+     for your particular site
+  3. edit configuration.xml add the following:
+            <class>com.elluminate.adapter.CommandAdapter</class>
+               .....
+               <argument>
+                   <name>command:listXxxx</name>
+                   <value>com.elluminate.adapter.command.ListXxxxCommand</value>
+               </argument>
+  4. restart elluminate ands try again
+
+=back
+
+=head1 INSTALLED SCRIPTS
+
+=head2 elive_query
 
 elive_query is an example script included in the Elive distribution. It is a
 simple program for listing and retrieving entities.

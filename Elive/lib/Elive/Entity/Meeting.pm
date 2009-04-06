@@ -88,7 +88,60 @@ sub list_user_meetings_by_date {
 			  %opt,
 	);
 }
-    
+
+=head2 join_meeting_url
+
+Utility method to return the url for the meeting. This is available as
+both class level and object level methods.
+
+=head3 Examples
+
+    #
+    # Class level access. This may save an unessesary fetch.
+    #
+    my $url = Elive::Entity::Meeting->join_meeting_url(
+                     $meeting_id,
+                     connection => $my_connection);  # optional
+
+
+    #
+    # Object level. For when we've got an object
+    #
+    my $meeting = Elive::Entity::Meeting->retrieve($meeting_id);
+    my $url = meeting->join_meeting_url
+
+=cut
+
+sub join_meeting_url {
+    my $self = shift;
+
+    my $meeting_id;
+    my $connection;
+
+    if (ref($self)) {
+	#
+	# dealing with an object
+	#
+	$meeting_id = $self->meetingId;
+	$connection = $self->connection;
+    }
+    else {
+	$meeting_id = shift
+	    or die 'usage:  $self->join_meeting_url or $class->join_meeting_url($meeting_id,[connection => $connection])';
+	my %opt = @_;
+
+	my $connection = $opt{connection} || $self->connection;
+    }
+
+    die "not connected"
+	unless $connection;
+
+    my $url = $connection->url;
+    $url =~ s{ / (\Q'webservice.event\E)? $ } {}x;
+
+    return sprintf('%s/join_meeting.html?meetingId=%ld',
+		   $url, $meeting_id);
+}   
 
 sub _freeze {
     my $class = shift;
