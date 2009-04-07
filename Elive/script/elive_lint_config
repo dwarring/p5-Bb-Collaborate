@@ -1,0 +1,103 @@
+#!/usr/bin/perl
+use warnings;
+use strict;
+
+use Getopt::Long;
+use XML::Simple;
+use Elive;
+
+=head1 NAME
+
+elive_lint_config
+
+=head1 SYNOPSIS
+
+    % cd /opt/ElluminateLive/manager/tomcat/webapps/mysite
+    % elive_lint_config WEB-INF/resources/configuration.xml
+
+=head1 DESCRIPTION
+
+This script can be run on a elluminate server site configuration file to
+sanity check the basic configuration.
+
+In particular, some adapter definitions may be missing. This seems to
+depend on the sites vintage, manua edits, and the general upgrade history.
+
+It's recommended that you rerun this script after upgrading either
+Elluminate Live or Elive.
+
+=head1 SEE ALSO
+
+    perldoc Elive
+    http://search.cpan/org?Elive
+
+=cut
+
+my $help;
+
+print "Elive Configuration Linter ${Elive::VERSION}\n";
+
+GetOptions(
+    'help|?' => \$help,
+    )
+    && (($help && pod2usage(1)) || (my $config_file = shift @ARGV))
+    && (!@ARGV)
+    or die pod2usage(1);
+
+print "Checking: $config_file\n";
+
+my %required_adapters = map {$_ => 1} (Elive->required_adapters);
+my %found;
+
+my $config = XMLin($config_file, KeepRoot => 1);
+
+my @errors;
+
+select STDERR; $| = 1;
+
+my $commands = $config->{elm}{adapters}{adapter}{argument}
+or die "unable to locate adapters: <elm><adapters><adapter><argument>...";
+
+print "Adapters: ";
+
+foreach my $command (keys %$commands) {
+    my $data = $commands->{$command};
+    next unless $command =~ s{^command\:}{};
+    next unless exists $required_adapters{$command};
+    print "[$command]";
+
+    if (exists $found{$command}) {
+	push(@errors, "Duplicate entries for command: $command");
+	next;
+    }
+    else {
+	$found{$command} = undef;
+    }
+
+    my $value = $data->{value};
+
+    unless ($value) {
+	push(@errors, "Could not find a value for adapter command: $command");
+	next;
+    }
+
+    my $expected_value = 'com.elluminate.adapter.command.'.ucfirst($command).'Command';
+    unless ($value eq $expected_value) {
+	push (@errors, "command: $command\n    Expected value: $expected_value\n    Actual value: $value");
+    }
+}
+
+my @missing = sort grep {!exists $found{$_}} (keys %required_adapters);
+
+foreach (@missing) {
+    push(@errors, "missing adapter command: $_");
+}
+
+die join("\n", '',@errors)
+    if @errors;
+
+print "\nNo errors found\n";
+
+exit(0);
+
+

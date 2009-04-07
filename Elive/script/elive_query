@@ -11,6 +11,7 @@ use Elive;
 use Elive::Entity;
 use Elive::Util;
 use Term::ReadLine;
+use Pod::Usage;
 
 local $SIG{__DIE__};
 
@@ -18,6 +19,30 @@ our $version = ${Elive::VERSION};
 our $entities = Elive::Entity->entities;
 our $term = new Term::ReadLine 'elive shell';
 our $is_tty = -t STDIN;
+
+=head1 NAME
+
+elive_query
+
+=head1 SYNOPSIS
+
+elive_query   http://myserver.com/my-site[:port]
+
+    -user someuser              # server login user
+    -pass somepass              # server login password
+    -debug=n                    # 1=some, 2=verbose, 3=verbose + soap
+    -help
+
+=head1 DESCRIPTION
+
+Simple lightweight query shell for Elive
+
+=head1 SEE ALSO
+
+perldoc Elive
+L<http://search.cpan.org/dist/Elive/>
+
+=cut
 
 foreach (keys %$entities) {
     #
@@ -316,20 +341,17 @@ sub output_row {
 }
 
 sub _getopt {
-    my ($more_usage,@more_options) = @_;
-
-    my $usage = "usage: $0 url -username user -password pass -id value -debug 1|2|3 "
-	.($more_usage || '');
 
     my %options;
 
     Getopt::Long::GetOptions(\%options,
-			      'username|user=s',
-			      'password|pass=s',
-			      'id=i',
-			      'debug=i',
-			      @more_options,
-     ) or die $usage;
+			     'username|user=s',
+			     'password|pass=s',
+			     'debug=i',
+			     'help|?'
+	) or die pod2usage(1);
+
+    pod2usage(2) if ($options{help});
 
     my $url = shift(@ARGV);
 

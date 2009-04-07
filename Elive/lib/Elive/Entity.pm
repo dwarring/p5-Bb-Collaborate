@@ -556,6 +556,8 @@ sub _insert_class {
 
     my $adapter = $opt{adapter} || 'create'.$class->entity_name;
 
+    $class->required_adapter($adapter);
+
     my $som = $connection->call($adapter,
 				 %$db_data,
 				 loginPassword => $login_password,
@@ -638,6 +640,8 @@ sub update {
 
     my $adapter = $opt{adapter} || 'update'.$self->entity_name;
 
+    $self->required_adapter($adapter);
+
     my $som =  $self->connection->call($adapter,
 				       %$db_updates);
 
@@ -695,7 +699,10 @@ sub list {
     die "class $class has neither a collection_name or entity_name"
 	unless $collection_name;
 
-    my $som =  $connection->call('list'.$collection_name, @params);
+    my $adapter = 'list'.$collection_name;
+    $class->required_adapter($adapter);
+
+    my $som =  $connection->call($adapter, @params);
 
     my $results = $class->_get_results(
 	$som,
@@ -724,6 +731,8 @@ sub _fetch {
 
     warn "get: entity name for $class: ".$class->entity_name.", adapter: ".$adapter
 	if $class->debug;
+
+    $class->required_adapter($adapter);
 
     my $som =  $connection->call($adapter,
 				 %$db_query);
@@ -862,7 +871,10 @@ sub delete {
 	$_ => shift( @id );
     } @primary_key;
 
-    my $som =  $self->connection->call('delete'.$self->entity_name,
+    my $adapter = 'delete'.$self->entity_name;
+    $self->required_adapter($adapter);
+
+    my $som =  $self->connection->call($adapter,
 				       @params);
 
     my $results = $self->_get_results(

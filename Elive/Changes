@@ -10,3 +10,7 @@ Revision history for Elive
         New Methods
         - Elive::Entity::Meeting::join_meeting_url - compute url to launch
           a meeting
+        New Scripts
+        - elive_raise_meeting
+        - elive_lint_config
+

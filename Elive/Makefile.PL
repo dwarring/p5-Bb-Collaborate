@@ -12,7 +12,7 @@ author         ('David Warring <david.warring@gmail.com>');
 version_from   ('lib/Elive.pm');
 license	       ('perl');
 abstract       ('Elluminate Live (c) client library');
-install_script ('elive_query', 'elive_raise_meeting');
+install_script ('elive_query', 'elive_raise_meeting', 'elive_lint_config);
 
 requires(
     'Class::Data::Inheritable'     => 0,

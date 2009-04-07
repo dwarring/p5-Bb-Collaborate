@@ -25,6 +25,7 @@ my $raise_hands;
 my $preload;
 my $url;
 my @participant_opts;
+my $help;
 
 use Carp;
 
@@ -34,24 +35,24 @@ elive_raise_meeting
 
 =head1 SYNOPSIS
 
-elive_raise_meeting url
+elive_raise_meeting   http://myserver.com/my-site[:port]
+
+    -user someuser              # server login user
+    -pass somepass              # server login password
 
     -participants participant[=roleId] ....
     -facilitator userId
     -name 'my meeting name'
-    -url http://my_server.com/my_instance (default http://localhost)
-    -user someuser              # server login user
-    -pass somepass              # server login password
     -meeting_pass otherpass     # meeting password
     -preload path               # local file to use as preload
     -start  'YYYY-MM-DD HH:MM'  # start time
     -end '[YYYY-MM-DD] HH::MM'  # end time
     -max_talkers                # max no. of simultaneous talkers
+    -help
 
 =head1 DESCRIPTION
 
-Sample elive script. Creates an Elluminate meeting on an Elluminate
-server
+Creates a meeting on an Elluminate Live (c) server
 
 =head1 SEE ALSO
 
@@ -73,8 +74,9 @@ GetOptions(
 ##	   'private' => \$private,
     'debug=i' => \$debug,
     'participants|users=s{,}' => \@participant_opts,
+    'help|?' => \$help,
     )
-    && ($url = shift @ARGV)
+    && (($help && pod2usage(2)) || ($url = shift @ARGV))
     && (!@ARGV)
     or die pod2usage(1);
 

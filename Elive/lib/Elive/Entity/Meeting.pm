@@ -12,8 +12,8 @@ Elive::Entity::Meeting - Elluminate Meeting instance class
 
 =head2 BUGS & LIMITATIONS
 
-Seems that privateMeeting gets ignored on Ellluminate Live 9 & 9.1. If you
-try to set it the readback check may fail.
+Seems that privateMeeting gets ignored on update for Elluminate Live 9 & 9.1.
+If you try to set it the readback check may fail.
 
 =cut
 
@@ -89,57 +89,67 @@ sub list_user_meetings_by_date {
 	);
 }
 
-=head2 join_meeting_url
+=head2 meeting_url
 
-Utility method to return the url for the meeting. This is available as
-both class level and object level methods.
+Utility method to return various website url's for the meeting. This is
+available as both class level and object level methods.
 
 =head3 Examples
 
     #
     # Class level access. This may save an unessesary fetch.
     #
-    my $url = Elive::Entity::Meeting->join_meeting_url(
-                     $meeting_id,
+    my $url = Elive::Entity::Meeting->meeting_url(
+                     meeting_id => $meeting_id,
+                     action => 'join',    # join|edit|...
                      connection => $my_connection);  # optional
 
 
     #
-    # Object level. For when we've got an object
+    # Object level.
     #
     my $meeting = Elive::Entity::Meeting->retrieve($meeting_id);
-    my $url = meeting->join_meeting_url
+    my $url = meeting->meeting_url(action => 'join');
 
 =cut
 
-sub join_meeting_url {
+sub meeting_url {
     my $self = shift;
+    my %opt = @_;
 
-    my $meeting_id;
-    my $connection;
+    my $meeting_id = $opt{meeting_id};
+    my $connection = ($opt{connection}
+		      || $self->connection);
 
     if (ref($self)) {
 	#
 	# dealing with an object
 	#
-	$meeting_id = $self->meetingId;
-	$connection = $self->connection;
+	$meeting_id ||= $self->meetingId;
     }
-    else {
-	$meeting_id = shift
-	    or die 'usage:  $self->join_meeting_url or $class->join_meeting_url($meeting_id,[connection => $connection])';
-	my %opt = @_;
 
-	my $connection = $opt{connection} || $self->connection;
-    }
+    die "no meeting_id given"
+	unless $meeting_id;
 
     die "not connected"
 	unless $connection;
 
     my $url = $connection->url;
+
     $url =~ s{ / (\Q'webservice.event\E)? $ } {}x;
 
-    return sprintf('%s/join_meeting.html?meetingId=%ld',
+    my %Actions = (
+	'join'   => '%s/join_meeting.html?meetingId=%ld',
+	'edit'   => '%s/modify_meeting.event?meetingId=%ld',
+	'delete' => '%s/delete_meeting?meetingId=%ld',
+	);
+
+    my $action = $opt{action} || 'join';
+
+    die "unrecognised action: $action"
+	unless exists $Actions{$action};
+
+    return sprintf($Actions{$action},
 		   $url, $meeting_id);
 }   
 
@@ -147,7 +157,7 @@ sub _freeze {
     my $class = shift;
     my $data = shift;
     #
-    # Meetings are stored as 'facilitor'
+    # facilitor -> facilitatorId
     #
     my $frozen = $class->SUPER::_freeze($data, @_);
 

@@ -179,6 +179,57 @@ sub debug {
     return $DEBUG || 0;
 }
 
+our %RequiredAdapters;
+
+BEGIN {
+    @RequiredAdapters{qw(
+addGroupMember addMeetingPreload attendanceNotification
+changePassword checkMeetingPreload
+createGroup createMeeting createPreload createRecording createUser
+deleteGroup deleteMeeting deleteParticipant deleteRecording deleteUser
+getGroup getMeeting getMeetingParameters getPreload getPreloadStream getRecording getRecordingStream getUser
+listMeetingPreloads listMeetings listParticipants listPreloads listRecordings listUserMeetingsByDate listUsers
+resetGroup resetParticipantList
+setParticipantList
+streamPreload streamRecording
+updateMeeting updateMeetingParameters updateRecording updateServerParameters updateUser)} = undef;
+}
+
+=head2 required_adapter
+
+=head3 synopsis
+
+    # Ensure that we are using a known adapter
+    #
+    Elive->required_adapter('getUser')
+    
+
+=cut
+
+sub required_adapter {
+    my $class = shift;
+    my $adapter = shift
+	or die 'usage: $class->required_adapter($name)';
+
+    die "Uknown adapter: $adapter"
+	unless exists $RequiredAdapters{$adapter};
+
+    return $adapter;
+}
+
+=head2 required_adapters
+
+    Return a list of all Elive adapters.
+
+=cut
+
+sub required_adapters {
+    my $class = shift;
+    return sort keys %RequiredAdapters;
+}
+
+=cut
+
 =head1 ERROR MESSAGES
 
 Elluminate Services Errors:
@@ -273,6 +324,8 @@ used to used for the meeting.
 
 For more information, type the command: elive_raise_meeting --help
 
+=head2 elive_lint_config
+
 =head1 SEE ALSO
 
 Perl Modules:
@@ -282,6 +335,8 @@ Perl Modules:
 =item Elive::Connection - SOAP/XML connection to Elluminate
 
 =item Elive::Entity - The base class for all elive entities
+
+=item Data::Def::Struct::Stored - The absrtact class for Elive::Entity
 
 =item Entity - Entity base class
 
@@ -311,16 +366,18 @@ Scripts:
 
 =item elive_raise_meeting - sample script that create meetings via one-liners
 
+=item elive_lint_config - sanity check your servers site configuration
+
 =back
 
-The Elluminate Dcoumentation Suite, including:
+Elluminate Live Documentation. This comes with your distribtuion
 
 =over 4
 
 =item ELM2.5_SDK.pdf
 
-Elive interfaces with the SOAP/XML bindings described in section 4 - the
-command toolkit.
+General Description of SDK's available for Elluminate Live. In particular
+see section 4 - the SOAP/XML command toolkit.
 
 =item DatabaseSchema.pdf
 
