@@ -186,8 +186,8 @@ BEGIN {
 addGroupMember addMeetingPreload attendanceNotification
 changePassword checkMeetingPreload
 createGroup createMeeting createPreload createRecording createUser
-deleteGroup deleteMeeting deleteParticipant deleteRecording deleteUser
-getGroup getMeeting getMeetingParameters getPreload getPreloadStream getRecording getRecordingStream getUser
+deleteGroup deleteMeeting deleteParticipant deleteRecording deletePreload deleteUser
+getGroup getMeeting getMeetingParameters getPreload getPreloadStream getRecording getRecordingStream getServerDetails getUser
 listMeetingPreloads listMeetings listParticipants listPreloads listRecordings listUserMeetingsByDate listUsers
 resetGroup resetParticipantList
 setParticipantList
@@ -195,18 +195,18 @@ streamPreload streamRecording
 updateMeeting updateMeetingParameters updateRecording updateServerParameters updateUser)} = undef;
 }
 
-=head2 required_adapter
+=head2 require_adapter
 
 =head3 synopsis
 
     # Ensure that we are using a known adapter
     #
-    Elive->required_adapter('getUser')
+    Elive->require_adapter('getUser')
     
 
 =cut
 
-sub required_adapter {
+sub require_adapter {
     my $class = shift;
     my $adapter = shift
 	or die 'usage: $class->required_adapter($name)';

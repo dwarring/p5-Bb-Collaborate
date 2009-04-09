@@ -41,7 +41,7 @@ sub new {
     warn "connecting to ".$uri->as_string
 	if ($opt{debug});
 
-    my $soap = SOAP::Lite->new( proxy => $uri->as_string );
+    my $soap = SOAP::Lite->new(proxy => $uri->as_string );
 
     my $self = $class->SUPER::new($url);
     bless $self, $class;
@@ -79,7 +79,12 @@ sub call {
 
 	my $value = $params{$name};
 
-	push (@soap_params,  SOAP::Data->name($name)->value($value));
+	my $soap_param = SOAP::Data
+	    ->name($name)
+	    ->type('string')
+	    ->value($value);
+
+	push (@soap_params, $soap_param);
 
     }
 

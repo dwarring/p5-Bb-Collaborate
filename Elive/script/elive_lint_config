@@ -17,14 +17,14 @@ elive_lint_config
 
 =head1 DESCRIPTION
 
-This script can be run on a elluminate server site configuration file to
-sanity check the basic configuration.
+This script can be run on an elluminate server site configuration file to
+perform some rough checks on the basic configuration.
 
 In particular, some adapter definitions may be missing. This seems to
-depend on the sites vintage, manua edits, and the general upgrade history.
+depend on the sites vintage, manual edits, and the general upgrade history.
 
-It's recommended that you rerun this script after upgrading either
-Elluminate Live or Elive.
+It may be useful to rerun this script after upgrading either
+Elluminate Live or Elive, or creating new site instances.
 
 =head1 SEE ALSO
 
@@ -35,7 +35,7 @@ Elluminate Live or Elive.
 
 my $help;
 
-print "Elive Configuration Linter ${Elive::VERSION}\n";
+print "Elive  ${Elive::VERSION} - Server Configuration Linter\n";
 
 GetOptions(
     'help|?' => \$help,
@@ -49,41 +49,81 @@ print "Checking: $config_file\n";
 my %required_adapters = map {$_ => 1} (Elive->required_adapters);
 my %found;
 
-my $config = XMLin($config_file, KeepRoot => 1);
+my $config = XMLin($config_file,
+		   KeepRoot => 1,
+		   ForceArray => 1,
+    );
 
 my @errors;
 
 select STDERR; $| = 1;
 
-my $commands = $config->{elm}{adapters}{adapter}{argument}
-or die "unable to locate adapters: <elm><adapters><adapter><argument>...";
+#
+# just check for ldap access while we're at it
+#
+
+if (my @daos = _get_elems($config, qw/elm daofactory dao/)) {
+
+    my ($ldap_dao) = grep {$_->{class} =~ m{ldapdao}i} @daos;
+
+    if ($ldap_dao) {
+	print "Note: using LDAP for user management:\n\n";
+
+	if (my $argument = $ldap_dao->{argument}) {
+	    foreach my $name (sort keys %{$ldap_dao->{argument}}) {
+		my $value = $ldap_dao->{argument}{$name}{value};
+		$value =~ s{.}{*}g
+		    if $name eq 'password';
+
+		printf("  %-14.14s: %s\n", $name, $value)
+		    if (defined $name && defined $value);
+	    }
+	    print "\n";
+	}
+    }
+}
+
+##use YAML; die YAML::Dump($config);
+my @adapters = _get_elems($config, qw/elm adapters adapter/);
+my @classes = map {_get_elems($_, 'class')} @adapters;
+
+my ($command_adapter)
+    = (grep {my ($class) = _get_elems($_, 'class');
+	     $class =~ m{CommandAdapter}}
+       @adapters);
+
+die "Unable to locate adapter commands"
+    unless $command_adapter;
+
+my @commands = _get_elems($command_adapter, 'argument');
 
 print "Adapters: ";
 
-foreach my $command (keys %$commands) {
-    my $data = $commands->{$command};
-    next unless $command =~ s{^command\:}{};
-    next unless exists $required_adapters{$command};
-    print "[$command]";
+foreach my $command (@commands) {
 
-    if (exists $found{$command}) {
-	push(@errors, "Duplicate entries for command: $command");
+    my $name = $command->{name}[0];
+    my $value = $command->{value}[0];
+
+    next unless $name =~ s{^command\:}{};
+    next unless exists $required_adapters{$name};
+    print "[$name]";
+
+    if (exists $found{$name}) {
+	push(@errors, "Duplicate entries for command: $name");
 	next;
     }
     else {
-	$found{$command} = undef;
+	$found{$name} = undef;
     }
 
-    my $value = $data->{value};
-
     unless ($value) {
-	push(@errors, "Could not find a value for adapter command: $command");
+	push(@errors, "Could not find a value for adapter command: $name");
 	next;
     }
 
-    my $expected_value = 'com.elluminate.adapter.command.'.ucfirst($command).'Command';
+    my $expected_value = 'com.elluminate.adapter.command.'.ucfirst($name).'Command';
     unless ($value eq $expected_value) {
-	push (@errors, "command: $command\n    Expected value: $expected_value\n    Actual value: $value");
+	push (@errors, "command: $name\n    Expected value: $expected_value\n    Actual value: $value");
     }
 }
 
@@ -100,4 +140,17 @@ print "\nNo errors found\n";
 
 exit(0);
 
+sub _get_elems {
+    my $struct = shift;
+    my $tag = shift;
 
+    my $elem = $struct->{$tag};
+    die "unable to get: $tag"
+	unless ($elem);
+
+    my @got = @$elem;
+
+    return @_
+	? map {_get_elems($_, @_)} @got
+	: @got;
+}

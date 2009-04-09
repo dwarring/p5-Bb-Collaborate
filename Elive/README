@@ -4,7 +4,7 @@ classroom server.
 You can, for example, use it to query or add users, create sessions, assign
 users as class participants and change server settings.
 
-This package has been tested against Elluminate Live versions 8.0 and 9.0.
+This package has been tested against Elluminate Live versions 9.0 thru 9.1.
 
 INSTALLATION
 
@@ -71,7 +71,17 @@ POST INSTALLATION
 
         Usage is: elive_query --user SomeAdmin http://myserver/mysite
 
-	Where SomeAdmin is a system adminstrator account.
+	Where SomeAdmin is an Elluminate system adminstrator account.
+
+        Hopefully you should get:
+
+	    connecting to http://myserver/mysite...done
+            Elive query 0.nn - type 'help' for help
+            elive>
+
+        You can then try a simple query:
+
+            elive> select * from users
 
 
 SUPPORT AND DOCUMENTATION
@@ -108,3 +118,4 @@ Copyright (C) 2009 David Warring
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
+

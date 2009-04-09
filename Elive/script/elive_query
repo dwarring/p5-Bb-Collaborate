@@ -30,6 +30,7 @@ elive_query   http://myserver.com/my-site[:port]
 
     -user someuser              # server login user
     -pass somepass              # server login password
+    -eager                      # return all data
     -debug=n                    # 1=some, 2=verbose, 3=verbose + soap
     -help
 
@@ -304,10 +305,10 @@ sub _select {
 
     eval {
 	if ($id) {
-	    $rows =  $entity_class->retrieve_all([$id]);
+	    $rows =  $entity_class->retrieve_all([$id], eager => $options{eager});
 	}
 	else {
-	    $rows = $entity_class->list(filter => $filter);						     
+	    $rows = $entity_class->list(filter => $filter, eager => $options{eager});
 	}
     };
 
@@ -348,6 +349,7 @@ sub _getopt {
 			     'username|user=s',
 			     'password|pass=s',
 			     'debug=i',
+			     'eager',
 			     'help|?'
 	) or die pod2usage(1);
 

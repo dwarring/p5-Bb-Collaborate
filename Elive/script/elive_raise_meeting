@@ -9,7 +9,6 @@ use DateTime::Format::ISO8601;
 use Pod::Usage;
 
 use Carp;
-$SIG{__DIE__} = sub {warn "error: $_[0]"};;
 
 my $username = 'serversupport';
 my $password;
@@ -44,7 +43,7 @@ elive_raise_meeting   http://myserver.com/my-site[:port]
     -facilitator userId
     -name 'my meeting name'
     -meeting_pass otherpass     # meeting password
-    -preload path               # local file to use as preload
+    -preload file               # local file to upload as a preload
     -start  'YYYY-MM-DD HH:MM'  # start time
     -end '[YYYY-MM-DD] HH::MM'  # end time
     -max_talkers                # max no. of simultaneous talkers
@@ -115,6 +114,9 @@ do {
 
     foreach my $spec (@participant_opts) {
 
+	#
+	# parse a participant spec: user[=roleId]
+	#
 	my $user_spec;
 	my $role;
 
@@ -136,15 +138,17 @@ do {
 
 	my $user_obj = _get_user($user_spec);
 
-	die "duplicate user: $user_spec"
-	    if (grep {$_->{user} eq $user_obj} @participants); 
-
-	push (@participants, 
-	      Elive::Entity::Participant->construct({
-		  user => $user_obj,
-		  role => {roleId => $role},
-	      }),
-	    );
+	if (grep {$_->{user} eq $user_obj} @participants) {
+	    warn "duplicate user: $user_spec"
+	}
+	else {
+	    push (@participants, 
+		  Elive::Entity::Participant->construct({
+		      user => $user_obj,
+		      role => {roleId => $role},
+		  }),
+		);
+	}
     }
 
     my $meeting = Elive::Entity::Meeting->insert
@@ -177,7 +181,7 @@ do {
     if (@participants) {
 	
 	#
-	# Create an empty paticipant list
+	# Create participant list
 	#
 	my $participants_str = join(';', @participants);
 	print "participants: $participants_str\n";

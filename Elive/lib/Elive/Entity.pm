@@ -355,7 +355,7 @@ sub _unpack_results {
     return $results;
 }
 
-sub _get_results {
+sub _check_for_errors {
     my $class = shift;
     my $som = shift;
 
@@ -393,10 +393,17 @@ sub _get_results {
 	my @error = grep {defined} ($code, $reason, @stacktrace);
 	die join(' ', @error) || YAML::Dump($result);
     }
+}
+
+sub _get_results {
+    my $class = shift;
+    my $som = shift;
+
+    $class->_check_for_errors($som);
 
     my $results_list;
 
-    $result = $class->_unpack_results($result);
+    my $result = $class->_unpack_results($som->result);
 
     my $reftype = Elive::Util::_reftype($result);
 
@@ -428,6 +435,7 @@ sub _process_results {
 
     my $class = shift;
     my $soap_results = shift;
+    my %opt = @_;
 
     #
     # Thaw our returned SOAP responses to reconstruct the data
@@ -438,7 +446,7 @@ sub _process_results {
 
     foreach (@$soap_results) {
 
-	my $row = $class->_thaw( $_ );
+	my $row = $class->_thaw($_, %opt);
 
 	push(@rows, $row);
     }
@@ -556,7 +564,7 @@ sub _insert_class {
 
     my $adapter = $opt{adapter} || 'create'.$class->entity_name;
 
-    $class->required_adapter($adapter);
+    $class->require_adapter($adapter);
 
     my $som = $connection->call($adapter,
 				 %$db_data,
@@ -640,7 +648,7 @@ sub update {
 
     my $adapter = $opt{adapter} || 'update'.$self->entity_name;
 
-    $self->required_adapter($adapter);
+    $self->require_adapter($adapter);
 
     my $som =  $self->connection->call($adapter,
 				       %$db_updates);
@@ -700,7 +708,7 @@ sub list {
 	unless $collection_name;
 
     my $adapter = 'list'.$collection_name;
-    $class->required_adapter($adapter);
+    $class->require_adapter($adapter);
 
     my $som =  $connection->call($adapter, @params);
 
@@ -708,7 +716,7 @@ sub list {
 	$som,
 	);
 
-    my $rows =  $class->_process_results( $results );
+    my $rows =  $class->_process_results($results, %opt);
 
     return [
 	map { $class->construct( $_, respository => $connection) }
@@ -732,7 +740,7 @@ sub _fetch {
     warn "get: entity name for $class: ".$class->entity_name.", adapter: ".$adapter
 	if $class->debug;
 
-    $class->required_adapter($adapter);
+    $class->require_adapter($adapter);
 
     my $som =  $connection->call($adapter,
 				 %$db_query);
@@ -741,7 +749,7 @@ sub _fetch {
 	$som,
 	);
 
-    my $rows = $class->_process_results( $results );
+    my $rows = $class->_process_results($results, %opt);
     #
     # 0 results => not found
     #
@@ -772,7 +780,7 @@ sub retrieve {
     my $vals = shift;
     my %opt = @_;
 
-    die 'usage $class->retrieve_all([$val,..],%opt)'
+    die 'usage $class->retrieve([$val,..],%opt)'
 	unless Elive::Util::_reftype($vals) eq 'ARRAY';
     
     my @key_cols =  $class->primary_key;
@@ -872,7 +880,7 @@ sub delete {
     } @primary_key;
 
     my $adapter = 'delete'.$self->entity_name;
-    $self->required_adapter($adapter);
+    $self->require_adapter($adapter);
 
     my $som =  $self->connection->call($adapter,
 				       @params);
