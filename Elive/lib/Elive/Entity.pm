@@ -3,8 +3,8 @@ use warnings; use strict;
 use Mouse;
 
 use Elive;
-use Data::Def::Struct::Stored;
-use base qw{Elive Data::Def::Struct::Stored};
+use Data::Def::Entity;
+use base qw{Elive Data::Def::Entity};
 
 use Elive::Util;
 

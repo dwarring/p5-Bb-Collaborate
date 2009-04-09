@@ -1,6 +1,6 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 26;
+use Test::More tests => 27;
 use Test::Warn;
 
 BEGIN {
@@ -34,6 +34,7 @@ my $user1 = Elive::Entity::User->construct({
 isa_ok($user1, 'Elive::Entity::User');
 ok($user1->userId ==  $USER_ID, 'user - userId accessor');
 ok($user1->loginName eq  $LOGIN_NAME, 'constructed user - loginName accessor');
+ok($user1->_db_data, 'user1 has db data');
 
 ok(!$user1->is_changed, 'is_changed returns false before change');
 
