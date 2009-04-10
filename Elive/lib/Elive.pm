@@ -185,6 +185,7 @@ changePassword checkMeetingPreload
 createGroup createMeeting createPreload createRecording createUser
 deleteGroup deleteMeeting deleteParticipant deleteRecording deletePreload deleteUser
 getGroup getMeeting getMeetingParameters getPreload getPreloadStream getRecording getRecordingStream getServerDetails getUser
+importPreload
 listMeetingPreloads listMeetings listParticipants listPreloads listRecordings listUserMeetingsByDate listUsers
 resetGroup resetParticipantList
 setParticipantList

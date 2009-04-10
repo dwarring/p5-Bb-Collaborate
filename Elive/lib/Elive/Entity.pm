@@ -172,7 +172,6 @@ sub _thaw {
     # 1. Entity names returned capitalised: 'LoginName' => 'loginName
     # 2. Primary key returned as Id, rather than <entity_name>Id
     #
-
     my %prop_key_map = map {ucfirst($_) => $_} @properties;
 
     $prop_key_map{Id} = lcfirst($class->entity_name).'Id';
@@ -367,7 +366,10 @@ sub _check_for_errors {
 	if ($class->debug);
 
     if(!Elive::Util::_reftype($result)) {
-	die "unexpected SOAP response: $result";
+	#
+	# Simple scalar
+	#
+	return;
     }
     
     #
@@ -492,6 +494,8 @@ sub _readback_check {
 	    }
 	}
     }
+
+    return $row;
 }
 
 =head2 set
@@ -568,8 +572,9 @@ sub _insert_class {
     $class->check_adapter($adapter);
 
     my $som = $connection->call($adapter,
-				 %$db_data,
-				 loginPassword => $login_password,
+				%$db_data,
+				%{$opt{param} || {}},
+				loginPassword => $login_password,
 	);
 
     my $results = $class->_get_results(
@@ -580,9 +585,9 @@ sub _insert_class {
     # Check that the return response has our inserts
     #
     my $rows =  $class->_process_results( $results );
-    $class->_readback_check($insert_data, $rows);
+    my $row = $class->_readback_check($insert_data, $rows);
 
-    my $self = $class->construct( $rows->[0], repository => $connection );
+    my $self = $class->construct( $row, repository => $connection );
     return $self;
 }
 
@@ -652,7 +657,9 @@ sub update {
     $self->check_adapter($adapter);
 
     my $som =  $self->connection->call($adapter,
-				       %$db_updates);
+				       %$db_updates,
+				       %{$opt{param} || {}},
+);
 
     my $results = $self->_get_results(
 	$som,
@@ -662,8 +669,8 @@ sub update {
     # Check that the return response has our updates
     #
     my $rows =  $self->_process_results( $results );
-    $self->_readback_check(\%updates, $rows);
-    $self->set( %{ $rows->[0] } );
+    my $row = $self->_readback_check(\%updates, $rows);
+    $self->set($row);
 
     #
     # Save the db image
@@ -696,8 +703,6 @@ sub list {
 	push( @params, filter => $filter );
     }
 
-    push (@params, adapter => $class->adapter || 'default');
-
     my $connection = ($opt{connection}
 		      || $class->connection
 	)
@@ -708,7 +713,7 @@ sub list {
     die "class $class has neither a collection_name or entity_name"
 	unless $collection_name;
 
-    my $adapter = 'list'.$collection_name;
+    my $adapter = $opt{adapter} || 'list'.$collection_name;
     $class->check_adapter($adapter);
 
     my $som =  $connection->call($adapter, @params);

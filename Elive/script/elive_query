@@ -292,7 +292,6 @@ sub _select {
 
     if (my ($fld, $val) = ($filter =~ m{^ (\w+) \s* = \s* ([\w_\-\@\!\#\$\%\^\&\.\+]+) \s* $}x)) {
 	my $type = $property_types->{$fld} || '';
-	warn "field fetch: $fld, value: $val, type: $type";
 
 	if ($fld eq $pkey) {
 	    $id = $val;

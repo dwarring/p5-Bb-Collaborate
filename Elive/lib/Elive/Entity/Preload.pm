@@ -46,25 +46,24 @@ has 'size' => (is => 'rw', isa => 'Int', required => 1,
 	       documentation => 'The length of the preload in bytes',
     );
 
-has 'fileName' => (is => 'rw', isa => 'Str',
-		 documentation => 'Path to import file on remote server',
-    );
-
 has 'data' => (is => 'rw', isa => 'Str',
 	       documentation => 'The contents of the preload.');
 
 =head2 insert
 
+    #
+    # Somehow upload the file to the server. ssh, sftp, rync, http ..?
+    #
     my $path_on_server = my_server_upload('introduction.wbd');
 
     my $preload = Elive::Entity::Preload->insert(
              {
-                    fileName => $path_on_server,
 		    type => 'whiteboard',
 		    mimeType => 'application/octet-stream',
 		    name => 'introduction.wbd',
 		    ownerId => 357147617360,
 	     },
+             fileName => $path_on_server,
          );
 
 
@@ -78,9 +77,14 @@ sub _insert_class {
     my $insert_data = shift;
     my %opt = @_;
 
-    my $adapter = ($insert_data->{import}
-		   ? 'importPreload'
-		   : 'createPreload');
+    my $adapter = 'createPreload';
+
+    if (my $import_file_name = delete $opt{fileName}) {
+
+	$opt{param}->{fileName} = $import_file_name;
+	$adapter = 'importPreload';
+
+    }
 
     $self->SUPER::_insert_class($insert_data, adapter => $adapter, %opt);
 }

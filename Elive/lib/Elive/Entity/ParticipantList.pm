@@ -142,56 +142,29 @@ Update meeting participants
 
 =cut
 
-sub update {
-    my $self = shift;
-    my $data = shift;
-    my %opt = @_;
-
-    my $meeting_id = $self->meetingId;
-    my $expected_participants = $self->participants->stringify;
-    my $participant_list;
-
-    eval {
-	$participant_list
-	    = $self->SUPER::update($data,
-				   adapter => 'setParticipantList',
-				   %opt );
-
-    };
-
-    if (my $err = @_) {
-	return ref($self)->__handle_response($err, $meeting_id,
-	    $expected_participants);
-    }
-
-    return $participant_list;
-}
-
-sub __handle_response {
+sub _readback_check {
     my $class = shift;
-    my $err = shift;
-    my $meeting_id = shift;
-    my $expected_participants;
+    my $updates = shift;
+    my $rows = shift;
+
     #
-    # sometimes get back an empty response from setPartipcantList
-    # if this happens abort the standard readback. Re-retreive the
-    # to complete the readback.
-    # 
-    if ($meeting_id && $err =~ m{unexpected soap response}i) {
-	warn "warning: $err";
+    # sometimes get back an empty response from setParticantList
+    # if this happens Re-retreive the updates, then complete the readback.
+    #
+    unless (Elive::Util::_reftype($rows) eq 'ARRAY'
+	    && @$rows
+	    && (my $meeting_id = $updates->{meetingId})
+	) {
+
 	my $self = $class->retrieve([$meeting_id]);
 
 	die "unable to retrieve $class/$meeting_id"
 	    unless $self;
 
-	my $actual_participants = $self->participants->stringify;
-	die "readback failed on participants:\nexpected $expected_participants\nactual: $actual_participants"
-	    unless $expected_participants eq $actual_participants;
+	$rows = [$self];
+    }
 
-    }
-    else {
-	die $err;
-    }
+    $class->SUPER::_readback_check($updates, $rows, @_);
 }
 
 =head2 list
