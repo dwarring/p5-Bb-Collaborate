@@ -535,13 +535,14 @@ Adds a new record to the Elluminate database.
 sub insert {
     my $class = shift;
 
-    if (ref($class)) {
+    if (my $_class = ref($class)) {
 	my $self  = $class;
+	$class = $_class;
 	#
 	# Undo any prior deletion
 	#
 	$self->_deleted(0);
-	return $self->_insert_class($self,@_);
+	return $class->_insert_class($self,@_);
     }
 
     return $class->_insert_class(@_);
@@ -564,7 +565,7 @@ sub _insert_class {
 
     my $adapter = $opt{adapter} || 'create'.$class->entity_name;
 
-    $class->require_adapter($adapter);
+    $class->check_adapter($adapter);
 
     my $som = $connection->call($adapter,
 				 %$db_data,
@@ -648,7 +649,7 @@ sub update {
 
     my $adapter = $opt{adapter} || 'update'.$self->entity_name;
 
-    $self->require_adapter($adapter);
+    $self->check_adapter($adapter);
 
     my $som =  $self->connection->call($adapter,
 				       %$db_updates);
@@ -708,7 +709,7 @@ sub list {
 	unless $collection_name;
 
     my $adapter = 'list'.$collection_name;
-    $class->require_adapter($adapter);
+    $class->check_adapter($adapter);
 
     my $som =  $connection->call($adapter, @params);
 
@@ -740,7 +741,7 @@ sub _fetch {
     warn "get: entity name for $class: ".$class->entity_name.", adapter: ".$adapter
 	if $class->debug;
 
-    $class->require_adapter($adapter);
+    $class->check_adapter($adapter);
 
     my $som =  $connection->call($adapter,
 				 %$db_query);
@@ -880,7 +881,7 @@ sub delete {
     } @primary_key;
 
     my $adapter = 'delete'.$self->entity_name;
-    $self->require_adapter($adapter);
+    $self->check_adapter($adapter);
 
     my $som =  $self->connection->call($adapter,
 				       @params);

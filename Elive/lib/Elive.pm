@@ -43,19 +43,16 @@ use Elive::Connection;
 
 =head1 DESCRIPTION
 
-Elluminate Live (c) is a virtual classroom portal largely written in Java.
-Session particpants join the meeting via a Java portal back to a central
-server.
+Elluminate Live (c) is an online virtual classroom written in Java.
 
 This module provides class and object bindings to Elluminate Live server
-via the SOAP/XML command interace.
+via its SOAP/XML command interace.
 
-It enables basic create/read/update and delete of Users, User Lists,
-Meetings and Meeting Participants.
+You can use it to create/read/update and delete entities on an Elluminate
+site. This includes Users, User Groups, Meetings and Meeting Participants.
 
-Elluminate installs with a built-in pure Java database (Mckoi) and provides
-language independant SOAP/XML layer. This package implements perl bindings
-for this.
+This module can also assit you in setting meeting preloads, such as whiteboards
+and multi-media files. 
 
 =cut
 __PACKAGE__->mk_classdata('_login');
@@ -118,7 +115,7 @@ sub connect {
      $e1 = Elive->connection
          or warn 'no elive connection active';
 
-     Returns an Elive handle for the last successful connection.
+     Returns an Elive connection handle.
 
 =cut
 
@@ -179,10 +176,10 @@ sub debug {
     return $DEBUG || 0;
 }
 
-our %RequiredAdapters;
+our %KnownAdapters;
 
 BEGIN {
-    @RequiredAdapters{qw(
+    @KnownAdapters{qw(
 addGroupMember addMeetingPreload attendanceNotification
 changePassword checkMeetingPreload
 createGroup createMeeting createPreload createRecording createUser
@@ -195,37 +192,39 @@ streamPreload streamRecording
 updateMeeting updateMeetingParameters updateRecording updateServerParameters updateUser)} = undef;
 }
 
-=head2 require_adapter
+=head2 check_adapter
 
-=head3 synopsis
+    Elive->check_adapter('getUser')
 
-    # Ensure that we are using a known adapter
-    #
-    Elive->require_adapter('getUser')
-    
+Simple asserts that the adapter we are about to use is valid and known to
+Elive.
+
+=head3 See Also
+
+elive_lint_config
 
 =cut
 
-sub require_adapter {
+sub check_adapter {
     my $class = shift;
     my $adapter = shift
-	or die 'usage: $class->required_adapter($name)';
+	or die 'usage: $class->known_adapter($name)';
 
     die "Uknown adapter: $adapter"
-	unless exists $RequiredAdapters{$adapter};
+	unless exists $KnownAdapters{$adapter};
 
     return $adapter;
 }
 
-=head2 required_adapters
+=head2 known_adapters
 
     Return a list of all Elive adapters.
 
 =cut
 
-sub required_adapters {
+sub known_adapters {
     my $class = shift;
-    return sort keys %RequiredAdapters;
+    return sort keys %KnownAdapters;
 }
 
 =cut

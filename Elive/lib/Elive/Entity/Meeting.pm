@@ -153,6 +153,33 @@ sub meeting_url {
 		   $url, $meeting_id);
 }   
 
+sub add_preload {
+    my $self = shift;
+    my %opt = @_;
+
+    my $meeting_id = $opt{meeting_id};
+    $meeting_id ||= $self->meetingId
+	if ref($self);
+
+    die "Unable to determine meeting_id"
+	unless $meeting_id;
+
+    my $preload_id = $opt{preload_id};
+
+    die "unabe to determine prelod_id"
+	unless $preload_id;
+
+
+    my $adapter = $self->check_adapter('addMeetingPreload');
+
+    my $som = $self->connection->call($adapter,
+				      meetingId => $meeting_id,
+				      preloadId => $preload_id,
+	);
+
+    $self->_check_for_errors($som);
+}
+
 sub _freeze {
     my $class = shift;
     my $data = shift;

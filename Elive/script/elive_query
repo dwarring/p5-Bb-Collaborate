@@ -36,7 +36,7 @@ elive_query   http://myserver.com/my-site[:port]
 
 =head1 DESCRIPTION
 
-Simple lightweight query shell for Elive
+Simple read-only query shell for Elive
 
 =head1 SEE ALSO
 
