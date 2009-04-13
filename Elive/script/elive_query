@@ -235,7 +235,7 @@ sub _show {
     foreach my $property ($entity_class->properties) {
 
 	my ($type, $is_array, $is_entity) 
-	    = Data::Def::Util::parse_type($property_types->{$property});
+	    = Elive::Util::parse_type($property_types->{$property});
 
 	my $is_primary = $property eq $pkey;
 

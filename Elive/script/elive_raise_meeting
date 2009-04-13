@@ -23,7 +23,6 @@ my $max_talkers;
 my $raise_hands;
 my $preload;
 my $url;
-my @participant_opts;
 my $help;
 
 use Carp;
@@ -34,12 +33,11 @@ elive_raise_meeting
 
 =head1 SYNOPSIS
 
-elive_raise_meeting   http://myserver.com/my-site[:port]
+elive_raise_meeting   http://myserver.com/my-site[:port] userid[=role] [userid[=role]...]
 
     -user someuser              # server login user
     -pass somepass              # server login password
 
-    -participants participant[=roleId] ....
     -facilitator userId
     -name 'my meeting name'
     -meeting_pass otherpass     # meeting password
@@ -72,11 +70,9 @@ GetOptions(
     'raise_hands' => \$raise_hands,
 ##	   'private' => \$private,
     'debug=i' => \$debug,
-    'participants|users=s{,}' => \@participant_opts,
     'help|?' => \$help,
     )
     && (($help && pod2usage(2)) || ($url = shift @ARGV))
-    && (!@ARGV)
     or die pod2usage(1);
 
 Elive->debug($debug);
@@ -112,7 +108,7 @@ do {
 
     my @participants;
 
-    foreach my $spec (@participant_opts) {
+    foreach my $spec (@ARGV) {
 
 	#
 	# parse a participant spec: user[=roleId]
@@ -136,14 +132,14 @@ do {
 	die "null username: $spec"
 	    if ($user_spec eq '');
 
-	my $user_obj = _get_user($user_spec);
+	my $user_obj = _resolve_user($user_spec);
 
 	if (grep {$_->{user} eq $user_obj} @participants) {
 	    warn "duplicate user: $user_spec"
 	}
 	else {
 	    push (@participants, 
-		  Elive::Entity::Participant->construct({
+		  Elive::Entity::Participant->new({
 		      user => $user_obj,
 		      role => {roleId => $role},
 		  }),
@@ -202,7 +198,7 @@ exit(0);
 
 ########################################################################
 
-sub _get_user {
+sub _resolve_user {
     my $user_spec = shift;
 
     die 'usage: _get_user($user_name_or_id)'
@@ -212,13 +208,16 @@ sub _get_user {
     #
     my $user;
 
-    #
-    # Numeric id. Could be a user id
-    #
     if ($user_spec =~ m{^\d+$}) {
+	#
+	# Numeric id. Assume it's a user id
+	#
 	$user =  Elive::Entity::User->retrieve([$user_spec]);
     }
     else {
+	#
+	# Treat non-numeric as a loginName
+	#
 	$user = Elive::Entity::User->get_by_loginName($user_spec);
     }
 

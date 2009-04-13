@@ -1,4 +1,6 @@
 package Elive::Entity::Preload;
+use warnings; use strict;
+
 use Mouse;
 
 use Elive::Entity;
@@ -48,6 +50,10 @@ has 'size' => (is => 'rw', isa => 'Int', required => 1,
 
 has 'data' => (is => 'rw', isa => 'Str',
 	       documentation => 'The contents of the preload.');
+
+=head1 METHODS
+
+=cut
 
 =head2 insert
 

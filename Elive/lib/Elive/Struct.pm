@@ -1,4 +1,5 @@
 package Elive::Struct;
+use warnings; use strict;
 
 use Elive;
 use base qw{Elive};
@@ -21,6 +22,21 @@ use Scalar::Util;
 sub _refaddr {
     return Scalar::Util::refaddr( shift() );
 }
+
+=head1 NAME
+
+Elive::Struct - Base class for entities and simple structures
+
+=head1 DESCRIPTION
+
+Base class for sub-structures within entities, eg Elive::Entity::Role.
+This is also used as a base class for Elive::Entity.
+
+=cut
+
+=head1 METHODS
+
+=cut
 
 =head2 stringify
 

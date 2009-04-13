@@ -1,6 +1,8 @@
 package Elive::Entity::Group;
+use warnings; use strict;
 
 use Mouse;
+
 use Elive::Entity;
 use base qw{ Elive::Entity };
 
@@ -19,6 +21,24 @@ has 'members' => (is => 'rw', isa => 'ArrayRef[Int]', required => 1,
 =head1 NAME
 
 Elive::Entity::Group - Elluminate Group entity instance class
+
+=cut
+
+=head1 METHODS
+
+=cut
+
+=head2 construct
+
+    my $group = Elive::Entity::Group->construct({
+	name => 'Elluminati',
+	members => [111111, 222222, 333333 ],
+     },
+    );
+
+    $group->insert;
+
+Construct a group from data.
 
 =cut
 

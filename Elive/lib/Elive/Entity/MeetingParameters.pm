@@ -1,4 +1,6 @@
 package Elive::Entity::MeetingParameters;
+use warnings; use strict;
+
 use Mouse;
 
 use Elive::Entity;
@@ -30,6 +32,10 @@ Elive::Entity::MeetingParameters - meeting parameters entity class
 =head1 DESCRIPTION
 
 This class contains additional meeting information.
+
+=cut
+
+=head1 METHODS
 
 =cut
 

@@ -1,4 +1,5 @@
 package Elive::Entity::Recording;
+use warnings; use strict;
 use Mouse;
 
 use Elive::Entity;

@@ -17,6 +17,10 @@ use HTML::Entities;
 
 __PACKAGE__->mk_accessors( qw{ url user pass soap } );
 
+=head1 METHODS
+
+=cut
+
 =head2 new
 
     my $ec = Elive::Store->new ('http://someserver.com/test',

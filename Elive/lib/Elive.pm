@@ -186,7 +186,7 @@ createGroup createMeeting createPreload createRecording createUser
 deleteGroup deleteMeeting deleteParticipant deleteRecording deletePreload deleteUser
 getGroup getMeeting getMeetingParameters getPreload getPreloadStream getRecording getRecordingStream getServerDetails getUser
 importPreload
-listMeetingPreloads listMeetings listParticipants listPreloads listRecordings listUserMeetingsByDate listUsers
+listGroups listMeetingPreloads listMeetings listParticipants listPreloads listRecordings listUserMeetingsByDate listUsers
 resetGroup resetParticipantList
 setParticipantList
 streamPreload streamRecording
@@ -267,8 +267,6 @@ sub DESTROY {
     my $self = shift;
     delete  $Meta_Data{ $self->_refaddr };
 }
-
-=cut
 
 =head1 ERROR MESSAGES
 

@@ -4,11 +4,11 @@ use Test::More tests => 14;
 use Test::Warn;
 
 BEGIN {
-    use_ok( 'Data::Def::Repository' );
+    use_ok( 'Elive::Connection' );
     use_ok( 'Elive::Entity::ParticipantList' );
 };
 
-Elive->connection(Data::Def::Repository->new('http://test.org'));
+Elive->connection(Elive::Connection->new('http://test.org'));
 
 my $participant_list = Elive::Entity::ParticipantList->construct(
     {

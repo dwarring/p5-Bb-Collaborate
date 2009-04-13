@@ -1,4 +1,5 @@
 package Elive::Entity::Role;
+use warnings; use strict;
 use Mouse;
 
 use Elive::Struct;
@@ -18,14 +19,5 @@ __PACKAGE__->entity_name('Role');
 
 has 'roleId' => (is => 'rw', isa => 'Int', required => 1);
 __PACKAGE__->primary_key('roleId');
-
-sub destringify {
-    my $class = shift;
-    my $role_id = shift;
-
-    return {
-	roleid => sprintf("%d", $role_id || 0),
-    }
-}
 
 1;

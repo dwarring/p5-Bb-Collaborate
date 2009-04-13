@@ -19,13 +19,16 @@ POST INSTALLATION
 
     elive_lint_config
 
-       It is strongly recommended that you run this script on your
-       elluminate site configuration files. In particular this will
-       check for any missing adapters.
+       This script will check for missing adapters.
 
-       You'll need a copy copy the site configuration from the server.
+       It is recommended that you run this script on your configuration
+       files for each Elluminate site instance.
+
+       You'll probably want to copy the site configuration from the server
+       and run this script on it there.
+
        For a Unix server the configration for path http://myserver/mysite/
-       should be:
+       should be found under:
 
              /opt/ElluminateLive/manager/tomcat/webapps/mysite
 
@@ -41,8 +44,12 @@ POST INSTALLATION
           will return the error message 'Unable to determine a command
           for the key Xxxxx'.
 
-          This is usually easily fixed by adding the missing entry in
-          the configuration.
+          If you get this error, please check that your Elluminate Live
+          software is up-to-date. Ii you've installed all upgrades and
+          the SDK.
+
+          Its possible that you may need to edit the configuration file
+          manually to add the adapter.
 
           You'll need to stop Elluminate services before editing.
 

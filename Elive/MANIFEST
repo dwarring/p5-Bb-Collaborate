@@ -10,6 +10,7 @@ inc/Module/Install/Metadata.pm
 inc/Module/Install/Win32.pm
 inc/Module/Install/WriteAll.pm
 lib/Elive.pm
+lib/Elive/Array.pm
 lib/Elive/Connection.pm
 lib/Elive/Entity.pm
 lib/Elive/Entity/Group.pm
@@ -17,6 +18,7 @@ lib/Elive/Entity/Meeting.pm
 lib/Elive/Entity/MeetingParameters.pm
 lib/Elive/Entity/Participant.pm
 lib/Elive/Entity/ParticipantList.pm
+lib/Elive/Entity/Preload.pm
 lib/Elive/Entity/Recording.pm
 lib/Elive/Entity/Role.pm
 lib/Elive/Entity/ServerDetails.pm
@@ -27,6 +29,8 @@ Makefile.PL
 MANIFEST			This list of files
 META.yml
 README
+script/elive_lint_config
+script/elive_preload
 script/elive_query
 script/elive_raise_meeting
 t/00-load.t
@@ -39,4 +43,3 @@ t/06-entity-errors.t
 t/90-pod.t
 t/91-pod-coverage.t
 t/99-kwalitee.t
-vn				commit -m initial release

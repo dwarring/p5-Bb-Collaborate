@@ -1,4 +1,6 @@
 package Elive::Entity::User;
+use warnings; use strict;
+
 use Mouse;
 
 use Elive::Entity;
@@ -34,6 +36,10 @@ has 'lastName' => (is => 'rw', isa => 'Str',
 =head1 NAME
 
     Elive::Entity::User - Elluminate Users entity class
+
+=cut
+
+=head1 METHODS
 
 =cut
 

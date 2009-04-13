@@ -1,4 +1,6 @@
 package Elive::Entity::Participant;
+use warnings; use strict;
+
 use Mouse;
 
 use Elive::Struct;
@@ -34,6 +36,17 @@ Elive::Entity::ParticpiantList
 
 =cut
 
+=head1 METHODS
+
+=cut
+
+=head2 stringify
+
+Returns a string of the form userId=role. This value is used for
+comparisions, sql display, etc...
+
+=cut
+
 sub stringify {
 
     my $self = shift;
@@ -43,32 +56,6 @@ sub stringify {
     #
 
     return $self->user.'='.$self->role;
-}
-
-sub destringify {
-    my $class = shift;
-
-    #
-    # inverse of stringification. resubstantiate the object.
-    #
-
-    my $string = shift;
-
-    die "not in format: <user_id>=<rold_id>: $string"
-	unless ($string && $string =~ m{^[0-9]+=[0-9]+$});
-
-    my ($user_id, $role_id) = split('=', $string);
-
-    my $user = Elive::Entity::User->retrieve($user_id)
-	or die "no such user: $user_id";
-
-    return __PACKAGE__->construct
-	({
-	    user => $user,
-	    role => {
-		roleId => $role_id,
-	    }
-	 });
 }
 
 1;

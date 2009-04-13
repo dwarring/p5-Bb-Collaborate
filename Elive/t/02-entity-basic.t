@@ -4,13 +4,13 @@ use Test::More tests => 27;
 use Test::Warn;
 
 BEGIN {
-    use_ok( 'Data::Def::Repository' );
     use_ok( 'Elive' );
+    use_ok( 'Elive::Connection' );
     use_ok( 'Elive::Entity' );
     use_ok( 'Elive::Entity::User' );
 }
 
-Elive->connection(Data::Def::Repository->new('http://test.org'));
+Elive->connection(Elive::Connection->new('http://test.org'));
 
 my %user_props = (map {$_ => 1} Elive::Entity::User->properties);
 

@@ -1,4 +1,6 @@
 package Elive::Entity::Meeting;
+use warnings; use strict;
+
 use Mouse;
 
 use Elive::Entity;
@@ -8,14 +10,8 @@ use base qw{ Elive::Entity };
 
 Elive::Entity::Meeting - Elluminate Meeting instance class
 
-=head2 DESCRIPTION
-
-=head2 BUGS & LIMITATIONS
-
-Seems that privateMeeting gets ignored on update for Elluminate Live 9 & 9.1.
-If you try to set it the readback check may fail.
-
 =cut
+
 
 __PACKAGE__->entity_name('Meeting');
 __PACKAGE__->collection_name('Meetings');
@@ -42,6 +38,10 @@ has 'end' => (is => 'rw', isa => 'Int', required => 1,
 has 'name' => (is => 'rw', isa => 'Str', required => 1,
 	       documentation => 'meeting name',
     );
+
+=head1 METHODS
+
+=cut
 
 =head2 list_user_meetings_by_date
 
@@ -151,7 +151,20 @@ sub meeting_url {
 
     return sprintf($Actions{$action},
 		   $url, $meeting_id);
-}   
+}
+
+=head2 add_preload
+
+    my $meeting = Elive::Entity::Meeting->retrieve($meeting_id);
+    $meeting->add_preload($preload_id);
+
+Associate a preload with a meeting
+
+=head3 See also
+
+    Elive::Entity::Preload
+
+=cut
 
 sub add_preload {
     my $self = shift;
@@ -229,5 +242,12 @@ sub _thaw {
 
     return $data;
 }
+
+=head1 BUGS & LIMITATIONS
+
+Seems that privateMeeting gets ignored on update for Elluminate Live 9 & 9.1.
+If you try to set it the readback check may fail.
+
+=cut
 
 1;

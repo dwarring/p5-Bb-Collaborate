@@ -12,6 +12,10 @@ Elive::Util - utility functions for Elive
 
 =cut
 
+=head1 METHODS
+
+=cut
+
 =head2 parse_type
 
    my $att = $my_class->meta->get_attribute_map->{foo};
@@ -30,10 +34,9 @@ sub parse_type {
     my $is_array = ($type =~ s{^ArrayRef\[(.*?)\]$}{$1})
 	||  UNIVERSAL::isa($type, 'Elive::Array');
 
-    my $is_data = UNIVERSAL::isa($type, 'Elive::Struct')
-	|| $is_array;
+    my $is_struct = UNIVERSAL::isa($type, 'Elive::Struct');
 
-    return ($type, $is_array, $is_data);
+    return ($type, $is_array, $is_struct);
 }
 
 =head2 prompt

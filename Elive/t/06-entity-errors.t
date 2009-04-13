@@ -3,23 +3,15 @@ use warnings; use strict;
 use Test::More tests => 7;
 use Test::Exception;
 
-package Elive::Connection::TestStub;
-
-sub url {return 'http://elive.test.org/test'};
-
-########################################################################
-
 package main;
 
 BEGIN {
 	use_ok( 'Elive' );
-	use_ok( 'Elive::Entity' );
+	use_ok( 'Elive::Connection' );
 	use_ok( 'Elive::Entity::User' );
 }
 
-my $connection_stub = bless {}, 'Elive::Connection::TestStub';
-
-Elive->connection($connection_stub);
+Elive->connection(Elive::Connection->new('http://test.org'));
 
 dies_ok(
     sub {

@@ -78,6 +78,10 @@ sub _url {
 	    $path);
 }
 
+=head1 METHODS
+
+=cut
+
 =head2 url
 
     my $url = $user->url
@@ -122,6 +126,14 @@ sub construct {
 
     $opt{repository} = delete $opt{connection} || $class->connection;
 
+    my %known_properties;
+    @known_properties{$class->properties} = undef;
+
+    foreach (keys %$data) {
+	warn "unknown property $_"
+	    unless exists $known_properties{$_};
+    }
+    
     my $self = $class->new($data);
 
     return $self if ($opt{copy});
@@ -142,7 +154,7 @@ sub construct {
 	    die "can't construct $class without value for primary key field: $_";
 	}
     }
-    
+
     my $obj_url = $self->url;
 
     if (my $cached = $Stored_Objects{ $obj_url }) {
@@ -1218,6 +1230,13 @@ coerce 'Elive::Entity::Role' => from 'HashRef'
 coerce 'Elive::Entity::User' => from 'HashRef'
           => via { Elive::Entity::User->construct($_, %Elive::_construct_opts) };
 
+=head2 DEMOLISH
+
+Standard Moose/Mouse object destructor. Destroying an object with unsaved
+changes produces a warning. Call the revert method to suppress this.
+
+=cut
+
 sub DEMOLISH {
     my ($self) = shift;
     my $class = ref($self);
@@ -1273,15 +1292,11 @@ Entity instance classes are simply Mouse objects that use this class
 (Elive::Entity) as base. It should be quite possible to extend existing
 entity classes.
 
-=head1 SEE ALSO
-
- overload
-
 =cut
 
 =head1 SEE ALSO
 
- Entity
+ Elive::Struct
  Mouse
  overload
 

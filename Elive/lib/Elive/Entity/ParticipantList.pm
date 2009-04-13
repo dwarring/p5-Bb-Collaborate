@@ -1,4 +1,6 @@
 package Elive::Entity::ParticipantList;
+use warnings; use strict;
+
 use Mouse;
 use Mouse::Util::TypeConstraints;
 
@@ -18,13 +20,6 @@ has 'participants' => (is => 'rw', isa => 'ArrayRef[Elive::Entity::Participant]'
 coerce 'ArrayRef[Elive::Entity::Participant]' => from 'ArrayRef[HashRef]'
           => via {[ map {Elive::Entity::Participant->new($_) } @$_ ]};
 
-sub construct {
-    my $self = shift->SUPER::construct(@_);
-    bless $self->participants, 'Elive::Array';
-    $self;
-}
-
-
 =head1 NAME
 
 Elive::Entity::ParticipantList - Meeting Participants entity class
@@ -36,6 +31,41 @@ This is the entity class for meeting participants.
 The participants property is an array of Elive::Entity::Participant.
 
 =cut
+
+=head1 METHODS
+
+=cut
+
+=head2 construct
+
+    my $user2_obj = Elive::Entity::User->retrieve($user2_id);
+
+    my $participant_list = Elive::Entity::ParticipantList->construct(
+    {
+	meetingId => 123456,
+	participants => [
+	    {
+		user => {userId => 11111111,
+			 loginName => 'test_user',
+		},
+		role => {roleId => 2},
+	    },
+            $user2_obj,
+	    
+	    ],
+    },
+    );
+
+Construct a participant list from data.
+
+=cut
+
+sub construct {
+    my $self = shift->SUPER::construct(@_);
+    bless $self->participants, 'Elive::Array';
+    $self;
+}
+
 
 =head2 retrieve_all
 

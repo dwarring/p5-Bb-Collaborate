@@ -1,4 +1,6 @@
 package Elive::Entity::ServerDetails;
+use warnings; use strict;
+
 use Mouse;
 
 use Elive::Entity;
@@ -28,6 +30,10 @@ has 'seats' => (is => 'rw', isa => 'Int');
 has 'port' => (is => 'rw', isa => 'Int');
 has 'version' => (is => 'rw', isa => 'Str');
 	
+=head1 METHODS
+
+=cut
+
 =head2 list
 
 my ($server) = Elive::Entity::ServerDetails->list();
