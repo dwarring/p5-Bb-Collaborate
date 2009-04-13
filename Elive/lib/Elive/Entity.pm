@@ -3,9 +3,8 @@ use warnings; use strict;
 use Mouse;
 use Mouse::Util::TypeConstraints;
 
-use Elive;
-use Data::Def::Entity;
-use base qw{Elive Data::Def::Entity};
+use Elive::Struct;
+use base qw{Elive::Struct};
 
 use Elive::Util;
 
@@ -14,7 +13,6 @@ use Scalar::Util qw{weaken};
 use UNIVERSAL;
 
 use Elive::Array;
-__PACKAGE__->array_class('Elive::Array');
 __PACKAGE__->has_metadata('_deleted');
 
 =head1 NAME
@@ -39,14 +37,14 @@ context.
 Arrays of sub-items evaluated, in a string context, to a semi-colon seperated
 string of the individual values sorted.
 
-    my $group = Data::Def::Group->retrieve([98765]);
+    my $group = Elive::Entity::Group->retrieve([98765]);
     if ($group->members eq "11223344;2222222") {
          ....
     }
 
 In particular meeting participants stringify to userId=role, eg
 
-    my $participant_list = Data::Def::ParticipantList->retrieve([98765]);
+    my $participant_list = Elive::Entity::ParticipantList->retrieve([98765]);
     if ($participant_list->participants eq "11223344;2222222") {
          ....
     }
@@ -57,12 +55,54 @@ use overload
     '""' =>
     sub {shift->stringify}, fallback => 1;
 
+our %Stored_Objects;
 
-=head1 METHODS
+#
+# create metadata properties. NB this will be stored inside out to
+# ensure our object is an exact image of the data.
+#
+
+foreach my $accessor (qw/repository _db_data/) {
+    __PACKAGE__->has_metadata($accessor);
+}
+
+sub _url {
+    my $class = shift;
+    my $repository = shift || $class->repository;
+    my $path = shift;
+
+    return ($repository->url
+	    . '/'
+	    . $class->entity_name
+	    .'/'.
+	    $path);
+}
+
+=head2 url
+
+    my $url = $user->url
+
+Return a restful url for an object instance. This will include both
+the url of the repository scring and the entity class name. It is used
+internally to uniquely identify and cache objects across repositorys.
+
+=cut
+
+sub url {
+    my $self = shift;
+    return $self->_url($self->repository, $self->stringify);
+}
 
 =head2 construct
 
-Construct an Elive entity.
+    my $user = Entity::User->construct(
+            {userId = 123456,
+             loginName => 'demo_user',
+             role => {
+                roleId => 1
+             });
+
+Construct an entity from data.
 
 =cut
 
@@ -70,6 +110,9 @@ sub construct {
     my $class = shift;
     my $data = shift;
     my %opt = @_;
+
+    die "usage: ${class}->construct( \\%data )"
+	unless (Elive::Util::_reftype($data) eq 'HASH');
 
     #
     # This method may also be called to coerce sub-entities into existance.
@@ -79,7 +122,49 @@ sub construct {
 
     $opt{repository} = delete $opt{connection} || $class->connection;
 
-    $class->SUPER::construct($data, %opt);
+    my $self = $class->new($data);
+
+    return $self if ($opt{copy});
+
+    my $repository = $opt{repository};
+    #
+    # Retain one copy of the data for this repository
+    #
+    die "can't construct objects without a repository"
+	unless $repository;
+
+    $self->repository($repository);
+
+    my %primary_key_data = map {$_ => $data->{ $_ }} ($class->primary_key);
+
+    foreach (keys %primary_key_data) {
+	unless (defined $primary_key_data{ $_ }) {
+	    die "can't construct $class without value for primary key field: $_";
+	}
+    }
+    
+    my $obj_url = $self->url;
+
+    if (my $cached = $Stored_Objects{ $obj_url }) {
+
+	#
+	# Overwrite the cached object, then reuse it.
+	#
+	die "attempted overwrite of object with unsaved changes ($obj_url)"
+	    if $cached->is_changed;
+
+	%{$cached} = %{$self};
+	$self = $cached;
+    }
+    else {
+	weaken ($Stored_Objects{$obj_url} = $self);
+    }
+
+    my $data_copy = Elive::Util::_clone($self);
+    $data_copy->_db_data(undef);
+    $self->_db_data( $data_copy );
+
+    $self;
 }
 
 sub _freeze {
@@ -99,7 +184,7 @@ sub _freeze {
 	die "unknown property: $_: expected: @properties"
 	    unless exists $property_types->{$_};
 
-	my ($type, $is_array, $is_entity) = Data::Def::Util::parse_type($property_types->{$_});
+	my ($type, $is_array, $is_entity) = Elive::Util::parse_type($property_types->{$_});
 
 	for ($db_data{$_}) {
 
@@ -189,7 +274,7 @@ sub _thaw {
 
     foreach my $col (grep {exists $data{ $_ }} @properties) {
 
-	my ($type, $expect_array, $is_entity) = Data::Def::Util::parse_type($property_types->{$col});
+	my ($type, $expect_array, $is_entity) = Elive::Util::parse_type($property_types->{$col});
 
 	for my $val ($data{$col}) {
 
@@ -488,7 +573,7 @@ sub _readback_check {
 		    if ($class->debug);
 
 		foreach ($read_val, $write_val) {
-		    bless $_, 'Data::Def::Array'  # gives a nice stringified digest
+		    bless $_, 'Elive::Array'  # gives a nice stringified digest
 			if (Elive::Util::_reftype($_) eq 'ARRAY');
 		}
 		die "Update consistancy check failed on $_. Wrote:$write_val, read-back:$read_val, column: $_"
@@ -497,6 +582,128 @@ sub _readback_check {
     }
 
     return $row;
+}
+
+
+sub _cmp_col {
+
+    #
+    # Compare two values for a property 
+    #
+
+    my $class = shift;
+    my $col = shift;
+    my $_v1 = shift;
+    my $_v2 = shift;
+
+    return undef
+	unless (defined $_v1 && defined $_v2);
+
+    my $cmp;
+
+    my ($type, $is_array, $is_def) = Elive::Util::parse_type($class->property_types->{$col});
+    my @v1 = ($is_array? @$_v1: ($_v1));
+    my @v2 = ($is_array? @$_v2: ($_v2));
+
+    if ($is_def) {
+	#
+	# Normalise objects and references to simple strings
+	#
+	for (@v1, @v2) {
+	    #
+	    # autobless references
+	    if (Scalar::Util::refaddr($_)) {
+
+		$_ = $type->construct(Elive::Util::_clone($_))
+		    unless (Scalar::Util::blessed($_));
+
+		$_ = $_->stringify;
+	    }
+	}
+    }
+
+    @v1 = sort @v1;
+    @v2 = sort @v2;
+
+    #
+    # unequal arrays lengths => unequal
+    #
+
+    $cmp ||= scalar @v1 <=> scalar @v2;
+
+    if ($cmp) {
+    }
+    elsif (scalar @v1 == 0) {
+
+	#
+	# Empty arrays => equal
+	#
+
+	$cmp = undef;
+    }
+    else {
+	#
+	# compare values
+	#
+	for (my $i = 0; $i < @v1; $i++) {
+
+	    my $v1 = $v1[$i];
+	    my $v2 = $v2[$i];
+
+	    if ($is_def || $type =~ m{Str}i) {
+		# string comparision. works on simple strings and
+		# stringified entities.
+		# 
+		$cmp ||= $v1 cmp $v2;
+	    }
+	    elsif ($type =~ m{Bool}i) {
+		# boolean comparison
+		$cmp ||= ($v1? 1: 0) <=> ($v2? 1: 0);
+	    }
+	    elsif ($type =~ m{Int}i) {
+		# int comparision
+		$cmp ||= $v1 <=> $v2
+	    }
+	    else {
+		die "$col has unknown type: $type";
+	    }
+	}
+    }
+    return $cmp;
+}
+
+=head2 is_changed
+
+    Return  a list of properties that have uncommited changes.
+
+=cut
+
+sub is_changed {
+
+    my $self = shift;
+
+    my @updated_properties;
+    my $db_data = $self->_db_data;
+
+    #
+    # not mapped to a stored data value. either a scratch object or
+    # sub entity.
+    #
+    return unless ($db_data);
+
+    foreach my $col ($self->properties) {
+
+	my $new = $self->$col;
+	my $old = $db_data->$col;
+	if (defined ($new) != defined ($old)
+	    || Elive::Util::_reftype($new) ne Elive::Util::_reftype($old)
+	    || $self->_cmp_col($col,$new,$old)) {
+
+	    push (@updated_properties, $col);
+	}
+    }
+
+    return @updated_properties;
 }
 
 =head2 set
@@ -590,6 +797,30 @@ sub _insert_class {
 
     my $self = $class->construct( $row, repository => $connection );
     return $self;
+}
+
+=head2 live_entity
+
+Entity has already been loaded. Return it for reuse.
+
+=cut
+
+sub live_entity {
+    my $class = shift;
+    my $url = shift;
+
+    return $Stored_Objects{ $url };
+}
+
+=head2 live_entities
+
+Return the list of live entities
+
+=cut
+
+sub live_entities {
+    my $class = shift;
+    return \%Stored_Objects;
 }
 
 =head2 update
@@ -917,6 +1148,41 @@ sub delete {
     $self->_deleted(1);
 }
 
+=head2 revert
+
+    $user->revert                        # revert entire entity
+    $user->revert(qw/loginName email/);  # revert selected properties
+
+Revert an entity to its last constructed value.
+
+=cut
+
+sub revert {
+    my $self = shift;
+    my @props = @_;
+
+    my $db_data = $self->_db_data
+	|| die "object doesn't have db-data!? - can't cope";
+
+    if (@props) {
+
+	for (@props) {
+
+	    if (exists $db_data->{$_}) {
+		$self->{$_} = $db_data->{$_};
+	    }
+	    else {
+		delete $self->{$_};
+	    }
+	}
+    }
+    else {
+	%{ $self } = %{ $db_data };
+    }
+
+    return $self;
+}
+
 sub _not_available {
     my $self = shift;
 
@@ -947,10 +1213,71 @@ use Elive::Entity::User;
 
 
 coerce 'Elive::Entity::Role' => from 'HashRef'
-          => via { Elive::Entity::Role->construct($_, %Elive::_construct_opts) };
+          => via { Elive::Entity::Role->new($_) };
 
 coerce 'Elive::Entity::User' => from 'HashRef'
           => via { Elive::Entity::User->construct($_, %Elive::_construct_opts) };
+
+sub DEMOLISH {
+    my ($self) = shift;
+    my $class = ref($self);
+
+    if (my $db_data = $self->_db_data) {
+	if (my @changed = $self->is_changed) {
+	    warn("$class $self destroyed without saving changes to: "
+		 . join(', ', @changed));
+	}
+	#
+	# Destroy this objects data
+	#
+	$self->_db_data(undef);
+    }
+}
+
+=head1 ADVANCED
+
+=head2 Object Reuse
+
+A single unique object is mained for each entity instance. if you re-retrieve
+or re-construct the object, any other copies of the object are also upated.
+
+    my $user = Elive::Entity::User->retrieve([11223344]);
+    #
+    # returns another reference to user, but refetches from the database
+    #
+    my $user_copy = Elive::Entity::User->retrieve([11223344]);
+    #
+    # same as above, however don't refetch if we already have a copy
+    #
+    my $user_copy2 = Elive::Entity::User->retrieve([11223344], reuse => 1);
+
+=head2 Entity Manipulation
+
+Through the magic of inside-out objects, all objects are simply blessed
+structures that contain data and nothing else. You may choose to use the
+accessors, or work directly with the object data.
+
+The following are all equivalent, and all ok:
+
+    my $p_list = Elive::Entity::ParticipantList->retrieve([98765]);
+    my $user = Elive::Entity::User->retrieve([11223344]);
+
+    $p_list->participants->add($user);
+    push (@{ $p_list->participants        }, $user);
+    push (@{ $p_list->{participants}      }, $user);
+    push (@{ $p_list->get('participants') }, $user);
+
+=head2 Extending and Subclassing Entities
+
+Entity instance classes are simply Mouse objects that use this class
+(Elive::Entity) as base. It should be quite possible to extend existing
+entity classes.
+
+=head1 SEE ALSO
+
+ overload
+
+=cut
 
 =head1 SEE ALSO
 

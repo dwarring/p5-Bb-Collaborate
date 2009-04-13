@@ -1,9 +1,8 @@
 package Elive::Connection;
 use warnings; use strict;
 
-use Data::Def::Repository;
 use Class::Accessor;
-use base qw{ Data::Def::Repository Class::Accessor };
+use base qw{Class::Accessor };
 
 =head1 NAME
 
@@ -16,7 +15,7 @@ use URI;
 use File::Spec;
 use HTML::Entities;
 
-__PACKAGE__->mk_accessors( qw{ user pass soap } );
+__PACKAGE__->mk_accessors( qw{ url user pass soap } );
 
 =head2 new
 
@@ -43,9 +42,10 @@ sub new {
 
     my $soap = SOAP::Lite->new(proxy => $uri->as_string );
 
-    my $self = $class->SUPER::new($url);
+    my $self = {};
     bless $self, $class;
 
+    $self->url($uri->as_string);
     $self->user($user);
     $self->pass($pass);
     $self->soap($soap);

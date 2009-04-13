@@ -228,6 +228,46 @@ sub known_adapters {
     return sort keys %KnownAdapters;
 }
 
+our %Meta_Data;
+our %Meta_Data_Accessor;
+
+=head2 has_metadata
+
+Create or reuse an inside-out accessor
+
+=cut
+
+sub has_metadata {
+
+    my $class = shift;
+    my $accessor = shift;
+
+    unless (exists $Meta_Data_Accessor{ $accessor }) {
+
+	no strict 'refs';
+
+	$Meta_Data_Accessor{ $accessor }  = sub {
+	    my $self = shift;
+	    my $ref = $self->_refaddr
+		or return;
+
+	    $Meta_Data{ $ref }{ $accessor } = $_[0]
+		if @_;
+
+	    return $Meta_Data{ $ref }{ $accessor };
+	};
+
+	*{$class.'::'.$accessor} = $Meta_Data_Accessor{ $accessor }
+    }
+
+    return $Meta_Data_Accessor{ $accessor };
+}
+
+sub DESTROY {
+    my $self = shift;
+    delete  $Meta_Data{ $self->_refaddr };
+}
+
 =cut
 
 =head1 ERROR MESSAGES
@@ -335,8 +375,6 @@ Perl Modules:
 =item Elive::Connection - SOAP/XML connection to Elluminate
 
 =item Elive::Entity - The base class for all elive entities
-
-=item Data::Def::Struct::Stored - The absrtact class for Elive::Entity
 
 =item Entity - Entity base class
 

@@ -31,8 +31,6 @@ my $participant_list = Elive::Entity::ParticipantList->construct(
     },
     );
 
-use YAML; warn YAML::Dump($participant_list);
-
 isa_ok($participant_list, 'Elive::Entity::ParticipantList', 'participant');
 ok($participant_list eq "123456", 'particpiant list stringified');
 

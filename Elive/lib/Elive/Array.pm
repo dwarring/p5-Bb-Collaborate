@@ -3,8 +3,6 @@ use warnings; use strict;
 use Mouse;
 
 use Elive;
-use Data::Def::Array;
-
 use base qw{Elive};
 
 use overload

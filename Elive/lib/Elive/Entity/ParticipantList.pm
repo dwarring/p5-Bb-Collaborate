@@ -16,7 +16,7 @@ __PACKAGE__->primary_key('meetingId');
 has 'participants' => (is => 'rw', isa => 'ArrayRef[Elive::Entity::Participant]',
     coerce => 1);
 coerce 'ArrayRef[Elive::Entity::Participant]' => from 'ArrayRef[HashRef]'
-          => via {[ map {Elive::Entity::Participant->construct($_, %Elive::_construct_opts ) } @$_ ]};
+          => via {[ map {Elive::Entity::Participant->new($_) } @$_ ]};
 
 sub construct {
     my $self = shift->SUPER::construct(@_);
