@@ -1,10 +1,11 @@
 #!perl -T
 
-use Test::More tests => 11;
+use Test::More tests => 12;
 
 BEGIN {
 	use_ok( 'Elive' );
 	use_ok( 'Elive::Connection' );
+	use_ok( 'Elive::Array');
 	use_ok( 'Elive::Entity' );
 	use_ok( 'Elive::Entity::Group' );
 	use_ok( 'Elive::Entity::Meeting' );

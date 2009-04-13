@@ -6,8 +6,7 @@ use base qw{ Elive::Entity };
 
 __PACKAGE__->entity_name('MeetingParameters');
 
-has 'meetingId' => (is => 'rw', isa => 'Int', required => 1,
-		    documentation => 'meeting (foreign-key)');
+has 'meetingId' => (is => 'rw', isa => 'Int', required => 1);
 __PACKAGE__->primary_key('meetingId');
 
 has 'costCenter' => (is => 'rw', isa => 'Str');

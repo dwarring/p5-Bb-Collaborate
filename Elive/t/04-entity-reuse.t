@@ -18,6 +18,7 @@ Elive->connection(Data::Def::Repository->new('http://test.org'));
 my $group = Elive::Entity::Group->construct(
     {
 	groupId => 111111,
+	name => 'test group',
 	members => [
 	    123456, 112233
 	    ]

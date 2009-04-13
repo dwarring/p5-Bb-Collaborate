@@ -1,5 +1,6 @@
 package Elive::Entity::ParticipantList;
 use Mouse;
+use Mouse::Util::TypeConstraints;
 
 use Elive::Entity;
 use base qw{Elive::Entity};
@@ -12,7 +13,17 @@ __PACKAGE__->entity_name('ParticipantList');
 has 'meetingId' => (is => 'rw', isa => 'Int', required => 1);
 __PACKAGE__->primary_key('meetingId');
 
-has 'participants' => (is => 'rw', isa => 'ArrayRef[Elive::Entity::Participant]');
+has 'participants' => (is => 'rw', isa => 'ArrayRef[Elive::Entity::Participant]',
+    coerce => 1);
+coerce 'ArrayRef[Elive::Entity::Participant]' => from 'ArrayRef[HashRef]'
+          => via {[ map {Elive::Entity::Participant->construct($_, %Elive::_construct_opts ) } @$_ ]};
+
+sub construct {
+    my $self = shift->SUPER::construct(@_);
+    bless $self->participants, 'Elive::Array';
+    $self;
+}
+
 
 =head1 NAME
 

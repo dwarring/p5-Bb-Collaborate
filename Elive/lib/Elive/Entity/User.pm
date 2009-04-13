@@ -22,7 +22,8 @@ has 'email' => (is => 'rw', isa => 'Str',
 		documentation => 'users email address');
 
 has 'role' => (is => 'rw', isa => 'Elive::Entity::Role',
-	       documentation => 'default user role');
+	       documentation => 'default user role',
+	       coerce => 1);
 
 has 'firstName' => (is => 'rw', isa => 'Str', 
 		    documentation => 'users given name');

@@ -1,6 +1,7 @@
 package Elive::Entity;
 use warnings; use strict;
 use Mouse;
+use Mouse::Util::TypeConstraints;
 
 use Elive;
 use Data::Def::Entity;
@@ -70,13 +71,13 @@ sub construct {
     my $data = shift;
     my %opt = @_;
 
-    unless ($opt{copy}) {
-	my $repository = (delete $opt{connection}
-			  || $class->connection);
+    #
+    # This method may also be called to coerce sub-entities into existance.
+    # Don't seem to have any direct way of passing options through!?
 
-	$opt{repository} = $repository
-	    if $repository;
-    }
+    local (%Elive::_construct_opts) = %opt;
+
+    $opt{repository} = delete $opt{connection} || $class->connection;
 
     $class->SUPER::construct($data, %opt);
 }
@@ -677,6 +678,10 @@ sub update {
     #
     my $db_data = $self->construct(Elive::Util::_clone($self),
 	copy => 1);
+    #
+    # Make sure our db data hasn't got db data!
+    #
+    $db_data->_db_data(undef);
     $self->_db_data($db_data);
 
     return $self;
@@ -931,6 +936,21 @@ use Elive::Entity::Recording;
 use Elive::Entity::Role;
 use Elive::Entity::ServerDetails;
 use Elive::Entity::User;
+
+#------ Coercion Rules
+
+# passing some global flags through from our parent conastructor:
+# $Elive::_construct_opts       - this is copy don't register it as an abject
+
+#coerce 'Elive::Array' => from 'ArrayRef[Int]'
+#          => via {Elive::Array->new($_)};
+
+
+coerce 'Elive::Entity::Role' => from 'HashRef'
+          => via { Elive::Entity::Role->construct($_, %Elive::_construct_opts) };
+
+coerce 'Elive::Entity::User' => from 'HashRef'
+          => via { Elive::Entity::User->construct($_, %Elive::_construct_opts) };
 
 =head1 SEE ALSO
 
