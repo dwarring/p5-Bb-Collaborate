@@ -46,7 +46,6 @@ sub stringify {
 =cut
 
 sub new {
-    warn "new: @_";
     return bless($_[1] || [], $_[0]);
 }
 

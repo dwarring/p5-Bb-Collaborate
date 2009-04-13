@@ -7,6 +7,7 @@ inc/Module/Install/Can.pm
 inc/Module/Install/Fetch.pm
 inc/Module/Install/Makefile.pm
 inc/Module/Install/Metadata.pm
+inc/Module/Install/Scripts.pm
 inc/Module/Install/Win32.pm
 inc/Module/Install/WriteAll.pm
 lib/Elive.pm
@@ -30,7 +31,6 @@ MANIFEST			This list of files
 META.yml
 README
 script/elive_lint_config
-script/elive_preload
 script/elive_query
 script/elive_raise_meeting
 t/00-load.t

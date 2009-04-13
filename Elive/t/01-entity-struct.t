@@ -49,12 +49,10 @@ ok($participants->[0]->role eq '2', 'role stringified');
 
 ok($participants->[0] eq '123456=2', 'particpiant stringified');
 
-SKIP: {
-    ok($participants eq '112233=3;123456=2',
-       'participants sorting and stringification');
-}
+ok($participants->stringify eq '112233=3;123456=2',
+   'participants sorting and stringification');
 
-diag "participants: $participants";
+diag "participants: ".$participants->stringify;
 
 ok($participant_list->participants->[0]->user->loginName eq 'test_user',
    'dereference');

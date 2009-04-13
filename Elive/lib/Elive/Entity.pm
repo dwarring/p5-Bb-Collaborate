@@ -360,7 +360,7 @@ sub _thaw {
 		    $_ = 0 if ($_ eq '-0');
 		}
 		else {
-		    die "column $col has unknown type: $type";
+		    die "class $class: column $col has unknown type: $type";
 		}
 	    }
 	} 
@@ -677,7 +677,7 @@ sub _cmp_col {
 		$cmp ||= $v1 <=> $v2
 	    }
 	    else {
-		die "$col has unknown type: $type";
+		die "class $class: column $col has unknown type: $type";
 	    }
 	}
     }
