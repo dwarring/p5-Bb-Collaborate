@@ -18,7 +18,7 @@ requires(
     'Class::Accessor'              => 0,
     'Class::Data::Inheritable'     => 0,
     'DateTime'                     => 0,  # for elive_raise_meeting
-    'DateTime::Format::ISO8601'    => 0,  # for elive_raise_meeting    'Class::Data::Inheritable'     => 0,
+    'DateTime::Format::ISO8601'    => 0,  # for elive_raise_meeting
     'Carp'                         => 0,  # for scripts
     'File::Spec'                   => 0,
     'Getopt::Long'                 => 0,  # for scripts
