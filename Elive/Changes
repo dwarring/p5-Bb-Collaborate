@@ -1,5 +1,9 @@
 Revision history for Elive
 
+0.03    15th April
+        - Bug fixes and enhancements to Participant Lists
+        - Enhancements to elive_query
+
 0.02    14th April
         New Entities:
         - Elive::Entity::Preload

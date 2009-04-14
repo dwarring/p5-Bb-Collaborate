@@ -6,12 +6,12 @@ use Mouse::Util::TypeConstraints;
 use Elive::Struct;
 use base qw{Elive::Struct};
 
-use Elive::Util;
-
 use YAML;
 use Scalar::Util qw{weaken};
 use UNIVERSAL;
+use Scalar::Util;
 
+use Elive::Util;
 use Elive::Array;
 __PACKAGE__->has_metadata('_deleted');
 
@@ -134,7 +134,9 @@ sub construct {
 	    unless exists $known_properties{$_};
     }
     
-    my $self = $class->new($data);
+    my $self = Scalar::Util::blessed($data)
+	? $data
+	: $class->new($data);
 
     return $self if ($opt{copy});
 
@@ -206,8 +208,7 @@ sub _freeze {
 
 		    if (Scalar::Util::refaddr($_)) {
 
-			$_ = $type->construct(Elive::Util::_clone($_),
-			    copy => 1)
+			$_ = $type->new(Elive::Util::_clone($_))
 			    unless (Scalar::Util::blessed($_));
 
 			$_ = $_->stringify;
@@ -772,6 +773,27 @@ sub insert {
     return $class->_insert_class(@_);
 }
 
+sub _readback {
+    my $class = shift;
+    my $som = shift;
+    my $sent_data = shift;
+    #
+    # Inserts and updates normally return a copy of the entity
+    # after an insert or update. Confirm that the output record contains
+    # the updates and return it.
+
+    my $results = $class->_get_results(
+	$som,
+	);
+    #
+    # Check that the return response has our inserts
+    #
+    my $rows =  $class->_process_results( $results );
+    my $row = $class->_readback_check($sent_data, $rows);
+
+    return $row;
+}
+
 sub _insert_class {
     my $class = shift;
     my $insert_data = shift;
@@ -797,15 +819,7 @@ sub _insert_class {
 				loginPassword => $login_password,
 	);
 
-    my $results = $class->_get_results(
-	$som,
-	);
-
-    #
-    # Check that the return response has our inserts
-    #
-    my $rows =  $class->_process_results( $results );
-    my $row = $class->_readback_check($insert_data, $rows);
+    my $row = $class->_readback($som, $insert_data);
 
     my $self = $class->construct( $row, repository => $connection );
     return $self;
@@ -905,15 +919,7 @@ sub update {
 				       %{$opt{param} || {}},
 );
 
-    my $results = $self->_get_results(
-	$som,
-	);
-
-    #
-    # Check that the return response has our updates
-    #
-    my $rows =  $self->_process_results( $results );
-    my $row = $self->_readback_check(\%updates, $rows);
+    my $row = $self->_readback($som, \%updates);
     $self->set($row);
 
     #

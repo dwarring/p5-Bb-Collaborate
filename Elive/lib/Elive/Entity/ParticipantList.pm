@@ -120,14 +120,11 @@ sub _freeze {
 
 =head2 insert
 
-    my $user1 = Elive::Entity::User->retrieve($user1_id);
-    my $user2 = Elive::Entity::User->retrieve($user2_id);
-
     my $partcipants = Elive::Entity::participantList->insert({
 	      meetingId => 123456,
 	      particpants => [
-                  {user => $user1, role => 3},
-                  {user => $user2, role => 3},
+                  {user => $userId_1, role => 3},
+                  {user => $userId_2, role => 3},
               ],
               }
 	    )};
@@ -141,31 +138,9 @@ sub insert {
     my $data = shift;
     my %opt = @_;
 
-    my $result;
-
-    my $meeting_id = $data->{meetingId};
-    my $participant_list;
-
-    my $data_image = Elive::Entity::ParticipantList->construct(
-	Elive::Util::_clone($data, copy => 1),
-	);
- 
-    my $expected_participants = $data_image->participants->stringify;
-    $data_image = undef;
-
-    eval {
-	$participant_list = $class->SUPER::insert(
-	    $data,
-	    adapter => 'setParticipantList',
-	    %opt );
-    };
-
-    if (my $err = @_) {
-	return $class->__handle_response($err, $meeting_id,
-					 $expected_participants);
-    }
-
-    return $participant_list;
+    $class->SUPER::insert($data,
+			  adapter => 'setParticipantList',
+			  %opt);
 }
 
 =head2 update
@@ -181,27 +156,40 @@ Update meeting participants
 
 =cut
 
-sub _readback_check {
+sub update {
     my $class = shift;
+    my $data = shift;
+    my %opt = @_;
+
+    $class->SUPER::update($data,
+			  adapter => 'setParticipantList',
+			  %opt);
+}
+
+sub _readback {
+    my $class = shift;
+    my $som = shift;
     my $updates = shift;
-    my $rows = shift;
 
     #
     # sometimes get back an empty response from setParticantList
-    # if this happens Re-retreive the updates, then complete the readback.
+    # if this happens we'll have to handle it ourselves.
     #
-    unless (Elive::Util::_reftype($rows) eq 'ARRAY'
-	    && @$rows
-	    && (my $meeting_id = $updates->{meetingId})
-	) {
+    my $result = $som->result;
+    return $class->SUPER::_readback($som, $updates, @_)
+	if Elive::Util::_reftype($result);
+    #
+    # Ok, we need to handle our own readbaOAck.
+    #
+    $class->_check_for_errors($som);
 
-	my $self = $class->retrieve([$meeting_id]);
+    my $meeting_id = $updates->{meetingId}
+    || die "couldn't find meetingId";
 
-	die "unable to retrieve $class/$meeting_id"
-	    unless $self;
+    my $self = $class->retrieve([$meeting_id])
+	or die "unable to retrieve $class/$meeting_id";
 
-	$rows = [$self];
-    }
+    my $rows = [$self];
 
     $class->SUPER::_readback_check($updates, $rows, @_);
 }
