@@ -13,6 +13,8 @@ use Elive::Util;
 use Term::ReadLine;
 use Pod::Usage;
 
+use UNIVERSAL;
+
 local $SIG{__DIE__};
 
 our $version = ${Elive::VERSION};
@@ -30,7 +32,6 @@ elive_query   http://myserver.com/my-site[:port]
 
     -user someuser              # server login user
     -pass somepass              # server login password
-    -eager                      # return all data
     -debug=n                    # 1=some, 2=verbose, 3=verbose + soap
     -help
 
@@ -237,7 +238,7 @@ sub _show {
 	my ($type, $is_array, $is_entity) 
 	    = Elive::Util::parse_type($property_types->{$property});
 
-	my $is_primary = $property eq $pkey;
+	my $is_primary = $pkey && $property eq $pkey;
 
 	my $primary_str = $is_primary? 'pkey ': '';
 	my $array_str = $is_array? ' []': '';
@@ -304,10 +305,10 @@ sub _select {
 
     eval {
 	if ($id) {
-	    $rows =  $entity_class->retrieve_all([$id], eager => $options{eager});
+	    $rows =  $entity_class->retrieve_all([$id]);
 	}
 	else {
-	    $rows = $entity_class->list(filter => $filter, eager => $options{eager});
+	    $rows = $entity_class->list(filter => $filter);
 	}
     };
 
@@ -331,8 +332,8 @@ sub output_row {
 	#
 	# rely on stringification to display sub entities
 	#
-	ref($val) eq 'ARRAY'
-	    ? join(';', @$val)
+      UNIVERSAL::can($val, 'stringify')
+	    ? $val->stringify
 	    : (defined $val? $val: '(undef)');
 
     } @$props;

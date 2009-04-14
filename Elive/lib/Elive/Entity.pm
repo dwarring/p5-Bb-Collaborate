@@ -546,7 +546,7 @@ sub _process_results {
 
     foreach (@$soap_results) {
 
-	my $row = $class->_thaw($_, %opt);
+	my $row = $class->_thaw($_);
 
 	push(@rows, $row);
     }

@@ -38,21 +38,19 @@ The participants property is an array of Elive::Entity::Participant.
 
 =head2 construct
 
-    my $user2_obj = Elive::Entity::User->retrieve($user2_id);
-
     my $participant_list = Elive::Entity::ParticipantList->construct(
     {
 	meetingId => 123456,
 	participants => [
 	    {
-		user => {userId => 11111111,
-			 loginName => 'test_user',
-		},
-		role => {roleId => 2},
+		user => 11111111, #user id
+		role => 2,
 	    },
-            $user2_obj,
-	    
-	    ],
+	    {
+		user => 22222222, #user id
+		role => 2,
+	    },
+	],
     },
     );
 

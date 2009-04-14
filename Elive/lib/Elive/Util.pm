@@ -31,8 +31,14 @@ sub-structure.
 sub parse_type {
     my $type = shift;
 
-    my $is_array = ($type =~ s{^ArrayRef\[(.*?)\]$}{$1})
-	||  UNIVERSAL::isa($type, 'Elive::Array');
+    #
+    # Alternate types returned are returned as an array. Take first as
+    # the primary type.
+    #
+    $type = $type->[0]
+	if (_reftype($type) eq 'ARRAY');
+
+    my $is_array = ($type =~ s{^ArrayRef\[([^\|]*).*?\]$}{$1});
 
     my $is_struct = UNIVERSAL::isa($type, 'Elive::Struct');
 

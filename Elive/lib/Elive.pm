@@ -7,11 +7,11 @@ Elive -  Elluminate Live (c) client library
 
 =head1 VERSION
 
-Version 0.02
+Version 0.03
 
 =cut
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 use Mouse;
 
@@ -349,10 +349,6 @@ The equivalent Elive method call for the above is
 Also note that we've got no way of enforcing limits via the SOAP interface.
 be careful the include a where clauses to limit the amount of data returned
 for larger tables. 
-
-As a final note, elive_query doesn't support updates or deletes with the
-initial release of Elive 0.2. This may be implemented in the next few
-releases.
 
 =head2 elive_raise_meeting
 

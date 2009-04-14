@@ -212,7 +212,7 @@ sub _resolve_user {
 	#
 	# Numeric id. Assume it's a user id
 	#
-	$user =  Elive::Entity::User->retrieve([$user_spec]);
+	$user = $user_spec;
     }
     else {
 	#

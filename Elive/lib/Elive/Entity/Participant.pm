@@ -11,12 +11,12 @@ use Elive::Entity::Role;
 
 __PACKAGE__->entity_name('Participant');
 
-has 'user' => (is => 'rw', isa => 'Int|Elive::Entity::User',
+has 'user' => (is => 'rw', isa => 'Elive::Entity::User|Int',
 	       documentation => 'User attending the meeting',
 	       coerce => 1,
     );
 
-has 'role' => (is => 'rw', isa => 'Int|Elive::Entity::Role',
+has 'role' => (is => 'rw', isa => 'Elive::Entity::Role|Int',
 	       documentation => 'Role of the user within this meeting',
 	       coerce => 1,
     );
