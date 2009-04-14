@@ -45,13 +45,13 @@ POST INSTALLATION
           for the key Xxxxx'.
 
           If you get this error, please check that your Elluminate Live
-          software is up-to-date. Ii you've installed all upgrades and
+          software is up-to-date. I.e. you've installed all upgrades to
           the SDK.
 
-          Its possible that you may need to edit the configuration file
-          manually to add the adapter.
+          Its possible that you may need to manually add the adapter to
+          your configuration.
 
-          You'll need to stop Elluminate services before editing.
+          You'll need to first stop Elluminate services.
 
           For example, if elive_lint_conf returned the error:
 

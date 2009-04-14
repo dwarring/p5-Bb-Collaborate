@@ -35,6 +35,7 @@ requires(
     'Storable'                     => 0,
     'YAML'                         => 0,
     'URI'                          => 0,
+    'XML::Simple'                  => 0.
     );
 
 recommends(

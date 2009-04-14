@@ -116,7 +116,7 @@ sub list_meeting_preloads {
 
 =head2 check_meeting_preloads
 
-my $preloads = Elive::Entity::Preload->meeting_preloads($meeting_id);
+my $preloads = Elive::Entity::Preload->check_meeting_preloads($meeting_id);
 
 Implements the checkMeetingPreloads method
 

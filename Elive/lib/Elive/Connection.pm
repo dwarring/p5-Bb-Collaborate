@@ -23,9 +23,9 @@ __PACKAGE__->mk_accessors( qw{ url user pass soap } );
 
 =head2 new
 
-    my $ec = Elive::Store->new ('http://someserver.com/test',
-                                'user1', 'pass1',
-                                 debug => 1)
+    my $ec = Elive::Connection->new ('http://someserver.com/test',
+                                     'user1', 'pass1',
+                                     debug => 1)
 
 =cut
 
