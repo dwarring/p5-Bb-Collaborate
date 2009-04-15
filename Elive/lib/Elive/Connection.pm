@@ -59,9 +59,10 @@ sub new {
 
 =head2 call
 
-    my $resp = $ec->call('listUsers', filter => '(givenName like "john%")')
+    my $som = $ec->call('listUsers', filter => '(givenName like "john%")')
 
-    Make an Elluminate SOAP/XML method call.
+    Makes an Elluminate SOAP/XML method call. Returns the response as a
+    SOAP::SOM object.
 
 =cut
 
@@ -104,10 +105,10 @@ sub _soap_header_xml {
     die "Not logged in"
 	unless ($self->user);
 
-    my @user_pass =  (map {HTML::Entities::encode_entities( $_ )}
+    my @user_auth =  (map {HTML::Entities::encode_entities( $_ )}
 		      ($self->user, $self->pass));
 
-    return sprintf (<<EOD, @user_pass );
+    return sprintf (<<EOD, @user_auth);
 <h:BasicAuth
     xmlns:h="http://soap-authentication.org/basic/2001/10/"
     soap:mustUnderstand="1">

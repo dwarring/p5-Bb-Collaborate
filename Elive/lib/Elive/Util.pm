@@ -6,6 +6,8 @@ use Term::ReadLine;
 use Scalar::Util;
 use Storable;
 
+use UNIVERSAL;
+
 =head1 NAME
 
 Elive::Util - utility functions for Elive
@@ -20,8 +22,9 @@ Elive::Util - utility functions for Elive
 
    my $att = $my_class->meta->get_attribute_map->{foo};
 
-   my ($is_array,
-       $is_entity) = Elivey::Util::parse_type($att->type_constraint)
+   my ($primary_type,
+       $is_array,
+       $is_entity) = Elive::Util::parse_type($att->type_constraint)
 
 Parses an entity property type. Determines whether it is an array and/or
 sub-structure.
@@ -32,22 +35,28 @@ sub parse_type {
     my $type = shift;
 
     #
-    # Alternate types returned are returned as an array. Take first as
-    # the primary type.
+    # Alternate types returned are returned as an array in some Moose
+    # Moose versions. Take first as the primary type.
     #
     $type = $type->[0]
 	if (_reftype($type) eq 'ARRAY');
 
-    my $is_array = ($type =~ s{^ArrayRef\[([^\|]*).*?\]$}{$1});
+    my $is_array = ($type =~ s{^ArrayRef\[ ([^\]]*) \] $}{$1}x);
 
-    my $is_struct = UNIVERSAL::isa($type, 'Elive::Struct');
+    #
+    # May also be in the format primary-type[|type2[|type3]]
+    #
+    ($type) = split(/\|/, $type);
+
+    my $is_struct = $type =~ m{^Elive::(Struct||Entity)(::|$)};
+##    my $is_struct = UNIVERSAL::isa($type, 'Elive::Struct');
 
     return ($type, $is_array, $is_struct);
 }
 
 =head2 prompt
 
-    my $password = Elive::Util::prompt('Password: ', password =>1)
+    my $password = Elive::Util::prompt('Password: ', password => 1)
 
 Prompt for user input
 

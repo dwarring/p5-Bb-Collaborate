@@ -1,5 +1,6 @@
 package Elive::Array;
 use warnings; use strict;
+
 use Mouse;
 
 use Elive;

@@ -7,13 +7,11 @@ Elive -  Elluminate Live (c) client library
 
 =head1 VERSION
 
-Version 0.03
+Version 0.04
 
 =cut
 
-our $VERSION = '0.03';
-
-use Mouse;
+our $VERSION = '0.04';
 
 use Class::Data::Inheritable;
 use base qw{Class::Data::Inheritable};
@@ -51,10 +49,8 @@ via its SOAP/XML command interace.
 You can use it to create/read/update and delete entities on an Elluminate
 site. This includes Users, User Groups, Meetings and Meeting Participants.
 
-This module can also assit you in setting meeting preloads, such as whiteboards
-and multi-media files. 
-
 =cut
+
 __PACKAGE__->mk_classdata('_login');
 __PACKAGE__->mk_classdata('adapter' => 'default');
 
@@ -197,8 +193,8 @@ updateMeeting updateMeetingParameters updateRecording updateServerParameters upd
 
     Elive->check_adapter('getUser')
 
-Simple asserts that the adapter we are about to use is valid and known to
-Elive.
+Asserts that the adapter we are about to use is valid, i.e. it's in
+the Elive list of known adapters.
 
 =head3 See Also
 
@@ -219,7 +215,8 @@ sub check_adapter {
 
 =head2 known_adapters
 
-    Return a list of all Elive adapters.
+    Returns an array of all required Elluminate Live Elive. This
+    list is used by the script elive_lint_config. 
 
 =cut
 
@@ -298,8 +295,9 @@ your adapter configuration file
 
 =head2 elive_query
 
-elive_query is an example script included in the Elive distribution. It is a
-simple program for listing and retrieving entities.
+elive_query is an example script included in the Elive distribution. It is
+a simple program for listing and retrieving entities. It serves both as a
+demonstration script, and to confirm basic operation of Elive.
 
 	% elive_query http://myserver.com/test -username serversupport
         Password: ********
@@ -352,13 +350,15 @@ for larger tables.
 
 =head2 elive_raise_meeting
 
-This is a demonastration script to create a meeting, set options, assign
+This is a demonstration script to create a meeting, set options, assign
 participants and upload meeting preloads (whiteboard and media files to be
 used to used for the meeting.
 
 For more information, type the command: elive_raise_meeting --help
 
 =head2 elive_lint_config
+
+A utility script that checks your Elluminate server configuration.
 
 =head1 SEE ALSO
 
@@ -368,9 +368,9 @@ Perl Modules:
 
 =item Elive::Connection - SOAP/XML connection to Elluminate
 
-=item Elive::Entity - The base class for all elive entities
+=item Elive::Entity - base class for all elive entities
 
-=item Entity - Entity base class
+=item Elive::Struct - base class for Elive::Entity
 
 =item Elive::Entity::Group
 
@@ -398,7 +398,7 @@ Scripts:
 
 =item elive_raise_meeting - sample script that create meetings via one-liners
 
-=item elive_lint_config - sanity check your servers site configuration
+=item elive_lint_config - sanity checker for  Elluminate site configurations
 
 =back
 
@@ -429,39 +429,37 @@ David Warring, C<< <david.warring at gmail.com> >>
 
 =over 4
 
-=item The Elive 0.2 release:
+=item Elive is a new module
 
-has only been tested against Elluminate 9.0 and 9.1 and implements a subset
-of all documented SOAP/XML calls.
+It has only been tested against a limited number of Elluminate 9.0 and 9.1
+installations. So far it does not implement all SOAP/XML calls, but
+concentrates on users and meetings.
 
-=item Transactional control
+-=item Database Access
 
 Elluminate SOAP/XML interface doesn't provide for locking or transactional
-control. It's probably a good idea to design your application architecture
-and database updates to minimise the changes of contention. Eg. audit trails
-and/or master copies of the data.
+control. The Elluminate server installs with the Mckoi pure Java database
+which only supports JDBC access.
 
-=item Database Support
+Elluminate can also be configured to connect to other databases that support
+both DBI and a JDBC bridge, such as SQL Server or Oracle.
 
-The Elluminate server installs with the Mckoi JDBC database, but can
-also connect to other databases that support JDBC and can be readily
-accessed via the Perl DBI. E.g. SQL Server or Oracle. See the Elluminate
-Live advanced adminstration guide.
+Please see the Elluminate Live advanced administration guide.
 
 =item LDAP Authentication
 
 Elluminate Live can also be configured to use an LDAP respository for
 user authentication.  Users can still be retrieved or listed. However
-updates and deletes are not supported via Elluminate Live or Elive.
+updates and deletes are not supported. See also Net::LDAP.
 
 =back
+
+=head1 SUPPORT
 
 Please report any bugs or feature requests to C<bug-elive at rt.cpan.org>,
 or through the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Elive>.
 I will be notified, and then you'll automatically be notified of progress on
 your bug as I make changes.
-
-=head1 SUPPORT
 
 You can find documentation for this module with the perldoc command.
 

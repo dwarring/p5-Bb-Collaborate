@@ -1,14 +1,16 @@
 Revision history for Elive
 
+0.04    16th April
+        - Fixed alternate type handling in Elive::Util::parse_type
+
 0.03    15th April
         - Bug fixes and enhancements to Participant Lists
         - Enhancements to elive_query
 
 0.02    14th April
-        New Entities:
+        New Entity:
         - Elive::Entity::Preload
-        - Elive::Entity::MeetingPreloads
-        New Scripts
+        New Scripts:
         - elive_raise_meeting
         - elive_lint_config
 

@@ -198,13 +198,13 @@ sub _freeze {
 	die "unknown property: $_: expected: @properties"
 	    unless exists $property_types->{$_};
 
-	my ($type, $is_array, $is_entity) = Elive::Util::parse_type($property_types->{$_});
+	my ($type, $is_array, $is_struct) = Elive::Util::parse_type($property_types->{$_});
 
 	for ($db_data{$_}) {
 
 	    for ($is_array? @$_: $_) {
 
-		if ($is_entity) {
+		if ($is_struct) {
 
 		    if (Scalar::Util::refaddr($_)) {
 
@@ -287,7 +287,7 @@ sub _thaw {
 
     foreach my $col (grep {exists $data{ $_ }} @properties) {
 
-	my ($type, $expect_array, $is_entity) = Elive::Util::parse_type($property_types->{$col});
+	my ($type, $expect_array, $is_struct) = Elive::Util::parse_type($property_types->{$col});
 
 	for my $val ($data{$col}) {
 
@@ -314,7 +314,7 @@ sub _thaw {
 
 		if (!defined) {
 		}
-		elsif ($is_entity) {
+		elsif ($is_struct) {
 
 		    $_ = _thaw("$type", $_, $path . $idx);
 

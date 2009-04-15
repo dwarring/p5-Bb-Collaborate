@@ -43,7 +43,7 @@ $user1->set(loginName => $user1->loginName . '_1');
 ok($user1->loginName eq  $LOGIN_NAME .'_1', 'non-key update');
 ok($user1->is_changed, 'is_changed returns true after change');
 
-$user1->set(email => 'user@test.ord');
+$user1->set(email => 'user@test.org');
 ok($user1->is_changed, 'is_changed returns true after 2nd change');
 
 is_deeply([sort $user1->is_changed], [qw/email loginName/], 'is_changed properties');
