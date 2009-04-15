@@ -316,7 +316,7 @@ sub _thaw {
 		}
 		elsif ($is_entity) {
 
-		    $_ = _thaw($type, $_, $path . $idx);
+		    $_ = _thaw("$type", $_, $path . $idx);
 
 		}
 		elsif ($type =~ m{Bool}i) {
