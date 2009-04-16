@@ -6,6 +6,8 @@ use Mouse;
 use Elive::Struct;
 use base qw{Elive::Struct};
 
+use Scalar::Util;
+
 use Elive::Entity::User;
 use Elive::Entity::Role;
 

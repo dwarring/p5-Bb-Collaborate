@@ -736,6 +736,27 @@ sub set {
     return $self->SUPER::set(@_);
 }
 
+sub _readback {
+    my $class = shift;
+    my $som = shift;
+    my $sent_data = shift;
+    #
+    # Inserts and updates normally return a copy of the entity
+    # after an insert or update. Confirm that the output record contains
+    # the updates and return it.
+
+    my $results = $class->_get_results(
+	$som,
+	);
+    #
+    # Check that the return response has our inserts
+    #
+    my $rows =  $class->_process_results( $results );
+    my $row = $class->_readback_check($sent_data, $rows);
+
+    return $row;
+}
+
 =head2 insert
 
    # Construct object, then insert.
@@ -771,27 +792,6 @@ sub insert {
     }
 
     return $class->_insert_class(@_);
-}
-
-sub _readback {
-    my $class = shift;
-    my $som = shift;
-    my $sent_data = shift;
-    #
-    # Inserts and updates normally return a copy of the entity
-    # after an insert or update. Confirm that the output record contains
-    # the updates and return it.
-
-    my $results = $class->_get_results(
-	$som,
-	);
-    #
-    # Check that the return response has our inserts
-    #
-    my $rows =  $class->_process_results( $results );
-    my $row = $class->_readback_check($sent_data, $rows);
-
-    return $row;
 }
 
 sub _insert_class {
@@ -1221,20 +1221,8 @@ use Elive::Entity::Role;
 use Elive::Entity::ServerDetails;
 use Elive::Entity::User;
 
-#------ Coercion Rules
-
-# passing some global flags through from our parent conastructor:
+# passing some global flags through from our parent constructor:
 # $Elive::_construct_opts       - this is copy don't register it as an abject
-
-#coerce 'Elive::Array' => from 'ArrayRef[Int]'
-#          => via {Elive::Array->new($_)};
-
-
-coerce 'Elive::Entity::Role' => from 'HashRef'
-          => via { Elive::Entity::Role->new($_) };
-
-coerce 'Elive::Entity::User' => from 'HashRef'
-          => via { Elive::Entity::User->construct($_, %Elive::_construct_opts) };
 
 =head2 DEMOLISH
 

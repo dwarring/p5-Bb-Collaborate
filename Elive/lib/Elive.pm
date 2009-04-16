@@ -7,11 +7,11 @@ Elive -  Elluminate Live (c) client library
 
 =head1 VERSION
 
-Version 0.04
+Version 0.05
 
 =cut
 
-our $VERSION = '0.04';
+our $VERSION = '0.05';
 
 use Class::Data::Inheritable;
 use base qw{Class::Data::Inheritable};
@@ -431,9 +431,11 @@ David Warring, C<< <david.warring at gmail.com> >>
 
 =item Elive is a new module
 
-It has only been tested against a limited number of Elluminate 9.0 and 9.1
-installations. So far it does not implement all SOAP/XML calls, but
-concentrates on users and meetings.
+I have so far run it against a limited number of Elluminate 9.0 and 9.1
+installations.
+
+So far it does not implement all SOAP/XML calls, but concentrates on users,
+meetings and meeting participants.
 
 -=item Database Access
 

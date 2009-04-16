@@ -36,6 +36,31 @@ The participants property is an array of Elive::Entity::Participant.
 
 =cut
 
+=head2 insert
+
+Note that for inserts, you only need to include the userId in the
+user records.  The following will be sufficient to associate two
+participants with a meeting.
+
+    my $participant_list = Elive::Entity::ParticipantList->insert(
+    {
+	meetingId => 123456,
+	participants => [
+	    {
+		user => {userId => 11111111}, #user id
+		role => {roleId => 2},
+	    },
+	    {
+		user => {userId => 22222222}, #user id
+		role => {roleId => 2},
+	    },
+	],
+    },
+    );
+
+=cut
+
+
 =head2 construct
 
     my $participant_list = Elive::Entity::ParticipantList->construct(
@@ -43,12 +68,12 @@ The participants property is an array of Elive::Entity::Participant.
 	meetingId => 123456,
 	participants => [
 	    {
-		user => 11111111, #user id
-		role => 2,
+		user => {userId => 11111111}, #user id
+		role => {roleId => 2},
 	    },
 	    {
-		user => 22222222, #user id
-		role => 2,
+		user => {userId => 22222222}, #user id
+		role => {roleId => 2},
 	    },
 	],
     },
