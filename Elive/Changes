@@ -1,5 +1,8 @@
 Revision history for Elive
 
+0.06    18th April
+        - several fixes to elive_raise_meeting
+
 0.05    17th April
         - Removed Elive stringify overload for Elive objects
         - Added tests for unpack/freeze/thaw. Some resultant bug fixes.
