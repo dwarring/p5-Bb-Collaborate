@@ -6,12 +6,9 @@
 
 =head1 DESCRIPTION
 
-By the time we've got through two languages, XML and the command packing and
-process, we end up with quite a few variations with exactly how the data is
-packed.
-
-Extraneous data nodes are eliminated  are all normalised back to simple arrays,
-extraneous intermediate nodes are eliminated.
+The unpacking pass precedes thawing. It involves interpreting both
+'Collection and 'Map' within the data. These are both converted back
+to arrays.
 
 =cut
 
@@ -46,9 +43,13 @@ my $simple = {
 # The following should all unpack to canoncial
 #
 
+#------ Simple value
+
 my $simple_unpacked = Elive::Entity->_unpack_as_list($simple);
 isa_ok($simple_unpacked, 'ARRAY');
 is_deeply($simple, $simple_unpacked->[0], 'Simple unpacking');
+
+#------ Collection
 
 my $collection = {
     Collection => {
@@ -61,6 +62,8 @@ my $collection = {
 my $collection_unpacked = Elive::Entity->_unpack_as_list($collection);
 is_deeply($simple, $collection_unpacked->[0], 'Collection unpacking');
 
+#------ Collection - singular
+
 my $collection1 = {
     Collection => {
 	Entry => Storable::dclone($simple),
@@ -69,6 +72,8 @@ my $collection1 = {
 
 my $collection1_unpacked = Elive::Entity->_unpack_as_list($collection1);
 is_deeply($simple, $collection1_unpacked->[0], 'Collection unpacking');
+
+#------ Hash Map
 
 my $hash_map = {
     Map => {
@@ -84,6 +89,8 @@ my $hash_map = {
 my $hash_map_unpacked = Elive::Entity->_unpack_as_list($hash_map);
 is_deeply($simple, $hash_map_unpacked->[0], 'Hash Map unpacking');
 
+#------ Hash Map - singular
+
 my $hash_map1 = {
     Map => {
 	Entry => {
@@ -96,13 +103,11 @@ my $hash_map1 = {
 my $hash_map1_unpacked = Elive::Entity->_unpack_as_list($hash_map1);
 is_deeply($simple, $hash_map1_unpacked->[0], 'Hash Map unpacking');
 
-#
-#
-# An empty result [], is encoded like this
-#
-my $empty_result = {
+#------ Empty Collection (no results)
+
+my $empty_collection = {
     Collection => ''
 };
 
-my $empty_result_unpacked = Elive::Entity->_unpack_as_list($empty_result);
-is_deeply([], $empty_result_unpacked, 'Empty result unpacking');
+my $empty_collection_unpacked = Elive::Entity->_unpack_as_list($empty_collection);
+is_deeply([], $empty_collection_unpacked, 'Empty collection unpacking');
