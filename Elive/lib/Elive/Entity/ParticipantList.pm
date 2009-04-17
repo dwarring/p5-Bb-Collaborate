@@ -121,9 +121,10 @@ sub _freeze {
 
     if (my $participants = delete $frozen->{participants}) {
 	#
-	# We're using resetParticipantList, both for inserts and
-	# updates. This takes a stringified list of users as 'users'.
-	# The fetch mode returns the final list of 'particpiants'
+	# NOTE: thawed data is returned as the 'participants' property.
+        # but for frozen data the parmeter name is 'users'. Also
+        # setter methods expect a stringified digest in the form
+	#  userid=roleid[;userid=roleid]
 	#
 
 	die "expected participants to be an ARRAY"
@@ -133,8 +134,7 @@ sub _freeze {
 	    Elive::Entity::Participant->stringify($_);
 	} @$participants;
 
-
-	$frozen->{participants} = join(';', @users);
+	$frozen->{users} = join(';', @users);
     }
 
     return $frozen;

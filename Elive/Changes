@@ -1,7 +1,11 @@
 Revision history for Elive
 
+0.05    17th April
+        - Removed Elive stringify overload for Elive objects
+        - Added tests for unpack/freeze/thaw. Some resultant bug fixes.
+
 0.04    16th April
-        - Fixed alternate type handling in Elive::Util::parse_type
+        - Bitten by overloading Elive::Util::parse_type
 
 0.03    15th April
         - Bug fixes and enhancements to Participant Lists

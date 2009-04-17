@@ -64,7 +64,10 @@ my $participant_list_frozen = Elive::Entity::ParticipantList->_freeze(
 is_deeply($participant_list_frozen,
 	  {
 	      meetingId => 123456,
-	      participants => '112233=2;223344=3',
+	      #
+	      # note: participants are frozen to users
+	      #
+	      users => '112233=2;223344=3',
 	  },
 	  'participant_list freeze from data'
     );
@@ -93,7 +96,10 @@ my $participant_list_frozen2 = Elive::Entity::ParticipantList->_freeze(
 is_deeply($participant_list_frozen2,
 	  {
 	      meetingId => 234567,
-	      participants => '334455=2;667788=3'
+	      #
+	      # note: participants are frozen to users
+	      #
+	      users => '334455=2;667788=3'
 	  },
 	  'participant_list freeze from object'
     );
