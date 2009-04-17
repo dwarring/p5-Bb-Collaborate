@@ -8,6 +8,7 @@ use base qw{Elive::Struct};
 
 use Scalar::Util;
 
+use Elive::Util;
 use Elive::Entity::User;
 use Elive::Entity::Role;
 
@@ -50,14 +51,15 @@ comparisions, sql display, etc...
 =cut
 
 sub stringify {
-
     my $self = shift;
+    my $data = shift || $self;
 
+    return $data
+	unless Scalar::Util::refaddr($data);
     #
     # Stringify to the format used for updates: userId=role
     #
-
-    return $self->user.'='.$self->role;
+    return Elive::Entity::User->stringify($data->{user}).'='.Elive::Entity::Role->stringify($data->{role});
 }
 
 1;

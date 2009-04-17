@@ -30,7 +30,7 @@ It provides a simple mapping from the objects to database entities.
 Database entities evalute to their primary key, when used in a string
 context.
 
-    if ($user_obj eq "11223344") {
+    if ($user_obj->stringify eq "11223344") {
         ....
     }
 
@@ -38,22 +38,18 @@ Arrays of sub-items evaluated, in a string context, to a semi-colon seperated
 string of the individual values sorted.
 
     my $group = Elive::Entity::Group->retrieve([98765]);
-    if ($group->members eq "11223344;2222222") {
+    if ($group->members->stringify eq "11223344;2222222") {
          ....
     }
 
 In particular meeting participants stringify to userId=role, eg
 
     my $participant_list = Elive::Entity::ParticipantList->retrieve([98765]);
-    if ($participant_list->participants eq "11223344;2222222") {
+    if ($participant_list->participants->stringify eq "11223344=3;2222222=2") {
          ....
     }
 
 =cut
-
-use overload
-    '""' =>
-    sub {shift->stringify}, fallback => 1;
 
 our %Stored_Objects;
 
@@ -258,10 +254,7 @@ sub _freeze {
 
 		    if (Scalar::Util::refaddr($_)) {
 
-			$_ = $type->new(Elive::Util::_clone($_))
-			    unless (Scalar::Util::blessed($_));
-
-			$_ = $_->stringify;
+			$_ = $type->stringify($_);
 		    }
 		}
 		elsif ($type =~ m{Bool}i) {
@@ -641,94 +634,6 @@ sub _readback_check {
     return $row;
 }
 
-
-sub _cmp_col {
-
-    #
-    # Compare two values for a property 
-    #
-
-    my $class = shift;
-    my $col = shift;
-    my $_v1 = shift;
-    my $_v2 = shift;
-
-    return undef
-	unless (defined $_v1 && defined $_v2);
-
-    my $cmp;
-
-    my ($type, $is_array, $is_def) = Elive::Util::parse_type($class->property_types->{$col});
-    my @v1 = ($is_array? @$_v1: ($_v1));
-    my @v2 = ($is_array? @$_v2: ($_v2));
-
-    if ($is_def) {
-	#
-	# Normalise objects and references to simple strings
-	#
-	for (@v1, @v2) {
-	    #
-	    # autobless references
-	    if (Scalar::Util::refaddr($_)) {
-
-		$_ = $type->construct(Elive::Util::_clone($_))
-		    unless (Scalar::Util::blessed($_));
-
-		$_ = $_->stringify;
-	    }
-	}
-    }
-
-    @v1 = sort @v1;
-    @v2 = sort @v2;
-
-    #
-    # unequal arrays lengths => unequal
-    #
-
-    $cmp ||= scalar @v1 <=> scalar @v2;
-
-    if ($cmp) {
-    }
-    elsif (scalar @v1 == 0) {
-
-	#
-	# Empty arrays => equal
-	#
-
-	$cmp = undef;
-    }
-    else {
-	#
-	# compare values
-	#
-	for (my $i = 0; $i < @v1; $i++) {
-
-	    my $v1 = $v1[$i];
-	    my $v2 = $v2[$i];
-
-	    if ($is_def || $type =~ m{Str}i) {
-		# string comparision. works on simple strings and
-		# stringified entities.
-		# 
-		$cmp ||= $v1 cmp $v2;
-	    }
-	    elsif ($type =~ m{Bool}i) {
-		# boolean comparison
-		$cmp ||= ($v1? 1: 0) <=> ($v2? 1: 0);
-	    }
-	    elsif ($type =~ m{Int}i) {
-		# int comparision
-		$cmp ||= $v1 <=> $v2
-	    }
-	    else {
-		die "class $class: column $col has unknown type: $type";
-	    }
-	}
-    }
-    return $cmp;
-}
-
 =head2 is_changed
 
     Return  a list of properties that have uncommited changes.
@@ -1105,9 +1010,12 @@ sub retrieve {
 	#
 	# Have we already got the object loaded? if so return it
 	#
+	my %pkey;
+	@pkey{$class->primary_key} = @$vals;
+
 	my $obj_url = $class->_url(
 	    $connection,
-	    $class->stringify(@$vals)
+	    $class->stringify(\%pkey)
 	    );
 
 	my $cached = $class->live_entity($obj_url);

@@ -6,6 +6,8 @@ use Mouse;
 use Elive;
 use base qw{Elive};
 
+use UNIVERSAL;
+
 =head1 NAME
 
 Elive::Array - base class for arrays
@@ -16,10 +18,6 @@ Base class for arrays within entities. E.g. members property of
 Elive::Entity::participantList.
 
 =cut
-
-use overload
-    '""' =>
-    sub {shift->stringify}, fallback => 1;
 
 =head1 METHODS
 
@@ -33,11 +31,18 @@ Stringifies arrays members by joining their sting values with ';'.
 
 sub stringify {
     my $self = shift;
+
+    my $class = ref($self) || $self;
     my $arr = shift || $self;
     #
     # Rely on sub entities stringifying and sorting correctly
     #
-    return join(';', sort map {UNIVERSAL::can($_,'stringify')? $_->stringify: $_} @$arr);
+    my $string = join(';', sort map {Elive::Util::string($_)} @$arr);
+
+##    use YAML; warn YAML::Dump({class => $class, data => $arr});
+##    warn "string: $string";
+
+    return $string;
 }
 
 =head2 new

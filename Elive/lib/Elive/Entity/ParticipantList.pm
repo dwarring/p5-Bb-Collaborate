@@ -130,13 +130,11 @@ sub _freeze {
 	    unless (Elive::Util::_reftype($participants) eq 'ARRAY');
 
 	my @users = map {
-	    my $str = UNIVERSAL::can($_,'stringify')
-		? $_->stringify
-		: $_;
+	    Elive::Entity::Participant->stringify($_);
 	} @$participants;
 
 
-	$frozen->{users} = join(';', @users);
+	$frozen->{participants} = join(';', @users);
     }
 
     return $frozen;

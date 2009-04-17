@@ -1,6 +1,6 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 7;
+use Test::More tests => 12;
 use Test::Exception;
 
 package main;
@@ -24,7 +24,7 @@ dies_ok(
 
 my %user_data =  (
     userId => 1234,
-    loginName => 'user',
+    loginName => 'bbill',
     loginPassword => 'pass'
     );
 
@@ -56,4 +56,29 @@ lives_ok(
     "construction after reverting changes - lives"
     );
 
+lives_ok(
+    sub {$user_data->set('email', 'bbill@test.org')},
+    "setter on non-key value - lives"
+    );
 
+dies_ok(
+    sub {$user_data->set('userId', undef)},
+    "clearing primary key field - dies"
+    );
+
+dies_ok(
+    sub {$user_data->set('userId', $user_data->userId.'9')},
+    "updating primary key field - dies"
+    );
+
+lives_ok(
+    sub {$user_data->set('userId', $user_data->userId)},
+    "ineffective primary key update - lives"
+    );
+
+dies_ok(
+    sub {$user_data->set('noSuchField', 'die you ^&*#@')},
+    "setter on unknown field - dies"
+    );
+
+$user_data->revert;

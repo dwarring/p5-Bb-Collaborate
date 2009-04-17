@@ -4,11 +4,8 @@ use warnings; use strict;
 use Elive;
 use base qw{Elive};
 
-use overload
-    '""' =>
-    sub {shift->stringify}, fallback => 1;
-
 use Elive::Array;
+use Elive::Util;
 
 BEGIN {
     __PACKAGE__->mk_classdata('_entities' => {});
@@ -44,23 +41,25 @@ Return a human readable string representation of an object.
 
 =cut
 
-sub _stringify_class {
-        my $class = shift;
-	my @pkey_data = @_;
-
-        return join "/", @pkey_data;
-}
-
 sub stringify {
+    my $class = shift;
+    my $data = shift;
 
-    if (my $class = ref($_[0])) {
-	my $self = shift;
-	$class->_stringify_class($self->id);
-    }
-    else {
-	my $class = shift;
-	$class->_stringify_class(@_);
-    }
+    $data ||= $class
+	if ref($class);
+
+    return $data
+	unless Elive::Util::_reftype($data);
+
+    return unless $data;
+
+    my $string = join('/', map {Elive::Util::string($data->{$_})} $class->primary_key);
+
+
+##    use YAML; warn YAML::Dump({class => $class, data => $data, pkey => [$class->primary_key]});
+##    warn "string: $string";
+
+    return $string;
 }
 
 
@@ -178,6 +177,92 @@ sub _ordered_attributes {
     return map {$atts->{$_}} ($class->_ordered_attribute_names);
 }
 
+
+sub _cmp_col {
+
+    #
+    # Compare two values for a property 
+    #
+
+    my $class = shift;
+    my $col = shift;
+    my $_v1 = shift;
+    my $_v2 = shift;
+
+    return undef
+	unless (defined $_v1 && defined $_v2);
+
+    my $cmp;
+
+    my ($type, $is_array, $is_struct) = Elive::Util::parse_type($class->property_types->{$col});
+    my @v1 = ($is_array? @$_v1: ($_v1));
+    my @v2 = ($is_array? @$_v2: ($_v2));
+
+    if ($is_struct) {
+	#
+	# Normalise objects and references to simple strings
+	#
+	for (@v1, @v2) {
+	    #
+	    # autobless references
+	    if (Scalar::Util::refaddr($_)) {
+
+		$_ = $type->stringify($_);
+	    }
+	}
+    }
+
+    @v1 = sort @v1;
+    @v2 = sort @v2;
+
+    #
+    # unequal arrays lengths => unequal
+    #
+
+    $cmp ||= scalar @v1 <=> scalar @v2;
+
+    if ($cmp) {
+    }
+    elsif (scalar @v1 == 0) {
+
+	#
+	# Empty arrays => equal
+	#
+
+	$cmp = undef;
+    }
+    else {
+	#
+	# compare values
+	#
+	for (my $i = 0; $i < @v1; $i++) {
+
+	    my $v1 = $v1[$i];
+	    my $v2 = $v2[$i];
+
+	    if ($is_struct || $type =~ m{Str}i) {
+		# string comparision. works on simple strings and
+		# stringified entities.
+		# 
+		$cmp ||= $v1 cmp $v2;
+	    }
+	    elsif ($type =~ m{Bool}i) {
+		# boolean comparison
+		$cmp ||= ($v1? 1: 0) <=> ($v2? 1: 0);
+	    }
+	    elsif ($type =~ m{Int}i) {
+		# int comparision
+		$cmp ||= $v1 <=> $v2;
+	    }
+	    else {
+		die "class $class: column $col has unknown type: $type";
+	    }
+	}
+    }
+
+    return $cmp;
+}
+
 =head2 properties
 
    my @properties = MyApp::Entity::User->properties;
@@ -255,7 +340,7 @@ sub set {
                if (defined $old_val && !defined $data{$_}) {
                    die "attempt to delete primary key";
                }
-               elsif ($self->_cmp_col($old_val, $data{$_})) {
+               elsif ($self->_cmp_col($_, $old_val, $data{$_})) {
                    die "attempt to update primary key";
                }
            }

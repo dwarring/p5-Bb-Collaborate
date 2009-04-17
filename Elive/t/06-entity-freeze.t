@@ -3,6 +3,8 @@ use warnings; use strict;
 use Test::More tests => 7;
 use Test::Warn;
 
+use Carp; $SIG{__DIE__} = \&Carp::confess;
+
 BEGIN {
     use_ok( 'Elive::Connection' );
     use_ok( 'Elive::Entity::User' );
@@ -62,7 +64,7 @@ my $participant_list_frozen = Elive::Entity::ParticipantList->_freeze(
 is_deeply($participant_list_frozen,
 	  {
 	      meetingId => 123456,
-	      users => '112233=2;223344=3'
+	      participants => '112233=2;223344=3',
 	  },
 	  'participant_list freeze from data'
     );
@@ -84,7 +86,6 @@ my $participant_list_obj = Elive::Entity::ParticipantList->construct(
     },
     );
 
-
 my $participant_list_frozen2 = Elive::Entity::ParticipantList->_freeze(
     $participant_list_obj
     );
@@ -92,7 +93,7 @@ my $participant_list_frozen2 = Elive::Entity::ParticipantList->_freeze(
 is_deeply($participant_list_frozen2,
 	  {
 	      meetingId => 234567,
-	      users => '334455=2;667788=3'
+	      participants => '334455=2;667788=3'
 	  },
 	  'participant_list freeze from object'
     );
