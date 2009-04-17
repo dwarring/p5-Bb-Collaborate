@@ -6,6 +6,13 @@ users as class participants and change server settings.
 
 This package has been tested against Elluminate Live versions 9.0 thru 9.1.
 
+You will need to login in to your SOAP service using an Elluminate system
+administrator level account.
+
+Note that Elluminate installs with 'serversupport' and 'legacyadapter' as
+preset system adminstrator accounts. Don't forget to change password for
+both these accounts before use!
+
 INSTALLATION
 
 To install this module, run the following commands:
@@ -45,11 +52,12 @@ POST INSTALLATION
           for the key Xxxxx'.
 
           If you get this error, please check that your Elluminate Live
-          software is up-to-date. I.e. you've installed all upgrades to
-          the SDK.
+          software is up-to-date. I.e. you've installed all upgrades and
+          the SDK. This version Elive has only been tested against 9.0
+          and 9.1.
 
-          Its possible that you may need to manually add the adapter to
-          your configuration.
+          It's possible that you may be able to manually add the adapter
+          to your configuration.
 
           You'll need to first stop Elluminate services.
 
@@ -57,8 +65,8 @@ POST INSTALLATION
 
 	      "missing adapter command: getUser"
 
-         Then this can be fixed by editing the config and adding an
-         entry for the adapter, e.g.if getUser is missing:
+         Then an adapter entry can be added to the list of adapters.
+         E.g. to add getUser:
 
 	      <elm>
                   ...
@@ -78,7 +86,7 @@ POST INSTALLATION
 
         Usage is: elive_query --user SomeAdmin http://myserver/mysite
 
-	Where SomeAdmin is an Elluminate system adminstrator account.
+	Where SomeAdmin is an Elluminate system administrator account.
 
         Hopefully you should get:
 

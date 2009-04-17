@@ -7,11 +7,11 @@ Elive -  Elluminate Live (c) client library
 
 =head1 VERSION
 
-Version 0.05
+Version 0.06
 
 =cut
 
-our $VERSION = '0.05';
+our $VERSION = '0.06';
 
 use Class::Data::Inheritable;
 use base qw{Class::Data::Inheritable};
@@ -273,21 +273,15 @@ Elluminate Services Errors:
 
 =item   "Unable to determine a command for the key : listXxxx"
 
-This indicates that the particular command is not available for your site
-instance. The method may just need to be registers in your adapter configuration
-your adapter configuration file
+This may indicate that the particular command adaptor is is not available for
+your site instance.
 
-  1. stop elluminate services
-  2. cd /opt/ElluminateLive/manager/tomcat/webapps/<site>/WEB-INF/resources
-     for your particular site
-  3. edit configuration.xml add the following:
-            <class>com.elluminate.adapter.CommandAdapter</class>
-               .....
-               <argument>
-                   <name>command:listXxxx</name>
-                   <value>com.elluminate.adapter.command.ListXxxxCommand</value>
-               </argument>
-  4. restart elluminate ands try again
+Check that your Elluminate server software is up-to-date (Elive has been tested
+against Elluminate Live 9.0 and 9.1 only).
+
+If the problem persists, the command entry may be missing from your site
+configuration file. Please follow the instructions in the README file
+for detecting and repairing missing adapters.
 
 =back
 
