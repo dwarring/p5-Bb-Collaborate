@@ -16,7 +16,7 @@ extraneous intermediate nodes are eliminated.
 =cut
 
 use warnings; use strict;
-use Test::More tests => 6;
+use Test::More tests => 8;
 use Test::Warn;
 
 use Storable;
@@ -61,6 +61,15 @@ my $collection = {
 my $collection_unpacked = Elive::Entity->_unpack_as_list($collection);
 is_deeply($simple, $collection_unpacked->[0], 'Collection unpacking');
 
+my $collection1 = {
+    Collection => {
+	Entry => Storable::dclone($simple),
+    }
+};
+
+my $collection1_unpacked = Elive::Entity->_unpack_as_list($collection1);
+is_deeply($simple, $collection1_unpacked->[0], 'Collection unpacking');
+
 my $hash_map = {
     Map => {
 	Entry => [
@@ -72,18 +81,28 @@ my $hash_map = {
     }
 };
 
-my $hash_mapped_unpacked = Elive::Entity->_unpack_as_list($hash_map);
-is_deeply($simple, $hash_mapped_unpacked->[0], 'Hash Map unpacking');
+my $hash_map_unpacked = Elive::Entity->_unpack_as_list($hash_map);
+is_deeply($simple, $hash_map_unpacked->[0], 'Hash Map unpacking');
+
+my $hash_map1 = {
+    Map => {
+	Entry => {
+		Key   => 123456789000,
+		Value => Storable::dclone($simple),
+	    },
+    }
+};
+
+my $hash_map1_unpacked = Elive::Entity->_unpack_as_list($hash_map1);
+is_deeply($simple, $hash_map1_unpacked->[0], 'Hash Map unpacking');
 
 #
-# An empty result decodes like this
-
+#
+# An empty result [], is encoded like this
+#
 my $empty_result = {
     Collection => ''
 };
 
 my $empty_result_unpacked = Elive::Entity->_unpack_as_list($empty_result);
 is_deeply([], $empty_result_unpacked, 'Empty result unpacking');
-
-
-
