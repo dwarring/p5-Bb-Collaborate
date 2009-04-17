@@ -85,7 +85,7 @@ if ($debug) {
 our $connection = Elive->connect(
     $url      ||= Elive::Util::prompt('Elluminate Server: '),
     $username ||= Elive::Util::prompt('Username: '),
-    $password ||= Elive::Util::prompt('Password: '),
+    $password ||= Elive::Util::prompt('Password: ', password => 1),
     );
 
 do {
@@ -151,7 +151,7 @@ do {
 	({
 	    name => $meeting_name,
 	    password => $meeting_password,
-	    facilitatorId => "${facilitator_obj}",
+	    facilitatorId => $facilitator_obj->stringify,
 ##	    privateMeeting => $private,
 	    start => $start->epoch * 1000,
 	    end => $end->epoch * 1000,
@@ -179,13 +179,27 @@ do {
 	#
 	# Create participant list
 	#
-	my $participants_str = join(';', @participants);
-	print "participants: $participants_str\n";
-	    
 	my $participant_list = Elive::Entity::ParticipantList
 	    ->insert({meetingId => $meeting->meetingId,
 		      participants => \@participants,
 		     });
+
+	my @participants_echo;
+	my $participant_objs = $participant_list->participants;
+
+	foreach (@$participant_objs) {
+	    my $user_obj = $_->user;
+	    my $loginName = $user_obj->loginName;
+	    my $email = $user_obj->email;
+
+	    my $participant_str = ($loginName || $user_obj->userId);
+	    $participant_str .= ' <'.$email.'>'
+		if $email;
+	    push (@participants_echo, $participant_str);
+	}
+
+	print "participants: ".join(', ', @participants_echo)."\n";
+
     }
     else {
 	print "no participants\n";
