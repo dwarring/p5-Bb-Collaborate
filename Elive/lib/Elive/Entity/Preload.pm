@@ -18,8 +18,7 @@ This is the accessor class for meeting preloads.
                         filter =>  'mimeType=application/x-shockwave-flash',
                     );
 
-    my $this_preload = Elive::Entity::Preload->retrieve($preload_id,
-                       );
+    my $this_preload = Elive::Entity::Preload->retrieve([$preload_id]);
 
 =cut
 
