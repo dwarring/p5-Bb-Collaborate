@@ -34,13 +34,6 @@ sub-structure.
 sub parse_type {
     my $type = shift;
 
-    #
-    # Alternate types returned are returned as an array in some Moose
-    # Moose versions. Take first as the primary type.
-    #
-    $type = $type->[0]
-	if (_reftype($type) eq 'ARRAY');
-
     my $is_array = ($type =~ s{^ArrayRef\[ ([^\]]*) \] $}{$1}x);
 
     #

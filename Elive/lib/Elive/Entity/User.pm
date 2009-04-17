@@ -7,6 +7,8 @@ use Mouse::Util::TypeConstraints;
 use Elive::Entity;
 use base qw{ Elive::Entity };
 
+use Elive::Entity::Role;
+
 __PACKAGE__->entity_name('User');
 __PACKAGE__->collection_name('Users');
 

@@ -181,6 +181,56 @@ sub construct {
     $self;
 }
 
+#
+# __tidy_decimal(): general cleanup and normalisation of an integer.
+#               used to clean up numbers for data storage or comparision
+
+sub __tidy_decimal {
+    my $i = $_[0];
+    #
+    # well a number really. don't convert or sprintf etc
+    # to avoid overflow. Just normalise it for potential
+    # string comparisions
+
+    #
+    # l-r trim
+    #
+    $i =~ s{^ \s* (.*?) \s* $}{$1}x;
+
+    #
+    # non number. throw it back for mouse constraint handling (?)
+    #
+    return undef
+	unless $i =~ m{^[+-]?\d+$};
+
+    #
+    # remove any leading zeros:
+    # +000123 => 123
+    # -00045 => -45
+    # -000 => 0
+    #
+
+    $i =~ s{^
+            \+?    # leading plus -discarded 
+            (-?)   # leading minus retained (usually)
+            0*     # leading zeros discarded
+            (\d+)  # number - retained
+            $}
+	    {$1$2}x;
+
+    #
+    # reduce -0 => 0
+    $i = 0 if ($i eq '-0');
+
+    #
+    # should get here. just a sanity check.
+    #
+    die "bad integer: $_[0]"
+	unless $i =~ m{^[+-]?\d+$};
+
+    return $i;
+}
+
 sub _freeze {
     #
     # _freeze - construct name/value pairs for database inserts or updates
@@ -220,6 +270,11 @@ sub _freeze {
 		    # DBize boolean flags..
 		    #
 		    $_ =  $_ ? 'true' : 'false'
+			if defined;
+		}
+		elsif ($type =~ m{Int}i) {
+
+		    $_ = __tidy_decimal($_)
 			if defined;
 		}
 
@@ -326,39 +381,13 @@ sub _thaw {
 		    $_ = m{true}i ? 1 : 0;
 		}
 		elsif ($type =~ m{Str}i) {
-		    s{^ \s* (.*?) \s* $}{$1}x;
-		}
-		elsif ($type =~ m{Int}i) {
-		    #
-		    # well a number really. don't convert or sprintf etc
-		    # to avoid overflow. Just normalise it for potential
-		    # string comparisions
-
 		    #
 		    # l-r trim
 		    #
 		    s{^ \s* (.*?) \s* $}{$1}x;
-
-		    #
-		    # non number
-		    #
-		    $_ = 0 unless m{^\d+$};
-
-		    #
-		    # remove any leading zeros:
-		    # +000123 => 123
-                    # -00045 => -45
-                    # -000 => 0
-		    #
-		    $_ =~ s{^
-                             \+?    # leading plus -discarded 
-                             (-?)   # leading minus retained (usually)
-                             0*     # leading zeros discarded
-                             (\d+)  # number - retained
-                             $}
-		            {$1$2}x;
-
-		    $_ = 0 if ($_ eq '-0');
+		}
+		elsif ($type =~ m{Int}i) {
+		    $_ = __tidy_decimal($_);
 		}
 		else {
 		    die "class $class: column $col has unknown type: $type";
@@ -376,6 +405,12 @@ sub _thaw {
     
     return \%data;
 }
+
+#
+# Normalise our data and reconstruct arrays.
+#
+# See t/05-entity-unpack.t for examples and further explanation.
+#
 
 sub _unpack_results {
     my $class = shift;
@@ -453,6 +488,40 @@ sub _unpack_results {
     return $results;
 }
 
+sub _unpack_as_list {
+    my $class = shift;
+    my $result = shift;
+
+    $result = $class->_unpack_results($result);
+
+    my $reftype = Elive::Util::_reftype($result);
+
+    my $results_list;
+
+    if ($reftype eq 'HASH') {
+
+	$results_list = [ $result ];
+
+    }
+    elsif ($reftype eq 'ARRAY') {
+
+	$results_list = $result;
+
+    }
+    else {
+
+	$results_list = defined ($result)
+	    ? [ $result ]
+	    : [];
+
+    }
+
+    warn "$class result: ".YAML::Dump($result)
+	if ($class->debug >= 2);
+
+    return $results_list;
+}
+
 sub _check_for_errors {
     my $class = shift;
     my $som = shift;
@@ -502,32 +571,7 @@ sub _get_results {
 
     $class->_check_for_errors($som);
 
-    my $results_list;
-
-    my $result = $class->_unpack_results($som->result);
-
-    my $reftype = Elive::Util::_reftype($result);
-
-    if ($reftype eq 'HASH') {
-
-	$results_list = [ $result ];
-
-    }
-    elsif ($reftype eq 'ARRAY') {
-
-	$results_list = $result;
-
-    }
-    else {
-
-	$results_list = defined ($result)
-	    ? [ $result ]
-	    : [];
-
-    }
-
-    warn "$class result: ".YAML::Dump($result)
-	if ($class->debug >= 2);
+    my $results_list = $class->_unpack_as_list($som->result);
 
     return $results_list;
 }

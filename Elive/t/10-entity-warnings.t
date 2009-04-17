@@ -23,8 +23,6 @@ warnings_like(
     'constructing unknown property gives warning',
     );
 
-
-diag "exiting";
 exit(0);
 
 ########################################################################

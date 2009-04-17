@@ -119,8 +119,7 @@ sub _freeze {
 
     my $frozen = $class->SUPER::_freeze($data, %opt);
 
-    if ((my $participants = delete $frozen->{participants})
-	&& $opt{mode} =~ m{insert|update}i) {
+    if (my $participants = delete $frozen->{participants}) {
 	#
 	# We're using resetParticipantList, both for inserts and
 	# updates. This takes a stringified list of users as 'users'.

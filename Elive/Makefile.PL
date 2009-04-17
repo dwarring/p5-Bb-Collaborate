@@ -24,8 +24,7 @@ requires(
     'Getopt::Long'                 => 0,  # for scripts
     'HTML::Entities'               => 0,
     'IO::Prompt'                   => 0,
-    'Mouse'                        => 0,
-    'Mouse::Util::TypeConstraints' => 0,
+    'Mouse'                        => 0.21,
     'Pod::Usage'                   => 0,  # for elive_raise_meeting
     'Scalar::Util'                 => 0,
     'Storable'                     => 0,
