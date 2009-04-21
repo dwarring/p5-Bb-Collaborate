@@ -1,6 +1,7 @@
 #!perl -T
 
 use Test::More tests => 15;
+use Test::Exception;
 
 BEGIN {
     use_ok( 'Elive' );
@@ -16,9 +17,9 @@ BEGIN {
     use_ok( 'Elive::Entity::ServerDetails' );
     use_ok( 'Elive::Entity::User' );
 
-    require_ok('script/elive_lint_config');
-    require_ok('script/elive_query');
-    require_ok('script/elive_raise_meeting');
+    foreach my $script (qw(elive_lint_config elive_query elive_raise_meeting)) {
+	lives_ok(sub{do('script/'.$script)}, "script $script compiles");
+    }
 }
 
 diag( "Testing Elive $Elive::VERSION, Perl $], $^X" );

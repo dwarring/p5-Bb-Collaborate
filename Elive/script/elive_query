@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-package Elive::query;
+package Elive::script::elive_query;
 use warnings; use strict;
 
 use YAML;

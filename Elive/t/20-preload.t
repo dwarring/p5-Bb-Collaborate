@@ -26,7 +26,7 @@ SKIP: {
     my $auth = $result{auth};
 
     skip ($result{reason} || 'unable to find test connection',
-	2)
+	8)
 	unless $auth;
 
     Elive->connect(@$auth);
