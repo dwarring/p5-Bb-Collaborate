@@ -1,5 +1,8 @@
 Revision history for Elive
 
+0.07    22nd April
+        Added 'upload' and 'download' methods for Elive::Entity::Preload
+
 0.06    18th April
         - several fixes to elive_raise_meeting
 
