@@ -1,10 +1,12 @@
 #!/usr/bin/perl
+package Elive::lint_config;
 use warnings;
 use strict;
 
 use Getopt::Long;
 use XML::Simple;
 use Elive;
+use Pod::Usage;
 
 =head1 NAME
 
@@ -18,13 +20,13 @@ elive_lint_config
 =head1 DESCRIPTION
 
 This script can be run on an elluminate server site configuration file to
-perform some rough checks on the basic configuration.
+perform some rough checks on the basic setup.
 
 In particular, some adapter definitions may be missing. This seems to
 depend on the sites vintage, manual edits, and the general upgrade history.
 
-It may be useful to rerun this script after upgrading either
-Elluminate Live or Elive, or creating new site instances.
+It may be useful to rerun this script after upgrading either Elluminate Live
+or Elive, or creating new site instances.
 
 =head1 SEE ALSO
 
@@ -33,112 +35,116 @@ Elluminate Live or Elive, or creating new site instances.
 
 =cut
 
-my $help;
+main(@ARGV) unless caller;
 
-print "Elive  ${Elive::VERSION} - Server Configuration Linter\n";
+sub main {
 
-GetOptions(
-    'help|?' => \$help,
-    )
-    && (($help && pod2usage(1)) || (my $config_file = shift @ARGV))
-    && (!@ARGV)
-    or die pod2usage(1);
+    local(@ARGV) = @_;
 
-print "Checking: $config_file\n";
+    my $help;
 
-my %required_adapters = map {$_ => 1} (Elive->known_adapters);
-my %found;
+    print "Elive  ${Elive::VERSION} - Server Configuration Linter\n";
 
-my $config = XMLin($config_file,
-		   KeepRoot => 1,
-		   ForceArray => 1,
-    );
+    GetOptions(
+	'help|?' => \$help,
+	)
+	&& (($help && pod2usage(1)) || (my $config_file = shift @ARGV))
+	&& (!@ARGV)
+	or die pod2usage(1);
 
-my @errors;
+    print "Checking: $config_file\n";
 
-select STDERR; $| = 1;
+    my %required_adapters = map {$_ => 1} (Elive->known_adapters);
+    my %found;
+
+    my $config = XMLin($config_file,
+		       KeepRoot => 1,
+		       ForceArray => 1,
+	);
+
+    my @errors;
+
+    select STDERR; $| = 1;
 
 #
-# just check for ldap access while we're at it
+# check and report on ldap status
 #
+    if (my @daos = _get_elems($config, qw/elm daofactory dao/)) {
 
-if (my @daos = _get_elems($config, qw/elm daofactory dao/)) {
+	my ($ldap_dao) = grep {$_->{class} =~ m{ldapdao}i} @daos;
 
-    my ($ldap_dao) = grep {$_->{class} =~ m{ldapdao}i} @daos;
+	if ($ldap_dao) {
+	    print "Note: using LDAP for user management:\n\n";
 
-    if ($ldap_dao) {
-	print "Note: using LDAP for user management:\n\n";
+	    if (my $argument = $ldap_dao->{argument}) {
+		foreach my $name (sort keys %{$ldap_dao->{argument}}) {
+		    my $value = $ldap_dao->{argument}{$name}{value};
+		    $value =~ s{.}{*}g
+			if $name eq 'password';
 
-	if (my $argument = $ldap_dao->{argument}) {
-	    foreach my $name (sort keys %{$ldap_dao->{argument}}) {
-		my $value = $ldap_dao->{argument}{$name}{value};
-		$value =~ s{.}{*}g
-		    if $name eq 'password';
-
-		printf("  %-14.14s: %s\n", $name, $value)
-		    if (defined $name && defined $value);
+		    printf("  %-14.14s: %s\n", $name, $value)
+			if (defined $name && defined $value);
+		}
+		print "\n";
 	    }
-	    print "\n";
 	}
     }
-}
 
 ##use YAML; die YAML::Dump($config);
-my @adapters = _get_elems($config, qw/elm adapters adapter/);
-my @classes = map {_get_elems($_, 'class')} @adapters;
+    my @adapters = _get_elems($config, qw/elm adapters adapter/);
+    my @classes = map {_get_elems($_, 'class')} @adapters;
 
-my ($command_adapter)
-    = (grep {my ($class) = _get_elems($_, 'class');
-	     $class =~ m{CommandAdapter}}
-       @adapters);
+    my ($command_adapter)
+	= (grep {my ($class) = _get_elems($_, 'class');
+		 $class =~ m{CommandAdapter}}
+	   @adapters);
 
-die "Unable to locate adapter commands"
-    unless $command_adapter;
+    die "Unable to locate adapter commands"
+	unless $command_adapter;
 
-my @commands = _get_elems($command_adapter, 'argument');
+    my @commands = _get_elems($command_adapter, 'argument');
 
-print "Adapters: ";
+    print "Adapters: ";
 
-foreach my $command (@commands) {
+    foreach my $command (@commands) {
 
-    my $name = $command->{name}[0];
-    my $value = $command->{value}[0];
+	my $name = $command->{name}[0];
+	my $value = $command->{value}[0];
 
-    next unless $name =~ s{^command\:}{};
-    next unless exists $required_adapters{$name};
-    print "[$name]";
+	next unless $name =~ s{^command\:}{};
+	next unless exists $required_adapters{$name};
+	print "[$name]";
 
-    if (exists $found{$name}) {
-	push(@errors, "Duplicate entries for command: $name");
-	next;
+	if (exists $found{$name}) {
+	    push(@errors, "Duplicate entries for command: $name");
+	    next;
+	}
+	else {
+	    $found{$name} = undef;
+	}
+
+	unless ($value) {
+	    push(@errors, "Could not find a value for adapter command: $name");
+	    next;
+	}
+
+	my $expected_value = 'com.elluminate.adapter.command.'.ucfirst($name).'Command';
+	unless ($value eq $expected_value) {
+	    push (@errors, "command: $name\n    Expected value: $expected_value\n    Actual value: $value");
+	}
     }
-    else {
-	$found{$name} = undef;
+
+    my @missing = sort grep {!exists $found{$_}} (keys %required_adapters);
+
+    foreach (@missing) {
+	push(@errors, "missing adapter command: $_");
     }
 
-    unless ($value) {
-	push(@errors, "Could not find a value for adapter command: $name");
-	next;
-    }
+    die join("\n", '',@errors)
+	if @errors;
 
-    my $expected_value = 'com.elluminate.adapter.command.'.ucfirst($name).'Command';
-    unless ($value eq $expected_value) {
-	push (@errors, "command: $name\n    Expected value: $expected_value\n    Actual value: $value");
-    }
+    print "\nNo errors found\n";
 }
-
-my @missing = sort grep {!exists $found{$_}} (keys %required_adapters);
-
-foreach (@missing) {
-    push(@errors, "missing adapter command: $_");
-}
-
-die join("\n", '',@errors)
-    if @errors;
-
-print "\nNo errors found\n";
-
-exit(0);
 
 sub _get_elems {
     my $struct = shift;

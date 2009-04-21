@@ -1,4 +1,5 @@
 #!/usr/bin/perl
+package Elive::raise_meeting;
 use warnings;
 use strict;
 
@@ -6,24 +7,7 @@ use Getopt::Long;
 use Elive::Util;
 use Elive::Entity;
 use DateTime::Format::ISO8601;
-use Pod::Usage;
-
-use Carp;
-
-my $username = 'serversupport';
-my $password;
-;
-my $debug;
-my $facilitator;
-my $start_str;
-my $end_str;
-my $meeting_name = 'elive test meeting';
-my $meeting_password;
-my $max_talkers;
-my $raise_hands;
-my $preload;
-my $url;
-my $help;
+use Pod::Usage qw{};
 
 use Carp;
 
@@ -33,7 +17,7 @@ elive_raise_meeting
 
 =head1 SYNOPSIS
 
-elive_raise_meeting   http://myserver.com/my-site[:port] userid[=role] [userid[=role]...]
+% elive_raise_meeting   http://myserver.com/my-site[:port] userid[=role] [userid[=role]...]
 
     -user someuser              # server login user
     -pass somepass              # server login password
@@ -58,37 +42,56 @@ Creates a meeting on an Elluminate Live (c) server
 
 =cut
 
-GetOptions(
-    'name|meeting_name=s' => \$meeting_name,
-    'username|user=s' => \$username,
-    'password|pass=s' => \$password,
-    'facilitator|moderator=s' => \$facilitator,
-    'start=s' => \$start_str,
-    'end=s' => \$end_str,
-    'meeting_password|meeting_pass=s' => \$meeting_password,
-    'max_talkers=i' => \$max_talkers,
-    'raise_hands' => \$raise_hands,
+my $username = 'serversupport';
+my $password;
+my $debug;
+my $facilitator;
+my $start_str;
+my $end_str;
+my $meeting_name = 'elive test meeting';
+my $meeting_password;
+my $max_talkers = 1;
+my $raise_hands;
+my $preload;
+my $url;
+my $help;
+
+main(@ARGV) unless caller;
+
+sub main {
+
+    local(@ARGV) = @_;
+
+    GetOptions(
+	'name|meeting_name=s' => \$meeting_name,
+	'username|user=s' => \$username,
+	'password|pass=s' => \$password,
+	'facilitator|moderator=s' => \$facilitator,
+	'start=s' => \$start_str,
+	'end=s' => \$end_str,
+	'meeting_password|meeting_pass=s' => \$meeting_password,
+	'max_talkers=i' => \$max_talkers,
+	'raise_hands' => \$raise_hands,
 ##	   'private' => \$private,
-    'debug=i' => \$debug,
-    'help|?' => \$help,
+	'debug=i' => \$debug,
+	'help|?' => \$help,
+	'preload' => \$preload,
     )
-    && (($help && pod2usage(2)) || ($url = shift @ARGV))
-    or die pod2usage(1);
+	&& (($help && pod2usage(2)) || ($url = shift @ARGV))
+	or die pod2usage(1);
 
-Elive->debug($debug);
+    Elive->debug($debug);
 
-if ($debug) {
-    $SIG{__WARN__} = \&Carp::cluck;
-    $SIG{__DIE__} = \&Carp::confess;
-}
+    if ($debug) {
+	$SIG{__WARN__} = \&Carp::cluck;
+	$SIG{__DIE__} = \&Carp::confess;
+    }
 
-our $connection = Elive->connect(
-    $url      ||= Elive::Util::prompt('Elluminate Server: '),
-    $username ||= Elive::Util::prompt('Username: '),
-    $password ||= Elive::Util::prompt('Password: ', password => 1),
-    );
-
-do {
+    our $connection = Elive->connect(
+	$url      ||= Elive::Util::prompt('Elluminate Server: '),
+	$username ||= Elive::Util::prompt('Username: '),
+	$password ||= Elive::Util::prompt('Password: ', password => 1),
+	);
 
     my $start = $start_str
 	? DateTime::Format::ISO8601->parse_datetime($start_str)
@@ -97,7 +100,7 @@ do {
     my $end = $end_str
 	? DateTime::Format::ISO8601->parse_datetime($end_str,
 						    base_datetime => $start)
-	: $start->clone->add(minutes => 30);
+	: $start->clone->add(minutes => 45);
 
     die "end time must be later than start time"
 	unless ($end->epoch > $start->epoch);
@@ -142,7 +145,7 @@ do {
 		  Elive::Entity::Participant->new({
 		      user => $user_obj,
 		      role => {roleId => $role},
-		  }),
+		      }),
 		);
 	}
     }
@@ -175,12 +178,57 @@ do {
     }
 
     if (@participants) {
-	
+
+	setup_participants($meeting->meetingId, @participants);
+
+    }
+    else {
+	print "no participants\n";
+    }
+
+    if ($preload) {
+	_upload_preload('/tmp/onechar.tmp',
+			$meeting->meetingId,
+			$meeting->facilitatorID || $connection->login->userId);
+    }
+
+    Elive->disconnect;
+
+    return $meeting;
+}
+
+########################################################################
+
+sub _upload_preload {
+    my $file_name = shift;
+    my $meeting_id = shift;
+    my $facilitator_id = shift;
+
+    my $preload = Elive::Entity::Preload->insert(
+	{
+	    type => 'whiteboard',
+	    mimeType => 'application/octet-stream',
+	    name => 'introduction.wbd',
+	    ownerId => $facilitator_id,
+	},
+	param => {size => 1},
+
+	);
+
+    
+
+}
+
+########################################################################
+
+sub _setup_participants {
+    my $meeting_id = shift;
+    my @participants = @_;
 	#
 	# Create participant list
 	#
 	my $participant_list = Elive::Entity::ParticipantList
-	    ->insert({meetingId => $meeting->meetingId,
+	    ->insert({meetingId => $meeting_id,
 		      participants => \@participants,
 		     });
 
@@ -199,16 +247,7 @@ do {
 	}
 
 	print "participants: ".join(', ', @participants_echo)."\n";
-
-    }
-    else {
-	print "no participants\n";
-    }
-};
-
-Elive->disconnect;
-
-exit(0);
+}
 
 ########################################################################
 

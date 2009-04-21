@@ -1,7 +1,7 @@
 #!/usr/bin/perl
+package Elive::query;
 use warnings; use strict;
 
-package main;
 use YAML;
 use Carp;
 
@@ -11,16 +11,11 @@ use Elive;
 use Elive::Entity;
 use Elive::Util;
 use Term::ReadLine;
-use Pod::Usage;
+use Pod::Usage qw{};
 
 use UNIVERSAL;
 
 local $SIG{__DIE__};
-
-our $version = ${Elive::VERSION};
-our $entities = Elive::Entity->entities;
-our $term = new Term::ReadLine 'elive shell';
-our $is_tty = -t STDIN;
 
 =head1 NAME
 
@@ -46,176 +41,185 @@ L<http://search.cpan.org/dist/Elive/>
 
 =cut
 
-foreach (keys %$entities) {
-    #
-    # Just want database entities. Omit simple structs
-    #
-    delete $entities->{$_}
-    unless ($entities->{$_}->isa('Elive::Entity'));
-}
+main(@ARGV) unless caller;
 
-my $prompt = "elive> ";
+sub main {
 
-my ($url, $usage, %options) = _getopt();
+    local(@ARGV) = @_;
 
-our $debug = $options{debug};
-Elive->debug( $debug );
+    our $version = ${Elive::VERSION};
+    our $entities = Elive::Entity->entities;
+    our $term = new Term::ReadLine 'elive shell';
+    our $is_tty = -t STDIN;
 
-our $connection;
+    foreach (keys %$entities) {
+	#
+	# Just want database entities. Omit simple structs
+	#
+	delete $entities->{$_}
+	unless ($entities->{$_}->isa('Elive::Entity'));
+    }
 
-if ($url) {
+    my $prompt = "elive> ";
 
-    _connect($url, %options);
+    my ($url, %options) = _getopt();
 
-}
+    our $debug = $options{debug};
+    Elive->debug( $debug );
 
-print "Elive query $version - type 'help' for help\n"
-    if $is_tty;
+    our $connection;
 
-while (defined (my $cmd = $is_tty? $term->readline($prompt): <STDIN>)) {
+    if ($url) {
 
-    $term->addhistory($cmd);
-    #
-    # strip leading white-space & trailing white-space + semicolon
-    #
-    $cmd =~ s{^ \s* (.*?) \s* ;? \s* $}{$1}x;
+	$connection = _connect($url, %options);
 
-    if ($cmd =~ m{\S}) {
+    }
 
-	if (my ($keyw, $args) = ($cmd =~ m{^ (\w+) \s* (.*)? $}x)) {
+    print "Elive query $version - type 'help' for help\n"
+	if $is_tty;
 
-	    if (lc($keyw) eq substr('help',0, length($keyw))) {
-		print "Elive query $version help:\n\n";
-		print "connect url [user] - connect to an elluminate server\n";
-		print "show [entity_name] - list/show entities\n";
-		print "debug = [0|1|2|3] - set debugging level\n";
-		print "select *|prop[,prop] from entity [where exp]\n";
-	    }
-	    elsif ($keyw  =~ m{^(connect)$}i) {
-		my ($url, $user) = split(m{\s+}, $args);
+    while (defined (my $cmd = $is_tty? $term->readline($prompt): <STDIN>)) {
 
-		if ($url) {
-		    _connect($url,
-			     username => $user,
-			     %options);
+	$term->addhistory($cmd);
+	#
+	# strip leading white-space & trailing white-space + semicolon
+	#
+	$cmd =~ s{^ \s* (.*?) \s* ;? \s* $}{$1}x;
+
+	if ($cmd =~ m{\S}) {
+
+	    if (my ($keyw, $args) = ($cmd =~ m{^ (\w+) \s* (.*)? $}x)) {
+
+		if (lc($keyw) eq substr('help',0, length($keyw))) {
+		    print "Elive query $version help:\n\n";
+		    print "connect url [user] - connect to an elluminate server\n";
+		    print "show [entity_name] - list/show entities\n";
+		    print "debug = [0|1|2|3] - set debugging level\n";
+		    print "select *|prop[,prop] from entity [where exp]\n";
 		}
-		else {
-		    print STDERR "usage: connect url [user]\n";
-		}
-	    }
-	    elsif ($keyw  =~ m{^(debug)$}i) {
-		my ($level) = ($args =~ m{^\s* = \s* ([0-9])}x);
+		elsif ($keyw  =~ m{^(connect)$}i) {
+		    my ($url, $user) = split(m{\s+}, $args);
 
-		if (defined $level) {
-		    print "Debugging level set to $level\n";
-		    $level = $level + 0;
-
-		    $SIG{__WARN__} = $level > 1
-			? \&Carp::cluck
-			: undef;
-
-		    $SIG{__DIE__} = $level
-			? \&Carp::confess
-			: undef;
-
-		    Elive->debug($level);
-		}
-		else {
-		    print STDERR "usage: debug = 0..9";
-		}
-	    }
-	    elsif ($keyw =~ m{^(show)$}i) {
-
-		if (my ($entity_name) = ($args =~ m{^ \s* (\w+) \s* $}x)) {
-		    _show($entity_name);
+		    if ($url) {
+			_connect($url,
+				 username => $user,
+				 %options);
 		    }
-		else {
-		    print 'usage: show '.join('|', sort keys %$entities)."\n";
+		    else {
+			print STDERR "usage: connect url [user]\n";
+		    }
 		}
-	    }
-	    elsif (lc($keyw) eq 'select') {
+		elsif ($keyw  =~ m{^(debug)$}i) {
+		    my ($level) = ($args =~ m{^\s* = \s* ([0-9])}x);
 
-		warn "args: $args\n"
-		    if (Elive->debug);
+		    if (defined $level) {
+			print "Debugging level set to $level\n";
+			$level = $level + 0;
 
-		my $valid;
+			$SIG{__WARN__} = $level > 1
+			    ? \&Carp::cluck
+			    : undef;
 
-		if ($args =~ m{^
+			$SIG{__DIE__} = $level
+			    ? \&Carp::confess
+			    : undef;
+
+			Elive->debug($level);
+		    }
+		    else {
+			print STDERR "usage: debug = 0..9";
+		    }
+		}
+		elsif ($keyw =~ m{^(show)$}i) {
+
+		    if (my ($entity_name) = ($args =~ m{^ \s* (\w+) \s* $}x)) {
+			_show($entities, $entity_name);
+		    }
+		    else {
+			print 'usage: show '.join('|', sort keys %$entities)."\n";
+		    }
+		}
+		elsif (lc($keyw) eq 'select') {
+
+		    warn "args: $args\n"
+			if (Elive->debug);
+
+		    my $valid;
+
+		    if ($args =~ m{^
                           (.+?) \s+
                           from \s+ (\w+)?
                           (\s+ where \s+ (.*?))?
                           $}ix) {
 
-		    $valid = 1;
+			$valid = 1;
 
-		    my @props = split(m{\s* , \s*}x, $1);
-		    my $entity = $2;
-		    my $filter = $4;
+			my @props = split(m{\s* , \s*}x, $1);
+			my $entity = $2;
+			my $filter = $4;
 
-		    my $entity_class = $entities->{$entity};
+			my $entity_class = $entities->{$entity};
 
-		    if (!$entity_class) {
-			print STDERR "Unknown entity: $entity\n";
-			$valid = 0;
-		    }
-		    else {
-			if (@props == 1 && $props[0] eq '*') {
-			    #
-			    # '*' selection
-			    #
-			    @props = $entity_class->properties;
+			if (!$entity_class) {
+			    print STDERR "Unknown entity: $entity\n";
+			    $valid = 0;
 			}
 			else {
-			    foreach (@props) {
-				$valid = 0 unless m{^ [a-zA-Z_-]+ $}x;
+			    if (@props == 1 && $props[0] eq '*') {
+				#
+				# '*' selection
+				#
+				@props = $entity_class->properties;
+			    }
+			    else {
+				foreach (@props) {
+				    $valid = 0 unless m{^ [a-zA-Z_-]+ $}x;
+				}
+			    }
+			}
+
+			if ($valid) {
+			    warn "entity: $entity, filter: $filter, props: @props"
+				if (Elive->debug);
+
+			    unless ($connection) {
+				print STDERR "you'll need to connect first - see help connect\n";
+			    }
+			    else {
+				_select($entity_class, $filter, @props); 
 			    }
 			}
 		    }
 
-
-		    if ($valid) {
-			warn "entity: $entity, filter: $filter, props: @props"
-			    if (Elive->debug);
-
-			unless ($connection) {
-			    print STDERR "you'll need to connect first - see help connect\n";
-			}
-			else {
-			    _select($entity_class,$filter, @props); 
-			}
+		    unless ($valid) {
+			print STDERR  "usage: select props|* from entity [where filter|id=val];\n";
 		    }
 		}
-
-		unless ($valid) {
-		    print STDERR  "usage: select props|* from entity [where filter|id=val];\n";
+		else {
+		    print STDERR "unrecognised command: $keyw\n";
 		}
-	    }
-	    else {
-	    print STDERR "unrecognised command: $keyw\n";
-	    }
 	}
-	else {
-	    print STDERR "unrecognised command\n";
+	    else {
+		print STDERR "unrecognised command\n";
+	    }
 	}
     }
+
+    Elive->disconnect;
+
+    if (Elive->debug) {
+	my @living = grep {$Elive::Entity::Elive_Objects->{$_}}
+	(keys %Elive::Entity::Elive_Objects);
+
+	print STDERR "about to shutdown, live objects: @living\n";
+    }
 }
-
-Elive->disconnect;
-
-if (Elive->debug) {
-    my @living = grep {$Elive::Entity::Elive_Objects->{$_}}
-      (keys %Elive::Entity::Elive_Objects);
-
-    print STDERR "about to shutdown, live objects: @living\n";
-}
-
-exit(0);
 
 ########################################################################
 
 sub _show {
 
-    my ($entity_name, $nesting, $entity_class) = @_;
+    my ($entities, $entity_name, $nesting, $entity_class) = @_;
 
     $nesting ||= 0;
     my $sp = ' ' x ($nesting * 4);
@@ -357,7 +361,7 @@ sub _getopt {
 
     my $url = shift(@ARGV);
 
-    return ($url, $usage, %options);
+    return ($url, %options);
 }
 
 sub _connect {
@@ -372,12 +376,10 @@ sub _connect {
 
     $password ||= Elive::Util::prompt('Password: ', password => 1);
 
-    ($username && $password)
-	or die $usage;
-
     print STDERR "connecting to $url...";
-    $connection = Elive->connect($url,
+    my $connection = Elive->connect($url,
 				 $username, $password);
     print STDERR "done\n";
 
+    return $connection;
 }

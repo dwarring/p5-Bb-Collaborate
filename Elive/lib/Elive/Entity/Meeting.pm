@@ -12,7 +12,6 @@ Elive::Entity::Meeting - Elluminate Meeting instance class
 
 =cut
 
-
 __PACKAGE__->entity_name('Meeting');
 __PACKAGE__->collection_name('Meetings');
 
@@ -20,7 +19,7 @@ has 'meetingId' => (is => 'rw', isa => 'Int', required => 1);
 __PACKAGE__->primary_key('meetingId');
 
 has 'password' => (is => 'rw', isa => 'Str',
-		   documentation => 'optional meeting password');
+		   documentation => 'meeting password (optional)');
 
 has 'deleted' => (is => 'rw', isa => 'Bool');
 
@@ -171,17 +170,19 @@ sub add_preload {
     my %opt = @_;
 
     my $meeting_id = $opt{meeting_id};
+
     $meeting_id ||= $self->meetingId
 	if ref($self);
 
-    die "Unable to determine meeting_id"
+    die "unable to determine meeting_id"
 	unless $meeting_id;
 
     my $preload_id = $opt{preload_id};
+    $preload_id ||= $self->preloadId
+	if ref($self);
 
-    die "unabe to determine prelod_id"
+    die "unable to determine preload_id"
 	unless $preload_id;
-
 
     my $adapter = $self->check_adapter('addMeetingPreload');
 
@@ -191,6 +192,44 @@ sub add_preload {
 	);
 
     $self->_check_for_errors($som);
+}
+
+=head2 list_preloads
+
+my $preloads = Elive::Entity::Preload->list_meeting_preloads($meeting_id);
+
+Implements the listMeetingPreloads method
+
+=cut
+
+sub list_preloads {
+    my $self = shift;
+    my %opt = @_;
+
+    my $meeting_id = $opt{meeting_id} || $self->meetingId;
+
+    return $self->fetch({meetingId => $meeting_id},
+			 adapter => 'listMeetingPreloads',
+			 %opt
+	);
+}
+
+=head2 check_preloads
+
+my $preloads = Elive::Entity::Preload->check_meeting_preloads($meeting_id);
+
+Implements the checkMeetingPreloads method
+
+=cut
+
+sub check_preloads {
+    my $self = shift;
+    my %opt = @_;
+
+    my $meeting_id = $opt{meeting_id} || $self->meetingId;
+
+    return $self->fetch({meetingId => $meeting_id},
+			 adapter => 'checkMeetingPreloads');
 }
 
 sub _freeze {

@@ -7,11 +7,11 @@ Elive -  Elluminate Live (c) client library
 
 =head1 VERSION
 
-Version 0.06
+Version 0.07
 
 =cut
 
-our $VERSION = '0.06';
+our $VERSION = '0.07';
 
 use Class::Data::Inheritable;
 use base qw{Class::Data::Inheritable};
@@ -41,7 +41,9 @@ use Elive::Connection;
 
 =head1 DESCRIPTION
 
-Elluminate Live (c) is an online virtual classroom written in Java.
+Elluminate Live (c) is is a synchronous web tool virtual online classroom. It
+is suitable for online collaboration, classrooms, demonstrations, meetings,
+web conferences, seminars and IT deployment, training and support..
 
 This module provides class and object bindings to Elluminate Live server
 via its SOAP/XML command interace.
@@ -66,8 +68,8 @@ our $WARN = 1;
      Elive->connect('http://myServer.com/test2', user2, pass2);
      my $e2 = Elive->connection;
 
-    Connects to an Elluminate Server instance. Dies if the connection could not
-    be established. For example the connection or user login failed.
+    Connects to an Elluminate Server instance. Dies if the connection could
+    not be established. For example the connection or user login failed.
 
 =cut
 
@@ -86,13 +88,13 @@ sub connect {
 	debug => $class->debug,
 	);
 
-    $class->connection( $connection );
+    $class->connection($connection);
 
     #
     # The login name should be a valid user in the database
     # retrieve it as a way of authenticating the user and
     # checking basic connectivity.
-
+    #
     eval "use  Elive::Entity::User";
     die $@ if $@;
 
@@ -127,7 +129,6 @@ sub login {
     return shift->_login
 }
     
-
 =head2 disconnect
 
 Disconnect from elluminate. It is recommended that you do this prior to
@@ -170,6 +171,28 @@ sub debug {
     }
 
     return $DEBUG || 0;
+}
+
+#
+# _test_auth - locate test authorization from the environment
+#
+sub _get_test_auth {
+    my $class = shift;
+
+    my $user = $ENV{ELIVE_TEST_USER};
+    my $pass = $ENV{ELIVE_TEST_PASS};
+    my $url  = $ENV{ELIVE_TEST_URL};
+
+    my %result;
+
+    if ($user && $pass && $url) {
+	$result{auth} = [$url, $user, $pass];
+    }
+    else {
+	$result{reason} = 'need to set $ELIVE_TEST_{USER|PASS|URL}';
+    }
+
+    return %result;
 }
 
 our %KnownAdapters;
@@ -281,7 +304,7 @@ against Elluminate Live 9.0 and 9.1 only).
 
 If the problem persists, the command entry may be missing from your site
 configuration file. Please follow the instructions in the README file
-for detecting and repairing missing adapters.
+for insrtuctions on detecting and repairing missing adapters.
 
 =back
 

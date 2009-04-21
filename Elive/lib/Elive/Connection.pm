@@ -24,32 +24,32 @@ __PACKAGE__->mk_accessors( qw{ url user pass soap } );
 =head2 new
 
     my $ec = Elive::Connection->new ('http://someserver.com/test',
-                                     'user1', 'pass1',
-                                     debug => 1)
+    'user1', 'pass1',
+    debug => 1)
 
 =cut
 
 sub new {
     my ($class, $url,  $user, $pass, %opt) = @_;
 
-    my $uri = URI->new($url, 'http');
+    my $uri_obj = URI->new($url, 'http');
 
-    my @path = File::Spec->splitdir( $uri->path );
+    my @path = File::Spec->splitdir( $uri_obj->path );
 
     push (@path, 'webservice.event')
 	unless (@path && $path[-1] eq 'webservice.event');
 
-    $uri->path( File::Spec->catdir(@path) );
+    $uri_obj->path( File::Spec->catdir(@path) );
 
-    warn "connecting to ".$uri->as_string
+    warn "connecting to ".$uri_obj->as_string
 	if ($opt{debug});
 
-    my $soap = SOAP::Lite->new(proxy => $uri->as_string );
+    my $soap = SOAP::Lite->new(proxy => $uri_obj->as_string );
 
     my $self = {};
     bless $self, $class;
 
-    $self->url($uri->as_string);
+    $self->url($uri_obj->as_string);
     $self->user($user);
     $self->pass($pass);
     $self->soap($soap);
@@ -78,16 +78,18 @@ sub call {
     my @soap_params = (SOAP::Data->name('_')->value(''),
 		       SOAP::Header->type(xml => $self->_soap_header_xml()),
 		       SOAP::Data->name('command')->value($cmd),
-		);
+	);
 
     foreach my $name (keys %params) {
 
 	my $value = $params{$name};
 
-	my $soap_param = SOAP::Data
-	    ->name($name)
-	    ->type('string')
-	    ->value($value);
+	my $soap_param = UNIVERSAL::isa($value, 'SOAP::Data')
+	    ? $value->name($name)
+	    : (SOAP::Data
+	       ->name($name)
+	       ->type('string')
+	       ->value($value));
 
 	push (@soap_params, $soap_param);
 
@@ -109,12 +111,12 @@ sub _soap_header_xml {
 		      ($self->user, $self->pass));
 
     return sprintf (<<EOD, @user_auth);
-<h:BasicAuth
-    xmlns:h="http://soap-authentication.org/basic/2001/10/"
+    <h:BasicAuth
+      xmlns:h="http://soap-authentication.org/basic/2001/10/"
     soap:mustUnderstand="1">
     <Name>%s</Name>
     <Password>%s</Password>
-</h:BasicAuth>
+    </h:BasicAuth>
 EOD
 };
 

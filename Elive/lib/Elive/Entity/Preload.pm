@@ -6,6 +6,8 @@ use Mouse;
 use Elive::Entity;
 use base qw{ Elive::Entity };
 
+use SOAP::Lite;  # contains SOAP::Data package
+
 =head1 NAME
 
 Elive::Entity::Preload - Elluminate Preload instance class
@@ -54,80 +56,114 @@ has 'data' => (is => 'rw', isa => 'Str',
 
 =cut
 
-=head2 insert
+=head2 import_file
 
-    #
-    # Somehow upload the file to the server. ssh, sftp, rync, http ..?
-    #
-    my $path_on_server = my_server_upload('introduction.wbd');
-
-    my $preload = Elive::Entity::Preload->insert(
+    my $preload1 = Elive::Entity::Preload->import(
              {
 		    type => 'whiteboard',
 		    mimeType => 'application/octet-stream',
 		    name => 'introduction.wbd',
 		    ownerId => 357147617360,
+                    fileName => $path_on_server
 	     },
-             fileName => $path_on_server,
          );
 
-
-fileName is the path to a file that has been previously uploaded to the
-remote server. This will be imported as the contents of the preload.
+Create a preload from a file already present on the server.
 
 =cut
 
-sub _insert_class {
-    my $self = shift;
+sub import_file {
+    my $class = shift;
     my $insert_data = shift;
     my %opt = @_;
 
-    my $adapter = 'createPreload';
-
-    if (my $import_file_name = delete $opt{fileName}) {
-
-	$opt{param}->{fileName} = $import_file_name;
-	$adapter = 'importPreload';
-
-    }
-
-    $self->SUPER::_insert_class($insert_data, adapter => $adapter, %opt);
+    $class->SUPER::_insert_class($insert_data,
+				 adapter => 'importPreload',
+				 %opt);
 }
 
-=head2 list_meeting_preloads
+=head2 upload
 
-my $preloads = Elive::Entity::Preload->list_meeting_preloads($meeting_id);
+    my $preload1 = Elive::Entity::Preload->upload(
+             {
+		    type => 'whiteboard',
+		    mimeType => 'application/octet-stream',
+		    name => 'introduction.wbd',
+		    ownerId => 357147617360,
+                    data => $binary_data,
+	     },
+         );
 
-Implements the listMeetingPreloads method
+Create a preload from binary data.
 
 =cut
 
-sub list_meeting_preloads {
+sub upload {
     my $class = shift;
-    my $meeting_id = shift;
+    my $insert_data = shift;
     my %opt = @_;
 
-    return $class->fetch({meetingId => $meeting_id},
-			 adapter => 'listMeetingPreloads',
-			 %opt
-	);
+    my $binary_data = delete $insert_data->{data};
+
+    my $length = length($binary_data) ||0;
+
+    $opt{param} = {length => $length}
+    if $length;
+
+    my $self = $class->SUPER::_insert_class($insert_data, %opt);
+
+    if ($length) {
+
+	my $som = $self->connection->call('streamPreload',
+					  preloadId => $self->preloadId,
+					  length => $length,
+					  stream => (SOAP::Data
+						     ->type('hexBinary')
+						     ->value($binary_data)),
+	    );
+
+	$self->_check_for_errors($som);
+    }
+
+    return $self;
 }
 
-=head2 check_meeting_preloads
+=head2 download
 
-my $preloads = Elive::Entity::Preload->check_meeting_preloads($meeting_id);
+    my $preload = Elive::Entity::Preload->retrieve([$preload_id]);
 
-Implements the checkMeetingPreloads method
+    my $data = $preload->download
+
+Create a preload from binary data.
 
 =cut
 
-sub check_meeting_preloads {
-    my $class = shift;
-    my $meeting_id = shift;
+sub download {
+    my $self = shift;
+    my %opt = @_;
 
-    return $class->fetch({meetingId => $meeting_id},
-			 adapter => 'checkMeetingPreloads');
+    my $preload_id = $opt{preload_id};
+    $preload_id ||= $self->preloadId
+	if ref($self);
+
+    die "unable to get a preload_id"
+	unless $preload_id;
+
+
+    my $som = $self->connection->call('getPreloadStream',
+				      preloadId => $self->preloadId,
+	    );
+
+    $self->_check_for_errors($som);
+
+    my $results = $self->_get_results($som);
+
+    return  $self->_hex_decode($results->[0])
+	if $results->[0];
+
+    return undef;
 }
+
 
 sub _thaw {
     my $class = shift;
@@ -149,9 +185,16 @@ sub _hex_decode {
     my $self = shift;
     my $data = shift;
 
-    die "that isn't hex data: ".YAML::Dump($data)
-	unless (length($data) % 2 == 0
-		&& $data =~ m{^[0-9a-f]*$}i);
+    return
+	unless defined $data;
+
+    $data = '0'.$data
+	unless length($data) % 2 == 0;
+
+    my ($non_hex_char) = ($data =~ m{([^0-9a-f])}i);
+
+    die "non hex character in data: ".$non_hex_char
+	if (defined $non_hex_char);
     #
     # Works for simple ascii
     $data =~ s{(..)}{chr(hex($1))}ge;

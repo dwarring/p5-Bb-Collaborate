@@ -1,0 +1,24 @@
+#!perl -T
+
+use Test::More tests => 15;
+
+BEGIN {
+    use_ok( 'Elive' );
+    use_ok( 'Elive::Connection' );
+    use_ok( 'Elive::Array');
+    use_ok( 'Elive::Entity' );
+    use_ok( 'Elive::Entity::Group' );
+    use_ok( 'Elive::Entity::Meeting' );
+    use_ok( 'Elive::Entity::MeetingParameters' );
+    use_ok( 'Elive::Entity::Participant' );
+    use_ok( 'Elive::Entity::ParticipantList' );
+    use_ok( 'Elive::Entity::Role' );
+    use_ok( 'Elive::Entity::ServerDetails' );
+    use_ok( 'Elive::Entity::User' );
+
+    require_ok('script/elive_lint_config');
+    require_ok('script/elive_query');
+    require_ok('script/elive_raise_meeting');
+}
+
+diag( "Testing Elive $Elive::VERSION, Perl $], $^X" );
