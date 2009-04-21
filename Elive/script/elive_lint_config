@@ -1,5 +1,4 @@
 #!/usr/bin/perl
-package Elive::script::elive_lint_config;
 use warnings;
 use strict;
 

@@ -1,5 +1,4 @@
 #!/usr/bin/perl
-package Elive::script::elive_raise_meeting;
 use warnings;
 use strict;
 

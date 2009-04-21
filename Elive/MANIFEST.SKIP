@@ -6,6 +6,8 @@
 Makefile.old
 ^blib/
 ^pm_to_blib$
+# distributions - packed and unpacked
+^Elive-
 # Temp, old and emacs backup files.
 ~$
 .*#$
