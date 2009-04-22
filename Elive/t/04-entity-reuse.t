@@ -43,8 +43,6 @@ my $user2 =  Elive::Entity::User->construct(
      loginName => 'pete'},
     );
 
-_dump_objs();
-
 my $participant_list = Elive::Entity::ParticipantList->construct(
     {
 	meetingId => 9999,

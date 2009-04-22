@@ -88,7 +88,7 @@ $user1->revert;
 my $EMAIL = 'tester@test.org';
 $user1->set(email => $EMAIL);
 
-ok($user1->email eq $EMAIL, 'can set additional attribute');
+ok($user1->email eq $EMAIL, 'can set additional attributes');
 ok($user1->is_changed, 'Setting additional attributes shows as a change');
 
 $user1->set(email => undef);

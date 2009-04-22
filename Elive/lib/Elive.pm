@@ -266,13 +266,14 @@ sub has_metadata {
 
 	no strict 'refs';
 
-	$Meta_Data_Accessor{ $accessor }  = sub {
+	$Meta_Data_Accessor{ $accessor } ||= sub {
 	    my $self = shift;
 	    my $ref = $self->_refaddr
 		or return;
 
-	    $Meta_Data{ $ref }{ $accessor } = $_[0]
-		if @_;
+	    if (@_) {
+		$Meta_Data{ $ref }{ $accessor } = $_[0];
+	    }
 
 	    return $Meta_Data{ $ref }{ $accessor };
 	};
@@ -285,7 +286,16 @@ sub has_metadata {
 
 sub DESTROY {
     my $self = shift;
-    delete  $Meta_Data{ $self->_refaddr };
+    delete  $Meta_Data{Scalar::Util::refaddr($self)};
+}
+
+{
+    #
+    # just in case this is a moose/mouse object - grr
+    #
+    no strict 'refs';
+
+    *{__PACKAGE__.'::DEMOLISH'} = \&DESTROY;
 }
 
 =head1 ERROR MESSAGES
