@@ -869,7 +869,11 @@ sub update {
 );
 
     my $row = $self->_readback($som, \%updates);
-    $self->set($row);
+    #
+    # refresh the object from the database.
+    #
+    $self->set(%$row)
+	if (Elive::Util::_reftype($row) eq 'HASH');
 
     #
     # Save the db image
