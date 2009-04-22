@@ -92,7 +92,7 @@ sub get_by_loginName {
 	      firstName => ...,
 	      lastName => ...,
 	      email => ...,
-	      role => ...,
+	      role => {roleId => 0|1|2|3},
 	    )};
 
 Insert a new user
@@ -123,11 +123,12 @@ sub insert {
 
     $user_obj->update({fld => new_val,...},[force => 1]);
 
+    $user_obj->update(role => {roleId => 1}); # make the user an app admin
     $user_obj->lastName('Smith');
     $user_obj->update(undef,[force => 1]);
 
 Update an Elluminate user. Everything can be changed, other than userId.
-This includes the loginName. However the loginName must be unqiue.
+This includes the loginName. However loginNames must all remain unique.
 
 As a safeguard, you need to pass force => 1 to update
 system administrator accounts
@@ -136,18 +137,17 @@ system administrator accounts
 
 sub update {
     my $self = shift;
-    my %data = %{shift()};
+    my %data = %{shift() || {}};
     my %opt = @_;
 
     unless ($opt{force}) {
 	die "Cowardly refusing to update system admin account: (pass force => 1 to override)"
-	    if ($self->role <= 0);
+	    if ($self->role->stringify <= 0);
     }
 
     my $password = $data{loginPassword};
 
-    my $ret = $self->SUPER::update( \%data, %opt )
-	if (keys %data);
+    my $ret = $self->SUPER::update( \%data, %opt );
 
     #
     # seems we have to insert a record, then set the password
@@ -155,6 +155,8 @@ sub update {
     if (defined $password and $password ne '') {
 	$self->change_password($password);
     }
+
+    return $ret;
 }
 
 =head2 change_password 
