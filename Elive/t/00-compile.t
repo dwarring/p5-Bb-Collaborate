@@ -16,10 +16,23 @@ BEGIN {
     use_ok( 'Elive::Entity::Role' );
     use_ok( 'Elive::Entity::ServerDetails' );
     use_ok( 'Elive::Entity::User' );
+}
 
-    foreach my $script (qw(elive_lint_config elive_query elive_raise_meeting)) {
-	lives_ok(sub{do('script/'.$script)}, "script $script compiles");
-    }
+foreach (qw/elive_query elive_lint_config elive_raise_meeting/) {
+    lives_ok(\&{$_.'::load'}, "script $_ compiles");
 }
 
 diag( "Testing Elive $Elive::VERSION, Perl $], $^X" );
+
+package elive_query;
+sub load{do('script/elive_query')};
+
+package elive_lint_config;
+sub load{do('script/elive_lint_config')};
+
+package elive_raise_meeting;
+sub load{do('script/elive_raise_meeting')};
+
+
+
+
