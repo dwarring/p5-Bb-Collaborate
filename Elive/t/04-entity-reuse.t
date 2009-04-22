@@ -77,10 +77,10 @@ ok(_same_ref($user2, $user2_again), 'nested reuse');
 sub _dump_objs {
     my $live_objects = Elive::Entity->live_entities;
 
-    print "Elive Objects:\n";
+    diag "Elive Objects:\n";
     foreach (keys %$live_objects) {
 	my $o = $live_objects->{$_};
-	print "\t$_ = ".Scalar::Util::refaddr($o)."\n"
+	diag "\t$_ = ".Scalar::Util::refaddr($o)
 	    if ($o);
     }
     print "\n";
