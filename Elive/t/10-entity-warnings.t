@@ -13,7 +13,7 @@ BEGIN {
 Elive->connection(Elive::Connection->new('http://test.org'));
 
 warning_like (\&do_unsaved_update,
-	      qr{destroyed without saving changes},
+	      qr{destroyed without saving .* changes},
 	      'unsaved change gives warning'
     );
 
