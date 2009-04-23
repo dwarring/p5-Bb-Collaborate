@@ -114,7 +114,9 @@ sub upload {
 
     if ($length) {
 
-	my $som = $self->connection->call('streamPreload',
+	my $adapter = Elive->check_adapter('streamPreload');
+
+	my $som = $self->connection->call($adapter,
 					  preloadId => $self->preloadId,
 					  length => $length,
 					  stream => (SOAP::Data
@@ -149,8 +151,8 @@ sub download {
     die "unable to get a preload_id"
 	unless $preload_id;
 
-
-    my $som = $self->connection->call('getPreloadStream',
+    my $adapter = Elive->check_adapter('getPreloadStream');
+    my $som = $self->connection->call($adapter,
 				      preloadId => $self->preloadId,
 	    );
 
