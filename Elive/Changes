@@ -1,5 +1,8 @@
 Revision history for Elive
 
+0.09    22nd April
+       - Extra tests
+
 0.08    22nd April
         Fixed read-back bug in entity updates
 
@@ -14,7 +17,7 @@ Revision history for Elive
         - Added tests for unpack/freeze/thaw. Some resultant bug fixes.
 
 0.04    16th April
-        - Bitten by overloading Elive::Util::parse_type
+        - Elive::Util::parse_type compatibility with Mouse 0.21+
 
 0.03    15th April
         - Bug fixes and enhancements to Participant Lists

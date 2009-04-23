@@ -7,11 +7,11 @@ Elive -  Elluminate Live (c) client library
 
 =head1 VERSION
 
-Version 0.08
+Version 0.09
 
 =cut
 
-our $VERSION = '0.08';
+our $VERSION = '0.09';
 
 use Class::Data::Inheritable;
 use base qw{Class::Data::Inheritable};
