@@ -10,7 +10,7 @@ use Elive;
 use Elive::Entity;
 use Elive::Util;
 use Term::ReadLine;
-use Pod::Usage qw{};
+use Pod::Usage;
 
 use UNIVERSAL;
 
@@ -68,11 +68,8 @@ sub main {
 
     our $connection;
 
-    if ($url) {
-
-	$connection = _connect($url, %options);
-
-    }
+    $connection = _connect($url, %options)
+        if $url;
 
     print "Elive query $version - type 'help' for help\n"
 	if $is_tty;
@@ -352,7 +349,6 @@ sub _getopt {
 			     'username|user=s',
 			     'password|pass=s',
 			     'debug=i',
-			     'eager',
 			     'help|?'
 	) or die pod2usage(1);
 

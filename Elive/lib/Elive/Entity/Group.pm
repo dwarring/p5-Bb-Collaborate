@@ -22,6 +22,11 @@ has 'members' => (is => 'rw', isa => 'ArrayRef[Int]', required => 1,
 
 Elive::Entity::Group - Elluminate Group entity instance class
 
+=head1 DESCRIPTION
+
+These are used to maintain user groups for general use. In particular,
+for group selection of meeting participants.
+
 =cut
 
 =head1 METHODS

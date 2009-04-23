@@ -41,15 +41,16 @@ use Elive::Connection;
 
 =head1 DESCRIPTION
 
-Elluminate Live (c) is is a synchronous web tool virtual online classroom. It
-is suitable for online collaboration, classrooms, demonstrations, meetings,
+Elluminate Live (c) is is a synchronous web tool for virtual online classrooms.
+
+It is suitable for online collaboration, demonstrations, meetings,
 web conferences, seminars and IT deployment, training and support..
 
 This module provides class and object bindings to Elluminate Live server
 via its SOAP/XML command interace.
 
-You can use it to create/read/update and delete entities on an Elluminate
-site. This includes Users, User Groups, Meetings and Meeting Participants.
+You can use it to manage Elluminate sites. This includes Users, User Groups,
+Meetings and Meeting Participants and Preloads.
 
 =cut
 
@@ -70,6 +71,8 @@ our $WARN = 1;
 
     Connects to an Elluminate Server instance. Dies if the connection could
     not be established. For example the connection or user login failed.
+
+    The login user must be a system administrator account.
 
 =cut
 
@@ -318,38 +321,13 @@ for insrtuctions on detecting and repairing missing adapters.
 
 =back
 
-=head1 INSTALLED SCRIPTS
+=head1 SCRIPTS
 
 =head2 elive_query
 
-elive_query is an example script included in the Elive distribution. It is
-a simple program for listing and retrieving entities. It serves both as a
-demonstration script, and to confirm basic operation of Elive.
-
-	% elive_query http://myserver.com/test -username serversupport
-        Password: ********
-	connecting to http://myserver.com/test ...done
-	Elive 0.01 - type 'help' for help
-	elive> help
-	...
-	elive> describe
-	usage: describe group|meeting|meetingParameters|participant|participantList|recording|role|serverDetails|user
-	elive> describe user
-	user: Elive::Entity::User:
-	  userId: pkey Int
-	  deleted: Bool
-	  loginPassword: Str
-	  loginName: Str
-	  email: Str
-	  role: Elive::Entity::Role
-	    roleID:  pkey Int
-	  firstName: Str
-	  lastName: Str
-	elive> select * from users where name like smith*
-	userId|deleted|loginPassword|loginName|email|role|firstName|lastName
-	182324083157|0||john.smith|john@allthesmiths.net|3|John|Smith
-	462298303857|0||sally.smith|sally@smith.id.au|3|Sally|Smith
-	elive>
+elive_query is an example simple sql-like script. It is a basic program
+for listing and retrieving entities. It serves as a simple demonstration
+script, and can be used to confirm basic operation of Elive.
 
 elive_query is simply passing where clauses, but through to the Elluminate
 server as filters on SOAP calls.
@@ -371,9 +349,7 @@ The equivalent Elive method call for the above is
 
     my $participants =  Elive::Entity::MeetingParticpant->retrieve_all(1234567);
 
-Also note that we've got no way of enforcing limits via the SOAP interface.
-be careful the include a where clauses to limit the amount of data returned
-for larger tables. 
+Also be careful to avoid selecting large amounts of data, e.g. all users.
 
 =head2 elive_raise_meeting
 

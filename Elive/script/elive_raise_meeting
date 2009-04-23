@@ -6,7 +6,7 @@ use Getopt::Long;
 use Elive::Util;
 use Elive::Entity;
 use DateTime::Format::ISO8601;
-use Pod::Usage qw{};
+use Pod::Usage;
 
 use Carp;
 

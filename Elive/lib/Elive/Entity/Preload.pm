@@ -56,35 +56,9 @@ has 'data' => (is => 'rw', isa => 'Str',
 
 =cut
 
-=head2 import_file
-
-    my $preload1 = Elive::Entity::Preload->import(
-             {
-		    type => 'whiteboard',
-		    mimeType => 'application/octet-stream',
-		    name => 'introduction.wbd',
-		    ownerId => 357147617360,
-                    fileName => $path_on_server
-	     },
-         );
-
-Create a preload from a file already present on the server.
-
-=cut
-
-sub import_file {
-    my $class = shift;
-    my $insert_data = shift;
-    my %opt = @_;
-
-    $class->SUPER::_insert_class($insert_data,
-				 adapter => 'importPreload',
-				 %opt);
-}
-
 =head2 upload
 
-    my $preload1 = Elive::Entity::Preload->upload(
+    my $preload = Elive::Entity::Preload->upload(
              {
 		    type => 'whiteboard',
 		    mimeType => 'application/octet-stream',
@@ -94,7 +68,7 @@ sub import_file {
 	     },
          );
 
-Create a preload from binary data.
+Upload data from a client and create a preload..
 
 =cut
 
@@ -133,10 +107,9 @@ sub upload {
 =head2 download
 
     my $preload = Elive::Entity::Preload->retrieve([$preload_id]);
+    my $binary_data = $preload->download;
 
-    my $data = $preload->download
-
-Create a preload from binary data.
+Download data for a preload.
 
 =cut
 
@@ -166,6 +139,31 @@ sub download {
     return undef;
 }
 
+=head2 import_file
+
+    my $preload1 = Elive::Entity::Preload->import_file(
+             {
+		    type => 'whiteboard',
+		    mimeType => 'application/octet-stream',
+		    name => 'introduction.wbd',
+		    ownerId => 357147617360,
+                    fileName => $path_on_server
+	     },
+         );
+
+Create a preload from a file that is already present on the server.
+
+=cut
+
+sub import_file {
+    my $class = shift;
+    my $insert_data = shift;
+    my %opt = @_;
+
+    $class->SUPER::_insert_class($insert_data,
+				 adapter => 'importPreload',
+				 %opt);
+}
 
 sub _thaw {
     my $class = shift;
