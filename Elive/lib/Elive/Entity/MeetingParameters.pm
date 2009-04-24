@@ -2,6 +2,7 @@ package Elive::Entity::MeetingParameters;
 use warnings; use strict;
 
 use Mouse;
+use Mouse::Util::TypeConstraints;
 
 use Elive::Entity;
 use base qw{ Elive::Entity };
@@ -14,7 +15,10 @@ __PACKAGE__->primary_key('meetingId');
 has 'costCenter' => (is => 'rw', isa => 'Str');
 has 'moderatorNotes' => (is => 'rw', isa => 'Str');
 has 'userNotes' => (is => 'rw', isa => 'Str');
-has 'recordingStatus' => (is => 'rw', isa => 'Str');
+
+enum RecordingStates => qw(ON OFF REMOTE);
+# todo handle enumerations
+has 'recordingStatus' => (is => 'rw', isa => 'Str|RecordingStates');
 has 'raiseHandOnEnter' => (is => 'rw', isa => 'Bool');
 has 'maxTalkers' => (is => 'rw', isa => 'Int');
 has 'inSessionInvitation' => (is => 'rw', isa => 'Bool');
@@ -23,11 +27,12 @@ has 'inSessionInvitation' => (is => 'rw', isa => 'Bool');
 
 Elive::Entity::MeetingParameters - meeting parameters entity class
 
-    my $meeting = Elive::Entity::Meeting->retrieve($meeting_id);
+    my $meeting = Elive::Entity::Meeting->retrieve(\%meeting_data);
     my $meeting_params
-        = Elive::Entity::MeetingParameters->retrieve($meeting_id);
+        = Elive::Entity::MeetingParameters->retrieve([$meeting->meetingId]);
 
-    my $maxTalkers = $meeting_params->maxTalkers;
+    $meeting_params->maxTalkers(5);
+    $meeting_params->update;
 
 =head1 DESCRIPTION
 
@@ -51,7 +56,7 @@ sub create {shift->_not_available}
 =head2 list
 
 The list method is not available for meeting parameters. You'll need
-to retrieve on a meeting id.
+to create a meeting, then retrieve on meeting id
 
 =cut
 

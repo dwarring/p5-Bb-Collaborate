@@ -444,18 +444,18 @@ meetings and meeting participants.
 
 Elluminate SOAP/XML interface doesn't provide for locking or transactional
 control. The Elluminate server installs with the Mckoi pure Java database
-which only supports JDBC access.
+which supports JDBC access.
 
-Elluminate can also be configured to connect to other databases that support
-both DBI and a JDBC bridge, such as SQL Server or Oracle.
-
-Please see the Elluminate Live advanced administration guide.
+The Elluminate Live advanced installation guide also mentions that it
+can be configured to use other databases that support a JDBC bridge.It
+mentions SQL Server or Oracle. 
 
 =item LDAP Authentication
 
 Elluminate Live can also be configured to use an LDAP respository for
 user authentication.  Users can still be retrieved or listed. However
-updates and deletes are not supported. See also Net::LDAP.
+updates and deletes are not supported by the LDAP DAO adapter. See also
+Net::LDAP.
 
 =back
 
