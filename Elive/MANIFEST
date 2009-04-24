@@ -1,6 +1,5 @@
 .cvsignore
 .releaserc
-bug.txt
 Changes
 inc/Module/Install.pm
 inc/Module/Install/Base.pm
@@ -47,7 +46,6 @@ t/09-entity-connections.t
 t/10-entity-warnings.t
 t/11-entity-errors.t
 t/12-entity-lifecycle.t
-t/20-preload.t
 t/20-soap-preload.t
 t/21-soap-meeting.t
 t/90-pod.t
