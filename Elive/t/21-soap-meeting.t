@@ -1,6 +1,6 @@
 #!perl
 use warnings; use strict;
-use Test::More tests => 17;
+use Test::More tests => 18;
 use Test::Exception;
 
 package main;
@@ -80,8 +80,16 @@ SKIP: {
 	ok($meeting_params->$_ == $parameter_int_data{$_}, "meeting paramter $_ == $parameter_int_data{$_}");
     }
 
-##    lives_ok(sub {$meeting_params->delete},'meeting parameter deletion');
+    my $meeting_id = $meeting->meetingId;
+
     lives_ok(sub {$meeting->delete},'meeting deletion');
+    #
+    # This is arguably an elluminate test. Just want to verify that the
+    # meeting params have been deleted along with the parent record
+    #
+    $meeting_params = undef;
+    dies_ok( sub {Elive::Entity::MeetingParameters->retrieve([$meeting_id])},
+	     'cascaded delete of meeting parameters');
 }
 
 Elive->disconnect;

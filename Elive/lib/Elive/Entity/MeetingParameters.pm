@@ -16,9 +16,8 @@ has 'costCenter' => (is => 'rw', isa => 'Str');
 has 'moderatorNotes' => (is => 'rw', isa => 'Str');
 has 'userNotes' => (is => 'rw', isa => 'Str');
 
-enum RecordingStates => qw(ON OFF REMOTE);
-# todo handle enumerations
-has 'recordingStatus' => (is => 'rw', isa => 'Str|RecordingStates');
+enum enumRecordingStates => '', qw(ON OFF REMOTE);
+has 'recordingStatus' => (is => 'rw', isa => 'enumRecordingStates');
 has 'raiseHandOnEnter' => (is => 'rw', isa => 'Bool');
 has 'maxTalkers' => (is => 'rw', isa => 'Int');
 has 'inSessionInvitation' => (is => 'rw', isa => 'Bool');
@@ -52,6 +51,15 @@ automatically created when you create a table.
 =cut
 
 sub create {shift->_not_available}
+
+=head2 delete
+
+The delete method is not applicable. meeting parameters are deleted
+when the meeting itself is deleted.
+
+=cut
+
+sub delete {shift->_not_available}
 
 =head2 list
 

@@ -43,21 +43,23 @@ use Elive::Connection;
 
 Elluminate Live (c) is is a synchronous web tool for virtual online classrooms.
 
-It is suitable for online collaboration, demonstrations, meetings,
-web conferences, seminars and IT deployment, training and support..
+It is suitable for online collaboration, demonstrations, meetings, web
+conferences, seminars and IT deployment, training and support.
 
-This module provides class and object bindings to Elluminate Live server
-via its SOAP/XML command interace.
+Elive implements Perl object bindings to the Elluminate Live
+SOAP/XML SDK.
 
-You can use it to manage Elluminate sites. This includes Users, User Groups,
-Meetings and Meeting Participants and Preloads.
+It is designed to assist in the management and integration of Elluminate
+Live sites, including user management and meeting setup. It provides
+object bindings to all common entities, including Users, Groups of Users,
+Meetings, Preloads and Meeting Participants.
 
 =cut
 
 __PACKAGE__->mk_classdata('_login');
 __PACKAGE__->mk_classdata('adapter' => 'default');
 
-our $DEBUG = 0;
+our $DEBUG = $ENV{ELIVE_DEBUG};
 our $WARN = 1;
 
 =head1 METHODS
@@ -72,7 +74,7 @@ our $WARN = 1;
     Connects to an Elluminate Server instance. Dies if the connection could
     not be established. For example the connection or user login failed.
 
-    The login user must be a system administrator account.
+    The login user must be an Elluminate Live system administrator account.
 
 =cut
 

@@ -240,7 +240,7 @@ sub _cmp_col {
 	    my $v1 = $v1[$i];
 	    my $v2 = $v2[$i];
 
-	    if ($is_struct || $type =~ m{Str}i) {
+	    if ($is_struct || $type =~ m{^(Str|Enum)}i) {
 		# string comparision. works on simple strings and
 		# stringified entities.
 		# 

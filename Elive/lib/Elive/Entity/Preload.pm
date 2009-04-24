@@ -31,9 +31,8 @@ __PACKAGE__->collection_name('Preloads');
 has 'preloadId' => (is => 'rw', isa => 'Int', required => 1);
 __PACKAGE__->primary_key('preloadId');
 
-enum PreloadTypes => qw(media blackboard);
-# to do handle enumsy
-has 'type' => (is => 'rw', isa => 'Str|PreloadTypes', required => 1,
+enum enumPreloadTypes => qw(media whiteboard);
+has 'type' => (is => 'rw', isa => 'enumPreloadTypes', required => 1,
 	       documentation => 'preload type. media or blackboard',
     );
 

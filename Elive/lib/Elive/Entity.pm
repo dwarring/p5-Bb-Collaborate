@@ -270,7 +270,6 @@ sub _freeze {
 		    $_ = __tidy_decimal($_)
 			if defined;
 		}
-
 	    }
 	}
     } 
@@ -367,19 +366,19 @@ sub _thaw {
 		    $_ = _thaw("$type", $_, $path . $idx);
 
 		}
-		elsif ($type =~ m{Bool}i) {
+		elsif ($type =~ m{^Bool}i) {
 		    #
 		    # Perlise boolean flags..
 		    #
 		    $_ = m{true}i ? 1 : 0;
 		}
-		elsif ($type =~ m{Str}i) {
+		elsif ($type =~ m{^(Str|Enum)}i) {
 		    #
 		    # l-r trim
 		    #
 		    s{^ \s* (.*?) \s* $}{$1}x;
 		}
-		elsif ($type =~ m{Int}i) {
+		elsif ($type =~ m{^Int}i) {
 		    $_ = __tidy_decimal($_);
 		}
 		else {

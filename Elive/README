@@ -1,5 +1,5 @@
-Elive is a set of Perl modules for access to Elluminate Live virtual
-classroom server.
+Elive is a set of Perl modules for management and integration of Elluminate
+Live virtual classroom servers.
 
 You can, for example, use it to query or add users, create sessions, assign
 users as class participants and change server settings.
@@ -28,11 +28,8 @@ POST INSTALLATION
 
        This script will check for missing adapters.
 
-       It is recommended that you run this script on your configuration
-       files for each Elluminate site instance.
-
-       You'll probably want to copy the site configuration from the server
-       and run this script on it there.
+       It is recommended that you run this script on your Elluminate
+       Live site configuration files.
 
        For a Unix server the configration for path http://myserver/mysite/
        should be found under:
@@ -47,9 +44,9 @@ POST INSTALLATION
 
 	     WEB-INF/resources/configuration.xml
 
-          If any adapters are missing, the corresponding Elive calls
-          will return the error message 'Unable to determine a command
-          for the key Xxxxx'.
+        If any adapters are missing, the corresponding Elive calls will
+        return the error message 'Unable to determine a command for the key
+        Xxxxx'.
 
           If you get this error, please check that your Elluminate Live
           software is up-to-date. I.e. you've installed all upgrades and

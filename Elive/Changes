@@ -1,13 +1,13 @@
 Revision history for Elive
 
-0.09    22nd April
-       - Extra tests
+0.09    25nd April
+        - Beefing up test suite. In particular added optional SOAP tests.
 
 0.08    22nd April
-        Fixed read-back bug in entity updates
+        - Fixed read-back bug in entity updates
 
 0.07    21st April
-        Added 'upload' and 'download' methods for Elive::Entity::Preload
+        - Added 'upload' and 'download' methods for Elive::Entity::Preload
 
 0.06    18th April
         - several fixes to elive_raise_meeting
