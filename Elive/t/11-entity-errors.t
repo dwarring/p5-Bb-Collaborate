@@ -1,6 +1,6 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 12;
+use Test::More tests => 18;
 use Test::Exception;
 
 package main;
@@ -9,6 +9,8 @@ BEGIN {
 	use_ok( 'Elive' );
 	use_ok( 'Elive::Connection' );
 	use_ok( 'Elive::Entity::User' );
+	use_ok( 'Elive::Entity::Preload' );
+	use_ok( 'Elive::Entity::MeetingParameters' );
 }
 
 Elive->connection(Elive::Connection->new('http://test.org'));
@@ -81,4 +83,49 @@ dies_ok(
     "setter on unknown field - dies"
     );
 
+lives_ok(
+	 sub {Elive::Entity::MeetingParameters->construct
+	     ({
+		 meetingId => 1111111,
+		 recordingStatus => 'REMOTE',
+	      })},
+	      'meeting parameters - valid recordingStatus - lives',
+    );       
+
+dies_ok(
+    sub {Elive::Entity::MeetingParameters->construct
+	     ({
+		 meetingId => 222222,
+		 recordingStatus => 'CRUD',
+	      })},
+	      'meeting parameters - invalid recordingStatus - dies',
+    );       
+
+lives_ok(
+	 sub {Elive::Entity::Preload->construct
+	     ({
+		 preloadId => 333333,
+		 name => 'test.swf',
+		 mimeType => 'mimeType=application/x-shockwave-flash',
+		 ownerId => 123456789000,
+		 size => 1024,
+		 type => 'media',
+	      })},
+	      'meeting parameters - valid type - lives',
+    );       
+
+dies_ok(
+	 sub {Elive::Entity::Preload->construct
+	     ({
+		 preloadId => 333333,
+		 name => 'test.swf',
+		 mimeType => 'mimeType=application/x-shockwave-flash',
+		 ownerId => 123456789000,
+		 size => 1024,
+		 type => 'crud',
+	      })},
+	      'meeting parameters - invalid type - dies',
+    );       
+
 $user_data->revert;
+Elive->disconnect;
