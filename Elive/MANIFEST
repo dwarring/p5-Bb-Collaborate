@@ -1,5 +1,6 @@
 .cvsignore
 .releaserc
+bug.txt
 Changes
 inc/Module/Install.pm
 inc/Module/Install/Base.pm
@@ -41,9 +42,14 @@ t/04-entity-reuse.t
 t/05-entity-unpack.t
 t/06-entity-freeze.t
 t/07-entity-thaw.t
+t/08-entity-urls.t
+t/09-entity-connections.t
 t/10-entity-warnings.t
 t/11-entity-errors.t
+t/12-entity-lifecycle.t
 t/20-preload.t
+t/20-soap-preload.t
+t/21-soap-meeting.t
 t/90-pod.t
 t/91-pod-coverage.t
 t/99-kwalitee.t
