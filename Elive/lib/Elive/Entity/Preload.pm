@@ -2,6 +2,7 @@ package Elive::Entity::Preload;
 use warnings; use strict;
 
 use Mouse;
+use Mouse::Util::TypeConstraints;
 
 use Elive::Entity;
 use base qw{ Elive::Entity };
@@ -30,8 +31,9 @@ __PACKAGE__->collection_name('Preloads');
 has 'preloadId' => (is => 'rw', isa => 'Int', required => 1);
 __PACKAGE__->primary_key('preloadId');
 
-has 'type' => (is => 'rw', isa => 'Str', required => 1,
-	       documentation => 'media or blackboard(?)',
+enum preloadTypes => qw(media blackboard);
+has 'type' => (is => 'rw', isa => 'preloadTypes', required => 1,
+	       documentation => 'preload type. media or blackboard',
     );
 
 has 'name' => (is => 'rw', isa => 'Str', required => 1,
@@ -51,6 +53,7 @@ has 'size' => (is => 'rw', isa => 'Int', required => 1,
 
 has 'data' => (is => 'rw', isa => 'Str',
 	       documentation => 'The contents of the preload.');
+
 
 =head1 METHODS
 
