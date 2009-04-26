@@ -7,11 +7,11 @@ Elive -  Elluminate Live (c) client library
 
 =head1 VERSION
 
-Version 0.09
+Version 0.10
 
 =cut
 
-our $VERSION = '0.09';
+our $VERSION = '0.10';
 
 use Class::Data::Inheritable;
 use base qw{Class::Data::Inheritable};
@@ -57,6 +57,7 @@ Meetings, Preloads and Meeting Participants.
 =cut
 
 __PACKAGE__->mk_classdata('_login');
+__PACKAGE__->mk_classdata('_server_details');
 __PACKAGE__->mk_classdata('adapter' => 'default');
 
 our $DEBUG = $ENV{ELIVE_DEBUG};
@@ -133,6 +134,36 @@ return the user entity used to connect to the server
 sub login {
     return shift->_login
 }
+
+=head2 server_details
+
+return the server details for entity for the current connection.
+
+=cut
+
+sub server_details {
+    my $class = shift;
+
+    my $connection = $class->connection
+	or die "not connected";
+
+    my $server_details = $class->_server_details;
+
+    unless ($server_details) {
+
+	my $server_details_list = Elive::Entity::ServerDetails->list();
+
+	die "unable to get server details"
+	    unless (Elive::Util::_reftype($server_details_list) eq 'ARRAY'
+		    && $server_details_list->[0]);
+
+	$server_details = ($server_details_list->[0]);
+
+	$class->_server_details($server_details);
+    }
+
+    return $server_details;
+}
     
 =head2 disconnect
 
@@ -144,8 +175,11 @@ exiting your program
 sub disconnect {
     my $class = shift;
 
-    $class->connection(undef);
+    $class->_server_details(undef);
     $class->_login(undef);
+    $class->connection(undef);
+
+    return undef;
 }
 
 =head2 debug
@@ -204,17 +238,17 @@ our %KnownAdapters;
 
 BEGIN {
     @KnownAdapters{qw(
-addGroupMember addMeetingPreload attendanceNotification
-changePassword checkMeetingPreload
-createGroup createMeeting createPreload createRecording createUser
-deleteGroup deleteMeeting deleteParticipant deleteRecording deletePreload deleteUser
-getGroup getMeeting getMeetingParameters getPreload getPreloadStream getRecording getRecordingStream getServerDetails getUser
-importPreload
-listGroups listMeetingPreloads listMeetings listParticipants listPreloads listRecordings listUserMeetingsByDate listUsers
-resetGroup resetParticipantList
-setParticipantList
-streamPreload streamRecording
-updateMeeting updateMeetingParameters updateRecording updateServerParameters updateUser)} = undef;
+addGroupMember addMeetingPreload attendanceNotification changePassword
+checkMeetingPreload createGroup createMeeting createPreload createRecording
+createUser deleteGroup deleteMeeting deleteParticipant deleteRecording
+deletePreload deleteUser getGroup getMeeting getMeetingParameters getPreload
+getPreloadStream getRecording getRecordingStream getServerDetails getUser
+importPreload listGroups listMeetingPreloads listMeetings listParticipants
+listPreloads listRecordings listUserMeetingsByDate listUsers resetGroup
+resetParticipantList setParticipantList streamPreload streamRecording
+updateMeeting updateMeetingParameters updateRecording updateServerParameters
+updateUser
+)} = undef;
 }
 
 =head2 check_adapter
@@ -448,9 +482,9 @@ Elluminate SOAP/XML interface doesn't provide for locking or transactional
 control. The Elluminate server installs with the Mckoi pure Java database
 which supports JDBC access.
 
-The Elluminate Live advanced installation guide also mentions that it
-can be configured to use other databases that support a JDBC bridge.It
-mentions SQL Server or Oracle. 
+The Elluminate Live advanced configuration guide mentions that it can be
+configured to use other databases that support a JDBC bridge (most databases
+in widespread use do). However, it specifcally mentions SQL Server or Oracle. 
 
 =item LDAP Authentication
 
