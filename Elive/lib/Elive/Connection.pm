@@ -75,7 +75,7 @@ sub call {
 
     $params{adapter} ||= 'default';
 
-    my @soap_params = (SOAP::Data->name('_')->value(''),
+    my @soap_params = (SOAP::Data->name('_')->uri('')->value(''),
 		       SOAP::Header->type(xml => $self->_soap_header_xml()),
 		       SOAP::Data->name('command')->value($cmd),
 	);
