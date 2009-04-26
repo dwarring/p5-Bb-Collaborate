@@ -9,17 +9,24 @@ use base qw{ Elive::Entity };
 
 __PACKAGE__->entity_name('MeetingParameters');
 
-has 'meetingId' => (is => 'rw', isa => 'Int', required => 1);
+has 'meetingId' => (is => 'rw', isa => 'Int', required => 1,
+    documentation => 'associated meeting');
 __PACKAGE__->primary_key('meetingId');
 
-has 'costCenter' => (is => 'rw', isa => 'Str');
-has 'moderatorNotes' => (is => 'rw', isa => 'Str');
-has 'userNotes' => (is => 'rw', isa => 'Str');
+has 'costCenter' => (is => 'rw', isa => 'Str',
+    documentation => 'user defined cost center');
+has 'moderatorNotes' => (is => 'rw', isa => 'Str',
+    documentation => 'meeting instructions for moderator(s)');
+has 'userNotes' => (is => 'rw', isa => 'Str',
+    documentation => 'meeting instructions for all participants');
 
 enum enumRecordingStates => '', qw(ON OFF REMOTE);
-has 'recordingStatus' => (is => 'rw', isa => 'enumRecordingStates');
-has 'raiseHandOnEnter' => (is => 'rw', isa => 'Bool');
-has 'maxTalkers' => (is => 'rw', isa => 'Int');
+has 'recordingStatus' => (is => 'rw', isa => 'enumRecordingStates',
+    documentation => 'recording status; ON, OFF or REMOTE (start/stopped by moderator)');
+has 'raiseHandOnEnter' => (is => 'rw', isa => 'Bool',
+    documentation => 'raise hands automatically when users join');
+has 'maxTalkers' => (is => 'rw', isa => 'Int',
+    documentation => 'maximum number of simultaneous talkers');
 has 'inSessionInvitation' => (is => 'rw', isa => 'Bool');
 
 =head1 NAME
