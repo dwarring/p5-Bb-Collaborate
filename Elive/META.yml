@@ -1,0 +1,46 @@
+---
+abstract: 'Elluminate Live (c) client library'
+author:
+  - 'David Warring <david.warring@gmail.com>'
+build_requires:
+  Test::Exception: 0
+  Test::More: 0
+  Test::Warn: 0
+configure_requires:
+  ExtUtils::MakeMaker: 6.30
+distribution_type: module
+generated_by: 'Module::Install version 0.81'
+license: perl
+meta-spec:
+  url: http://module-build.sourceforge.net/META-spec-v1.4.html
+  version: 1.4
+module_name: Elive
+name: Elive
+no_index:
+  directory:
+    - inc
+    - t
+requires:
+  Carp: 0
+  Class::Accessor: 0
+  Class::Data::Inheritable: 0
+  DateTime: 0
+  DateTime::Format::ISO8601: 0
+  File::Spec: 0
+  Getopt::Long: 0
+  HTML::Entities: 0
+  IO::Prompt: 0
+  Mouse: 0.21
+  Pod::Usage: 0
+  SOAP::Lite: 0.69
+  Scalar::Util: 0
+  Storable: 0
+  Term::ReadKey: 0
+  Term::ReadLine: 0
+  URI: 0
+  XML::Simple: 0
+  YAML: 0
+  perl: 5.005
+resources:
+  license: http://dev.perl.org/licenses/
+version: 0.09
