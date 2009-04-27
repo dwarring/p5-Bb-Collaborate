@@ -8,6 +8,7 @@ use Elive::Entity;
 use base qw{ Elive::Entity };
 
 use SOAP::Lite;  # contains SOAP::Data package
+use MIME::Types;
 
 =head1 NAME
 
@@ -64,14 +65,15 @@ has 'data' => (is => 'rw', isa => 'Str',
     my $preload = Elive::Entity::Preload->upload(
              {
 		    type => 'whiteboard',
-		    mimeType => 'application/octet-stream',
 		    name => 'introduction.wbd',
 		    ownerId => 357147617360,
                     data => $binary_data,
 	     },
          );
 
-Upload data from a client and create a preload..
+Upload data from a client and create a preload.  If a c<mimeType> is not
+supplied, it will be guessed from the extension, using MIME::Types. 
+
 
 =cut
 
@@ -85,7 +87,10 @@ sub upload {
     my $length = length($binary_data) ||0;
 
     $opt{param} = {length => $length}
-    if $length;
+        if $length;
+
+    $insert_data->{mimeType} ||= $class->_guess_mimetype($insert_data->{name})
+	if $insert_data->{name};
 
     my $self = $class->SUPER::_insert_class($insert_data, %opt);
 
@@ -147,14 +152,15 @@ sub download {
     my $preload1 = Elive::Entity::Preload->import_file(
              {
 		    type => 'whiteboard',
-		    mimeType => 'application/octet-stream',
 		    name => 'introduction.wbd',
 		    ownerId => 357147617360,
                     fileName => $path_on_server
 	     },
          );
 
-Create a preload from a file that is already present on the server.
+Create a preload from a file that is already present on the server. If
+a c<mimeType> is not supplied, it will be guessed from the extension,
+using MIME::Types.
 
 =cut
 
@@ -162,6 +168,9 @@ sub import_file {
     my $class = shift;
     my $insert_data = shift;
     my %opt = @_;
+
+    $insert_data->{mimeType} ||= $class->_guess_mimetype($insert_data->{name})
+	if $insert_data->{name};
 
     $class->SUPER::_insert_class($insert_data,
 				 adapter => 'importPreload',
@@ -212,6 +221,25 @@ sub _hex_encode {
     $data =~ s{(.)}{sprintf("%02x", ord($1))}ges;
 
     return $data;
+}
+
+our $mime_types;
+
+sub _guess_mimetype {
+    my $class = shift;
+    my $filename = shift;
+
+    $mime_types ||= MIME::Types->new;
+
+    my $mime_type = $mime_types->mimeTypeOf($filename);
+
+    my $guess;
+    $guess = $mime_type->type
+	if $mime_type;
+
+    $guess ||= 'application/octet-stream';
+
+    return $guess;
 }
 
 1;

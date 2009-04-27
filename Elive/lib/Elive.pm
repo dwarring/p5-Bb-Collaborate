@@ -46,13 +46,14 @@ Elluminate Live (c) is is a synchronous web tool for virtual online classrooms.
 It is suitable for online collaboration, demonstrations, meetings, web
 conferences, seminars and IT deployment, training and support.
 
-Elive implements Perl object bindings to the Elluminate Live
-SOAP/XML SDK.
+Users, Meetings and other resources are stored in a management database.
+These can managed via the Elluminate Live web server. Most actions can also
+be performed via a Elluminate Live's SOAP/XML SDK.
 
-It is designed to assist in the management and integration of Elluminate
-Live sites, including user management and meeting setup. It provides
-object bindings to all common entities, including Users, Groups of Users,
-Meetings, Preloads and Meeting Participants.
+Elive implements Perl object bindings for the Elluminate Live SOAP/XML SDK.
+
+It is designed to assist in then integration and automation of Elluminate
+Live sites. In particular, managing users and meetings..
 
 =cut
 

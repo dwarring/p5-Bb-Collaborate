@@ -30,6 +30,7 @@ requires:
   Getopt::Long: 0
   HTML::Entities: 0
   IO::Prompt: 0
+  MIME::Types: 0
   Mouse: 0.21
   Pod::Usage: 0
   SOAP::Lite: 0.69
@@ -43,4 +44,4 @@ requires:
   perl: 5.005
 resources:
   license: http://dev.perl.org/licenses/
-version: 0.09
+version: 0.10
