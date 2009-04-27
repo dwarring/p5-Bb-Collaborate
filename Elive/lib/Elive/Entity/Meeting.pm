@@ -96,7 +96,7 @@ available as both class level and object level methods.
 =head3 Examples
 
     #
-    # Class level access. This may save an unessesary fetch.
+    # Class level access. This may save an unecessary fetch.
     #
     my $url = Elive::Entity::Meeting->meeting_url(
                      meeting_id => $meeting_id,
@@ -167,7 +167,11 @@ Associate a preload with a meeting
 
 sub add_preload {
     my $self = shift;
+    my $preload = shift;
     my %opt = @_;
+
+    die 'usage: $meeting_obj->add_preload($preload || $preload_id)'
+	unless $preload;
 
     my $meeting_id = $opt{meeting_id};
 
@@ -177,9 +181,9 @@ sub add_preload {
     die "unable to determine meeting_id"
 	unless $meeting_id;
 
-    my $preload_id = $opt{preload_id};
-    $preload_id ||= $self->preloadId
-	if ref($self);
+    my $preload_id = ref($preload)
+	? $preload->preloadId
+	: $preload;
 
     die "unable to determine preload_id"
 	unless $preload_id;
