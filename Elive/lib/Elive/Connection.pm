@@ -34,22 +34,26 @@ sub new {
 
     my $uri_obj = URI->new($url, 'http');
 
-    my @path = File::Spec->splitdir( $uri_obj->path );
+    my @path = File::Spec->splitdir($uri_obj->path);
 
-    push (@path, 'webservice.event')
-	unless (@path && $path[-1] eq 'webservice.event');
+    pop (@path)
+	if (@path && $path[-1] eq 'webservice.event');
 
-    $uri_obj->path( File::Spec->catdir(@path) );
+    $uri_obj->path(File::Spec->catdir(@path));
+    my $restful_url = $uri_obj->as_string;
 
-    warn "connecting to ".$uri_obj->as_string
+    $uri_obj->path(File::Spec->catdir(@path, 'webservice.event'));
+    my $soap_url = $uri_obj->as_string;
+
+    warn "connecting to ".$soap_url
 	if ($opt{debug});
 
-    my $soap = SOAP::Lite->new(proxy => $uri_obj->as_string );
+    my $soap = SOAP::Lite->new(proxy => $soap_url );
 
     my $self = {};
     bless $self, $class;
 
-    $self->url($uri_obj->as_string);
+    $self->url($restful_url);
     $self->user($user);
     $self->pass($pass);
     $self->soap($soap);
