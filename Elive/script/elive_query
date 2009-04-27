@@ -81,7 +81,7 @@ sub main {
 	    if $elive_version;
     }
 
-    print "Elive query $elive_version $server_version - type 'help' for help\n"
+    print "Elive client $elive_version $server_version - type 'help' for help\n"
 	if $is_tty;
 
     while (defined (my $cmd = $is_tty? $term->readline($prompt): <STDIN>)) {

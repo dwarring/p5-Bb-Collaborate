@@ -132,7 +132,28 @@ return the user entity used to connect to the server
 =cut
 
 sub login {
-    return shift->_login
+    my $class = shift;
+
+    my $connection = $class->connection
+	or die "not connected";
+
+    my $login_entity = $class->_login;
+
+    unless ($login_entity) {
+
+	my $username = $connection->user
+	    or return;
+
+	eval "use  Elive::Entity::Login";
+	die $@ if $@;
+
+	$login_entity = Elive::Entity::User->get_by_loginName($username)
+	    or die "unable to get login user: $username";
+
+	$class->_login($login_entity);
+    }
+
+    return $login_entity;
 }
 
 =head2 server_details
@@ -150,6 +171,9 @@ sub server_details {
     my $server_details = $class->_server_details;
 
     unless ($server_details) {
+
+	eval "use  Elive::Entity::ServerDetails";
+	die $@ if $@;
 
 	my $server_details_list = Elive::Entity::ServerDetails->list();
 
