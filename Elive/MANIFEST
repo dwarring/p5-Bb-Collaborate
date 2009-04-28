@@ -1,4 +1,5 @@
 .cvsignore
+.profile
 .releaserc
 Changes
 inc/Module/Install.pm
@@ -23,6 +24,7 @@ lib/Elive/Entity/Preload.pm
 lib/Elive/Entity/Recording.pm
 lib/Elive/Entity/Role.pm
 lib/Elive/Entity/ServerDetails.pm
+lib/Elive/Entity/ServerParameters.pm
 lib/Elive/Entity/User.pm
 lib/Elive/Struct.pm
 lib/Elive/Util.pm

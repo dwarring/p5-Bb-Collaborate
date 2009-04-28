@@ -14,6 +14,10 @@ Makefile.old
 \.#
 .log$
 #
+# Devel::Cover junk
+#
+^cover_db/
+#
 # kwalitee.t junk
 #
 ^Debian_CPANTS\.txt
@@ -23,6 +27,6 @@ Makefile.old
 ^1$
 ^2$
 #
-# The distribution itself
+# Anything that's gzipped
 #
 \.gz$

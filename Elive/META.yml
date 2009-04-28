@@ -39,6 +39,7 @@ requires:
   Storable: 0
   Term::ReadKey: 0
   Term::ReadLine: 0
+  Term::ReadLine::Perl: 0
   URI: 0
   XML::Simple: 0
   YAML: 0

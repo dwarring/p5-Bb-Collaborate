@@ -23,7 +23,6 @@ SKIP: {
 	22)
 	unless $auth;
 
-    Elive->debug(4);
     Elive->connect(@$auth);
 
     my %meeting_str_data = (
@@ -45,7 +44,7 @@ SKIP: {
 
     foreach ('name') {
 	#
-	# returned recxord doesn't contain password
+	# returned record doesn't contain password
 	ok($meeting->$_ eq $meeting_str_data{$_}, "meeting $_ eq $meeting_str_data{$_}");
     }
 

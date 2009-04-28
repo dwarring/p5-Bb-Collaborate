@@ -88,22 +88,36 @@ sub _freeze {
     my $class = shift;
     my $data = shift;
 
-    warn YAML::Dump({server_parameter_data => $data})
-	if $class->debug;
-
-
     my $frozen = $class->SUPER::_freeze($data, @_);
     #
-    # update parameters don't quite match readback
-    warn YAML::Dump({frozen => $frozen})
-	if $class->debug;
-
-    $frozen->{boundary} =  delete $frozen->{boundaryMinutes};
-    $frozen->{permissionsOn} =  delete $frozen->{fullPermissions};
+    # Some properties require aliasing. The update names are
+    # different to the fetched names.
+    #
+    $frozen->{boundary} = delete $frozen->{boundaryMinutes};
+    $frozen->{permissionsOn} = delete $frozen->{fullPermissions};
 
     return $frozen;
 
 }
+
+=head2 update
+
+    my $server_parameters
+         = Elive::Entity::ServerParameters->fetch([$meeting_id]);
+
+    $server_parameters->update({
+	    boundaryMinutes => 15,
+	    fullPermissions => 1,
+	    supervised => 1,
+        });
+
+Updates the meeting boundary times, permissions and whether the meeting is
+supervised.
+
+Note: although maxTalkers (maximum number of simultaneous talkers) is
+retrieved via this entity, but must be updated via Elive::Entity::Meeting.
+
+=cut
 
 sub update {
     my $self = shift;

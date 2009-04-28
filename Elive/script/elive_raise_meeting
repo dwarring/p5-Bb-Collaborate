@@ -188,9 +188,6 @@ sub main {
 	    warn "duplicate user: $user_spec"
 	}
 	else {
-	    warn "participant: ".Elive::Util::string($user_obj)
-		if $debug;
-
 	    push (@participants, 
 		  Elive::Entity::Participant->new({
 		      user => $user_obj,
@@ -204,7 +201,6 @@ sub main {
 	    name => $meeting_name,
 	    password => $meeting_password,
 	    facilitatorId => $facilitator_obj->stringify,
-##	    privateMeeting => $private,
 	    start => $start->epoch * 1000,
 	    end => $end->epoch * 1000,
 	);
@@ -243,9 +239,6 @@ sub main {
 	    = Elive::Entity::ServerParameters->retrieve([$meeting->meetingId])
 	    or die "Unable to retrieve server parameters for this meeting";
 
-	warn YAML::Dump({server_parameters => $server_parameters})
-	    if Elive->debug;
-	
 	$server_parameters->boundaryMinutes($boundary)
 	    if defined $boundary;
 

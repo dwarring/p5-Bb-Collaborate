@@ -625,9 +625,10 @@ sub _readback_check {
 
 		foreach ($read_val, $write_val) {
 		    bless $_, 'Elive::Array'  # gives a nice stringified digest
-			if (Elive::Util::_reftype($_) eq 'ARRAY');
+			if (Elive::Util::_reftype($_) eq 'ARRAY'
+			&& !Scalar::Util::blessed($_));
 		}
-		die "Update consistancy check failed on $_. Wrote:$write_val, read-back:$read_val, column: $_"
+		die "Update consistancy check failed on $_: wrote:".Elive::Util::string($write_val).", read-back:".Elive::Util::string($read_val);
 	    }
 	}
     }
