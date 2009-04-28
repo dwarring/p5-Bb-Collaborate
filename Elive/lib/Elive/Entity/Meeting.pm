@@ -53,17 +53,27 @@ has 'name' => (is => 'rw', isa => 'Str', required => 1,
 
 =head3 synopsis
 
+    #
+    # Simple case, single meeting
+    #
     my $meeting = Elive::Entity::Meeting->insert({
         start => hires_time,
         end => hires_time,
         name => string,
         password =. string,
         seats => int,
-        private => 0|1,
-        recurrenceCount => int,
-        recurrenceDays => int,
+        privateMeeting => 0|1,
         timeZone => string
        });
+
+    #
+    # A recurring series of meetings:
+    #
+    my @meetings = Elive::Entity::Meeting->insert({
+                            ...,
+                            recurrenceCount => n,
+                            recurrenceDays => 7,
+                        });
 
 =cut
 
@@ -327,12 +337,17 @@ sub _freeze {
 	$frozen->{facilitator} =  $facilitatorId;
     }
 
+    if (defined(my $privateMeeting = delete $frozen->{privateMeeting})) {
+	$frozen->{private} =  $privateMeeting;
+    }
+
     return $frozen;
 }
 
 sub _readback_check {
     my $class = shift;
     my %updates = %{shift()};
+    my $rows = shift;
 
     #
     # password not included in readback record - skip it
@@ -340,7 +355,15 @@ sub _readback_check {
 
     delete $updates{password};
 
-    $class->SUPER::_readback_check(\%updates, @_);
+    #
+    # A series of recurring meetings can potentially be returned.
+    # to do: would be to check for correct ascension of start and
+    # end times. 
+    # just lop it for now
+    #
+    $rows = [$rows->[0]] if @$rows > 1;
+
+    $class->SUPER::_readback_check(\%updates, $rows, @_);
 }
 
 sub _thaw {

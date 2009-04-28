@@ -1,6 +1,6 @@
 #!perl
 use warnings; use strict;
-use Test::More tests => 26;
+use Test::More tests => 27;
 use Test::Exception;
 
 package main;
@@ -11,6 +11,8 @@ BEGIN {
     use_ok( 'Elive::Entity::MeetingParameters' );
     use_ok( 'Elive::Entity::ServerParameters' );
 };
+
+use Carp; $SIG{__DIE__} = \&Carp::confess;
 
 my $class = 'Elive::Entity::Meeting' ;
 
@@ -34,11 +36,11 @@ SKIP: {
 	facilitatorId => Elive->login->userId,
 	start => time() * 1000,
 	end => (time()+900) * 1000,
-##	privateMeeting => 1,
+	privateMeeting => 1,
 	
     );
 
-    my $meeting = $class->insert({%meeting_int_data, %meeting_str_data});
+    my ($meeting) = $class->insert({%meeting_int_data, %meeting_str_data});
 
     isa_ok($meeting, $class, 'meeting');
 

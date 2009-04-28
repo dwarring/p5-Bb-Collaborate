@@ -1,11 +1,12 @@
 Revision history for Elive
 
 0.10    28th April
-        Added Elive::Entity::ServerParameters (isa table for meetings)
-        Extra Parameters added to elive_raise_meeting
-        -upload     -- upload a whiteboard/media file preload
-        -import     -- import a server-side whiteboard/media file preload
-        -max_talkers n -boundary m -recording on|off|auto
+        - Added support for recurring meetings
+        - Added Elive::Entity::ServerParameters (isa table for meetings)
+        - Extra Parameters added to elive_raise_meeting
+            -upload     -- upload a whiteboard/media file preload
+            -import     -- import a server-side whiteboard/media file preload
+            -max_talkers n -boundary m -recording on|off|auto
 
 0.09    25nd April
         - Beefing up test suite. In particular added optional SOAP tests.
