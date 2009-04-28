@@ -3,12 +3,22 @@ use warnings;
 use strict;
 
 use Getopt::Long;
-use Elive::Util;
-use Elive::Entity;
 use DateTime::Format::ISO8601;
 use Pod::Usage;
+use File::Basename qw{};
 
 use Carp;
+
+use Elive;
+use Elive::Util;
+use Elive::Entity;
+use Elive::Entity::Meeting;
+use Elive::Entity::MeetingParameters;
+use Elive::Entity::ServerParameters;
+use Elive::Entity::Participant;
+use Elive::Entity::ParticipantList;
+use Elive::Entity::Preload;
+use Elive::Entity::User;
 
 =head1 NAME
 
@@ -16,19 +26,31 @@ elive_raise_meeting
 
 =head1 SYNOPSIS
 
-% elive_raise_meeting   http://myserver.com/my-site[:port] userid[=role] [userid[=role]...]
+% elive_raise_meeting http://myserver.com/my-site[:port] userid[=role] [userid[=role]...]
 
     -user someuser              # server login user
     -pass somepass              # server login password
 
-    -facilitator userId
-    -name 'my meeting name'
+  Basic Settings
+
+    -facilitator  userId
+    -name        'meeting name' # name the meeting
     -meeting_pass otherpass     # meeting password
-    -preload file               # local file to upload as a preload
     -start  'YYYY-MM-DD HH:MM'  # start time
     -end '[YYYY-MM-DD] HH::MM'  # end time
-    -max_talkers                # max no. of simultaneous talkers
-    -help
+
+  Advanced Settings
+
+    -boundary     0|15|30|..    # number minutes participants can arrive before
+                                # or leave after the sceduled meeting times.
+    -max_talkers n              # max no. of simultaneous talkers
+    -upload       local_file    # upload a file as a preload
+    -import       remote_file   # import a file on the server as a preload
+    -recording    on|off|auto   # set recording status
+    -raise_hands                # automatically raise hands on entry
+    -seats        count         # number of seats to reserve
+
+    -help                       # Get this help
 
 =head1 DESCRIPTION
 
@@ -50,10 +72,15 @@ my $end_str;
 my $meeting_name = 'elive test meeting';
 my $meeting_password;
 my $max_talkers = 1;
+my $recording = 'auto';
 my $raise_hands;
-my $preload;
+my $import;
+my $private;
+my $upload;
 my $url;
 my $help;
+my $boundary = 15;
+my $seats;
 
 main(@ARGV) unless caller;
 
@@ -71,13 +98,22 @@ sub main {
 	'meeting_password|meeting_pass=s' => \$meeting_password,
 	'max_talkers=i' => \$max_talkers,
 	'raise_hands' => \$raise_hands,
-##	   'private' => \$private,
+	'private' => \$private,
 	'debug=i' => \$debug,
 	'help|?' => \$help,
-	'preload' => \$preload,
+	'upload=s' => \$upload,
+	'import=s' => \$import,
+	'recording' => \$recording,
+	'boundary=i' => \$boundary,
+	'seats' => \$seats,
     )
 	&& (($help && pod2usage(2)) || ($url = shift @ARGV))
 	or die pod2usage(1);
+
+    $recording = uc($recording);
+    die pod2usage("recording mode must be 'on', 'off' or 'auto'")
+	unless $recording =~ m{^ ON|OFF|AUTO|REMOTE $}x;
+    $recording =~ s{^ AUTO $}{REMOTE}x;
 
     Elive->debug($debug);
 
@@ -86,11 +122,13 @@ sub main {
 	$SIG{__DIE__} = \&Carp::confess;
     }
 
-    our $connection = Elive->connect(
-	$url      ||= Elive::Util::prompt('Elluminate Server: '),
-	$username ||= Elive::Util::prompt('Username: '),
-	$password ||= Elive::Util::prompt('Password: ', password => 1),
-	);
+    $url ||= Elive::Util::prompt('Elluminate Server: '),
+    $username ||= Elive::Util::prompt('Username: '),
+    $password ||= Elive::Util::prompt('Password: ', password => 1),
+
+    print "connecting to $url";
+
+    our $connection = Elive->connect($url, $username, $password);
 
     my $start = $start_str
 	? DateTime::Format::ISO8601->parse_datetime($start_str)
@@ -103,6 +141,16 @@ sub main {
 
     die "end time must be later than start time"
 	unless ($end->epoch > $start->epoch);
+
+    my $upload_data;
+
+    if ($upload) {
+	open(UPLOAD, '<', $upload)
+	    or die "unable to open $upload: $!";
+
+	$upload_data = join('', <UPLOAD>);
+	close (UPLOAD);
+    }
 
     my $facilitator_obj = $facilitator
 	? _get_user($facilitator)
@@ -140,6 +188,9 @@ sub main {
 	    warn "duplicate user: $user_spec"
 	}
 	else {
+	    warn "participant: ".Elive::Util::string($user_obj)
+		if $debug;
+
 	    push (@participants, 
 		  Elive::Entity::Participant->new({
 		      user => $user_obj,
@@ -149,32 +200,57 @@ sub main {
 	}
     }
 
-    my $meeting = Elive::Entity::Meeting->insert
-	({
+    my %meeting_data = (
 	    name => $meeting_name,
 	    password => $meeting_password,
 	    facilitatorId => $facilitator_obj->stringify,
 ##	    privateMeeting => $private,
 	    start => $start->epoch * 1000,
 	    end => $end->epoch * 1000,
-	 });
+	);
+
+    $meeting_data{seats} = $seats
+	if defined $seats;
+
+    $meeting_data{private} = $private
+	if defined $private;
+
+    my $meeting = Elive::Entity::Meeting->insert(\%meeting_data);
     
     print "created meeting: ".$meeting->name." with id ".$meeting->meetingId."\n";
 
-    if (defined $max_talkers || defined $raise_hands) {
+    do {
 	
 	my $meeting_parameters
 	    = Elive::Entity::MeetingParameters->retrieve([$meeting->meetingId])
 	    or die "Unable to retrieve meeting parameters for this meeting";
 	
 	$meeting_parameters->maxTalkers($max_talkers)
-	    if (defined $max_talkers);
+	    if defined $max_talkers;
 
 	$meeting_parameters->raiseHandOnEnter($raise_hands)
-	    if (defined $raise_hands);
+	    if defined $raise_hands;
+
+	$meeting_parameters->recordingStatus($recording);
 
 	$meeting_parameters->update;
-    }
+    };
+
+
+    if ($boundary) {
+	
+	my $server_parameters
+	    = Elive::Entity::ServerParameters->retrieve([$meeting->meetingId])
+	    or die "Unable to retrieve server parameters for this meeting";
+
+	warn YAML::Dump({server_parameters => $server_parameters})
+	    if Elive->debug;
+	
+	$server_parameters->boundaryMinutes($boundary)
+	    if defined $boundary;
+
+	$server_parameters->update;
+    };
 
     if (@participants) {
 
@@ -185,11 +261,44 @@ sub main {
 	print "no participants\n";
     }
 
-    if ($preload) {
-	_upload_preload('/tmp/onechar.tmp',
-			$meeting->meetingId,
-			$meeting->facilitatorID || $connection->login->userId);
+    #
+    # to do - allow multiple uploads
+    #
+    if ($upload) {
+
+	my $upload_basename = File::Basename::basename($upload);
+
+	my $preload = Elive::Entity::Preload->upload({
+	    name => $upload_basename,
+	    data => $upload_data,
+	    ownerId => $facilitator_obj->stringify,
+	 });
+
+	printf("adding '%s' preload: %s (%s)\n",
+	       $preload->type, $preload->name, $preload->mimeType);
+
+	$meeting->add_preload($preload);
     }
+
+    #
+    # to do - allow multiple imports
+    #
+    if ($import) {
+
+	print "importing (from remote server): $import\n";
+
+	my $preload = Elive::Entity::Preload->import_from_server({
+	    fileName => $import,
+	    ownerId => $facilitator_obj->stringify,
+	 });
+
+	printf("adding '%s' preload: %s (%s)\n",
+	       $preload->type, $preload->name, $preload->mimeType);
+
+	$meeting->add_preload($preload);
+    }
+
+    print "meeting address: ".$meeting->web_url."\n";
 
     Elive->disconnect;
 
@@ -198,29 +307,7 @@ sub main {
 
 ########################################################################
 
-sub _upload_preload {
-    my $file_name = shift;
-    my $meeting_id = shift;
-    my $facilitator_id = shift;
-
-    my $preload = Elive::Entity::Preload->insert(
-	{
-	    type => 'whiteboard',
-	    mimeType => 'application/octet-stream',
-	    name => 'introduction.wbd',
-	    ownerId => $facilitator_id,
-	},
-	param => {size => 1},
-
-	);
-
-    
-
-}
-
-########################################################################
-
-sub _setup_participants {
+sub setup_participants {
     my $meeting_id = shift;
     my @participants = @_;
 	#
@@ -264,7 +351,7 @@ sub _resolve_user {
 	#
 	# Numeric id. Assume it's a user id
 	#
-	$user = {userId => $user_spec};
+	$user =  Elive::Entity::User->construct({userId => $user_spec});
     }
     else {
 	#

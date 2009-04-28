@@ -42,6 +42,78 @@ has 'name' => (is => 'rw', isa => 'Str', required => 1,
 
 =cut
 
+=head2 insert
+
+=head3 synopsis
+
+    my $meeting = Elive::Entity::Meeting->insert({
+        start => hires_time,
+        end => hires_time,
+        name => string,
+        password =. string,
+        seats => int,
+        private => 0|1,
+        recurrenceCount => int,
+        recurrenceDays => int,
+        timeZone => string
+       });
+
+=cut
+
+sub _insert_class {
+    my $class = shift;
+    my $data = shift;
+    my %opt = @_;
+
+    foreach (qw(seats recurrenceCount recurrenceDays timeZone)) {
+	$opt{param}{$_} = delete $data->{$_}
+	    if exists $data->{$_}
+    }
+
+    $opt{param}{private} = (delete $data->{private}? 'true': 'false')
+	if exists $data->{private};
+
+    $class->SUPER::_insert_class($data, %opt);
+}
+
+=head2 update
+
+=head3 synopsis
+
+    my $meeting = Elive::Entity::Meeting->update({
+        start => hires_time,
+        end => hires_time,
+        name => string,
+        password =. string,
+        seats => int,
+        private => 0|1,
+        timeZone => string
+       });
+
+=cut
+
+sub update {
+    my $self = shift;
+    my $data = shift;
+    my %opt = @_;
+
+    warn YAML::Dump({meeting_update_data => $data})
+	if (Elive->debug);
+
+    foreach (qw(seats timeZone)) {
+	$opt{param}{$_} = delete $data->{$_}
+	    if exists $data->{$_}
+    }
+
+    $opt{param}{private} = (delete $data->{private}? 'true': 'false')
+	if exists $data->{private};
+
+    warn YAML::Dump({meeting_opts => \%opt})
+	if (Elive->debug);
+
+    $self->SUPER::update($data, %opt);
+}
+
 =head2 list_user_meetings_by_date
 
 =head3 synopsis
@@ -88,7 +160,7 @@ sub list_user_meetings_by_date {
 	);
 }
 
-=head2 meeting_url
+=head2 web_url
 
 Utility method to return various website url's for the meeting. This is
 available as both class level and object level methods.
@@ -108,11 +180,11 @@ available as both class level and object level methods.
     # Object level.
     #
     my $meeting = Elive::Entity::Meeting->retrieve($meeting_id);
-    my $url = meeting->meeting_url(action => 'join');
+    my $url = meeting->web_url(action => 'join');
 
 =cut
 
-sub meeting_url {
+sub web_url {
     my $self = shift;
     my %opt = @_;
 
@@ -285,6 +357,11 @@ sub _thaw {
 
     return $data;
 }
+
+=head1 SEE ALSO
+
+Elive::Entity::MeetingParameters
+Elive::Entity::ServerParameters
 
 =head1 BUGS & LIMITATIONS
 

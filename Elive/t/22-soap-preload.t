@@ -1,6 +1,6 @@
 #!perl
 use warnings; use strict;
-use Test::More tests => 14;
+use Test::More tests => 17;
 use Test::Exception;
 
 package main;
@@ -26,7 +26,7 @@ SKIP: {
     my $auth = $result{auth};
 
     skip ($result{reason} || 'unable to find test connection',
-	10)
+	13)
 	unless $auth;
 
     Elive->connect(@$auth);
@@ -52,7 +52,15 @@ SKIP: {
     ok($data_download, 'got data download');
     ok($data_download eq $data[0], 'download matches upload');
 
-    lives_ok(sub {$preload->delete},'preload deletion');
+    ok (my $preload_id = $preload->preloadId, 'got preload id');
+
+    $preload = undef;
+
+    ok($preload = Elive::Entity::Preload->retrieve([$preload_id]), 'preload retrieval');
+
+    lives_ok(sub {$preload->delete}, 'preload deletion - lives');
+
+    dies_ok(sub {$preload->retrieve([$preload_id])}, 'attempted retrieval of deleted preload - dies');
 
     my $preload2 = Elive::Entity::Preload->upload(
     {
@@ -76,6 +84,9 @@ SKIP: {
     );
 
     ok($preload3->mimeType eq 'video/mpeg','expected value for mimeType (set)');
+
+    $preload2->delete;
+    $preload3->delete;
 
 }
 

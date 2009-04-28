@@ -77,11 +77,11 @@ sub main {
 	my $elive_version =  Elive->server_details->version
 	    or warn "unable to get elluminate version";
 
-	$server_version  = "(Elluminate Live server $elive_version) "
+	$server_version  = "(Elluminate Live $elive_version) "
 	    if $elive_version;
     }
 
-    print "Elive client $elive_version $server_version - type 'help' for help\n"
+    print "Elive query $elive_version $server_version - type 'help' for help\n"
 	if $is_tty;
 
     while (defined (my $cmd = $is_tty? $term->readline($prompt): <STDIN>)) {

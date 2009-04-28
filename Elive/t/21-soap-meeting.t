@@ -1,6 +1,6 @@
 #!perl
 use warnings; use strict;
-use Test::More tests => 18;
+use Test::More tests => 26;
 use Test::Exception;
 
 package main;
@@ -9,6 +9,7 @@ BEGIN {
     use_ok( 'Elive::Connection' );
     use_ok( 'Elive::Entity::Meeting' );
     use_ok( 'Elive::Entity::MeetingParameters' );
+    use_ok( 'Elive::Entity::ServerParameters' );
 };
 
 my $class = 'Elive::Entity::Meeting' ;
@@ -19,9 +20,10 @@ SKIP: {
     my $auth = $result{auth};
 
     skip ($result{reason} || 'unable to find test connection',
-	15)
+	22)
 	unless $auth;
 
+    Elive->debug(4);
     Elive->connect(@$auth);
 
     my %meeting_str_data = (
@@ -77,20 +79,49 @@ SKIP: {
     }
 
     foreach (keys %parameter_int_data) {
-	ok($meeting_params->$_ == $parameter_int_data{$_}, "meeting paramter $_ == $parameter_int_data{$_}");
+	ok($meeting_params->$_ == $parameter_int_data{$_}, "meeting parameter $_ == $parameter_int_data{$_}");
     }
 
+    my %meeting_server_data = (
+	boundaryMinutes => 15,
+	fullPermissions => 1,
+	supervised => 1,
+    );
+
+    #
+    # seats are updated via the updateMeeting adapter
+    #
+    ok($meeting->update({seats => 42}), 'can update number of seats in the meeting');
+
+    my $server_params = Elive::Entity::ServerParameters->retrieve([$meeting->meetingId]);
+
+    isa_ok($server_params, 'Elive::Entity::ServerParameters', 'server_params');
+
+    $server_params->update(\%meeting_server_data);
+
+    foreach (keys %meeting_server_data) {
+	ok($server_params->$_ == $meeting_server_data{$_}, "server parameter $_ == $meeting_server_data{$_}");
+    }
+
+    ok($server_params->seats == 42, 'server_param - expected number of seats');
+    #
+    # start to tidy up
+    #
     my $meeting_id = $meeting->meetingId;
 
     lives_ok(sub {$meeting->delete},'meeting deletion');
     #
-    # This is arguably an elluminate test. Just want to verify that the
-    # meeting params have been deleted along with the parent record
+    # This is an assertion of server behaviour. Just want to verify that
+    # meeting deletion cascades to meeting & server parameters
+    # are deleted when the meeting is deleted.
     #
     $meeting_params = undef;
     dies_ok( sub {Elive::Entity::MeetingParameters->retrieve([$meeting_id])},
 	     'cascaded delete of meeting parameters');
+
+    $server_params = undef;
+    dies_ok( sub {Elive::Entity::ServerParameters->retrieve([$meeting_id])},
+	     'cascaded delete of server parameters');
 }
 
 Elive->disconnect;
-

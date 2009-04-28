@@ -9,6 +9,7 @@ use base qw{ Elive::Entity };
 
 use SOAP::Lite;  # contains SOAP::Data package
 use MIME::Types;
+use File::Basename qw{};
 
 =head1 NAME
 
@@ -86,11 +87,15 @@ sub upload {
 
     my $length = length($binary_data) ||0;
 
-    $opt{param} = {length => $length}
+    $opt{param}{length} = $length
         if $length;
 
-    $insert_data->{mimeType} ||= $class->_guess_mimetype($insert_data->{name})
-	if $insert_data->{name};
+    if ($insert_data->{name}) {
+	$insert_data->{mimeType} ||= $class->_guess_mimetype($insert_data->{name});
+	$insert_data->{type} ||= $insert_data->{name} =~ m{\.wbd}i
+	    ? 'whiteboard'
+	    : 'media';
+    }
 
     my $self = $class->SUPER::_insert_class($insert_data, %opt);
 
@@ -147,9 +152,9 @@ sub download {
     return undef;
 }
 
-=head2 import_file
+=head2 import_from_server
 
-    my $preload1 = Elive::Entity::Preload->import_file(
+    my $preload1 = Elive::Entity::Preload->import_from_server(
              {
 		    type => 'whiteboard',
 		    name => 'introduction.wbd',
@@ -164,13 +169,23 @@ using MIME::Types.
 
 =cut
 
-sub import_file {
+sub import_from_server {
     my $class = shift;
     my $insert_data = shift;
     my %opt = @_;
 
-    $insert_data->{mimeType} ||= $class->_guess_mimetype($insert_data->{name})
-	if $insert_data->{name};
+    my $filename = delete $insert_data->{fileName};
+
+    die "missing fileName parameter"
+	unless $filename;
+
+    $insert_data->{mimeType} ||= $class->_guess_mimetype($filename);
+    $insert_data->{type} ||= $filename =~ m{\.wbd}i
+	    ? 'whiteboard'
+	    : 'media';
+    $insert_data->{name} ||= File::Basename::basename($filename);
+
+    $opt{param}{fileName} = $filename;
 
     $class->SUPER::_insert_class($insert_data,
 				 adapter => 'importPreload',

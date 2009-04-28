@@ -15,7 +15,7 @@ both these accounts before use!
 
 INSTALLATION
 
-To install this module, run the following commands:
+yTo install this module, run the following commands:
 
 	perl Makefile.PL
 	make
@@ -26,21 +26,21 @@ POST INSTALLATION
 
     elive_lint_config
 
-       This script will check for missing adapters.
+        This script will check for missing adapters.
 
-       It is recommended that you run this script on your Elluminate
-       Live site configuration files.
+        It is recommended that you run this script on your Elluminate
+        Live site configuration files.
 
-       For a Unix server the configration for path http://myserver/mysite/
-       should be found under:
+        For a Unix server the configration for path http://myserver/mysite/
+        should be found under:
 
              /opt/ElluminateLive/manager/tomcat/webapps/mysite
 
-          or if its running from the server root http://myserver/:
+        or if its running from the server root http://myserver/:
 
              /opt/ElluminateLive/manager/tomcat/webapps/ROOT
 
-          The actual configuration is then in the sub-path:
+        The actual configuration is then in the sub-path:
 
 	     WEB-INF/resources/configuration.xml
 
@@ -85,10 +85,10 @@ POST INSTALLATION
 
 	Where SomeAdmin is an Elluminate system administrator account.
 
-        Hopefully you should get:
+        You will need to enter a password. You should get:
 
 	    connecting to http://myserver/mysite...done
-            Elive query 0.nn - type 'help' for help
+            Elive query 0.nn (Elluminate Live 9.x.y) - type 'help' for help
             elive>
 
         You can then try a simple query:

@@ -15,6 +15,8 @@ use Elive::Util;
 use Elive::Array;
 __PACKAGE__->has_metadata('_deleted');
 
+BEGIN {use Carp; local $SIG{__DIE__} = \&Carp::cluck}
+
 =head1 NAME
 
     Elive::Entity - Abstract class for Elive Entities
@@ -836,12 +838,14 @@ sub update {
     #
     # Write only changed properties.
     #
-    my @updated_properties = $self->is_changed;
-
+    my @updated_properties = ($opt{changed}
+			      ? @{$opt{changed}} 
+			      : $self->is_changed);
     #
     # Nothing to update
     #
-    return $self unless @updated_properties;;
+    return $self unless @updated_properties 
+	|| $opt{param};
 
     my %primary_key = map {$_ => 1} ($self->primary_key);
 
@@ -1174,6 +1178,7 @@ use Elive::Entity::Preload;
 use Elive::Entity::Recording;
 use Elive::Entity::Role;
 use Elive::Entity::ServerDetails;
+use Elive::Entity::ServerParameters;
 use Elive::Entity::User;
 
 # passing some global flags through from our parent constructor:

@@ -1,6 +1,6 @@
 #!perl -T
 
-use Test::More tests => 15;
+use Test::More tests => 16;
 use Test::Exception;
 
 BEGIN {
@@ -15,6 +15,7 @@ BEGIN {
     use_ok( 'Elive::Entity::ParticipantList' );
     use_ok( 'Elive::Entity::Role' );
     use_ok( 'Elive::Entity::ServerDetails' );
+    use_ok( 'Elive::Entity::ServerParameters' );
     use_ok( 'Elive::Entity::User' );
 }
 

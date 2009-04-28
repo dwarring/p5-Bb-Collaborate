@@ -267,7 +267,7 @@ addGroupMember addMeetingPreload attendanceNotification changePassword
 checkMeetingPreload createGroup createMeeting createPreload createRecording
 createUser deleteGroup deleteMeeting deleteParticipant deleteRecording
 deletePreload deleteUser getGroup getMeeting getMeetingParameters getPreload
-getPreloadStream getRecording getRecordingStream getServerDetails getUser
+getPreloadStream getRecording getRecordingStream getServerDetails getServerParameters getUser
 importPreload listGroups listMeetingPreloads listMeetings listParticipants
 listPreloads listRecordings listUserMeetingsByDate listUsers resetGroup
 resetParticipantList setParticipantList streamPreload streamRecording
@@ -449,6 +449,8 @@ Perl Modules:
 =item Elive::Entity::Recording
 
 =item Elive::Entity::ServerDetails
+
+=item Elive::Entity::ServerParameters
 
 =item Elive::Entity::User
 

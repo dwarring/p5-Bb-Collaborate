@@ -31,6 +31,7 @@ requires(
     'Storable'                     => 0,
     'Term::ReadKey'                => 0,
     'Term::ReadLine'               => 0,
+    'Term::ReadLine::Perl'         => 0,  # nice fallback
     'SOAP::Lite'                   => 0.69,
     'Storable'                     => 0,
     'YAML'                         => 0,
