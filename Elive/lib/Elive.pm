@@ -7,11 +7,11 @@ Elive -  Elluminate Live (c) client library
 
 =head1 VERSION
 
-Version 0.10
+Version 0.11
 
 =cut
 
-our $VERSION = '0.10';
+our $VERSION = '0.11';
 
 use Class::Data::Inheritable;
 use base qw{Class::Data::Inheritable};
@@ -432,9 +432,9 @@ Perl Modules:
 
 =item Elive::Connection - SOAP/XML connection to Elluminate
 
-=item Elive::Entity - base class for all elive entities
-
 =item Elive::Struct - base class for Elive::Entity
+
+=item Elive::Entity - base class for all elive entities
 
 =item Elive::Entity::Group
 
@@ -468,7 +468,7 @@ Scripts:
 
 =back
 
-Elluminate Live Documentation. This comes with your distribtuion
+Elluminate Live Documentation. This comes with your distribution
 
 =over 4
 
@@ -503,7 +503,7 @@ installations.
 So far it does not implement all SOAP/XML calls, but concentrates on users,
 meetings and meeting participants.
 
--=item Database Access
+=item Database Access
 
 Elluminate SOAP/XML interface doesn't provide for locking or transactional
 control. The Elluminate server installs with the Mckoi pure Java database
