@@ -15,7 +15,7 @@ both these accounts before use!
 
 INSTALLATION
 
-yTo install this module, run the following commands:
+To install this module, run the following commands:
 
 	perl Makefile.PL
 	make

@@ -1,13 +1,15 @@
 #!perl
 use warnings; use strict;
-use Test::More tests => 17;
+use Test::More tests => 34;
 use Test::Exception;
 
 package main;
 
 BEGIN {
+    use_ok('Elive');
     use_ok( 'Elive::Connection' );
     use_ok( 'Elive::Entity::Preload' );
+    use_ok( 'Elive::Entity::Meeting' );
 };
 
 my $class = 'Elive::Entity::Preload' ;
@@ -26,12 +28,14 @@ SKIP: {
     my $auth = $result{auth};
 
     skip ($result{reason} || 'unable to find test connection',
-	13)
+	28)
 	unless $auth;
 
     Elive->connect(@$auth);
 
-    my $preload = Elive::Entity::Preload->upload(
+    my @preloads;
+
+    $preloads[0] = Elive::Entity::Preload->upload(
     {
 	type => 'whiteboard',
 	name => 'test.wbd',
@@ -40,29 +44,33 @@ SKIP: {
     },
     );
 
-    isa_ok($preload, $class, 'preload object');
+    isa_ok($preloads[0], $class, 'preload object');
 
-    ok($preload->type eq 'whiteboard', "preload type is 'whiteboard'");
-    ok($preload->mimeType eq 'application/octet-stream','expected value for mimeType (guessed)');
-    ok($preload->name eq 'test.wbd','expected name');
-    ok($preload->ownerId == Elive->login->userId, 'expected user id');
+    ok($preloads[0]->type eq 'whiteboard', "preload type is 'whiteboard'");
+    ok($preloads[0]->mimeType eq 'application/octet-stream','expected value for mimeType (guessed)');
+    ok($preloads[0]->name eq 'test.wbd','expected name');
+    ok($preloads[0]->ownerId == Elive->login->userId, 'expected user id');
 
-    my $data_download = $preload->download;
+    my $data_download = $preloads[0]->download;
 
     ok($data_download, 'got data download');
     ok($data_download eq $data[0], 'download matches upload');
 
-    ok (my $preload_id = $preload->preloadId, 'got preload id');
+    ok (my $preload_id = $preloads[0]->preloadId, 'got preload id');
 
-    $preload = undef;
+    $preloads[0] = undef;
 
-    ok($preload = Elive::Entity::Preload->retrieve([$preload_id]), 'preload retrieval');
+    ok($preloads[0] = Elive::Entity::Preload->retrieve([$preload_id]), 'preload retrieval');
 
-    lives_ok(sub {$preload->delete}, 'preload deletion - lives');
+    ok(my $meeting = Elive::Entity::Meeting->insert({
+	name => 'created by t/23-soap-preload.t',
+	facilitatorId => Elive->login->userId,
+	start => time() . '000',
+	end => (time()+900) . '000',
+	privateMeeting => 1,
+    }));
 
-    dies_ok(sub {$preload->retrieve([$preload_id])}, 'attempted retrieval of deleted preload - dies');
-
-    my $preload2 = Elive::Entity::Preload->upload(
+    $preloads[1] = Elive::Entity::Preload->upload(
     {
 	type => 'whiteboard',
 	name => 'test.wav',
@@ -71,9 +79,9 @@ SKIP: {
     },
     );
 
-    ok($preload2->mimeType eq 'audio/x-wav','expected value for mimeType (guessed)');
+    ok($preloads[1]->mimeType eq 'audio/x-wav','expected value for mimeType (guessed)');
 
-    my $preload3 = Elive::Entity::Preload->upload(
+    $preloads[2] = Elive::Entity::Preload->upload(
     {
 	type => 'whiteboard',
 	name => 'test_no_ext',
@@ -83,10 +91,54 @@ SKIP: {
     },
     );
 
-    ok($preload3->mimeType eq 'video/mpeg','expected value for mimeType (set)');
+    ok($preloads[2]->mimeType eq 'video/mpeg','expected value for mimeType (set)');
 
-    $preload2->delete;
-    $preload3->delete;
+    my $check;
+
+    lives_ok(sub {$check = $meeting->check_preload($preloads[0])},
+	     'meeting->check_preloads - lives');
+
+    ok(!$check, 'check_meeting prior to add - returns false');
+
+    lives_ok(sub {$meeting->add_preload($_) for (@preloads)},
+	     'adding meeting preloads - lives');
+
+    lives_ok(sub {$check = $meeting->check_preload($preloads[0])},
+	     'meeting->check_preloads - lives');
+
+    ok($check, 'check_meeting after add - returns true');
+
+    my $preloads_list;
+    lives_ok(sub {$preloads_list = Elive::Entity::Preload->list_meeting_preloads($meeting)},
+	     'list_meeting_preloads - lives');
+
+    isa_ok($preloads_list, 'ARRAY', 'preloads list');
+
+    ok(@$preloads_list == 3, 'meeting has three preloads');
+
+    do {
+	my @preload_ids = map {$_->preloadId} @preloads;
+	my $n = 0;
+
+	foreach (@$preloads_list) {
+	    isa_ok($_, 'Elive::Entity::Preload', "preload_list[$n]");
+	    my $preload_id = $_->preloadId;
+	    ok((grep {$_ eq $preload_id} @preload_ids), "preload_id[$n] - as expected");
+	    ++$n;
+	    
+	}
+    };
+
+       # start to tidy up
+
+    $meeting->delete;
+
+    lives_ok(sub {$preloads[0]->delete}, 'preloads[0] deletion - lives');
+
+    dies_ok(sub {$preloads[0]->retrieve([$preload_id])}, 'attempted retrieval of deleted preload - dies');
+
+    $preloads[1]->delete;
+    $preloads[2]->delete;
 
 }
 

@@ -192,6 +192,31 @@ sub import_from_server {
 				 %opt);
 }
 
+=head2 list_meeting_preloads
+
+my $preloads = Elive::Entity::Preload->list_meeting_preloads($meeting_id);
+
+Implements the listMeetingPreloads method
+
+=cut
+
+sub list_meeting_preloads {
+    my $self = shift;
+    my $meeting_id = shift;
+    my %opt = @_;
+
+    die 'usage: $preload_obj->list_meeting_preloads($meeting)'
+	unless $meeting_id;
+
+    $meeting_id = $meeting_id->meetingId
+	if (ref($meeting_id));
+
+    return $self->_fetch({meetingId => $meeting_id},
+			 adapter => 'listMeetingPreloads',
+			 %opt
+	);
+}
+
 sub _thaw {
     my $class = shift;
     my $db_data = shift;

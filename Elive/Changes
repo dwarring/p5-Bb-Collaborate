@@ -1,5 +1,9 @@
 Revision history for Elive
 
+0.11    30th April
+        - Moved list_meeting_preloads method from meetings to preloads
+        - Corrected check_preload method for meetings
+
 0.10    28th April
         - Added support for recurring meetings
         - Added Elive::Entity::ServerParameters (isa table for meetings)

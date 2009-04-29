@@ -278,42 +278,33 @@ sub add_preload {
     $self->_check_for_errors($som);
 }
 
-=head2 list_preloads
+=head2 check_preload
 
-my $preloads = Elive::Entity::Preload->list_meeting_preloads($meeting_id);
+my $ok = Elive::Entity::Meeting->check_preload($preload);
 
-Implements the listMeetingPreloads method
-
-=cut
-
-sub list_preloads {
-    my $self = shift;
-    my %opt = @_;
-
-    my $meeting_id = $opt{meeting_id} || $self->meetingId;
-
-    return $self->fetch({meetingId => $meeting_id},
-			 adapter => 'listMeetingPreloads',
-			 %opt
-	);
-}
-
-=head2 check_preloads
-
-my $preloads = Elive::Entity::Preload->check_meeting_preloads($meeting_id);
-
-Implements the checkMeetingPreloads method
+Checks that the preload is associated with ths meeting.
 
 =cut
 
-sub check_preloads {
+sub check_preload {
     my $self = shift;
+    my $preload_id = shift;
     my %opt = @_;
 
-    my $meeting_id = $opt{meeting_id} || $self->meetingId;
+    $preload_id = $preload_id->preloadId
+	if ref($preload_id);
 
-    return $self->fetch({meetingId => $meeting_id},
-			 adapter => 'checkMeetingPreloads');
+    my $adapter = $self->check_adapter('checkMeetingPreload');
+
+    my $som =  $self->connection->call($adapter,
+				       preloadId => $preload_id,
+				       meetingId => $self->meetingId);
+
+    $self->_check_for_errors($som);
+
+    my $results = $self->_unpack_as_list($som->result);
+
+    return @$results && $results->[0] eq 'true';
 }
 
 sub _freeze {

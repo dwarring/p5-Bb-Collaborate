@@ -34,8 +34,8 @@ SKIP: {
 
     my %meeting_int_data = (
 	facilitatorId => Elive->login->userId,
-	start => time() * 1000,
-	end => (time()+900) * 1000,
+	start => time() . '000',
+	end => (time()+900) . '000',
 	privateMeeting => 1,
 	
     );
