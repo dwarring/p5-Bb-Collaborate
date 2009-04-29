@@ -87,9 +87,6 @@ sub _insert_class {
 	    if exists $data->{$_}
     }
 
-    $opt{param}{private} = (delete $data->{private}? 'true': 'false')
-	if exists $data->{private};
-
     $class->SUPER::_insert_class($data, %opt);
 }
 
@@ -103,7 +100,7 @@ sub _insert_class {
         name => string,
         password =. string,
         seats => int,
-        private => 0|1,
+        privateMeeting => 0|1,
         timeZone => string
        });
 
@@ -121,12 +118,6 @@ sub update {
 	$opt{param}{$_} = delete $data->{$_}
 	    if exists $data->{$_}
     }
-
-    $opt{param}{private} = (delete $data->{private}? 'true': 'false')
-	if exists $data->{private};
-
-    warn YAML::Dump({meeting_opts => \%opt})
-	if (Elive->debug);
 
     $self->SUPER::update($data, %opt);
 }
@@ -393,11 +384,6 @@ sub _thaw {
 Elive::Entity::Preload
 Elive::Entity::MeetingParameters 
 Elive::Entity::ServerParameters
-
-=head1 BUGS & LIMITATIONS
-
-Seems that privateMeeting gets ignored on update for Elluminate Live 9 & 9.1.
-If you try to set it the readback check may fail.
 
 =cut
 
