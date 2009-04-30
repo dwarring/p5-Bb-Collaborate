@@ -28,7 +28,9 @@ elive_raise_meeting
 
   elive_raise_meeting http://myserver.com/my-site[:port] userid[=role] [userid[=role]...]
 
-    -user someuser              # server login user
+  Authentication
+
+    -user someAdminUser         # server login user
     -pass somepass              # server login password
 
   Basic Settings
