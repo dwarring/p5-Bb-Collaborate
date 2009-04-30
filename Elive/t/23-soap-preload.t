@@ -1,6 +1,6 @@
 #!perl
 use warnings; use strict;
-use Test::More tests => 34;
+use Test::More tests => 35;
 use Test::Exception;
 
 package main;
@@ -10,6 +10,7 @@ BEGIN {
     use_ok( 'Elive::Connection' );
     use_ok( 'Elive::Entity::Preload' );
     use_ok( 'Elive::Entity::Meeting' );
+    use_ok ('Elive::Util');
 };
 
 my $class = 'Elive::Entity::Preload' ;
@@ -19,7 +20,9 @@ $data[0] = 'the quick brown fox. %%(&)+(*)+*(_+';
 $data[1] = join('',map {pack('C', $_)} (0..255));
 
 for (0..1) {
-    ok($class->_hex_decode($class->_hex_encode($data[$_])) eq $data[$_], "encode/decode $_");   
+    #
+    # belongs in util tests
+    ok(Elive::Util::_hex_decode(Elive::Util::_hex_encode($data[$_])) eq $data[$_], "encode/decode $_");   
 }
 
 SKIP: {

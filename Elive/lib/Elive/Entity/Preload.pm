@@ -7,6 +7,8 @@ use Mouse::Util::TypeConstraints;
 use Elive::Entity;
 use base qw{ Elive::Entity };
 
+use Elive::Util;
+
 use SOAP::Lite;  # contains SOAP::Data package
 use MIME::Types;
 use File::Basename qw{};
@@ -56,7 +58,6 @@ has 'size' => (is => 'rw', isa => 'Int', required => 1,
 has 'data' => (is => 'rw', isa => 'Str',
 	       documentation => 'The contents of the preload.');
 
-
 =head1 METHODS
 
 =cut
@@ -73,8 +74,8 @@ has 'data' => (is => 'rw', isa => 'Str',
          );
 
 Upload data from a client and create a preload.  If a c<mimeType> is not
-supplied, it will be guessed from the extension, using MIME::Types. 
-
+supplied, it will be guessed from the c<fileName> extension, using
+MIME::Types. 
 
 =cut
 
@@ -146,7 +147,7 @@ sub download {
 
     my $results = $self->_get_results($som);
 
-    return  $self->_hex_decode($results->[0])
+    return  Elive::Util::_hex_decode($results->[0])
 	if $results->[0];
 
     return undef;
@@ -164,8 +165,8 @@ sub download {
          );
 
 Create a preload from a file that is already present on the server. If
-a c<mimeType> is not supplied, it will be guessed from the extension,
-using MIME::Types.
+a c<mimeType> is not supplied, it will be guessed from the c<fileName>
+extension using MIME::Types.
 
 =cut
 
@@ -231,36 +232,6 @@ sub _thaw {
     }
 
     return $db_thawed;
-}
-
-sub _hex_decode {
-    my $self = shift;
-    my $data = shift;
-
-    return
-	unless defined $data;
-
-    $data = '0'.$data
-	unless length($data) % 2 == 0;
-
-    my ($non_hex_char) = ($data =~ m{([^0-9a-f])}i);
-
-    die "non hex character in data: ".$non_hex_char
-	if (defined $non_hex_char);
-    #
-    # Works for simple ascii
-    $data =~ s{(..)}{chr(hex($1))}ge;
-
-    return $data;
-}
-
-sub _hex_encode {
-    my $self = shift;
-    my $data = shift;
-
-    $data =~ s{(.)}{sprintf("%02x", ord($1))}ges;
-
-    return $data;
 }
 
 our $mime_types;

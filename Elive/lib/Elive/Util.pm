@@ -86,6 +86,34 @@ sub _clone {
     return Storable::dclone(shift);
 }
 
+sub _hex_decode {
+    my $data = shift;
+
+    return
+	unless defined $data;
+
+    $data = '0'.$data
+	unless length($data) % 2 == 0;
+
+    my ($non_hex_char) = ($data =~ m{([^0-9a-f])}i);
+
+    die "non hex character in data: ".$non_hex_char
+	if (defined $non_hex_char);
+    #
+    # Works for simple ascii
+    $data =~ s{(..)}{chr(hex($1))}ge;
+
+    return $data;
+}
+
+sub _hex_encode {
+    my $data = shift;
+
+    $data =~ s{(.)}{sprintf("%02x", ord($1))}ges;
+
+    return $data;
+}
+
 =head2 string
 
 Try hard to return the object as a string. If it's a simple scalar fine,

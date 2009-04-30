@@ -160,9 +160,9 @@ sub main {
 
 			$valid = 1;
 
-			my @props = split(m{\s* , \s*}x, $1);
 			my $entity = $2;
 			my $filter = $4;
+			my @props = split(m{\s* , \s*}x, $1);
 
 			my $entity_class = $entities->{$entity};
 
@@ -285,10 +285,8 @@ sub _select {
     #
     # See if our filter is in the format: keyprop=val
     #
-    $filter ||= '';
-
     warn "filter=$filter"
-	if (Elive->debug);
+	if (defined $filter && Elive->debug);
 
     warn "entity: $entity_name, class: $entity_class"
 	if (Elive->debug);
@@ -300,12 +298,14 @@ sub _select {
     # Detect and trap this as a simple fetch.
     #
     my $id;
-
-    if (my ($fld, $val) = ($filter =~ m{^ (\w+) \s* = \s* ([\w_\-\@\!\#\$\%\^\&\.\+]+) \s* $}x)) {
-	my $type = $property_types->{$fld} || '';
-
-	if ($fld eq $pkey) {
-	    $id = $val;
+    
+    if (defined $filter) {
+	if (my ($fld, $val) = ($filter =~ m{^ (\w+) \s* = \s* ([\w_\-\@\!\#\$\%\^\&\.\+]+) \s* $}x)) {
+	    my $type = $property_types->{$fld} || '';
+	    
+	    if ($fld eq $pkey) {
+		$id = $val;
+	    }
 	}
     }
 

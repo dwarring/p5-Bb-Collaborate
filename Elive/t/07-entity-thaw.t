@@ -57,7 +57,6 @@ my %user_contents = map {$_ => $user_object->$_} ($user_object->properties);
 #
 # Round trip verification. We can reconstruct the object from data
 #
-use YAML;
 is_deeply(\%user_contents,
 	  {
 	      email => 'bbill@test.com',

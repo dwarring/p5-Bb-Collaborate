@@ -1,6 +1,6 @@
 #!perl
 use warnings; use strict;
-use Test::More tests => 12;
+use Test::More tests => 10;
 use Test::Exception;
 
 package main;
@@ -15,10 +15,6 @@ my $class = 'Elive::Entity::Preload' ;
 my @data;
 $data[0] = 'the quick brown fox. %%(&)+(*)+*(_+';
 $data[1] = join('',map {pack('C', $_)} (0..255));
-
-for (0..1) {
-    ok($class->_hex_decode($class->_hex_encode($data[$_])) eq $data[$_], "encode/decode $_");   
-}
 
 SKIP: {
 

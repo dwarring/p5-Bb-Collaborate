@@ -117,9 +117,10 @@ sub construct {
 	unless (Elive::Util::_reftype($data) eq 'HASH');
 
     #
-    # This method may also be called to coerce sub-entities into existance.
-    # Don't seem to have any direct way of passing options through!?
-
+    # Note: don't seem to have an way of recursively passing options
+    # through mouse/moose contructors.
+    # Resort to action at a distance via The construct_opts local variable.
+    #
     local (%Elive::_construct_opts) = %opt;
 
     $opt{repository} = delete $opt{connection} || $class->connection;
@@ -131,6 +132,9 @@ sub construct {
 	warn "unknown property $_"
 	    unless exists $known_properties{$_};
     }
+
+    warn YAML::Dump({construct => $data})
+	if (Elive->debug > 1);
     
     my $self = Scalar::Util::blessed($data)
 	? $data
@@ -196,9 +200,9 @@ sub __tidy_decimal {
     $i =~ s{^ \s* (.*?) \s* $}{$1}x;
 
     #
-    # non number. throw it back for mouse constraint handling (?)
+    # non number => undef
     #
-    return undef
+    return
 	unless $i =~ m{^[+-]?\d+$};
 
     #
@@ -296,7 +300,7 @@ sub _thaw {
 
     my $reftype = Elive::Util::_reftype($db_data) || 'Scalar';
 
-    die "parsing $class: expected HASH, found $reftype, path: $path"
+    die "parsing $class: expected HASH, found $reftype ($db_data), path: $path"
 	unless ($reftype eq 'HASH');
 
     my $entity_data = $db_data->{$responseTag};
@@ -314,8 +318,8 @@ sub _thaw {
     my @properties = $class->properties;
 
     #
-    # Fix up a couple of anomolies with the fetched data versus the
-    # documented schema and the operation of the rest of the system
+    # Fix up a couple of inconsistancies with the fetched data versus
+    # the documented schema and the operation of the rest of the system
     # (inserts, updates, querys):
     # 1. Entity names returned capitalised: 'LoginName' => 'loginName
     # 2. Primary key returned as Id, rather than <entity_name>Id
@@ -328,13 +332,12 @@ sub _thaw {
 
 	my $val = $entity_data->{ $key };
 	my $prop_key = $prop_key_map{$key} || $key;
-
 	$data{$prop_key} = $val;
     }
 
     my $property_types = $class->property_types;
 
-    foreach my $col (grep {exists $data{ $_ }} @properties) {
+    foreach my $col (grep {defined $data{ $_ }} @properties) {
 
 	my ($type, $expect_array, $is_struct) = Elive::Util::parse_type($property_types->{$col});
 
@@ -348,8 +351,8 @@ sub _thaw {
 
 		unless ($val_type eq 'ARRAY') {
 		    #
-		    # A single value will be deserialise to a simple
-		    # struct. Convert it to a one element array
+		    # A single value deserialises to a simple
+		    # struct. Coerce it to a one element array
 		    #
 		    $val = [$val];
 		    warn "thawing $class coerced element into array for $col"
@@ -386,6 +389,21 @@ sub _thaw {
 		else {
 		    die "class $class: column $col has unknown type: $type";
 		}
+	    }
+
+	    if ($expect_array) {
+		@$val = grep {defined $_} @$val;
+	    }
+
+	    #
+	    # don't store null values, just omit the property.
+	    # saves a heap of work in Moose/Mouse constraints
+	    #
+	    if (defined $val) {
+		$data{$col} = $val;
+	    }
+	    else {
+		delete $data{$col};
 	    }
 	} 
     }
@@ -605,9 +623,6 @@ sub _readback_check {
     #
     die "Didn't receive a response for ".$class->entity_name
 	unless @$rows;
-
-##    die "Received multiple responses for ".$class->entity_name
-##	if (@$rows > 1);
 
     foreach my $row (@$rows) {
 
@@ -1251,7 +1266,6 @@ entity classes.
 
  Elive::Struct
  Mouse
- overload
 
 =cut
 
