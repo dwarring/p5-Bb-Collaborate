@@ -51,6 +51,7 @@ t/20-soap-connect.t
 t/21-soap-meeting.t
 t/22-soap-meeting-recurring.t
 t/23-soap-preload.t
+t/24-soap-recording.t
 t/90-pod.t
 t/91-pod-coverage.t
 t/99-kwalitee.t

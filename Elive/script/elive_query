@@ -22,7 +22,7 @@ elive_query
 
 =head1 SYNOPSIS
 
-elive_query   http://myserver.com/my-site[:port]
+  elive_query   http://myserver.com/my-site[:port]
 
     -user someuser              # server login user
     -pass somepass              # server login password
@@ -31,7 +31,7 @@ elive_query   http://myserver.com/my-site[:port]
 
 =head1 DESCRIPTION
 
-Simple read-only query shell for Elive
+Simple read-only query shell for Elive. 
 
 =head1 SEE ALSO
 

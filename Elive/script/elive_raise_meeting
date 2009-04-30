@@ -26,7 +26,7 @@ elive_raise_meeting
 
 =head1 SYNOPSIS
 
-% elive_raise_meeting http://myserver.com/my-site[:port] userid[=role] [userid[=role]...]
+  elive_raise_meeting http://myserver.com/my-site[:port] userid[=role] [userid[=role]...]
 
     -user someuser              # server login user
     -pass somepass              # server login password
@@ -34,7 +34,7 @@ elive_raise_meeting
   Basic Settings
 
     -facilitator  userId
-    -name        'meeting name' # name the meeting
+    -name         'meeting name'
     -meeting_pass otherpass     # meeting password
     -start  'YYYY-MM-DD HH:MM'  # start time
     -end '[YYYY-MM-DD] HH::MM'  # end time
@@ -42,7 +42,7 @@ elive_raise_meeting
   Advanced Settings
 
     -boundary     0|15|30|..    # number minutes participants can arrive before
-                                # or leave after the sceduled meeting times.
+                                # or leave after the scheduled meeting times.
     -max_talkers n              # max no. of simultaneous talkers
     -upload       local_file    # upload a file as a preload
     -import       remote_file   # import a file on the server as a preload
@@ -201,8 +201,8 @@ sub main {
 	    name => $meeting_name,
 	    password => $meeting_password,
 	    facilitatorId => $facilitator_obj->stringify,
-	    start => $start->epoch * 1000,
-	    end => $end->epoch * 1000,
+	    start => $start->epoch . '000',
+	    end => $end->epoch . '000',
 	);
 
     $meeting_data{seats} = $seats
