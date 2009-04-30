@@ -1,6 +1,6 @@
 #!perl
 use warnings; use strict;
-use Test::More tests => 27;
+use Test::More tests => 30;
 use Test::Exception;
 
 package main;
@@ -21,8 +21,8 @@ SKIP: {
     my %result = Elive->_get_test_auth();
     my $auth = $result{auth};
 
-    skip ($result{reason} || 'unable to find test connection',
-	23)
+    skip ($result{reason} || 'no test connection specified',
+	26)
 	unless $auth;
 
     Elive->connect(@$auth);
@@ -32,10 +32,16 @@ SKIP: {
 	password => 'test', # what else?
     );
 
+    my $meeting_start = time();
+    my $meeting_end = $meeting_start + 900;
+
+    $meeting_start .= '000';
+    $meeting_end .= '000';
+
     my %meeting_int_data = (
 	facilitatorId => Elive->login->userId,
-	start => time() . '000',
-	end => (time()+900) . '000',
+	start =>  $meeting_start,
+	end => $meeting_end,
 	privateMeeting => 1,
 	
     );
@@ -75,7 +81,7 @@ SKIP: {
 
     foreach (keys %parameter_str_data) {
 	#
-	# returned recxord doesn't contain password
+	# returned record doesn't contain password
 	ok($meeting_params->$_ eq $parameter_str_data{$_}, "meeting parameter $_ eq $parameter_str_data{$_}");
     }
 
@@ -105,10 +111,28 @@ SKIP: {
     }
 
     ok($server_params->seats == 42, 'server_param - expected number of seats');
+
+    #
+    # check that we can access our meeting by user and date range.
+    #
+    my $user_meetings = Elive::Entity::Meeting->list_user_meetings_by_date(
+	[$meeting_int_data{facilitatorId},
+	 $meeting_int_data{start},
+	 $meeting_int_data{end},
+	 ]
+	);
+
+    isa_ok($user_meetings, 'ARRAY', 'user_meetings');
+
+    my $meeting_id = $meeting->meetingId;
+
+    ok(@$user_meetings, 'found user meetings by date');
+    ok ((grep {$_->meetingId == $meeting_id} @$user_meetings),
+	'meeting is yin user_meetings_by_date');
+
     #
     # start to tidy up
     #
-    my $meeting_id = $meeting->meetingId;
 
     lives_ok(sub {$meeting->delete},'meeting deletion');
     #

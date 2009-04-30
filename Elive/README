@@ -48,32 +48,32 @@ POST INSTALLATION
         return the error message 'Unable to determine a command for the key
         Xxxxx'.
 
-          If you get this error, please check that your Elluminate Live
-          software is up-to-date. I.e. you've installed all upgrades and
-          the SDK. This version Elive has only been tested against 9.0
-          and 9.1.
+	If you get this error, please check that your Elluminate Live
+	software is up-to-date. I.e. you've installed all upgrades and
+	the SDK. This version Elive has only been tested against 9.0
+	and 9.1.
 
-          It's possible that you may be able to manually add the adapter
-          to your configuration.
+	It's possible that you may be able to manually add the adapter
+	to the list of adapters in your configuration file.
 
-          You'll need to first stop Elluminate services.
+	For example, if elive_lint_config returned the error:
 
-          For example, if elive_lint_conf returned the error:
+	    "missing adapter command: getUser"
 
-	      "missing adapter command: getUser"
+	You'll need to first stop Elluminate services.
 
-         Then an adapter entry can be added to the list of adapters.
-         E.g. to add getUser:
+	Then an adapter entry can be added to the list of adapters.
+	E.g. to add the getUser adapter:
 
-	      <elm>
-                  ...
-                  <adapters>
-                     <adapter>
-                        ...
-                        <argument>
-                             <name>command:getUser</name>
-                             <value>com.elluminate.adapter.command.GetUserCommand</value>
-                         </argument>
+	    <elm>
+		...
+		<adapters>
+		   <adapter>
+		      ...
+		      <argument>
+			   <name>command:getUser</name>
+			   <value>com.elluminate.adapter.command.GetUserCommand</value>
+		       </argument>
 
 
     elive_query
@@ -85,7 +85,7 @@ POST INSTALLATION
 
 	Where SomeAdmin is an Elluminate system administrator account.
 
-        You will need to enter a password. You should get:
+        You will need to enter a password. You should then get:
 
 	    connecting to http://myserver/mysite...done
             Elive query 0.nn (Elluminate Live 9.x.y) - type 'help' for help
