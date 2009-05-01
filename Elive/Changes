@@ -1,8 +1,9 @@
 Revision history for Elive
 
-0.12    1st May
+0.12    2nd May
+        - Added recording 'download' and 'web_url' methods
         - Omit null properties on retrieval. Avoid Mouse constraint errors.
-        - Corrected to 'list_user_meetings_by_date' method
+        - Corrections to 'list_user_meetings_by_date' method
 
 0.11    30th April
         - Moved 'list_meeting_preloads' method from meetings to preloads

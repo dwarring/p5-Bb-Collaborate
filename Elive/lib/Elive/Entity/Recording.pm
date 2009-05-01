@@ -13,9 +13,9 @@ __PACKAGE__->collection_name('Recordings');
 has 'recordingId' => (is => 'rw', isa => 'Str', required => 1);
 __PACKAGE__->primary_key('recordingId');
 
-has 'creationDate' => (is => 'rw', isa => 'Int');
+has 'creationDate' => (is => 'rw', isa => 'Int', required => 1);
 has 'data' => (is => 'rw', isa => 'Str');
-has 'facilitator' => (is => 'rw', isa => 'Int');
+has 'facilitator' => (is => 'rw', isa => 'Int', required => 1);
 has 'keywords' => (is => 'rw', isa => 'Str');
 has 'meetingId' => (is => 'rw', isa => 'Int', required => 1);
 has 'open' => (is => 'rw', isa => 'Bool');
@@ -68,36 +68,69 @@ sub download {
     return undef;
 }
 
-=head2 import_from_server
+=head2 web_url
 
-    my $recording = Elive::Entity::Recording->import_from_server(
-             {
-                    data => $binary_data,
-                    meetingRoomId => $_->meeting_id
-                    facilitator => $facilitator_id,
-                    fileName => $path_on_server
-	     },
-         );
+Utility method to return various website links for the recording. This is
+available as both class level and object level methods.
 
-Create a recording from a file that is already present on the server.
+=head3 Examples
+
+    #
+    # Class level access.
+    #
+    my $url = Elive::Entity::Recording->web_url(
+                     recording_id => $recording_id,
+                     action => 'play',
+                     connection => $my_connection);  # optional
+
+
+    #
+    # Object level.
+    #
+    my $recording = Elive::Entity::Recording->retrieve($recording_id);
+    my $url = recording->web_url(action => 'join');
 
 =cut
 
-sub import_from_server {
-    my $class = shift;
-    my $insert_data = shift;
+sub web_url {
+    my $self = shift;
     my %opt = @_;
 
-    my $filename = delete $insert_data->{fileName};
+    my $recording_id = $opt{recording_id};
+    my $connection = ($opt{connection}
+		      || $self->connection);
 
-    die "missing fileName parameter"
-	unless $filename;
+    if (ref($self)) {
+	#
+	# dealing with an object
+	#
+	$recording_id ||= $self->recordingId;
+    }
+    elsif (ref($recording_id)) {  # an object
+	$recording_id = $recording_id->recordingId;
+    }
 
-    $opt{param}{fileName} = $filename;
+    die "no recording_id given"
+	unless $recording_id;
 
-    $class->SUPER::_insert_class($insert_data,
-				 adapter => 'importRecording',
-				 %opt);
+    die "not connected"
+	unless $connection;
+
+    my $url = $connection->url;
+
+    $url =~ s{ / (\Q'webservice.event\E)? $ } {}x;
+
+    my %Actions = (
+	'play'   => '%s/play_recording.html?recordingId=%s',
+	);
+
+    my $action = $opt{action} || 'play';
+
+    die "unrecognised action: $action"
+	unless exists $Actions{$action};
+
+    return sprintf($Actions{$action},
+		   $url, $recording_id);
 }
 
 sub _thaw {

@@ -172,7 +172,7 @@ sub list_user_meetings_by_date {
 
 =head2 web_url
 
-Utility method to return various website url's for the meeting. This is
+Utility method to return various website links for the meeting. This is
 available as both class level and object level methods.
 
 =head3 Examples
@@ -180,7 +180,7 @@ available as both class level and object level methods.
     #
     # Class level access.
     #
-    my $url = Elive::Entity::Meeting->meeting_url(
+    my $url = Elive::Entity::Meeting->web_url(
                      meeting_id => $meeting_id,
                      action => 'join',    # join|edit|...
                      connection => $my_connection);  # optional
@@ -207,6 +207,9 @@ sub web_url {
 	# dealing with an object
 	#
 	$meeting_id ||= $self->meetingId;
+    }
+    elsif (ref($meeting_id)) {  # an object
+	$meeting_id = $meeting_id->meetingId;
     }
 
     die "no meeting_id given"
