@@ -42,7 +42,7 @@ sub main {
 
     my $help;
 
-    print "Elive  ${Elive::VERSION} - Server Configuration Linter\n";
+    print "Elive ${Elive::VERSION} - Server Configuration Linter\n";
 
     GetOptions(
 	'help|?' => \$help,
@@ -70,26 +70,30 @@ sub main {
 #
     if (my @daos = _get_elems($config, qw/elm daofactory dao/)) {
 
-	my ($ldap_dao) = grep {$_->{class} =~ m{ldapdao}i} @daos;
+	my ($ldap_dao) = grep {
+	    my ($class) =_get_elems($_, 'class');
+	    $class =~ m{ldapdao}i;
+	    } @daos;
 
 	if ($ldap_dao) {
 	    print "Note: using LDAP for user management:\n\n";
 
-	    if (my $argument = $ldap_dao->{argument}) {
-		foreach my $name (sort keys %{$ldap_dao->{argument}}) {
-		    my $value = $ldap_dao->{argument}{$name}{value};
+	    my @arguments = _get_elems($ldap_dao, 'argument');
+
+	    foreach my $argument (sort {$a->{name}[0] cmp $b->{name}[0]} @arguments) {
+		    my $name = $argument->{name}[0];
+		    my $value = $argument->{value}[0];
 		    $value =~ s{.}{*}g
 			if $name eq 'password';
 
 		    printf("  %-14.14s: %s\n", $name, $value)
 			if (defined $name && defined $value);
-		}
-		print "\n";
 	    }
+
+	    print "\n";
 	}
     }
 
-##use YAML; die YAML::Dump($config);
     my @adapters = _get_elems($config, qw/elm adapters adapter/);
     my @classes = map {_get_elems($_, 'class')} @adapters;
 
