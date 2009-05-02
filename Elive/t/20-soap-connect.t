@@ -25,6 +25,8 @@ SKIP: {
 	8)
 	unless $auth && @$auth;
 
+    diag ("connecting: user=$auth->[1], url=$auth->[0]");
+
     Elive->connect(@$auth);
 
     ok(my $connection = Elive->connection, 'got connection');
@@ -43,8 +45,7 @@ SKIP: {
     ok ($server_details = Elive->server_details, 'got server details');
     isa_ok($server_details, 'Elive::Entity::ServerDetails','server_details');
     ok($server_version = $server_details->version, 'got server version');
-    diag ("testing server: $auth->[1], url: $auth->[0], version: $server_version");
-
+    diag ("Elluminate Live version: $server_version");
 }
 
 Elive->disconnect;
