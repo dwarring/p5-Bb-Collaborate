@@ -189,7 +189,7 @@ available as both class level and object level methods.
     #
     # Object level.
     #
-    my $meeting = Elive::Entity::Meeting->retrieve($meeting_id);
+    my $meeting = Elive::Entity::Meeting->retrieve([$meeting_id]);
     my $url = meeting->web_url(action => 'join');
 
 =cut
@@ -345,8 +345,8 @@ sub _readback_check {
     #
     # A series of recurring meetings can potentially be returned.
     # to do: would be to check for correct ascension of start and
-    # end times. 
-    # just lop it for now
+    # end times.  Just apply to first meeting for now.
+    # 
     #
     $rows = [$rows->[0]] if @$rows > 1;
 

@@ -24,7 +24,9 @@ has 'supervised' => (is => 'rw', isa => 'Bool',
 
 =head1 NAME
 
-Elive::Entity::ServerParameters - meeting server parameters entity class
+Elive::Entity::ServerParameters - Meeting server parameters entity class
+
+=head1 SYNOPSIS
 
     my $meeting = Elive::Entity::Meeting->retrieve([$meeting_id]);
     my $meeting_params
@@ -122,13 +124,20 @@ retrieved via this entity, but must be updated via Elive::Entity::Meeting.
 sub update {
     my $self = shift;
     my $data = shift;
+
+    #
+    # changed to seats are ignored. This needs to be updated via meeting
+    # entity objects.
+    #
+    warn "ignoring changed 'seats' value"
+	if (grep {$_ eq 'seats'} $self->is_changed);
+
     #
     # This adaptor barfs if we don't write values back, whether they've
-    # changed or not! override normal optimisations and write everything
-    # back!
+    # changed or not.
     #
     $self->SUPER::update($data, @_,
-			 changed => [qw/seats boundaryMinutes fullPermissions supervised/]);
+			 changed => [qw/boundaryMinutes fullPermissions supervised/]);
 }
 
 1;
