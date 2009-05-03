@@ -15,7 +15,7 @@ __PACKAGE__->primary_key('recordingId');
 
 has 'creationDate' => (is => 'rw', isa => 'Int', required => 1);
 has 'data' => (is => 'rw', isa => 'Str');
-has 'facilitator' => (is => 'rw', isa => 'Int', required => 1);
+has 'facilitator' => (is => 'rw', isa => 'Int');
 has 'keywords' => (is => 'rw', isa => 'Str');
 has 'meetingId' => (is => 'rw', isa => 'Int', required => 1);
 has 'open' => (is => 'rw', isa => 'Bool');
@@ -67,42 +67,6 @@ sub download {
 
     return undef;
 }
-
-# _insert_class:
-#
-# The insert method unusually leaves it up to the client to create a primary
-# key for the recording entity instance. In pratice this is a concatonation
-# of the meeting_id and creation date.
-
-sub _insert_class {
-    my $class = shift;
-    my %data = %{shift()};
-    my %opt = @_;
-
-    #
-    # provide defaults for creation date and facilitator.
-    #
-    # note there's a small chance of key contention. The faciliator
-    # could potentially create two meetings at exactly the same
-    # moment.
-    #
-    # to do
-    # 1. consider Time::HiRes
-    # 2. implement detection + backoff/retry
-    #
-
-    $data{creationDate}
-        ||= time().sprintf("%03d", rand(999));  # dummy up fractions of a second
-
-    $data{facilitator}
-        ||= $class->facilitator(connection => $opt{connection});
-
-    $data{recordingId}
-        ||= join('_', $data{facilitator},  $data{creationDate});
-
-    $class->SUPER::_insert_class(\%data, %opt);
-}
-
 
 =head2 web_url
 

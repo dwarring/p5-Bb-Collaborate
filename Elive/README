@@ -6,8 +6,8 @@ users as class participants and change server settings.
 
 This package has been tested against Elluminate Live versions 9.0 thru 9.1.
 
-You will need to login in to your SOAP service using an Elluminate system
-administrator level account.
+You will need to be able to login in to your SOAP service using an Elluminate
+system administrator level account.
 
 Note that Elluminate installs with 'serversupport' and 'legacyadapter' as
 preset system adminstrator accounts. Don't forget to change password for
@@ -62,8 +62,8 @@ POST INSTALLATION
 
 	You'll need to first stop Elluminate services.
 
-	Then an adapter entry can be added to the list of adapters.
-	E.g. to add the getUser adapter:
+	Then an adapter entry can be added to the list of adapters. E.g.
+        to add the getUser adapter:
 
 	    <elm>
 		...

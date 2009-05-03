@@ -117,7 +117,7 @@ sub _hex_encode {
 =head2 string
 
 Try hard to return the object as a string. If it's a simple scalar fine,
-If it's an object that supports the stringify method, also good.
+If it's an object, try using the stringify method..
 
 =cut
 

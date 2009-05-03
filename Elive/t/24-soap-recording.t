@@ -12,7 +12,7 @@ BEGIN {
     use_ok( 'Elive::Entity::Meeting' );
 };
 
-my $class = 'Elive::Entity::Recording' ;
+my $class = 'Elive::Entity::Recording';
 
 my @data;
 $data[0] = 'the quick brown fox. %%(&)+(*)+*(_+';
@@ -33,31 +33,29 @@ SKIP: {
 ## ** STUB  ** STUB  ** STUB  ** STUB  ** STUB  ** STUB  ** STUB  ** STUB 
 
 ##    ok(my $meeting = Elive::Entity::Meeting->insert({
-##	name => 'created by t/23-soap-recording.t',
+##	name => 'created by t/24-soap-recording.t',
 ##	facilitatorId => Elive->login->userId,
 ##	start => time() . '000',
 ##	end => (time()+900) . '000',
 ##	privateMeeting => 1,
 ##    }));
 
-##    my $recording = Elive::Entity::Recording->upload(
+##    my $recording = Elive::Entity::Recording->insert(
 ##    {
-##	recordingId =>  time().'000',
 ##	facilitator => Elive->login->userId,
 ##	meetingId => $meeting->meetingId,
+##	fileName => '/tmp/recording.out',
 ##	data => $data[0],
 ##	size => length($data[0]),
 ##	version => Elive->server_details->version,
-##	roomName => 'room 24-soap-recording.t',
-##	creationDate => time().'000',
-##	open => 0,
+##	roomName => 'room t/24-soap-recording.t',
+##	open => 1,
 ##    },
 ##    );
 
 ##    my $recording =  Elive::Entity::Recording->import_from_server
 ##	({fileName => '/dev/null',
 ##	  version => Elive->server_details->version,
-##	  facilitator => Elive->login->userId,
 ##	  meetingId => $meeting->meetingId,
 ##	 });
 
