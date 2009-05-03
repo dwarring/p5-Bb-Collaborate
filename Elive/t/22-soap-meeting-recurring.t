@@ -44,6 +44,10 @@ SKIP: {
     foreach (@meetings) {
 	isa_ok($_, $class, "meeting occurence");
     }
+
+    foreach (@meetings) {
+	$_->delete;
+    }
 }
 
 Elive->disconnect;
