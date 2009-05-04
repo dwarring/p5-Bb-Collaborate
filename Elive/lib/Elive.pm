@@ -7,11 +7,11 @@ Elive -  Elluminate Live (c) client library
 
 =head1 VERSION
 
-Version 0.13
+Version 0.14
 
 =cut
 
-our $VERSION = '0.13';
+our $VERSION = '0.14';
 
 use base qw{Class::Data::Inheritable};
 
@@ -40,7 +40,7 @@ use Elive::Connection;
 
 =head1 DESCRIPTION
 
-Elive is designed to assist in then integration and automation of
+Elive is designed to assist in the integration and automation of
 Elluminate Live sites. In particular, managing users and meetings.
 
 It provides Perl object bindings to entities via the Elluminate Live
