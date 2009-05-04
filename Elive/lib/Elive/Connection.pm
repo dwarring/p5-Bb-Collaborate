@@ -2,7 +2,9 @@ package Elive::Connection;
 use warnings; use strict;
 
 use Class::Accessor;
-use base qw{Class::Accessor };
+use Class::Data::Inheritable;
+
+use base qw{Class::Accessor};
 
 =head1 NAME
 
@@ -15,21 +17,21 @@ use URI;
 use File::Spec;
 use HTML::Entities;
 
-__PACKAGE__->mk_accessors( qw{ url user pass soap } );
+__PACKAGE__->mk_accessors( qw{ url user pass soap _login _server_details} );
 
 =head1 METHODS
 
 =cut
 
-=head2 new
+=head2 connect
 
-    my $ec = Elive::Connection->new ('http://someserver.com/test',
+    my $ec = Elive::Connection->connect('http://someserver.com/test',
     'user1', 'pass1',
     debug => 1)
 
 =cut
 
-sub new {
+sub connect {
     my ($class, $url,  $user, $pass, %opt) = @_;
 
     my $uri_obj = URI->new($url, 'http');
@@ -59,6 +61,19 @@ sub new {
     $self->soap($soap);
 
     return $self
+}
+
+=head2 disconnect
+
+Close a connection;
+
+=cut
+
+sub disconnect {
+    my $self = shift;
+
+    $self->_server_details(undef);
+    $self->_login(undef);
 }
 
 =head2 call
@@ -104,6 +119,65 @@ sub call {
     return $som;
 }
 
+=head2 login
+
+    Return an elive user entity instance for the login user
+
+=cut
+
+sub login {
+    my $self = shift;
+
+    my $login_entity = $self->_login;
+
+    unless ($login_entity) {
+
+	my $username = $self->user
+	    or return;
+
+	eval "use  Elive::Entity::User";
+	die $@ if $@;
+
+	$login_entity = Elive::Entity::User->get_by_loginName($username)
+	    or die "unable to get login user: $username";
+
+	$self->_login($login_entity);
+    }
+
+    return $login_entity;
+}
+
+=head2 server_details
+
+    Return an elive server_details entity instance for the connection.
+
+=cut
+
+sub server_details {
+    my $self = shift;
+
+    my $server_details = $self->_server_details;
+
+    unless ($server_details) {
+
+	eval "use  Elive::Entity::ServerDetails";
+	die $@ if $@;
+
+	my $server_details_list = Elive::Entity::ServerDetails->list();
+
+	die "unable to get server details"
+	    unless (Elive::Util::_reftype($server_details_list) eq 'ARRAY'
+		    && $server_details_list->[0]);
+
+	$server_details = ($server_details_list->[0]);
+
+	$self->_server_details($server_details);
+    }
+
+    return $server_details;
+}
+
+
 sub _soap_header_xml {
 
     my $self = shift;
@@ -123,5 +197,9 @@ sub _soap_header_xml {
     </h:BasicAuth>
 EOD
 };
+
+sub DESTROY {
+    shift->disconnect;
+}
 
 1;

@@ -13,7 +13,7 @@ BEGIN {
 	use_ok( 'Elive::Entity::MeetingParameters' );
 }
 
-Elive->connection(Elive::Connection->new('http://test.org'));
+Elive->connection(Elive::Connection->connect('http://test.org'));
 
 dies_ok(
     sub {

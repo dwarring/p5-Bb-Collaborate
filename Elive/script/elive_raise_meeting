@@ -33,26 +33,28 @@ elive_raise_meeting
     -user someAdminUser         # server login user
     -pass somepass              # server login password
 
-  Basic Settings
+  Basic
 
     -facilitator  userId
     -name         'meeting name'
-    -meeting_pass otherpass     # meeting password
-    -start  'YYYY-MM-DD HH:MM'  # start time
-    -end '[YYYY-MM-DD] HH::MM'  # end time
+    -meeting_pass otherpass      # meeting password
+    -start  'YYYY-MM-DD HH:MM'   # start time
+    -end '[YYYY-MM-DD] HH::MM'   # end time
 
-  Advanced Settings
+  Meeting Settings
 
-    -boundary     0|15|30|..    # number minutes participants can arrive before
-                                # or leave after the scheduled meeting times.
-    -max_talkers n              # max no. of simultaneous talkers
-    -upload       local_file    # upload a file as a preload
-    -import       remote_file   # import a file on the server as a preload
-    -recording    on|off|auto   # set recording status
-    -raise_hands                # automatically raise hands on entry
-    -seats        count         # number of seats to reserve
+    -boundary     0|15|30|..     # number minutes participants can arrive before
+                                 # or leave after the scheduled meeting times.
+    -max_talkers  n              # max no. of simultaneous talkers
+    -recording    on|off|auto    # set recording status
+    -raise_hands                 # automatically raise hands on entry
+    -seats        count          # number of seats to reserve
 
-    -help                       # Get this help
+  Preloads
+
+    -upload      local_file      # upload a meeting preload file
+    -import_from_server  file    # import a meeting preload from the server
+    -use_preload preload_id      # use an existing preload for the meeting
 
 =head1 DESCRIPTION
 
@@ -79,6 +81,7 @@ my $raise_hands;
 my $import;
 my $private;
 my $upload;
+my $preload_opt;
 my $url;
 my $help;
 my $boundary = 15;
@@ -104,7 +107,8 @@ sub main {
 	'debug=i' => \$debug,
 	'help|?' => \$help,
 	'upload=s' => \$upload,
-	'import=s' => \$import,
+	'import_from_server=s' => \$import,
+	'use_preload=i' => \$preload_opt,
 	'recording' => \$recording,
 	'boundary=i' => \$boundary,
 	'seats' => \$seats,
@@ -127,8 +131,6 @@ sub main {
     $url ||= Elive::Util::prompt('Elluminate Server: '),
     $username ||= Elive::Util::prompt('Username: '),
     $password ||= Elive::Util::prompt('Password: ', password => 1),
-
-    print "connecting to $url";
 
     our $connection = Elive->connect($url, $username, $password);
 
@@ -156,7 +158,7 @@ sub main {
 
     my $facilitator_obj = $facilitator
 	? _get_user($facilitator)
-	: Elive->_login;
+	: Elive->login;
 
     my @participants;
 
@@ -199,6 +201,35 @@ sub main {
 	}
     }
 
+    my $existing_preload;
+
+    if ($preload_opt) {
+
+	if ($preload_opt =~ m{^\d+$}) {
+	    #
+	    # numeric - assume it's a preload id
+	    #
+	    $existing_preload = Elive::Entity::Preload->retrieve([$preload_opt]);
+	}
+	else {
+	    #
+	    # preload filter appears to be ineffective. Shouldn't get here
+	    # anyway - option has been restricted to integer
+	    die "non numeric preload id";
+	    #
+	    # treat it as a filename.
+	    #
+	    my $preloads =  Elive::Entity::Preload->list(filter => "name = $preload_opt");
+	    #
+	    # take most recent
+	    #
+	    ($existing_preload) = sort {$b->id cmp $a->id} @$preloads;
+	}
+	
+	die "no existing preload: $preload_opt"
+	    unless $existing_preload;
+    }
+
     my %meeting_data = (
 	    name => $meeting_name,
 	    password => $meeting_password,
@@ -216,6 +247,8 @@ sub main {
     my $meeting = Elive::Entity::Meeting->insert(\%meeting_data);
     
     print "created meeting: ".$meeting->name." with id ".$meeting->meetingId."\n";
+    $meeting->add_preload($existing_preload)
+	if $existing_preload;
 
     do {
 	
@@ -280,7 +313,7 @@ sub main {
     #
     if ($import) {
 
-	print "importing (from remote server): $import\n";
+	print "importing (from server): $import\n";
 
 	my $preload = Elive::Entity::Preload->import_from_server({
 	    fileName => $import,

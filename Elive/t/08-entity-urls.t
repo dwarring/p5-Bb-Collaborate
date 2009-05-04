@@ -18,7 +18,7 @@ my $URL1 = 'http://test1.org';
 my $K1 = 123456123456;
 my $K2 = 112233445566;
 my $K3 = 111222333444;
-my $C1 = Elive::Connection->new($URL1);
+my $C1 = Elive::Connection->connect($URL1);
 
 Elive->connection($C1);
 

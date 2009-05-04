@@ -10,7 +10,7 @@ BEGIN {
     use_ok( 'Elive::Entity::User' );
 }
 
-Elive->connection(Elive::Connection->new('http://test.org'));
+Elive->connection(Elive::Connection->connect('http://test.org'));
 
 warning_like (\&do_unsaved_update,
 	      qr{destroyed without saving .* changes},

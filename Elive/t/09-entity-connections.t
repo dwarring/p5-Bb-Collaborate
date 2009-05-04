@@ -19,8 +19,8 @@ my $K1 = 123456123456;
 my $K2 = 112233445566;
 my $K3 = 111222333444;
 
-my $C1 = Elive::Connection->new($URL1);
-my $C2 = Elive::Connection->new($URL2);
+my $C1 = Elive::Connection->connect($URL1);
+my $C2 = Elive::Connection->connect($URL2);
 
 Elive->connection($C1);
 

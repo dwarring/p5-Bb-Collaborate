@@ -303,7 +303,7 @@ sub _select {
 	if (my ($fld, $val) = ($filter =~ m{^ (\w+) \s* = \s* ([\w_\-\@\!\#\$\%\^\&\.\+]+) \s* $}x)) {
 	    my $type = $property_types->{$fld} || '';
 	    
-	    if ($fld eq $pkey) {
+	    if ($fld eq $pkey || $fld eq 'id') {
 		$id = $val;
 	    }
 	}

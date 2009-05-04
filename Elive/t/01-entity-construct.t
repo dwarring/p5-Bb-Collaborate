@@ -8,7 +8,7 @@ BEGIN {
     use_ok( 'Elive::Entity::ParticipantList' );
 };
 
-Elive->connection(Elive::Connection->new('http://test.org'));
+Elive->connection(Elive::Connection->connect('http://test.org'));
 
 my $participant_list = Elive::Entity::ParticipantList->construct(
     {

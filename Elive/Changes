@@ -1,8 +1,12 @@
 Revision history for Elive
 
+0.13    5th May
+        - login & server_details now stored with connection handle 
+	- added -preload flag to elive_raise_meeting script.
+
 0.12    2nd May
         - Added recording 'download' and 'web_url' methods
-        - Omit null properties on retrieval. Avoid Mouse constraint errors.
+        - Omit null properties on retrieval. Avoids Mouse constraint errors.
         - Corrections to 'list_user_meetings_by_date' method
 
 0.11    30th April
@@ -12,7 +16,7 @@ Revision history for Elive
 0.10    28th April
         - Added support for recurring meetings
         - Added Elive::Entity::ServerParameters (isa table for meetings)
-        - Extra Parameters added to elive_raise_meeting
+        - Extra Parameters added to elive_raise_meeting script:
             -upload     -- upload a whiteboard/media file preload
             -import     -- import a server-side whiteboard/media file preload
             -max_talkers n -boundary m -recording on|off|auto

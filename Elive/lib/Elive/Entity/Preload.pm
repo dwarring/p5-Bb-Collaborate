@@ -92,6 +92,10 @@ sub upload {
         if $length;
 
     if ($insert_data->{name}) {
+
+	$_ = File::Basename::basename($_)
+	    for $insert_data->{name};
+
 	$insert_data->{mimeType} ||= $class->_guess_mimetype($insert_data->{name});
 	$insert_data->{type} ||= $insert_data->{name} =~ m{\.wbd}i
 	    ? 'whiteboard'

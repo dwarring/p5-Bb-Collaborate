@@ -9,7 +9,7 @@ BEGIN {
     use_ok( 'Elive::Entity::Group' );
 }
 
-Elive->connection(Elive::Connection->new('http://test.org'));
+Elive->connection(Elive::Connection->connect('http://test.org'));
 
 my @base_members = (100, 101, 102);
 
