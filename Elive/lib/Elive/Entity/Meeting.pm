@@ -14,7 +14,7 @@ Elive::Entity::Meeting - Elluminate Meeting instance class
 
 This is the main entity for meetings.
 
-Note that there are additional metting settings contained in both
+Note that there are additional meeting settings contained in both
 Elive::Entity::MeetingParameters and Elive::Entity::ServerParameters.
 
 =cut
@@ -287,7 +287,7 @@ sub add_preload {
 
 my $ok = $meeting_obj->check_preload($preload);
 
-Checks that the preload is associated with ths meeting.
+Checks that the preload is associated with this meeting.
 
 =cut
 

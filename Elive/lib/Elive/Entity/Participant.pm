@@ -46,7 +46,7 @@ Elive::Entity::ParticpiantList
 =head2 stringify
 
 Returns a string of the form userId=role. This value is used for
-comparisions, sql display, etc...
+comparisons, sql display, etc...
 
 =cut
 

@@ -344,7 +344,7 @@ against Elluminate Live 9.0 and 9.1 only).
 
 If the problem persists, the command entry may be missing from your site
 configuration file. Please follow the instructions in the README file
-for insrtuctions on detecting and repairing missing adapters.
+for instructions on detecting and repairing missing adapters.
 
 =back
 
@@ -477,11 +477,11 @@ which supports JDBC access.
 
 The Elluminate Live advanced configuration guide mentions that it can be
 configured to use other databases that support a JDBC bridge (most databases
-in widespread use do). However, it specifcally mentions SQL Server or Oracle. 
+in widespread use do). However, it specifically mentions SQL Server or Oracle. 
 
 =item LDAP Authentication
 
-Elluminate Live can also be configured to use an LDAP respository for
+Elluminate Live can also be configured to use an LDAP repository for
 user authentication.  Users can still be retrieved or listed. However
 updates and deletes are not supported by the LDAP DAO adapter. See also
 Net::LDAP.

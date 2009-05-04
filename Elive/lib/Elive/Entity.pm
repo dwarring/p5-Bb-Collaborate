@@ -29,14 +29,14 @@ It provides a simple mapping from the objects to database entities.
 
 =head2 Stringification
 
-Database entities evalute to their primary key, when used in a string
+Database entities evaluate to their primary key, when used in a string
 context.
 
     if ($user_obj->stringify eq "11223344") {
         ....
     }
 
-Arrays of sub-items evaluated, in a string context, to a semi-colon seperated
+Arrays of sub-items evaluated, in a string context, to a semi-colon separated
 string of the individual values sorted.
 
     my $group = Elive::Entity::Group->retrieve([98765]);
@@ -85,8 +85,8 @@ sub _url {
     my $url = $user->url
 
 Return a restful url for an object instance. This will include both
-the url of the repository scring and the entity class name. It is used
-internally to uniquely identify and cache objects across repositorys.
+the url of the repository string and the entity class name. It is used
+internally to uniquely identify and cache objects across repositories.
 
 =cut
 
@@ -185,14 +185,14 @@ sub construct {
 
 #
 # __tidy_decimal(): general cleanup and normalisation of an integer.
-#               used to clean up numbers for data storage or comparision
+#               used to clean up numbers for data storage or comparison
 
 sub __tidy_decimal {
     my $i = $_[0];
     #
     # well a number really. don't convert or sprintf etc
     # to avoid overflow. Just normalise it for potential
-    # string comparisions
+    # string comparisons
 
     #
     # l-r trim
@@ -617,7 +617,7 @@ sub _readback_check {
     my $rows = shift;
 
     #
-    # Create and upate responses generally return a copy of the
+    # Create and update responses generally return a copy of the
     # record, after applying the updates. This routine may be
     # run to check that the expected updates have been applied
     #
@@ -957,7 +957,7 @@ sub list {
     my $rows =  $class->_process_results($results, %opt);
 
     return [
-	map { $class->construct( $_, respository => $connection) }
+	map { $class->construct( $_, repository => $connection) }
 	@$rows
 	];
 }
@@ -1101,7 +1101,7 @@ sub retrieve_all {
 
     $user_obj->delete;
 
-Delete an entity from the datase.
+Delete an entity from the database.
 
 =cut
 
@@ -1225,8 +1225,9 @@ sub DEMOLISH {
 
 =head2 Object Reuse
 
-A single unique object is mained for each entity instance. if you re-retrieve
-or re-construct the object, any other copies of the object are also upated.
+A single unique object is maintained for each entity instance. if you
+re-retrieve or re-construct the object, any other copies of the object
+are also updated.
 
     my $user = Elive::Entity::User->retrieve([11223344]);
     #
