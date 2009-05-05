@@ -111,7 +111,7 @@ sub main {
 	'use_preload=i' => \$preload_opt,
 	'recording' => \$recording,
 	'boundary=i' => \$boundary,
-	'seats' => \$seats,
+	'seats=i' => \$seats,
     )
 	&& (($help && pod2usage(2)) || ($url = shift @ARGV))
 	or die pod2usage(1);
