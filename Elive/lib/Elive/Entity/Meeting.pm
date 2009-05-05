@@ -60,7 +60,7 @@ has 'name' => (is => 'rw', isa => 'Str', required => 1,
         start => hires_time,
         end => hires_time,
         name => string,
-        password =. string,
+        password => string,
         seats => int,
         privateMeeting => 0|1,
         timeZone => string
@@ -98,7 +98,7 @@ sub _insert_class {
         start => hires_time,
         end => hires_time,
         name => string,
-        password =. string,
+        password => string,
         seats => int,
         privateMeeting => 0|1,
         timeZone => string
