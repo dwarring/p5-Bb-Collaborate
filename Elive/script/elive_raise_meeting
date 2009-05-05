@@ -241,7 +241,7 @@ sub main {
     $meeting_data{seats} = $seats
 	if defined $seats;
 
-    $meeting_data{private} = $private
+    $meeting_data{privateMeeting} = $private
 	if defined $private;
 
     my $meeting = Elive::Entity::Meeting->insert(\%meeting_data);
