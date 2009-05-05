@@ -1,5 +1,8 @@
 Revision history for Elive
 
+0.14    6th May
+        - corrected elive_raise_meeting -private & -seats options
+
 0.13    5th May
         - login & server_details now stored with connection handle 
 	- added -use_preload id option to elive_raise_meeting script.
