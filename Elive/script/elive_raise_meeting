@@ -63,7 +63,7 @@ Creates a meeting on an Elluminate Live (c) server
 =head1 SEE ALSO
 
     perldoc Elive
-    http://search.cpan/org?Elive
+    http://search.cpan.org/dist/Elive
 
 =cut
 
