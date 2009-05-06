@@ -14,7 +14,7 @@ use Pod::Usage;
 
 use UNIVERSAL;
 
-local $SIG{__DIE__};
+local $SIG{__DIE__};#y = \&Carp::cluck;
 
 =head1 NAME
 

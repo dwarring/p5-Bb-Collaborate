@@ -1,13 +1,12 @@
 #!perl
 use warnings; use strict;
-use Test::More tests => 35;
+use Test::More tests => 34;
 use Test::Exception;
 
 package main;
 
 BEGIN {
     use_ok('Elive');
-    use_ok( 'Elive::Connection' );
     use_ok( 'Elive::Entity::Preload' );
     use_ok( 'Elive::Entity::Meeting' );
     use_ok ('Elive::Util');

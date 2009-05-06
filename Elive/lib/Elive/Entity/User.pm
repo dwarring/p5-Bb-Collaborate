@@ -79,6 +79,7 @@ sub get_by_loginName {
     #
     my $results = $class->_fetch({userName => $loginName},
 				 readback => {loginName => $loginName},
+				 @_,
 	);
 
     return @$results && $results->[0];
@@ -170,9 +171,12 @@ sub update {
 sub change_password {
     my $self = shift;
     my $new_password = shift;
+    my %opt = @_;
 
     $self->SUPER::update({loginPassword => $new_password},
-		  adapter => 'ChangePasswordCommand',)
+			 adapter => 'ChangePasswordCommand',
+			 %opt,
+	)
 	if (defined $new_password && $new_password ne '');
     #
     # Revert to the readback copy. This does not contain a copy of

@@ -170,7 +170,8 @@ sub login {
 	eval "use  Elive::Entity::User";
 	die $@ if $@;
 
-	$login_entity = Elive::Entity::User->get_by_loginName($username)
+	$login_entity = Elive::Entity::User->get_by_loginName($username,
+	    connection => $self)
 	    or die "unable to get login user: $username";
 
 	$self->_login($login_entity);
@@ -195,7 +196,8 @@ sub server_details {
 	eval "use  Elive::Entity::ServerDetails";
 	die $@ if $@;
 
-	my $server_details_list = Elive::Entity::ServerDetails->list();
+	my $server_details_list
+	    = Elive::Entity::ServerDetails->list(connection => $self);
 
 	die "unable to get server details"
 	    unless (Elive::Util::_reftype($server_details_list) eq 'ARRAY'

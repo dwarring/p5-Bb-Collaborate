@@ -83,6 +83,9 @@ sub _insert_class {
     my %opt = @_;
 
     foreach (qw(seats recurrenceCount recurrenceDays timeZone)) {
+	#
+	# these are parameters, not properties
+	#
 	$opt{param}{$_} = delete $data->{$_}
 	    if exists $data->{$_}
     }
@@ -199,8 +202,8 @@ sub web_url {
     my %opt = @_;
 
     my $meeting_id = $opt{meeting_id};
-    my $connection = ($opt{connection}
-		      || $self->connection);
+    my $connection = $opt{connection} || $self->connection
+	or die "not connected";
 
     if (ref($self)) {
 	#
@@ -214,9 +217,6 @@ sub web_url {
 
     die "no meeting_id given"
 	unless $meeting_id;
-
-    die "not connected"
-	unless $connection;
 
     my $url = $connection->url;
 
@@ -275,9 +275,12 @@ sub add_preload {
 
     my $adapter = $self->check_adapter('addMeetingPreload');
 
-    my $som = $self->connection->call($adapter,
-				      meetingId => $meeting_id,
-				      preloadId => $preload_id,
+    my $connection = $opt{connection} || $self->connection
+	or die "not connected";
+
+    my $som = $connection->call($adapter,
+				meetingId => $meeting_id,
+				preloadId => $preload_id,
 	);
 
     $self->_check_for_errors($som);
@@ -301,9 +304,12 @@ sub check_preload {
 
     my $adapter = $self->check_adapter('checkMeetingPreload');
 
-    my $som =  $self->connection->call($adapter,
-				       preloadId => $preload_id,
-				       meetingId => $self->meetingId);
+    my $connection = $opt{connection} || $self->connection
+	or die "not connected";
+
+    my $som =  $connection->call($adapter,
+				 preloadId => $preload_id,
+				 meetingId => $self->meetingId);
 
     $self->_check_for_errors($som);
 

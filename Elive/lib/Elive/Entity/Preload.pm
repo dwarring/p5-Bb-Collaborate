@@ -108,12 +108,15 @@ sub upload {
 
 	my $adapter = Elive->check_adapter('streamPreload');
 
-	my $som = $self->connection->call($adapter,
-					  preloadId => $self->preloadId,
-					  length => $length,
-					  stream => (SOAP::Data
-						     ->type('hexBinary')
-						     ->value($binary_data)),
+	my $connection = $opt{connection} || $self->connection
+	    or die "not connected";
+
+	my $som = $connection->call($adapter,
+				    preloadId => $self->preloadId,
+				    length => $length,
+				    stream => (SOAP::Data
+					       ->type('hexBinary')
+					       ->value($binary_data)),
 	    );
 
 	$self->_check_for_errors($som);
@@ -143,9 +146,13 @@ sub download {
 	unless $preload_id;
 
     my $adapter = Elive->check_adapter('getPreloadStream');
-    my $som = $self->connection->call($adapter,
-				      preloadId => $self->preloadId,
-	    );
+
+    my $connection = $opt{connection} || $self->connection
+	or die "not connected";
+
+    my $som = $connection->call($adapter,
+				preloadId => $self->preloadId,
+	);
 
     $self->_check_for_errors($som);
 

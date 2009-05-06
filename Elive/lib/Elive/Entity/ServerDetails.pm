@@ -50,7 +50,7 @@ sub list {
     die "filter not applicable to class $class"
 	if ($opt{filter});
 
-    return $class->_fetch({});
+    return $class->_fetch({}, %opt);
 }
 
 1;

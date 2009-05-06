@@ -60,16 +60,40 @@ our %Stored_Objects;
 # ensure our object is an exact image of the data.
 #
 
-foreach my $accessor (qw/repository _db_data/) {
+foreach my $accessor (qw/_connection _db_data/) {
     __PACKAGE__->has_metadata($accessor);
+}
+
+=head2 connection
+
+    my $default_connection = Elive::Entity::User->connection;
+    my $connection = $entity_obj->connection;
+
+Return a connection. Either the actual connection associated with a entity
+instance, or the default connection that will be used.
+
+=cut
+
+sub connection {
+    my $self = shift;
+
+    my $connection;
+
+    if (ref($self)) {
+	$self->_connection(shift)
+	    if @_;
+	$connection = $self->_connection;
+    }
+
+    return $connection || $self->SUPER::connection;
 }
 
 sub _url {
     my $class = shift;
-    my $repository = shift || $class->repository;
+    my $connection = shift || $class->connection;
     my $path = shift;
 
-    return ($repository->url
+    return ($connection->url
 	    . '/'
 	    . $class->entity_name
 	    .'/'.
@@ -85,14 +109,14 @@ sub _url {
     my $url = $user->url
 
 Return a restful url for an object instance. This will include both
-the url of the repository string and the entity class name. It is used
+the url of the connection string and the entity class name. It is used
 internally to uniquely identify and cache objects across repositories.
 
 =cut
 
 sub url {
     my $self = shift;
-    return $self->_url($self->repository, $self->stringify);
+    return $self->_url($self->connection, $self->stringify);
 }
 
 =head2 construct
@@ -123,7 +147,7 @@ sub construct {
     #
     local (%Elive::_construct_opts) = %opt;
 
-    $opt{repository} = delete $opt{connection} || $class->connection;
+    $opt{connection} = delete $opt{connection} || $class->connection;
 
     my %known_properties;
     @known_properties{$class->properties} = undef;
@@ -142,14 +166,14 @@ sub construct {
 
     return $self if ($opt{copy});
 
-    my $repository = $opt{repository};
+    my $connection = $opt{connection};
     #
-    # Retain one copy of the data for this repository
+    # Retain one copy of the data for this connection
     #
-    die "can't construct objects without a repository"
-	unless $repository;
+    die "can't construct objects without a connection"
+	unless $connection;
 
-    $self->repository($repository);
+    $self->connection($connection);
 
     my %primary_key_data = map {$_ => $data->{ $_ }} ($class->primary_key);
 
@@ -769,8 +793,9 @@ sub _insert_class {
     die "usage: ${class}->insert( \\%data )"
 	unless (Elive::Util::_reftype($insert_data) eq 'HASH');
 
-    my $connection = ($opt{connection}
-		      || $class->connection);
+    my $connection = $opt{connection}
+		      || $class->connection
+			  or die "not connected";
 
     my $db_data = $class->_freeze($insert_data, mode => 'insert');
 
@@ -788,7 +813,7 @@ sub _insert_class {
 
     my @rows = $class->_readback($som, $insert_data);
 
-    my @objs = (map {$class->construct( $_, repository => $connection )}
+    my @objs = (map {$class->construct( $_, connection => $connection )}
 		@rows);
     #
     # Not a big fan of wantarry, but 99% we expect to return a single
@@ -935,9 +960,8 @@ sub list {
 	push( @params, filter => $filter );
     }
 
-    my $connection = ($opt{connection}
+    my $connection = $opt{connection}
 		      || $class->connection
-	)
 	or die "no connection active";
 
     my $collection_name = $class->collection_name || $class->entity_name;
@@ -948,7 +972,7 @@ sub list {
     my $adapter = $opt{adapter} || 'list'.$collection_name;
     $class->check_adapter($adapter);
 
-    my $som =  $connection->call($adapter, @params);
+    my $som = $connection->call($adapter, @params);
 
     my $results = $class->_get_results(
 	$som,
@@ -957,7 +981,7 @@ sub list {
     my $rows =  $class->_process_results($results, %opt);
 
     return [
-	map { $class->construct( $_, repository => $connection) }
+	map { $class->construct( $_, connection => $connection) }
 	@$rows
 	];
 }
@@ -1000,7 +1024,7 @@ sub _fetch {
     my $read_back_query = $opt{readback} || $db_query;
 
     $class->_readback_check($read_back_query, $rows);
-    return [map {$class->construct( $_, repository => $connection )} @$rows];
+    return [map {$class->construct( $_, connection => $connection )} @$rows];
 }
 
 =head2 retrieve

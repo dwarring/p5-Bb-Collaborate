@@ -54,9 +54,13 @@ sub download {
 	unless $recording_id;
 
     my $adapter = Elive->check_adapter('getRecordingStream');
-    my $som = $self->connection->call($adapter,
-				      recordingId => $self->recordingId,
-	    );
+
+    my $connection = $opt{connection} || $self->connection
+	or die "not connected";
+
+    my $som = $connection->call($adapter,
+				recordingId => $self->recordingId,
+	);
 
     $self->_check_for_errors($som);
 
@@ -97,8 +101,8 @@ sub web_url {
     my %opt = @_;
 
     my $recording_id = $opt{recording_id};
-    my $connection = ($opt{connection}
-		      || $self->connection);
+    my $connection = $opt{connection} || $self->connection
+	or die "not connected";
 
     if (ref($self)) {
 	#

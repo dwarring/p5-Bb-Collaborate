@@ -6,7 +6,7 @@ use Test::Exception;
 package main;
 
 BEGIN {
-    use_ok( 'Elive::Connection' );
+    use_ok( 'Elive' );
     use_ok( 'Elive::Entity::Meeting' );
 };
 

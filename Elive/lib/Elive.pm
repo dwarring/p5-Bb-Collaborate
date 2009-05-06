@@ -213,10 +213,13 @@ sub debug {
 #
 sub _get_test_auth {
     my $class = shift;
+    my %opt = @_;
 
-    my $user = $ENV{ELIVE_TEST_USER};
-    my $pass = $ENV{ELIVE_TEST_PASS};
-    my $url  = $ENV{ELIVE_TEST_URL};
+    my $suffix = $opt{suffix} || '';
+
+    my $user = $ENV{'ELIVE_TEST_USER'.$suffix};
+    my $pass = $ENV{'ELIVE_TEST_PASS'.$suffix};
+    my $url  = $ENV{'ELIVE_TEST_URL'.$suffix};
 
     my %result;
 
@@ -224,7 +227,7 @@ sub _get_test_auth {
 	$result{auth} = [$url, $user, $pass];
     }
     else {
-	$result{reason} = 'need to set $ELIVE_TEST_{USER|PASS|URL}';
+	$result{reason} = 'need to set $ELIVE_TEST_{USER|PASS|URL}'.$suffix;
     }
 
     return %result;
