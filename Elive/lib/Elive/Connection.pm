@@ -8,7 +8,39 @@ use base qw{Class::Accessor};
 
 =head1 NAME
 
-Elive::Connection -  Manage an Elluminate SOAP/XML Connection
+Elive::Connection -  Manage Elluminate SOAP/XML connections.
+
+=head1 DESCRIPTION
+
+This module handles logical connections to Elluminate Live sites.
+
+Most of the time, you won't need to use this module directly, rather
+you'll create on default connection via Elive:
+
+    Elive->connect('http://someserver.com', 'someuser', 'somepass');
+
+However, if you need to manage multiple sites and/or servers. You can
+have multiple connections:
+
+    my $connection1
+            = Elive::Connection->connect('http://someserver.com/site1',
+                                        'someUser', 'somePass');
+
+
+    my $connection2
+            = Elive::Connection->connect('http://someserver.com/site2',
+                                         'anotherUser', 'anotherPass');
+
+All entity constructor and retrieval methods support an optional connection
+parameter:
+
+     my $user = Entity::User->retrieve(
+                     [userId => 123456789000],
+                     connection => $connection1,
+                    );
+                                      
+The C<connection> option can be used on all of the following entity methods:
+C<create>, C<insert>, C<list>, C<retrieve> and C<retrieve_all>.
 
 =cut
 
