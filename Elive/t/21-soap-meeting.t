@@ -1,6 +1,6 @@
 #!perl
 use warnings; use strict;
-use Test::More tests => 30;
+use Test::More tests => 33;
 use Test::Exception;
 
 package main;
@@ -10,9 +10,11 @@ BEGIN {
     use_ok( 'Elive::Entity::Meeting' );
     use_ok( 'Elive::Entity::MeetingParameters' );
     use_ok( 'Elive::Entity::ServerParameters' );
+    use_ok( 'Elive::Entity::ParticipantList' );
 };
 
 use Carp; $SIG{__DIE__} = \&Carp::confess;
+##Elive->debug(4);
 
 my $class = 'Elive::Entity::Meeting' ;
 
@@ -22,7 +24,7 @@ SKIP: {
     my $auth = $result{auth};
 
     skip ($result{reason} || 'no test connection specified',
-	26)
+	29)
 	unless $auth;
 
     Elive->connect(@$auth);
@@ -111,6 +113,27 @@ SKIP: {
     }
 
     ok($server_params->seats == 42, 'server_param - expected number of seats');
+
+    my $pl = Elive::Entity::ParticipantList->retrieve([$meeting->meetingId]);
+    diag ("participants=".$pl->participants->stringify);
+
+    my $participants = [{user => Elive->login->userId,
+			 role => 1}];
+    #
+    # NB. It's no neccessary to insert prior to update, but since we allow it
+    lives_ok(
+	     sub {Elive::Entity::ParticipantList->insert
+		      (
+		       {meetingId => $meeting->meetingId,
+			participants => $participants},
+		       )
+		  },
+	     'update of participant list - lives');
+
+    my $participant_list = Elive::Entity::ParticipantList->retrieve([$meeting->meetingId]);
+
+
+    isa_ok($participant_list, 'Elive::Entity::ParticipantList', 'server_params');
 
     #
     # check that we can access our meeting by user and date range.

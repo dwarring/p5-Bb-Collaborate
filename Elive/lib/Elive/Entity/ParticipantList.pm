@@ -108,8 +108,9 @@ sub retrieve_all {
     #
     # No getXxxx adapter use listXxxx
     #
-    return $class->SUPER::retrieve_all($vals, %opt,
-				      adapter => 'listParticipants');
+    return $class->SUPER::retrieve_all($vals,
+				       adapter => 'listParticipants',
+				       %opt);
 }
 
 sub _freeze {
@@ -122,19 +123,32 @@ sub _freeze {
     if (my $participants = delete $frozen->{participants}) {
 	#
 	# NOTE: thawed data is returned as the 'participants' property.
-        # but for frozen data the parmeter name is 'users'. Also
-        # setter methods expect a stringified digest in the form
+	# but for frozen data the parmeter name is 'users'. Also
+	# setter methods expect a stringified digest in the form
 	#  userid=roleid[;userid=roleid]
 	#
+	#
+	# allow prefrozen
+	#
+	my $reftype = Elive::Util::_reftype($participants);
 
-	die "expected participants to be an ARRAY"
-	    unless (Elive::Util::_reftype($participants) eq 'ARRAY');
+	my $users_frozen;
 
-	my @users = map {
-	    Elive::Entity::Participant->stringify($_);
-	} @$participants;
+	if ($reftype) {
+	    die "expected participants to be an ARRAY, found $reftype"
+		unless ($reftype eq 'ARRAY');
 
-	$frozen->{users} = join(';', @users);
+	    my @users = map {
+		Elive::Entity::Participant->stringify($_);
+	      } @$participants;
+
+	    $users_frozen = join(';', @users);
+	}
+	else {
+	    $users_frozen = $participants;
+	}
+
+	$frozen->{users} = $users_frozen;
     }
 
     return $frozen;
@@ -155,14 +169,14 @@ Insert meeting participants
 
 =cut
 
-sub insert {
+sub _insert_class {
     my $class = shift;
     my $data = shift;
     my %opt = @_;
 
-    $class->SUPER::insert($data,
-			  adapter => 'setParticipantList',
-			  %opt);
+    $class->SUPER::_insert_class($data,
+				 adapter => 'setParticipantList',
+				 %opt);
 }
 
 =head2 update
@@ -201,7 +215,7 @@ sub _readback {
     return $class->SUPER::_readback($som, $updates, @_)
 	if Elive::Util::_reftype($result);
     #
-    # Ok, we need to handle our own readbaOAck.
+    # Ok, we need to handle our own readback.
     #
     $class->_check_for_errors($som);
 
