@@ -47,6 +47,110 @@ sub parse_type {
     return ($type, $is_array, $is_struct);
 }
 
+sub _freeze {
+    my ($val, $type, $context) = @_;
+
+    for ($val) {
+	if ($type =~ m{Bool}i) {
+
+	    #
+	    # DBize boolean flags..
+	    #
+	    $_ =  $_ ? 'true' : 'false'
+		if defined;
+	}
+	elsif ($type =~ m{Int}i) {
+	    
+	    $_ = _tidy_decimal($_)
+		if defined;
+	}
+    }
+    return $val;
+}
+
+sub _thaw {
+    my ($val, $type) = @_;
+
+    return unless defined $val;
+
+    for ($val) {
+
+	if ($type =~ m{^Bool}i) {
+	    #
+	    # Perlise boolean flags..
+	    #
+	    $_ = m{true}i ? 1 : 0;
+	}
+	elsif ($type =~ m{^(Str|Enum)}i) {
+	    #
+	    # l-r trim
+	    #
+	    s{^ \s* (.*?) \s* $}{$1}x;
+	}
+	elsif ($type =~ m{^Int}i) {
+
+	    $_ = _tidy_decimal($_);
+
+	}
+	else {
+	    die "unknown type: $type";
+	}
+    }
+
+    return $val;
+}
+
+
+#
+# _tidy_decimal(): general cleanup and normalisation of an integer.
+#               used to clean up numbers for data storage or comparison
+
+sub _tidy_decimal {
+    my $i = $_[0];
+    #
+    # well a number really. don't convert or sprintf etc
+    # to avoid overflow. Just normalise it for potential
+    # string comparisons
+
+    #
+    # l-r trim
+    #
+    $i =~ s{^ \s* (.*?) \s* $}{$1}x;
+
+    #
+    # non number => undef
+    #
+    return
+	unless $i =~ m{^[+-]?\d+$};
+
+    #
+    # remove any leading zeros:
+    # +000123 => 123
+    # -00045 => -45
+    # -000 => 0
+    #
+
+    $i =~ s{^
+            \+?    # leading plus -discarded 
+            (-?)   # leading minus retained (usually)
+            0*     # leading zeros discarded
+            (\d+)  # number - retained
+            $}
+	    {$1$2}x;
+
+    #
+    # reduce -0 => 0
+    $i = 0 if ($i eq '-0');
+
+    #
+    # should get here. just a sanity check.
+    #
+    die "bad integer: $_[0]"
+	unless $i =~ m{^[+-]?\d+$};
+
+    return $i;
+}
+
 =head2 prompt
 
     my $password = Elive::Util::prompt('Password: ', password => 1)

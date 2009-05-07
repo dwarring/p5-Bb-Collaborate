@@ -207,56 +207,6 @@ sub construct {
     $self;
 }
 
-#
-# __tidy_decimal(): general cleanup and normalisation of an integer.
-#               used to clean up numbers for data storage or comparison
-
-sub __tidy_decimal {
-    my $i = $_[0];
-    #
-    # well a number really. don't convert or sprintf etc
-    # to avoid overflow. Just normalise it for potential
-    # string comparisons
-
-    #
-    # l-r trim
-    #
-    $i =~ s{^ \s* (.*?) \s* $}{$1}x;
-
-    #
-    # non number => undef
-    #
-    return
-	unless $i =~ m{^[+-]?\d+$};
-
-    #
-    # remove any leading zeros:
-    # +000123 => 123
-    # -00045 => -45
-    # -000 => 0
-    #
-
-    $i =~ s{^
-            \+?    # leading plus -discarded 
-            (-?)   # leading minus retained (usually)
-            0*     # leading zeros discarded
-            (\d+)  # number - retained
-            $}
-	    {$1$2}x;
-
-    #
-    # reduce -0 => 0
-    $i = 0 if ($i eq '-0');
-
-    #
-    # should get here. just a sanity check.
-    #
-    die "bad integer: $_[0]"
-	unless $i =~ m{^[+-]?\d+$};
-
-    return $i;
-}
-
 sub _freeze {
     #
     # _freeze - construct name/value pairs for database inserts or updates
@@ -287,18 +237,8 @@ sub _freeze {
 			$_ = $type->stringify($_);
 		    }
 		}
-		elsif ($type =~ m{Bool}i) {
-
-		    #
-		    # DBize boolean flags..
-		    #
-		    $_ =  $_ ? 'true' : 'false'
-			if defined;
-		}
-		elsif ($type =~ m{Int}i) {
-
-		    $_ = __tidy_decimal($_)
-			if defined;
+		else {
+		    $_ = Elive::Util::_freeze($_, $type);
 		}
 	    }
 	}
@@ -395,23 +335,8 @@ sub _thaw {
 		    $_ = _thaw("$type", $_, $path . $idx);
 
 		}
-		elsif ($type =~ m{^Bool}i) {
-		    #
-		    # Perlise boolean flags..
-		    #
-		    $_ = m{true}i ? 1 : 0;
-		}
-		elsif ($type =~ m{^(Str|Enum)}i) {
-		    #
-		    # l-r trim
-		    #
-		    s{^ \s* (.*?) \s* $}{$1}x;
-		}
-		elsif ($type =~ m{^Int}i) {
-		    $_ = __tidy_decimal($_);
-		}
 		else {
-		    die "class $class: column $col has unknown type: $type";
+		    $_ = Elive::Util::_thaw($_, $type);
 		}
 	    }
 

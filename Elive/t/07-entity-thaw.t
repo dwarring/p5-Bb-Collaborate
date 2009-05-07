@@ -1,13 +1,30 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 33;
+use Test::More tests => 47;
 use Test::Warn;
 
 BEGIN {
     use_ok( 'Elive::Connection' );
     use_ok( 'Elive::Entity::User' );
     use_ok( 'Elive::Entity::ParticipantList' );
+    use_ok( 'Elive::Util');
 };
+
+ok(Elive::Util::_thaw('123456', 'Int') == 123456, 'simple Int');
+ok(Elive::Util::_thaw('+123456', 'Int') == 123456, 'Int with plus sign');
+ok(Elive::Util::_thaw('00123456', 'Int') == 123456, 'Int with leading zeros');
+ok(Elive::Util::_thaw('-123456', 'Int') == -123456, 'Int negative');
+ok(Elive::Util::_thaw('-00123456', 'Int') == -123456, 'Int negative, leading zeros');
+ok(Elive::Util::_thaw('+00123456', 'Int') == 123456, 'Int plus sign leading zeros');
+ok(Elive::Util::_thaw(0, 'Int') == 0, 'Int zero');
+ok(Elive::Util::_thaw('-0', 'Int') == 0, 'Int minus zero');
+ok(Elive::Util::_thaw('+0', 'Int') == 0, 'Int plus zero');
+ok(Elive::Util::_thaw('0000', 'Int') == 0, 'Int multiple zeros');
+
+ok(!Elive::Util::_thaw('false', 'Bool'), 'Bool false => 0');
+ok(Elive::Util::_thaw('true', 'Bool'), 'Bool true => true');
+
+ok(Elive::Util::_thaw('  abc ', 'Str') eq 'abc', 'String l-r trimmed');
 
 Elive->connection(Elive::Connection->connect('http://test.org'));
 

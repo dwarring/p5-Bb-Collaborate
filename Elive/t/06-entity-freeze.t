@@ -1,6 +1,6 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 7;
+use Test::More tests => 21;
 use Test::Warn;
 
 use Carp; $SIG{__DIE__} = \&Carp::confess;
@@ -9,7 +9,24 @@ BEGIN {
     use_ok( 'Elive::Connection' );
     use_ok( 'Elive::Entity::User' );
     use_ok( 'Elive::Entity::ParticipantList' );
+    use_ok( 'Elive::Util');
 };
+
+ok(Elive::Util::_freeze('123456', 'Int') eq '123456', 'simple Int');
+ok(Elive::Util::_freeze('+123456', 'Int') eq '123456', 'Int with plus sign');
+ok(Elive::Util::_freeze('00123456', 'Int') eq '123456', 'Int with leading zeros');
+ok(Elive::Util::_freeze('-123456', 'Int') eq '-123456', 'Int negative');
+ok(Elive::Util::_freeze('-00123456', 'Int') eq '-123456', 'Int negative, leading zeros');
+ok(Elive::Util::_freeze('+00123456', 'Int') eq '123456', 'Int plus sign leading zeros');
+ok(Elive::Util::_freeze(0, 'Int') eq '0', 'Int zero');
+ok(Elive::Util::_freeze('-0', 'Int') eq '0', 'Int minus zero');
+ok(Elive::Util::_freeze('+0', 'Int') eq '0', 'Int plus zero');
+ok(Elive::Util::_freeze('0000', 'Int') eq '0', 'Int multiple zeros');
+
+ok(Elive::Util::_freeze(0, 'Bool') eq 'false', 'Bool 0 => false');
+ok(Elive::Util::_freeze(1, 'Bool') eq 'true', 'Bool 1 => true');
+
+ok(Elive::Util::_freeze('abc', 'Str') eq 'abc', 'String echoed');
 
 Elive->connection(Elive::Connection->connect('http://test.org'));
 

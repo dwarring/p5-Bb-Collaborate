@@ -6,6 +6,8 @@ use Mouse;
 use Elive::Entity;
 use base qw{ Elive::Entity };
 
+use Elive::Util;
+
 =head1 NAME
 
 Elive::Entity::Meeting - Elluminate Meeting instance class
@@ -82,11 +84,17 @@ sub _insert_class {
     my $data = shift;
     my %opt = @_;
 
-    foreach (qw(seats recurrenceCount recurrenceDays timeZone)) {
+    my %params = (seats => 'Int',
+		  recurrenceCount => 'Int',
+		  recurrenceDays => 'Int',
+		  timeZone => 'Str');
+
+    foreach (keys %params) {
+	my $type = $params{$_};
 	#
 	# these are parameters, not properties
 	#
-	$opt{param}{$_} = delete $data->{$_}
+	$opt{param}{$_} = Elive::Util::_freeze(delete $data->{$_}, $type)
 	    if exists $data->{$_}
     }
 
@@ -117,8 +125,15 @@ sub update {
     warn YAML::Dump({meeting_update_data => $data})
 	if (Elive->debug);
 
-    foreach (qw(seats timeZone)) {
-	$opt{param}{$_} = delete $data->{$_}
+    my %params = (seats => 'Int',
+		  timeZone => 'Str');
+
+    foreach (keys %params) {
+	my $type = $params{$_};
+	#
+	# these are parameters, not properties
+	#
+	$opt{param}{$_} = Elive::Util::_freeze(delete $data->{$_}, $type)
 	    if exists $data->{$_}
     }
 
@@ -163,7 +178,8 @@ sub list_user_meetings_by_date {
 		&& $params->[0] && @$params <= 3);
 
     my %fetch_params;
-    @fetch_params{qw{userId startDate endDate}} = @$params; 
+    @fetch_params{qw{userId startDate endDate}}
+    = map {Elive::Util::_freeze($_,'Int')} @$params; 
 
     my $adapter = $class->check_adapter('listUserMeetingsByDate');
 
@@ -278,9 +294,10 @@ sub add_preload {
     my $connection = $opt{connection} || $self->connection
 	or die "not connected";
 
-    my $som = $connection->call($adapter,
-				meetingId => $meeting_id,
-				preloadId => $preload_id,
+    my $som = $connection
+	->call($adapter,
+	       meetingId => Elive::Util::_freeze($meeting_id, 'Int'),
+	       preloadId => Elive::Util::_freeze($preload_id, 'Int'),
 	);
 
     $self->_check_for_errors($som);
@@ -307,15 +324,17 @@ sub check_preload {
     my $connection = $opt{connection} || $self->connection
 	or die "not connected";
 
-    my $som =  $connection->call($adapter,
-				 preloadId => $preload_id,
-				 meetingId => $self->meetingId);
+    my $som = $connection
+	->call($adapter,
+	       preloadId => Elive::Util::_freeze($preload_id, 'Int'),
+	       meetingId => Elive::Util::_freeze($self->meetingId, 'Int'),
+	       );
 
     $self->_check_for_errors($som);
 
     my $results = $self->_unpack_as_list($som->result);
 
-    return @$results && $results->[0] eq 'true';
+    return @$results && Elive::Util::_thaw($results->[0], 'Bool');
 }
 
 sub _freeze {
