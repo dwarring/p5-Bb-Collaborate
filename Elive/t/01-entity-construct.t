@@ -1,6 +1,6 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 14;
+use Test::More tests => 15;
 use Test::Warn;
 
 BEGIN {
@@ -54,3 +54,13 @@ ok($participants->stringify eq '112233=2;223344=3',
 
 ok($participant_list->participants->[0]->user->loginName eq 'test_user',
    'dereference');
+
+
+my $participant_list_2 = Elive::Entity::ParticipantList->construct(
+    {
+	meetingId => 123456,
+	participants => '1111=1;2222=2'
+    });
+
+my $participants_2 = $participant_list_2->participants;
+ok($participants_2->[1]->user->userId == 2222, 'participant list string construction');

@@ -17,8 +17,22 @@ __PACKAGE__->primary_key('meetingId');
 
 has 'participants' => (is => 'rw', isa => 'ArrayRef[Elive::Entity::Participant]',
     coerce => 1);
+
 coerce 'ArrayRef[Elive::Entity::Participant]' => from 'ArrayRef[HashRef]'
-          => via {[ map {Elive::Entity::Participant->new($_) } @$_ ]};
+          => via {[ map {Elive::Entity::Participant->new($_)} @$_ ]};
+
+coerce 'ArrayRef[Elive::Entity::Participant]' => from 'Str'
+          => via {
+	      my $spec;
+	      my @participants = map {
+		  m{^ \s* ([0-9]+) \s* = ([0-3]) \s* $}x
+		  or die "'$_' not in format: userId=role";
+
+		  {user => {userId => $1}, role => {roleId => $2}};
+	      } split(';');
+
+	      [ map {Elive::Entity::Participant->new($_)} @participants ];
+          };
 
 =head1 NAME
 
