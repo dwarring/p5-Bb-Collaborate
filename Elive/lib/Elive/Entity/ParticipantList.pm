@@ -9,29 +9,41 @@ use base qw{Elive::Entity};
 
 use Elive::Entity::Participant;
 use Elive::Util;
+use Elive::Array;
 
 __PACKAGE__->entity_name('ParticipantList');
 
 has 'meetingId' => (is => 'rw', isa => 'Int', required => 1);
 __PACKAGE__->primary_key('meetingId');
 
-has 'participants' => (is => 'rw', isa => 'ArrayRef[Elive::Entity::Participant]',
+has 'participants' => (is => 'rw', isa => 'ArrayRef[Elive::Entity::Participant]|Elive::Array',
     coerce => 1);
 
 coerce 'ArrayRef[Elive::Entity::Participant]' => from 'ArrayRef[HashRef]'
-          => via {[ map {Elive::Entity::Participant->new($_)} @$_ ]};
+          => via {
+	      my $a = [ map {Elive::Entity::Participant->new($_)} @$_ ];
+	      bless ($a, 'Elive::Array');
+	      $a;
+};
 
 coerce 'ArrayRef[Elive::Entity::Participant]' => from 'Str'
           => via {
 	      my $spec;
 	      my @participants = map {
-		  m{^ \s* ([0-9]+) \s* = ([0-3]) \s* $}x
+		  m{^ \s* ([0-9]+) \s* (= ([0-3]) \s*)? $}x
 		  or die "'$_' not in format: userId=role";
 
-		  {user => {userId => $1}, role => {roleId => $2}};
+		  my $userId = $1;
+		  my $roleId = $3;
+		  $roleId = 3 unless defined $roleId;
+
+		  {user => {userId => $userId},
+		   role => {roleId => $roleId}};
 	      } split(';');
 
-	      [ map {Elive::Entity::Participant->new($_)} @participants ];
+	      my $a = [ map {Elive::Entity::Participant->new($_)} @participants ];
+	      bless ($a,'Elive::Array');
+	      $a;
           };
 
 =head1 NAME
@@ -59,16 +71,7 @@ participants with a meeting.
     my $participant_list = Elive::Entity::ParticipantList->insert(
     {
 	meetingId => 123456,
-	participants => [
-	    {
-		user => {userId => 11111111}, #user id
-		role => {roleId => 2},
-	    },
-	    {
-		user => {userId => 22222222}, #user id
-		role => {roleId => 2},
-	    },
-	],
+	participants => "111111=2;222222=3"
     },
     );
 
@@ -77,13 +80,24 @@ participants with a meeting.
 
 =head2 construct
 
+Construct a participant list from data.
+
+
+Common usage is:
+
+    my $participant_list = Elive::Entity::ParticipantList->construct(
+        {meetingId => 123456, participants => '11111111=3;222222=2'}
+     );
+
+If you prefer, you can construct the participant list from a reference:
+
     my $participant_list = Elive::Entity::ParticipantList->construct(
     {
 	meetingId => 123456,
 	participants => [
 	    {
 		user => {userId => 11111111}, #user id
-		role => {roleId => 2},
+		role => {roleId => 3},
 	    },
 	    {
 		user => {userId => 22222222}, #user id
@@ -93,15 +107,7 @@ participants with a meeting.
     },
     );
 
-Construct a participant list from data.
-
 =cut
-
-sub construct {
-    my $self = shift->SUPER::construct(@_);
-    bless $self->participants, 'Elive::Array';
-    $self;
-}
 
 
 =head2 retrieve_all

@@ -1,6 +1,6 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 15;
+use Test::More tests => 18;
 use Test::Warn;
 
 BEGIN {
@@ -59,8 +59,11 @@ ok($participant_list->participants->[0]->user->loginName eq 'test_user',
 my $participant_list_2 = Elive::Entity::ParticipantList->construct(
     {
 	meetingId => 123456,
-	participants => '1111=1;2222=2'
+	participants => '1111;2222=2'
     });
 
 my $participants_2 = $participant_list_2->participants;
-ok($participants_2->[1]->user->userId == 2222, 'participant list string construction');
+ok($participants_2->[0]->user->userId == 1111, 'participant list user');
+ok($participants_2->[0]->role->roleId == 3, 'participant list role (defaulted)');
+ok($participants_2->[1]->user->userId == 2222, 'participant list user');
+ok($participants_2->[1]->role->roleId == 2, 'participant list role (explicit)');

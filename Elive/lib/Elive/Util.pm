@@ -34,6 +34,7 @@ sub-structure.
 sub parse_type {
     my $type = shift;
 
+    ($type) = split(/\|/, $type);
     my $is_array = ($type =~ s{^ArrayRef\[ ([^\]]*) \] $}{$1}x);
 
     #
