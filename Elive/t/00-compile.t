@@ -17,7 +17,7 @@ BEGIN {
     use_ok( 'Elive::Entity::ServerDetails' );
     use_ok( 'Elive::Entity::ServerParameters' );
     use_ok( 'Elive::Entity::User' );
-    use_ok( 'Elive::Command');
+    SKIP: {skip('todo Elive::Command', 1); use_ok( 'Elive::Command')};
 }
 
 foreach (qw/elive_query elive_lint_config elive_raise_meeting/) {

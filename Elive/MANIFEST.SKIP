@@ -1,3 +1,5 @@
+# Elive::Commmand - under construction
+lib/Elive/Command.pm
 # Subversion
 \B\.svn\b
 # Makemaker generated files and dirs.

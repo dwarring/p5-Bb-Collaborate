@@ -40,7 +40,7 @@ parameter:
                     );
                                       
 The C<connection> option can be used on all of the following entity methods:
-C<create>, C<insert>, C<list>, C<retrieve> and C<retrieve_all>.
+C<create>, C<insert>, C<list> and C<retrieve>.
 
 =cut
 

@@ -1,10 +1,11 @@
 Revision history for Elive
 
 0.15    9th May
-        - Added Elive::Commmand - for utitity and system SOAP calls
-        - Elive::Entity::ParticipantList constructors now accepts either a
-          reference or a simple string. format: '<userid>=<Role>;...', eg
-	  Elive::Entity::ParticipantList->insert($mtg,'12345=2;4567=3');
+        - Widthdrew redundant Elive::Entity 'retrieve_all' method.
+        - Elive::Entity::ParticipantList constructors now accepts strings
+          and arrays of strings as constructors, egs:
+	    Elive::Entity::ParticipantList->insert($mtg,'12345=2;456778');
+	    Elive::Entity::ParticipantList->insert($mtg,['12345=2',456778]);
         - Added a number of tests, in particular testing and debugging
           multiple connections.
 

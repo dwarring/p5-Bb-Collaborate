@@ -14,7 +14,7 @@ use Pod::Usage;
 
 use UNIVERSAL;
 
-local $SIG{__DIE__};#y = \&Carp::cluck;
+local $SIG{__DIE__};# = \&Carp::cluck;
 
 =head1 NAME
 
@@ -315,7 +315,7 @@ sub _select {
 
     eval {
 	if ($id) {
-	    $rows =  $entity_class->retrieve_all([$id]);
+	    $rows =  [grep {$_} $entity_class->retrieve([$id])];
 	}
 	else {
 	    $rows = $entity_class->list(filter => $filter);

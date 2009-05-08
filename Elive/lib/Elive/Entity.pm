@@ -1001,7 +1001,7 @@ sub retrieve {
     #
     # need to fetch it
     #
-    my $all = $class->retrieve_all($vals, %opt);
+    my $all = $class->_retrieve_all($vals, %opt);
 
     #
     # We've supplied a full primary key, so can expect 0 or 1 values
@@ -1010,21 +1010,21 @@ sub retrieve {
     return $all->[0];
 }
 
-=head2 retrieve_all
+=head2 _retrieve_all
 
     my $participants
-          = Elive::Entity::ParticpiantList->retrieve_all($meeting_id)
+          = Elive::Entity::ParticpiantList->_retrieve_all($meeting_id)
 
 Retrieve entity objects by partial primary key.
 
 =cut
 
-sub retrieve_all {
+sub _retrieve_all {
     my $class = shift;
     my $vals = shift;
     my %opt = @_;
 
-    die 'usage $class->retrieve_all([$val,..],%opt)'
+    die 'usage $class->_retrieve_all([$val,..],%opt)'
 	unless Elive::Util::_reftype($vals) eq 'ARRAY';
 
     my @key_cols =  $class->primary_key;

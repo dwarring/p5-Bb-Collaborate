@@ -19,6 +19,20 @@ __PACKAGE__->primary_key('meetingId');
 has 'participants' => (is => 'rw', isa => 'ArrayRef[Elive::Entity::Participant]|Elive::Array',
     coerce => 1);
 
+sub _parse_participant {
+    local ($_) = shift;
+
+    m{^ \s* ([0-9]+) \s* (= ([0-3]) \s*)? $}x
+	or die "'$_' not in format: userId=role";
+
+    my $userId = $1;
+    my $roleId = $3;
+    $roleId = 3 unless defined $roleId;
+
+    return {user => {userId => $userId},
+	    role => {roleId => $roleId}};
+}
+
 coerce 'ArrayRef[Elive::Entity::Participant]' => from 'ArrayRef[HashRef]'
           => via {
 	      my $a = [ map {Elive::Entity::Participant->new($_)} @$_ ];
@@ -26,19 +40,21 @@ coerce 'ArrayRef[Elive::Entity::Participant]' => from 'ArrayRef[HashRef]'
 	      $a;
 };
 
+coerce 'ArrayRef[Elive::Entity::Participant]' => from 'ArrayRef[Str]'
+          => via {
+	      my @participants = map {
+		  _parse_participant($_)
+	      } @$_;
+
+	      my $a = [ map {Elive::Entity::Participant->new($_)} @participants ];
+	      bless ($a, 'Elive::Array');
+	      $a;
+};
+
 coerce 'ArrayRef[Elive::Entity::Participant]' => from 'Str'
           => via {
-	      my $spec;
 	      my @participants = map {
-		  m{^ \s* ([0-9]+) \s* (= ([0-3]) \s*)? $}x
-		  or die "'$_' not in format: userId=role";
-
-		  my $userId = $1;
-		  my $roleId = $3;
-		  $roleId = 3 unless defined $roleId;
-
-		  {user => {userId => $userId},
-		   role => {roleId => $roleId}};
+		  _parse_participant($_)
 	      } split(';');
 
 	      my $a = [ map {Elive::Entity::Participant->new($_)} @participants ];
@@ -54,7 +70,7 @@ Elive::Entity::ParticipantList - Meeting Participants entity class
 
 This is the entity class for meeting participants.
 
-The participants property is an array of Elive::Entity::Participant.
+The participants property is an array of type Elive::Entity::Participant.
 
 =cut
 
@@ -68,59 +84,31 @@ Note that for inserts, you only need to include the userId in the
 user records.  The following will be sufficient to associate two
 participants with a meeting.
 
+Participants are specified in the format: userId[=roleId], where
+the role is 3 for a normal participant or 2 or higher to grant the
+user moderator privileges for the meeting.
+
+The list of participants may be specified as a ';' separated string:
+
     my $participant_list = Elive::Entity::ParticipantList->insert(
     {
 	meetingId => 123456,
-	participants => "111111=2;222222=3"
+	participants => "111111=2;222222"
     },
     );
 
-=cut
+The participants may also be specified as an array ref:
 
-
-=head2 construct
-
-Construct a participant list from data.
-
-
-Common usage is:
-
-    my $participant_list = Elive::Entity::ParticipantList->construct(
-        {meetingId => 123456, participants => '11111111=3;222222=2'}
-     );
-
-If you prefer, you can construct the participant list from a reference:
-
-    my $participant_list = Elive::Entity::ParticipantList->construct(
+    my $participant_list = Elive::Entity::ParticipantList->insert(
     {
 	meetingId => 123456,
-	participants => [
-	    {
-		user => {userId => 11111111}, #user id
-		role => {roleId => 3},
-	    },
-	    {
-		user => {userId => 22222222}, #user id
-		role => {roleId => 2},
-	    },
-	],
+	participants => ['111111=2', 222222]
     },
     );
 
 =cut
 
-
-=head2 retrieve_all
-
-Retrieve the participant list for this meeting.
-
-my $participant_list
-    = Elive::Entity::Participant
-        ->retrieve_all([$meeting_id])->[0];
-
-=cut
-
-sub retrieve_all {
+sub _retrieve_all {
     my $class = shift;
     my $vals = shift;
     my %opt = @_;
@@ -128,7 +116,7 @@ sub retrieve_all {
     #
     # No getXxxx adapter use listXxxx
     #
-    return $class->SUPER::retrieve_all($vals,
+    return $class->SUPER::_retrieve_all($vals,
 				       adapter => 'listParticipants',
 				       %opt);
 }

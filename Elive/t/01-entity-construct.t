@@ -1,6 +1,6 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 18;
+use Test::More tests => 22;
 use Test::Warn;
 
 BEGIN {
@@ -55,10 +55,12 @@ ok($participants->stringify eq '112233=2;223344=3',
 ok($participant_list->participants->[0]->user->loginName eq 'test_user',
    'dereference');
 
-
+#
+# test coercian
+#
 my $participant_list_2 = Elive::Entity::ParticipantList->construct(
     {
-	meetingId => 123456,
+	meetingId => 234567,
 	participants => '1111;2222=2'
     });
 
@@ -67,3 +69,15 @@ ok($participants_2->[0]->user->userId == 1111, 'participant list user');
 ok($participants_2->[0]->role->roleId == 3, 'participant list role (defaulted)');
 ok($participants_2->[1]->user->userId == 2222, 'participant list user');
 ok($participants_2->[1]->role->roleId == 2, 'participant list role (explicit)');
+
+my $participant_list_3 = Elive::Entity::ParticipantList->construct(
+    {
+	meetingId => 345678,
+	participants => [1122,'2233=2']
+    });
+
+my $participants_3 = $participant_list_3->participants;
+ok($participants_3->[0]->user->userId == 1122, 'participant list user');
+ok($participants_3->[0]->role->roleId == 3, 'participant list role (defaulted)');
+ok($participants_3->[1]->user->userId == 2233, 'participant list user');
+ok($participants_3->[1]->role->roleId == 2, 'participant list role (explicit)');

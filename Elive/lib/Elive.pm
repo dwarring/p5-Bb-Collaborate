@@ -379,7 +379,7 @@ the primary key for the entity table. e.g:
 
 The equivalent Elive method call for the above is
 
-    my $participants =  Elive::Entity::MeetingParticpant->retrieve_all(1234567);
+    my $participants =  Elive::Entity::MeetingParticpant->retrieve([1234567]);
 
 Also be careful to avoid selecting large amounts of data, e.g. all users.
 
