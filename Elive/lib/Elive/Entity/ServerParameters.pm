@@ -133,11 +133,21 @@ sub update {
 	if (grep {$_ eq 'seats'} $self->is_changed);
 
     #
+    # SDK seems to require a setting for fullPermissions (aka permissionOns)
+    # trap it as an error on our side.
+    #
+    my @required = qw/boundaryMinutes fullPermissions supervised/;
+
+    foreach (@required) {
+	die "missing required property: $_"
+	    unless defined $data->{$_} || defined $self->{$_};
+    }
+
+    #
     # This adaptor barfs if we don't write values back, whether they've
     # changed or not.
     #
-    $self->SUPER::update($data, @_,
-			 changed => [qw/boundaryMinutes fullPermissions supervised/]);
+    $self->SUPER::update($data, @_, changed => \@required);
 }
 
 1;
