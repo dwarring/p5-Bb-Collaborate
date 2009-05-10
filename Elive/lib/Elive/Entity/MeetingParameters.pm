@@ -27,7 +27,6 @@ has 'raiseHandOnEnter' => (is => 'rw', isa => 'Bool',
     documentation => 'raise hands automatically when users join');
 has 'maxTalkers' => (is => 'rw', isa => 'Int',
     documentation => 'maximum number of simultaneous talkers');
-has 'inSessionInvitation' => (is => 'rw', isa => 'Bool');
 
 =head1 NAME
 
