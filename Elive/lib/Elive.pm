@@ -40,11 +40,12 @@ use Elive::Connection;
 
 =head1 DESCRIPTION
 
-Elive is designed to assist in the integration and automation of
-Elluminate Live sites. In particular, managing users and meetings.
+Elive is a set of Perl modules for the integration and automation of
+Elluminate Live sites. In particular, it aids in the managment of users
+and meetings.
 
-It provides Perl object bindings to entities via the Elluminate Live
-SOAP/XML command interface.
+It provides convenient Perl object bindings to entities. These are accessed
+via the Elluminate Live SOAP/XML command interface.
 
 =head1 BACKGROUND
 
@@ -118,7 +119,7 @@ sub connect {
      $e1 = Elive->connection
          or warn 'no elive connection active';
 
-     Returns an Elive connection handle.
+     Returns the default Elive connection handle.
 
 =cut
 
@@ -126,7 +127,7 @@ __PACKAGE__->mk_classdata('connection');
 
 =head2 login
 
-return the user entity used to connect to the server
+Returns the login user for the default connection.
 
 =cut
 
@@ -144,7 +145,7 @@ sub login {
 
 =head2 server_details
 
-return the server details for entity for the current connection.
+Returns the server details for the default connection.
 
 =cut
 
@@ -162,8 +163,8 @@ sub server_details {
     
 =head2 disconnect
 
-Disconnect from elluminate. It is recommended that you do this prior to
-exiting your program
+Disconnects the default Elluminate connection. It is recommended that you
+do this prior to exiting your program.
 
 =cut
 

@@ -1,6 +1,6 @@
 #!perl
 use warnings; use strict;
-use Test::More tests => 33;
+use Test::More tests => 32;
 use Test::Exception;
 
 package main;
@@ -72,7 +72,6 @@ SKIP: {
     my %parameter_int_data = (
 	raiseHandOnEnter => 1,
 	maxTalkers => 3,
-	inSessionInvitation => 1
 	);
 
     my $meeting_params = Elive::Entity::MeetingParameters->retrieve([$meeting->meetingId]);
