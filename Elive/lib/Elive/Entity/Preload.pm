@@ -47,7 +47,7 @@ has 'name' => (is => 'rw', isa => 'Str', required => 1,
 has 'mimeType' => (is => 'rw', isa => 'Str', required => 1,
 		   documentation => 'The mimetype of the preload (e.g., video/quicktime).');
 
-has 'ownerId' => (is => 'rw', isa => 'Int', required => 1,
+has 'ownerId' => (is => 'rw', isa => 'Str', required => 1,
 		 documentation => 'preload owner (userId)',
     );
 

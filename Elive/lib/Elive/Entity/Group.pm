@@ -15,7 +15,7 @@ __PACKAGE__->primary_key('groupId');
 has 'name' => (is => 'rw', isa => 'Str', required => 1,
 	       documentation => 'name of the group');
 
-has 'members' => (is => 'rw', isa => 'ArrayRef[Int]', required => 1,
+has 'members' => (is => 'rw', isa => 'ArrayRef[Str]', required => 1,
 		  documentation => "ids of users in the group");
 
 =head1 NAME

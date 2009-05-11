@@ -25,4 +25,7 @@ __PACKAGE__->primary_key('roleId');
 coerce 'Elive::Entity::Role' => from 'HashRef'
           => via {Elive::Entity::Role->new($_) };
 
+coerce 'Elive::Entity::Role' => from 'Int'
+          => via {Elive::Entity::Role->new({roleId => $_}) };
+
 1;

@@ -34,13 +34,11 @@ sub-structure.
 sub parse_type {
     my $type = shift;
 
-    ($type) = split(/\|/, $type);
-    my $is_array = ($type =~ s{^ArrayRef\[ ([^\]]*) \] $}{$1}x);
-
     #
-    # May also be in the format primary-type[|type2[|type3]]
+    # ArrayRef[Elive::Entity::User]
     #
-    ($type) = split(/\|/, $type);
+    ($type) = split(/[ \| \] ]/x, $type);
+    my $is_array = ($type =~ s{^ArrayRef\[}{}x);
 
     my $is_struct = $type =~ m{^Elive::(Struct||Entity)(::|$)};
 ##    my $is_struct = UNIVERSAL::isa($type, 'Elive::Struct');

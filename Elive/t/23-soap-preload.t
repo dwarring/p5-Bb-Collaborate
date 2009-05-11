@@ -51,7 +51,7 @@ SKIP: {
     ok($preloads[0]->type eq 'whiteboard', "preload type is 'whiteboard'");
     ok($preloads[0]->mimeType eq 'application/octet-stream','expected value for mimeType (guessed)');
     ok($preloads[0]->name eq 'test.wbd','expected name');
-    ok($preloads[0]->ownerId == Elive->login->userId, 'expected user id');
+    ok($preloads[0]->ownerId eq Elive->login->userId, 'expected user id');
 
     my $data_download = $preloads[0]->download;
 

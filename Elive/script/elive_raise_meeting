@@ -124,7 +124,7 @@ sub main {
     Elive->debug($debug);
 
     if ($debug) {
-	$SIG{__WARN__} = \&Carp::cluck;
+	$SIG{__WARN__} = \&Carp::cluck if $debug > 1;
 	$SIG{__DIE__} = \&Carp::confess;
     }
 
@@ -195,7 +195,7 @@ sub main {
 	    push (@participants, 
 		  Elive::Entity::Participant->new({
 		      user => $user_obj,
-		      role => {roleId => $role},
+		      role => $role,
 		      }),
 		);
 	}
@@ -232,11 +232,13 @@ sub main {
 
     my %meeting_data = (
 	    name => $meeting_name,
-	    password => $meeting_password,
 	    facilitatorId => $facilitator_obj->stringify,
 	    start => $start->epoch . '000',
 	    end => $end->epoch . '000',
 	);
+
+    $meeting_data{password} = $meeting_password
+	if defined $meeting_password;
 
     $meeting_data{seats} = $seats
 	if defined $seats;
@@ -379,7 +381,7 @@ sub _resolve_user {
 	#
 	# Numeric id. Assume it's a user id
 	#
-	$user =  Elive::Entity::User->construct({userId => $user_spec});
+	$user = Elive::Entity::User->construct({userId => $user_spec});
     }
     else {
 	#

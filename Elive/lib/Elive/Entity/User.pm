@@ -38,7 +38,12 @@ has 'lastName' => (is => 'rw', isa => 'Str',
 
 
 coerce 'Elive::Entity::User' => from 'HashRef'
-          => via {Elive::Entity::User->construct($_, %Elive::_construct_opts) };
+          => via {Elive::Entity::User->construct($_,
+						 %Elive::_construct_opts) };
+
+coerce 'Elive::Entity::User' => from 'Str'
+          => via {Elive::Entity::User->construct({userId => $_}, 
+						 %Elive::_construct_opts) };
 
 =head1 NAME
 

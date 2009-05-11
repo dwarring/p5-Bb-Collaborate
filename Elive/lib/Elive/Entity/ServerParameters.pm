@@ -16,7 +16,7 @@ __PACKAGE__->primary_key('meetingId');
 has 'seats' => (is => 'rw', isa => 'Int',
     documentation => 'Number of available seats');
 has 'boundaryMinutes' => (is => 'rw', isa => 'Int', required => 1,
-    documentation => 'meeting boundary time(mins)');
+    documentation => 'meeting boundary time');
 has 'fullPermissions' => (is => 'rw', isa => 'Bool', required => 1,
     documentation => 'whether participants can perform activities (e.g. use whiteboard) before the supervisor arrives');
 has 'supervised' => (is => 'rw', isa => 'Bool',
