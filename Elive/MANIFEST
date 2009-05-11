@@ -21,14 +21,12 @@ lib/Elive/Entity/Participant.pm
 lib/Elive/Entity/ParticipantList.pm
 lib/Elive/Entity/Preload.pm
 lib/Elive/Entity/Recording.pm
-lib/Elive/Entity/Recording.pm.guff
 lib/Elive/Entity/Role.pm
 lib/Elive/Entity/ServerDetails.pm
 lib/Elive/Entity/ServerParameters.pm
 lib/Elive/Entity/User.pm
 lib/Elive/Struct.pm
 lib/Elive/Util.pm
-lib/Elive/Util.pm.guff
 Makefile.PL
 MANIFEST			This list of files
 META.yml
