@@ -1,13 +1,18 @@
 Revision history for Elive
 
+0.16    12 May
+        - Added 'buildJNLP' method to Elive::Entity::Meeting
+        - Elive::Entity::User user ids can be non-numeric under LDAP!
+          Changed schema, tests & doco to accomodate this.
+
 0.15    9th May
-        - Widthdrew redundant Elive::Entity 'retrieve_all' method.
         - Elive::Entity::ParticipantList constructors now accepts strings
           and arrays of strings as constructors, egs:
 	    Elive::Entity::ParticipantList->insert($mtg,'12345=2;456778');
 	    Elive::Entity::ParticipantList->insert($mtg,['12345=2',456778]);
         - Added a number of tests, in particular testing and debugging
           multiple connections.
+        - Widthdrew redundant Elive::Entity 'retrieve_all' method.
 
 0.14    6th May
         - Corrected elive_raise_meeting -private & -seats options
@@ -15,7 +20,7 @@ Revision history for Elive
 0.13    5th May
         - login & server_details now stored with connection handle. This
           is a prelude to allowing multiple active SOAP connections.
-	- Added -use_preload id option to elive_raise_meeting script.
+	- Added -use_preload option to elive_raise_meeting script.
 
 0.12    2nd May
         - Added recording 'download' and 'web_url' methods
