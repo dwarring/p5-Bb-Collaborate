@@ -12,8 +12,8 @@ use Elive::Entity::Role;
 __PACKAGE__->entity_name('User');
 __PACKAGE__->collection_name('Users');
 
-has 'userId' => (is => 'rw', isa => 'Int', required => 1,
-		 documentation => 'numeric identifier');
+has 'userId' => (is => 'rw', isa => 'Str|Int', required => 1,
+		 documentation => 'user identifier (usually numeric)');
 __PACKAGE__->primary_key('userId');
 
 has 'deleted' => (is => 'rw', isa => 'Bool');

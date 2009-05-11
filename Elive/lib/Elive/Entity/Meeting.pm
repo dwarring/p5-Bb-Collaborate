@@ -32,7 +32,7 @@ has 'password' => (is => 'rw', isa => 'Str',
 
 has 'deleted' => (is => 'rw', isa => 'Bool');
 
-has 'facilitatorId' => (is => 'rw', isa => 'Int',
+has 'facilitatorId' => (is => 'rw', isa => 'Str',
 			documentation => 'userId of facilator');
 
 has 'start' => (is => 'rw', isa => 'Int', required => 1,
@@ -178,7 +178,8 @@ sub list_user_meetings_by_date {
 		&& $params->[0] && @$params <= 3);
 
     my %fetch_params;
-    @fetch_params{qw{userId startDate endDate}}
+    $fetch_params{userId} = Elive::Util::_freeze(shift @$params,'Str');
+    @fetch_params{qw{startDate endDate}}
     = map {Elive::Util::_freeze($_,'Int')} @$params; 
 
     my $adapter = $class->check_adapter('listUserMeetingsByDate');
@@ -400,6 +401,57 @@ sub _thaw {
     return $data;
 }
 
+=head2 buildJNLP 
+
+    my $jnlp = $meeting_entity->buildJNLP(version => version,
+					  user => userId|userName,
+					  pass => password);
+
+Build one of those JNLP thingos.
+
+=cut
+
+sub buildJNLP {
+    my $self = shift;
+    my %opt = @_;
+
+    my $connection = $opt{connection} || $self->connection
+	or die "not connected";
+
+    my $meeting_id = $opt{meeting_id};
+
+    $meeting_id ||= $self->meetingId
+	if ref($self);
+
+    die "unable to determine meeting_id"
+	unless $meeting_id;
+
+    my %soap_params = (meetingId => $meeting_id);
+
+    foreach my $param (qw(version password)) {
+	my $val = delete $opt{$param};
+	$soap_params{$param} = Elive::Util::_freeze($val, 'Str')
+	    if $val;
+    }
+
+    for (delete $opt{user} || $connection->login->userId) {
+
+	$soap_params{m{^\d+$}? 'userid' : 'userName'} = Elive::Util::_freeze($_, 'Str');
+    }
+
+    my $adapter = $self->check_adapter('buildMeetingJNLP');
+
+    my $som = $connection->call($adapter,
+				%soap_params,
+				);
+
+    $self->_check_for_errors($som);
+
+    my $results = $self->_unpack_as_list($som->result);
+
+    return @$results && Elive::Util::_thaw($results->[0], 'Str');
+}
+    
 =head1 SEE ALSO
 
 Elive::Entity::Preload

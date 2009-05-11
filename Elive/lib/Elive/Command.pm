@@ -16,15 +16,14 @@ use Elive;
 use base qw{Elive};
 use Elive::Util;
 
-our %Commands = (
-    BuildMeetingJNLPCommand => {},
-    BuildRecordingJNLPCommand => {},    
-    BuildMeetingJNLPCommand => {},
-    DecryptCommand => {},
-    EncryptCommand => {},
-    GetServiceProviderCommand => {},
-    SaveConfigurationCommand => {},
-    GetInstalledDAOListCommand => {},
-    );
-    
+=head1 METHODS
+
+## todo:
+##    Decrypt
+##    Encrypt
+##    GetServiceProvider
+##    SaveConfiguration
+##    GetInstalledDAOList
+
+
 1;

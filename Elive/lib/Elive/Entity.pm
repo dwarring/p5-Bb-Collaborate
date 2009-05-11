@@ -147,7 +147,8 @@ sub construct {
     #
     local (%Elive::_construct_opts) = %opt;
 
-    $opt{connection} = delete $opt{connection} || $class->connection;
+    $opt{connection} = delete $opt{connection} || $class->connection
+	or die "not connected";
 
     my %known_properties;
     @known_properties{$class->properties} = undef;
@@ -483,49 +484,6 @@ sub _unpack_as_list {
     return $results_list;
 }
 
-sub _check_for_errors {
-    my $class = shift;
-    my $som = shift;
-
-    die $som->fault->{ faultstring } if ($som->fault);
-
-    my $result = $som->result;
-
-    warn "result: ".YAML::Dump($result)
-	if ($class->debug);
-
-    if(!Elive::Util::_reftype($result)) {
-	#
-	# Simple scalar
-	#
-	return;
-    }
-    
-    #
-    # Look for Elluminate-specific errors
-    #
-    if (my $code = $result->{Code}{Value}) {
-
-	#
-	# Elluminate error!
-	#
-	
-	my $reason = $result->{Reason}{Text};
-
-	my $trace = $result->{Detail}{Stack}{Trace};
-	my @stacktrace;
-	if ($trace) {
-	    @stacktrace = (Elive::Util::_reftype($trace) eq 'ARRAY'
-			   ? @$trace
-			   : $trace);
-
-	}
-
-	my @error = grep {defined} ($code, $reason, @stacktrace);
-	die join(' ', @error) || YAML::Dump($result);
-    }
-}
-
 sub _get_results {
     my $class = shift;
     my $som = shift;
@@ -736,7 +694,7 @@ sub _insert_class {
 				loginPassword => $login_password,
 	);
 
-    my @rows = $class->_readback($som, $insert_data);
+    my @rows = $class->_readback($som, $db_data);
 
     my @objs = (map {$class->construct( $_, connection => $connection )}
 		@rows);

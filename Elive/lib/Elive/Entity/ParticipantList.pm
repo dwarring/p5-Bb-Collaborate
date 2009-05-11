@@ -22,7 +22,7 @@ has 'participants' => (is => 'rw', isa => 'ArrayRef[Elive::Entity::Participant]|
 sub _parse_participant {
     local ($_) = shift;
 
-    m{^ \s* ([0-9]+) \s* (= ([0-3]) \s*)? $}x
+    m{^ \s* (.*?) \s* (= ([0-3]) \s*)? $}x
 	or die "'$_' not in format: userId=role";
 
     my $userId = $1;
@@ -135,28 +135,28 @@ sub _freeze {
 	# setter methods expect a stringified digest in the form
 	#  userid=roleid[;userid=roleid]
 	#
-	#
-	# allow prefrozen
-	#
 	my $reftype = Elive::Util::_reftype($participants);
-
-	my $users_frozen;
 
 	if ($reftype) {
 	    die "expected participants to be an ARRAY, found $reftype"
 		unless ($reftype eq 'ARRAY');
-
-	    my @users = map {
-		Elive::Entity::Participant->stringify($_);
-	      } @$participants;
-
-	    $users_frozen = join(';', @users);
 	}
 	else {
-	    $users_frozen = $participants;
+	    #
+	    # participant list passed as a string.
+	    #
+	    $_ = [split(';')] for ($participants);
 	}
 
-	$frozen->{users} = $users_frozen;
+	my @users = map {
+	    my $p = ref $_
+		? $_
+		: _parse_participant($_);
+
+	    Elive::Entity::Participant->stringify($p);
+	} @$participants;
+	
+	$frozen->{users} = join(';', @users);
     }
 
     return $frozen;

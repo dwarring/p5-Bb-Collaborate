@@ -7,11 +7,11 @@ Elive -  Elluminate Live (c) client library
 
 =head1 VERSION
 
-Version 0.15
+Version 0.16
 
 =cut
 
-our $VERSION = '0.15';
+our $VERSION = '0.16';
 
 use base qw{Class::Data::Inheritable};
 
@@ -239,6 +239,7 @@ our %KnownAdapters;
 BEGIN {
     @KnownAdapters{qw(
 addGroupMember addMeetingPreload attendanceNotification changePassword
+buildMeetingJNLP
 checkMeetingPreload createGroup createMeeting createPreload createRecording
 createUser deleteGroup deleteMeeting deleteParticipant deleteRecording
 deletePreload deleteUser getGroup getMeeting getMeetingParameters getPreload
@@ -266,8 +267,11 @@ sub check_adapter {
     my $adapter = shift
 	or die 'usage: $class->known_adapter($name)';
 
+    my %known_adapters;
+    @known_adapters{$class->known_adapters} = undef;
+
     die "Uknown adapter: $adapter"
-	unless exists $KnownAdapters{$adapter};
+	unless exists $known_adapters{$adapter};
 
     return $adapter;
 }
@@ -353,6 +357,51 @@ configuration file. Please follow the instructions in the README file
 for instructions on detecting and repairing missing adapters.
 
 =back
+
+=cut
+
+sub _check_for_errors {
+    my $class = shift;
+    my $som = shift;
+
+    die $som->fault->{ faultstring } if ($som->fault);
+
+    my $result = $som->result;
+
+    warn "result: ".YAML::Dump($result)
+	if ($class->debug);
+
+    if(!Elive::Util::_reftype($result)) {
+	#
+	# Simple scalar
+	#
+	return;
+    }
+    
+    #
+    # Look for Elluminate-specific errors
+    #
+    if (my $code = $result->{Code}{Value}) {
+
+	#
+	# Elluminate error!
+	#
+	
+	my $reason = $result->{Reason}{Text};
+
+	my $trace = $result->{Detail}{Stack}{Trace};
+	my @stacktrace;
+	if ($trace) {
+	    @stacktrace = (Elive::Util::_reftype($trace) eq 'ARRAY'
+			   ? @$trace
+			   : $trace);
+
+	}
+
+	my @error = grep {defined} ($code, $reason, @stacktrace);
+	die join(' ', @error) || YAML::Dump($result);
+    }
+}
 
 =head1 SCRIPTS
 
