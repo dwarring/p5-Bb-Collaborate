@@ -52,7 +52,7 @@ sub _freeze {
     my ($val, $type, $context) = @_;
 
     for ($val) {
-	if ($type =~ m{Bool}i) {
+	if ($type =~ m{^Bool}i) {
 
 	    #
 	    # DBize boolean flags..
@@ -60,12 +60,16 @@ sub _freeze {
 	    $_ =  $_ ? 'true' : 'false'
 		if defined;
 	}
-	elsif ($type =~ m{Int}i) {
+	elsif ($type =~ m{^Int}i) {
 	    
 	    $_ = _tidy_decimal($_)
 		if defined;
 	}
     }
+
+    warn "undefined value of type $type"
+	unless defined $val;
+
     return $val;
 }
 

@@ -53,11 +53,12 @@ sub stringify {
 
     return unless $data;
 
-    my $string = join('/', map {Elive::Util::string($data->{$_})} $class->primary_key);
+    my $types = $class->property_types;
 
+    my $string = join('/', map {Elive::Util::_freeze($data->{$_},
+						     $types->{$_})}
+		      $class->primary_key);
 
-##    use YAML; warn YAML::Dump({class => $class, data => $data, pkey => [$class->primary_key]});
-##    warn "string: $string";
 
     return $string;
 }

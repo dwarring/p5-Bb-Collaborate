@@ -1,6 +1,6 @@
 #!perl
 use warnings; use strict;
-use Test::More tests => 32;
+use Test::More tests => 31;
 use Test::Exception;
 
 package main;
@@ -13,8 +13,9 @@ BEGIN {
     use_ok( 'Elive::Entity::ParticipantList' );
 };
 
+##use Carp; $SIG{__WARN__} = \&Carp::cluck;
 use Carp; $SIG{__DIE__} = \&Carp::confess;
-##Elive->debug(4);
+##Elive->debug(1);
 
 my $class = 'Elive::Entity::Meeting' ;
 
@@ -24,7 +25,7 @@ SKIP: {
     my $auth = $result{auth};
 
     skip ($result{reason} || 'no test connection specified',
-	27)
+	26)
 	unless $auth;
 
     Elive->connect(@$auth);

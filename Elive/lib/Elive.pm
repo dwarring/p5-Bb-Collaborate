@@ -537,9 +537,14 @@ in widespread use do). However, it specifically mentions SQL Server or Oracle.
 =item LDAP Authentication
 
 Elluminate Live can also be configured to use an LDAP repository for
-user authentication.  Users can still be retrieved or listed. However
-updates and deletes are not supported by the LDAP DAO adapter. See also
-Net::LDAP.
+user authentication.  Users can still be retrieved or listed.
+
+Note also, that if you don't define a LDAP mapping for the userId, the LDAP
+DAO aliases the userId to loginName.
+
+However updates and deletes are not supported by the LDAP DAO adapter. You
+may also want to consider using another module such as Net::LDAP, to access
+and maintain the repository.
 
 =back
 

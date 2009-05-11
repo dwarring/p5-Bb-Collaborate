@@ -31,12 +31,12 @@ ok(Elive::Util::_freeze('abc', 'Str') eq 'abc', 'String echoed');
 Elive->connection(Elive::Connection->connect('http://test.org'));
 
 my $user_data =  {
-	userId => '+12345678',
+	userId => '12345678',
 	deleted => 0,
 	loginPassword => 'test',
 	loginName => 'tester',
 	email => 'test@test.org',
-	role => {roleId => 2},
+	role => {roleId => '+002'},
 	firstName => 'Timmee',
 	lastName => 'Tester',
     };
