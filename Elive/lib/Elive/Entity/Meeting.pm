@@ -7,6 +7,7 @@ use Elive::Entity;
 use base qw{ Elive::Entity };
 
 use Elive::Util;
+use Elive::Entity::Preload;
 
 =head1 NAME
 
@@ -450,6 +451,21 @@ sub buildJNLP {
     my $results = $self->_unpack_as_list($som->result);
 
     return @$results && Elive::Util::_thaw($results->[0], 'Str');
+}
+
+=head2 list_preloads
+
+    my $preloads = $meeting_obj->list_preloads;
+
+Lists all preloads associated with the meeting.
+
+=cut
+
+sub list_preloads {
+    my $self = shift;
+
+    return Elive::Entity::Preload->list_meeting_preloads($self->meetingId,
+							 @_);
 }
     
 =head1 SEE ALSO
