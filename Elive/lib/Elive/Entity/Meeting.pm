@@ -408,7 +408,16 @@ sub _thaw {
 					  user => userId|userName,
 					  pass => password);
 
-Build one of those JNLP thingos.
+Builds a JNLP for the meeting.
+
+JNLP is the 'Java Network Launch Protocol', also commonly known as Java
+WebStart. You can render this as a web page with mime type
+C<application/x-java-jnlp-file>.
+
+Under Windows, and other desktops, you can save this to a file with extension
+C<JNLP>.
+
+See also L<http://en.wikipedia.org/wiki/JNLP>.
 
 =cut
 
@@ -464,8 +473,8 @@ Lists all preloads associated with the meeting.
 sub list_preloads {
     my $self = shift;
 
-    return Elive::Entity::Preload->list_meeting_preloads($self->meetingId,
-							 @_);
+    return Elive::Entity::Preload
+	->list_meeting_preloads($self->meetingId,@_);
 }
     
 =head1 SEE ALSO

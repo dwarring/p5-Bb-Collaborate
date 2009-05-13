@@ -150,4 +150,56 @@ sub _thaw {
     return $data_thawed;
 }
 
+=head2 buildJNLP 
+
+    my $jnlp = $recording_entity->buildJNLP(version => version);
+
+Builds a JNLP for the recording.
+
+JNLP is the 'Java Network Launch Protocol', also commonly known as Java
+WebStart. You can render this as a web page with mime type
+C<application/x-java-jnlp-file>.
+
+Under Windows, and other desktops, you can save this to a file with extension
+C<JNLP>.
+
+See also L<http://en.wikipedia.org/wiki/JNLP>.
+
+=cut
+
+sub buildJNLP {
+    my $self = shift;
+    my %opt = @_;
+
+    my $connection = $opt{connection} || $self->connection
+	or die "not connected";
+
+    my $recording_id = $opt{recording_id};
+
+    $recording_id ||= $self->recordingId
+	if ref($self);
+
+    die "unable to determine recording_id"
+	unless $recording_id;
+
+    my %soap_params = (recordingId => $recording_id);
+
+    for (delete $opt{user} || $connection->login->userId) {
+
+	$soap_params{m{^\d+$}? 'userid' : 'userName'} = Elive::Util::_freeze($_, 'Str');
+    }
+
+    my $adapter = $self->check_adapter('buildRecordingJNLP');
+
+    my $som = $connection->call($adapter,
+				%soap_params,
+				);
+
+    $self->_check_for_errors($som);
+
+    my $results = $self->_unpack_as_list($som->result);
+
+    return @$results && Elive::Util::_thaw($results->[0], 'Str');
+}
+
 1;

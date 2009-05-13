@@ -525,7 +525,7 @@ sub _readback_check {
 
     #
     # Create and update responses generally return a copy of the
-    # record, after applying the updates. This routine may be
+    # record, after performing the update. This routine may be
     # run to check that the expected updates have been applied
     #
     die "Didn't receive a response for ".$class->entity_name

@@ -7,11 +7,11 @@ Elive -  Elluminate Live (c) client library
 
 =head1 VERSION
 
-Version 0.16
+Version 0.17
 
 =cut
 
-our $VERSION = '0.16';
+our $VERSION = '0.17';
 
 use base qw{Class::Data::Inheritable};
 
@@ -239,7 +239,7 @@ our %KnownAdapters;
 BEGIN {
     @KnownAdapters{qw(
 addGroupMember addMeetingPreload attendanceNotification changePassword
-buildMeetingJNLP
+buildMeetingJNLP buildRecordingJNLP
 checkMeetingPreload createGroup createMeeting createPreload createRecording
 createUser deleteGroup deleteMeeting deleteParticipant deleteRecording
 deletePreload deleteUser getGroup getMeeting getMeetingParameters getPreload
