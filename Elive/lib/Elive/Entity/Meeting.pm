@@ -80,7 +80,7 @@ has 'name' => (is => 'rw', isa => 'Str', required => 1,
 
 =cut
 
-sub _insert_class {
+sub insert {
     my $class = shift;
     my $data = shift;
     my %opt = @_;
@@ -99,7 +99,7 @@ sub _insert_class {
 	    if exists $data->{$_}
     }
 
-    $class->SUPER::_insert_class($data, %opt);
+    $class->SUPER::insert($data, %opt);
 }
 
 =head2 update

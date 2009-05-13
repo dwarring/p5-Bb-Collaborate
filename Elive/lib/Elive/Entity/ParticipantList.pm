@@ -78,36 +78,6 @@ The participants property is an array of type Elive::Entity::Participant.
 
 =cut
 
-=head2 insert
-
-Note that for inserts, you only need to include the userId in the
-user records.  The following will be sufficient to associate two
-participants with a meeting.
-
-Participants are specified in the format: userId[=roleId], where
-the role is 3 for a normal participant or 2 or higher to grant the
-user moderator privileges for the meeting.
-
-The list of participants may be specified as a ';' separated string:
-
-    my $participant_list = Elive::Entity::ParticipantList->insert(
-    {
-	meetingId => 123456,
-	participants => "111111=2;222222"
-    },
-    );
-
-The participants may also be specified as an array ref:
-
-    my $participant_list = Elive::Entity::ParticipantList->insert(
-    {
-	meetingId => 123456,
-	participants => ['111111=2', 222222]
-    },
-    );
-
-=cut
-
 sub _retrieve_all {
     my $class = shift;
     my $vals = shift;
@@ -164,27 +134,42 @@ sub _freeze {
 
 =head2 insert
 
-    my $partcipants = Elive::Entity::participantList->insert({
-	      meetingId => 123456,
-	      particpants => [
-                  {user => $userId_1, role => 3},
-                  {user => $userId_2, role => 3},
-              ],
-              }
-	    )};
+Note that for inserts, you only need to include the userId in the
+user records.  The following will be sufficient to associate two
+participants with a meeting.
 
-Insert meeting participants
+Participants are specified in the format: userId[=roleId], where
+the role is 3 for a normal participant or 2 or higher to grant the
+user moderator privileges for the meeting.
+
+The list of participants may be specified as a ';' separated string:
+
+    my $participant_list = Elive::Entity::ParticipantList->insert(
+    {
+	meetingId => 123456,
+	participants => "111111=2;222222"
+    },
+    );
+
+The participants may also be specified as an array ref:
+
+    my $participant_list = Elive::Entity::ParticipantList->insert(
+    {
+	meetingId => 123456,
+	participants => ['111111=2', 222222]
+    },
+    );
 
 =cut
 
-sub _insert_class {
+sub insert {
     my $class = shift;
     my $data = shift;
     my %opt = @_;
 
-    $class->SUPER::_insert_class($data,
-				 adapter => 'setParticipantList',
-				 %opt);
+    $class->SUPER::insert($data,
+			  adapter => 'setParticipantList',
+			  %opt);
 }
 
 =head2 update

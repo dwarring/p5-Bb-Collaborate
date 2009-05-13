@@ -70,7 +70,8 @@ SKIP: {
 	start => time() . '000',
 	end => (time()+900) . '000',
 	privateMeeting => 1,
-    }));
+    }),
+	'inserted meeting');
 
     $preloads[1] = Elive::Entity::Preload->upload(
     {

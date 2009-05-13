@@ -633,42 +633,20 @@ sub _readback {
 
 =head2 insert
 
-   # Construct object, then insert.
-   #
-   my $new_user = Elive::Entity::User->construct({userId => 12345, 
+   my $new_user = Elive::Entity::User->insert( 
                                  loginName => 'demo_user',
-                                 role => {roleId => 1},
-                               });
-   $new_user->insert;
-
-   # Construct and insert in one go
-   #
-   my $new_user = Elive::Entity::User->insert({userId => 12345, 
-                                 loginName => 'demo_user',
-                                 role => {roleId => 1},
+                                 email => 'demo.user@test.org',
+                                 role => 1,
                                });
 
-Adds a new record to the Elluminate database.
+   print "inserted user with id: ".$new_user->userId."\n";
+
+Inserts a new entity. The primary key should not be specified. It is
+generated for you and returned with the newly created object.
 
 =cut
 
 sub insert {
-    my $class = shift;
-
-    if (my $_class = ref($class)) {
-	my $self  = $class;
-	$class = $_class;
-	#
-	# Undo any prior deletion
-	#
-	$self->_deleted(0);
-	return $class->_insert_class($self,@_);
-    }
-
-    return $class->_insert_class(@_);
-}
-
-sub _insert_class {
     my $class = shift;
     my $insert_data = shift;
     my %opt = @_;
