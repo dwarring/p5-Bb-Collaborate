@@ -152,7 +152,8 @@ sub _thaw {
 
 =head2 buildJNLP 
 
-    my $jnlp = $recording_entity->buildJNLP(version => version);
+    my $jnlp = $recording_entity->buildJNLP(version => version,
+					    userId => $user->userId);
 
 Builds a JNLP for the recording.
 
@@ -184,9 +185,13 @@ sub buildJNLP {
 
     my %soap_params = (recordingId => $recording_id);
 
-    for (delete $opt{user} || $connection->login->userId) {
+    for (delete $opt{userId} || $connection->login->userId) {
 
-	$soap_params{m{^\d+$}? 'userid' : 'userName'} = Elive::Util::_freeze($_, 'Str');
+	$soap_params{'userId'} = Elive::Util::_freeze($_, 'Str');
+	#
+	# My version of Elluminate 9.1 was expcting 'userIp' !!?
+	#
+	$soap_params{'userIp'} = Elive::Util::_freeze($_, 'Str');
     }
 
     my $adapter = $self->check_adapter('buildRecordingJNLP');

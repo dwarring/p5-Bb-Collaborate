@@ -1,6 +1,11 @@
 Revision history for Elive
 
-0.16    12 May
+
+0.16    14th May
+        - Added 'buildJNLP' method to Elive::Entity::Recording
+        - Widthdrew Elive::Entity '_insert_class' method.
+
+0.16    12th May
         - Added 'buildJNLP' method to Elive::Entity::Meeting
         - Elive::Entity::User user ids can be non-numeric under LDAP!
           Changed schema, tests & doco to accomodate this.

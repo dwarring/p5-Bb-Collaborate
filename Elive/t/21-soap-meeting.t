@@ -1,6 +1,6 @@
 #!perl
 use warnings; use strict;
-use Test::More tests => 31;
+use Test::More tests => 32;
 use Test::Exception;
 
 package main;
@@ -14,7 +14,7 @@ BEGIN {
 };
 
 ##use Carp; $SIG{__WARN__} = \&Carp::cluck;
-use Carp; $SIG{__DIE__} = \&Carp::confess;
+##use Carp; $SIG{__DIE__} = \&Carp::confess;
 ##Elive->debug(1);
 
 my $class = 'Elive::Entity::Meeting' ;
@@ -25,7 +25,7 @@ SKIP: {
     my $auth = $result{auth};
 
     skip ($result{reason} || 'no test connection specified',
-	26)
+	27)
 	unless $auth;
 
     Elive->connect(@$auth);
@@ -145,8 +145,13 @@ SKIP: {
 	 ]
 	);
 
-##    my $jnlp = $meeting->buildJNLP(version => '8.0');
-##    diag("jnlp:$jnlp");
+    TODO: {
+	local $TODO = "Some problems building JNLP's on my test system";
+	my $jnlp;
+	lives_ok(sub {$jnlp = $meeting->buildJNLP(version => '8.0')},
+		'got meeting jnlp');
+	diag("jnlp:$jnlp") if $jnlp;
+    };
 
     isa_ok($user_meetings, 'ARRAY', 'user_meetings');
 
