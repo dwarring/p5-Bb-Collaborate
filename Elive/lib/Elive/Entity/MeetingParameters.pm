@@ -30,7 +30,7 @@ has 'maxTalkers' => (is => 'rw', isa => 'Int',
 
 =head1 NAME
 
-Elive::Entity::MeetingParameters - meeting parameters entity class
+Elive::Entity::MeetingParameters - Meeting parameters entity class
 
     my $meeting = Elive::Entity::Meeting->retrieve(\%meeting_data);
     my $meeting_params

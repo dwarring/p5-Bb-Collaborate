@@ -10,7 +10,7 @@ use UNIVERSAL;
 
 =head1 NAME
 
-Elive::Util - utility functions for Elive
+Elive::Util - Utility functions for Elive
 
 =cut
 

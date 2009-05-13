@@ -561,7 +561,8 @@ sub _readback_check {
 
 =head2 is_changed
 
-    Return  a list of properties that have uncommited changes.
+Returns a list of properties that have been changed since the entity was
+last retrieved or saved.
 
 =cut
 

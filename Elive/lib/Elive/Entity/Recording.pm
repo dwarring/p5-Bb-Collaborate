@@ -122,8 +122,6 @@ sub web_url {
 
     my $url = $connection->url;
 
-    $url =~ s{ / (\Q'webservice.event\E)? $ } {}x;
-
     my %Actions = (
 	'play'   => '%s/play_recording.html?recordingId=%s',
 	);
@@ -189,7 +187,8 @@ sub buildJNLP {
 
 	$soap_params{'userId'} = Elive::Util::_freeze($_, 'Str');
 	#
-	# My version of Elluminate 9.1 was expcting 'userIp' !!?
+	# My version of Elluminate 9.1 complains unless I supply
+	# (sic) 'userIp' !!?
 	#
 	$soap_params{'userIp'} = Elive::Util::_freeze($_, 'Str');
     }

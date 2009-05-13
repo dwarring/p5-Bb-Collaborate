@@ -123,9 +123,6 @@ sub update {
     my $data = shift;
     my %opt = @_;
 
-    warn YAML::Dump({meeting_update_data => $data})
-	if (Elive->debug);
-
     my %params = (seats => 'Int',
 		  timeZone => 'Str');
 
@@ -237,8 +234,6 @@ sub web_url {
 	unless $meeting_id;
 
     my $url = $connection->url;
-
-    $url =~ s{ / (\Q'webservice.event\E)? $ } {}x;
 
     my %Actions = (
 	'join'   => '%s/join_meeting.html?meetingId=%ld',
@@ -371,9 +366,8 @@ sub _readback_check {
 
     #
     # A series of recurring meetings can potentially be returned.
-    # to do: would be to check for correct ascension of start and
-    # end times.  Just apply to first meeting for now.
-    # 
+    # to do: check for correct sequence of start and end times.
+    # for now, we just check the first meeting.
     #
     $rows = [$rows->[0]] if @$rows > 1;
 

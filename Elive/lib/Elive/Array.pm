@@ -10,7 +10,7 @@ use UNIVERSAL;
 
 =head1 NAME
 
-Elive::Array - base class for arrays
+Elive::Array - Base class for arrays
 
 =head1 DESCRIPTION
 
