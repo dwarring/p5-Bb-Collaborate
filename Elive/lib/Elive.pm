@@ -29,7 +29,7 @@ use Elive::Connection;
 
     foreach my $user (@$users) {
 
-        printf ("changing last name for user: %s\n", $user->loginName)
+        printf ("changing last name for user: %s\n", $user->loginName);
 
         $user->lastName('Smith');
         $user->update;
@@ -199,11 +199,6 @@ sub debug {
 	my $debug = shift || 0;
 
 	$DEBUG = $debug;
-
-	SOAP::Lite::import($debug >= 3
-			   ? (+trace => 'debug')
-			   : ()
-	    );
     }
 
     return $DEBUG || 0;

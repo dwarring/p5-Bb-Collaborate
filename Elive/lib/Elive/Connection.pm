@@ -44,7 +44,7 @@ C<create>, C<insert>, C<list> and C<retrieve>.
 
 =cut
 
-use SOAP::Lite;
+require SOAP::Lite;
 use URI;
 use File::Spec;
 use HTML::Entities;
@@ -79,8 +79,16 @@ sub connect {
     $uri_obj->path(File::Spec->catdir(@path, 'webservice.event'));
     my $soap_url = $uri_obj->as_string;
 
+    my $debug = $opt{debug}||0;
+
     warn "connecting to ".$soap_url
-	if ($opt{debug});
+	if ($debug);
+
+
+    SOAP::Lite::import($debug >= 3
+		       ? (+trace => 'debug')
+		       : ()
+	);
 
     my $soap = SOAP::Lite->new(proxy => $soap_url );
 
