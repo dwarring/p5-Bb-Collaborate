@@ -1,5 +1,7 @@
 Revision history for Elive
 
+0.18    15th May
+        - Fixed connection problems under ActiveState/Win32.
 
 0.17    14th May
         - Added 'buildJNLP' method to Elive::Entity::Recording
