@@ -1,6 +1,6 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 11;
+use Test::More tests => 13;
 use Test::Warn;
 
 package main;
@@ -13,14 +13,17 @@ BEGIN {
 use Scalar::Util;
 
 my $URL1 = 'http://test1.org';
-my $URL2 = 'http://test2.org';
+my $URL2 = 'http://test2.org/test_dw';
 
 my $K1 = 123456123456;
 my $K2 = 112233445566;
 my $K3 = 111222333444;
 
-my $C1 = Elive::Connection->connect($URL1);
+my $C1 = Elive::Connection->connect($URL1.'/');
+ok($C1->url eq $URL1, 'connection 1 - url');
+
 my $C2 = Elive::Connection->connect($URL2);
+ok($C2->url eq $URL2, 'connection 2 - url');
 
 Elive->connection($C1);
 
