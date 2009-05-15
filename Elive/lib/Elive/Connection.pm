@@ -46,7 +46,7 @@ C<create>, C<insert>, C<list> and C<retrieve>.
 
 require SOAP::Lite;
 use URI;
-use File::Spec;
+use File::Spec::Unix;
 use HTML::Entities;
 
 __PACKAGE__->mk_accessors( qw{ url user pass soap _login _server_details} );
@@ -68,22 +68,26 @@ sub connect {
 
     my $uri_obj = URI->new($url, 'http');
 
-    my @path = File::Spec->splitdir($uri_obj->path);
+    my $uri_path = $uri_obj->path;
+
+    my @path = File::Spec::Unix->splitdir($uri_path);
+
+    shift (@path)
+	if (@path && !$path[0]);
 
     pop (@path)
 	if (@path && $path[-1] eq 'webservice.event');
 
-    $uri_obj->path(File::Spec->catdir(@path));
+    $uri_obj->path(File::Spec::Unix->catdir(@path));
     my $restful_url = $uri_obj->as_string;
 
-    $uri_obj->path(File::Spec->catdir(@path, 'webservice.event'));
+    $uri_obj->path(File::Spec::Unix->catdir(@path, 'webservice.event'));
     my $soap_url = $uri_obj->as_string;
 
     my $debug = $opt{debug}||0;
 
     warn "connecting to ".$soap_url
 	if ($debug);
-
 
     SOAP::Lite::import($debug >= 3
 		       ? (+trace => 'debug')
