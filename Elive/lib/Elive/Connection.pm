@@ -61,6 +61,9 @@ __PACKAGE__->mk_accessors( qw{ url user pass soap _login _server_details} );
     'user1', 'pass1',
     debug => 1)
 
+Establishes a logical SOAP connection. Retrieves the login user, to verify
+connectivity and authentication details.
+
 =cut
 
 sub connect {
@@ -126,8 +129,8 @@ sub disconnect {
 
     my $som = $ec->call('listUsers', filter => '(givenName like "john%")')
 
-    Makes an Elluminate SOAP/XML method call. Returns the response as a
-    SOAP::SOM object.
+Makes an Elluminate SOAP/XML method call. Returns the response as a
+SOAP::SOM object.
 
 =cut
 
@@ -167,7 +170,7 @@ sub call {
 
 =head2 login
 
-    Return an elive user entity instance for the login user
+Returns the login user as an object of type Elive::Entity::User.
 
 =cut
 
@@ -196,7 +199,7 @@ sub login {
 
 =head2 server_details
 
-    Return an elive server_details entity instance for the connection.
+Returns the server details in an object of type Elive::Entity::ServerDetails.
 
 =cut
 

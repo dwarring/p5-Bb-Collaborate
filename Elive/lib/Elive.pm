@@ -438,7 +438,8 @@ For more information, type the command: elive_raise_meeting --help
 
 =head2 elive_lint_config
 
-A utility script that checks your Elluminate server configuration.
+A utility script that checks your Elluminate server configuration. Please
+see the README file.
 
 =head1 SEE ALSO
 
