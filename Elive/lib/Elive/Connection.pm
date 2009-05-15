@@ -66,6 +66,8 @@ __PACKAGE__->mk_accessors( qw{ url user pass soap _login _server_details} );
 sub connect {
     my ($class, $url,  $user, $pass, %opt) = @_;
 
+    $url =~ s{/$}{};
+
     my $uri_obj = URI->new($url, 'http');
 
     my $uri_path = $uri_obj->path;
