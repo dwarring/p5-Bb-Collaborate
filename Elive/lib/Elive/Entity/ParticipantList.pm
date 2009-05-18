@@ -7,6 +7,7 @@ use Mouse::Util::TypeConstraints;
 use Elive::Entity;
 use base qw{Elive::Entity};
 
+use Elive::Entity::Meeting;
 use Elive::Entity::Participant;
 use Elive::Util;
 use Elive::Array;
@@ -160,6 +161,8 @@ The participants may also be specified as an array ref:
     },
     );
 
+Note that if you empty the participant list, C<reset> will be called.
+
 =cut
 
 sub insert {
@@ -169,30 +172,19 @@ sub insert {
 
     my $participants = $data->{participants};
 
-    my $no_participants;
+    #
+    # have a peak at the participantList, if it's empty,
+    # we need to call the clearParticipantList adapter.
+    #
 
-    if (defined $participants) {
+    if ((!defined $participants)
+	|| (Elive::Util::_reftype($participants) eq 'ARRAY' && !@$participants)
+	|| $participants eq '') {
 
-	#
-	# have a peak at the participantList, if it's empty,
-	# we need to call the clearParticipantList adapter.
-	#
-
-	my $reftype = Elive::Util::_reftype($participants);
-
-	if (($reftype eq 'ARRAY' && !@$participants)
-	    || (!$reftype && $participants =~ m{^\s*$})) {
-		$no_participants ||= 1;
-		delete $data->{participants};
-	    }
-    }
-    else {
-        $no_participants = 1;
+	goto sub {$class->reset(%opt)};
     }
 
-    my $adapter = $class->check_adapter($no_participants
-					? 'resetParticipantList'
-					: 'setParticipantList');
+    my $adapter = $class->check_adapter('setParticipantList');
 
     $class->SUPER::insert($data,
 			  adapter => $adapter,
@@ -208,7 +200,9 @@ sub insert {
     $participant_list->particpants->add($late_comer);
     $participant_list->update;
 
-Update meeting participants
+Update meeting participants.
+
+Note that if you empty the participant list, C<reset> will be called.
 
 =cut
 
@@ -217,31 +211,48 @@ sub update {
     my $data = shift;
     my %opt = @_;
 
-    my $no_participants;
+    my $participants = $data->{participants};
 
-    if (defined (my $participants = $data->{participants})) {
+    if ((!defined $participants)
+	|| (Elive::Util::_reftype($participants) eq 'ARRAY' && !@$participants)
+	|| $participants eq '') {
 
-	#
-	# have a peak at the participantList, if it's empty,
-	# we need to call the clearParticipantList adapter.
-	#
-
-	my $reftype = Elive::Util::_reftype($participants);
-
-	if (($reftype eq 'ARRAY' && !@$participants)
-	    || (!$reftype && $participants =~ m{^\s*$})) {
-		$no_participants ||= 1;
-		delete $data->{participants};
-	    }
+	goto sub {$class->reset(%opt)} unless $opt{resetting};
     }
 
-    my $adapter = $class->check_adapter($no_participants
-					? 'resetParticipantList'
-					: 'setParticipantList');
+    my $adapter = $opt{adapter} || $class->check_adapter('setParticipantList');
 
     $class->SUPER::update($data,
 			  adapter => $adapter,
 			  %opt);
+}
+
+
+=head2 reset 
+
+    $participant_list->reset
+
+Reset the participant list. This will leave only the facilitator as
+the only participant, with a role of 2 (moderator).
+
+=cut
+
+sub reset {
+    my $self = shift;
+    my %opt = @_;
+
+    #
+    # Seems that the returned value of the list will be just the meeting
+    # faciliator as a moderator.
+    #
+    my $meeting = Elive::Entity::Meeting->retrieve([$self->meetingId]);
+
+    $self->participants([{user => $meeting->facilitatorId, role => 2}]);
+
+    $self->update(undef,
+		  %opt,
+		  resetting => 1,
+		  adapter => 'resetParticipantList');
 }
 
 sub _readback {
