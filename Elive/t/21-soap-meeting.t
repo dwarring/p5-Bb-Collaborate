@@ -1,6 +1,6 @@
 #!perl
 use warnings; use strict;
-use Test::More tests => 32;
+use Test::More tests => 34;
 use Test::Exception;
 
 package main;
@@ -25,7 +25,7 @@ SKIP: {
     my $auth = $result{auth};
 
     skip ($result{reason} || 'no test connection specified',
-	27)
+	29)
 	unless $auth;
 
     Elive->connect(@$auth);
@@ -144,6 +144,13 @@ SKIP: {
 	 $meeting_int_data{end},
 	 ]
 	);
+
+    lives_ok(sub {$participant_list->update({participants => []})},
+	     'clearing participants - lives');
+
+    my $p = $participant_list->participants;
+
+    ok(@$participants == 1, 'participant_list - cleared');
 
     TODO: {
 	local $TODO = "Some problems building JNLP's on my test system";

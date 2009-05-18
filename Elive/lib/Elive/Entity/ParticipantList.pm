@@ -167,8 +167,35 @@ sub insert {
     my $data = shift;
     my %opt = @_;
 
+    my $participants = $data->{participants};
+
+    my $no_participants;
+
+    if (defined $participants) {
+
+	#
+	# have a peak at the participantList, if it's empty,
+	# we need to call the clearParticipantList adapter.
+	#
+
+	my $reftype = Elive::Util::_reftype($participants);
+
+	if (($reftype eq 'ARRAY' && !@$participants)
+	    || (!$reftype && $participants =~ m{^\s*$})) {
+		$no_participants ||= 1;
+		delete $data->{participants};
+	    }
+    }
+    else {
+        $no_participants = 1;
+    }
+
+    my $adapter = $class->check_adapter($no_participants
+					? 'resetParticipantList'
+					: 'setParticipantList');
+
     $class->SUPER::insert($data,
-			  adapter => 'setParticipantList',
+			  adapter => $adapter,
 			  %opt);
 }
 
@@ -190,8 +217,30 @@ sub update {
     my $data = shift;
     my %opt = @_;
 
+    my $no_participants;
+
+    if (defined (my $participants = $data->{participants})) {
+
+	#
+	# have a peak at the participantList, if it's empty,
+	# we need to call the clearParticipantList adapter.
+	#
+
+	my $reftype = Elive::Util::_reftype($participants);
+
+	if (($reftype eq 'ARRAY' && !@$participants)
+	    || (!$reftype && $participants =~ m{^\s*$})) {
+		$no_participants ||= 1;
+		delete $data->{participants};
+	    }
+    }
+
+    my $adapter = $class->check_adapter($no_participants
+					? 'resetParticipantList'
+					: 'setParticipantList');
+
     $class->SUPER::update($data,
-			  adapter => 'setParticipantList',
+			  adapter => $adapter,
 			  %opt);
 }
 

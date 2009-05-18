@@ -202,11 +202,11 @@ sub main {
 		    }
 		}
 		else {
-		    print STDERR "unrecognised command: $keyw\n";
+		    print STDERR "unrecognised command: $keyw, type 'help' for help\n";
 		}
 	}
 	    else {
-		print STDERR "unrecognised command\n";
+		print STDERR "unrecognised command  - type 'help' for help\n";
 	    }
 	}
     }
