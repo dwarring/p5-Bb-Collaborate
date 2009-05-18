@@ -20,20 +20,6 @@ __PACKAGE__->primary_key('meetingId');
 has 'participants' => (is => 'rw', isa => 'ArrayRef[Elive::Entity::Participant]|Elive::Array',
     coerce => 1);
 
-sub _parse_participant {
-    local ($_) = shift;
-
-    m{^ \s* (.*?) \s* (= ([0-3]) \s*)? $}x
-	or die "'$_' not in format: userId=role";
-
-    my $userId = $1;
-    my $roleId = $3;
-    $roleId = 3 unless defined $roleId;
-
-    return {user => {userId => $userId},
-	    role => {roleId => $roleId}};
-}
-
 coerce 'ArrayRef[Elive::Entity::Participant]' => from 'ArrayRef[HashRef]'
           => via {
 	      my $a = [ map {Elive::Entity::Participant->new($_)} @$_ ];
@@ -133,6 +119,20 @@ sub _freeze {
     return $frozen;
 }
 
+sub _parse_participant {
+    local ($_) = shift;
+
+    m{^ \s* (.*?) \s* (= ([0-3]) \s*)? $}x
+	or die "'$_' not in format: userId=role";
+
+    my $userId = $1;
+    my $roleId = $3;
+    $roleId = 3 unless defined $roleId;
+
+    return {user => {userId => $userId},
+	    role => {roleId => $roleId}};
+}
+
 =head2 insert
 
 Note that for inserts, you only need to include the userId in the
@@ -217,7 +217,7 @@ sub update {
 	|| (Elive::Util::_reftype($participants) eq 'ARRAY' && !@$participants)
 	|| $participants eq '') {
 
-	goto sub {$class->reset(%opt)} unless $opt{resetting};
+	goto sub {$class->reset(%opt)};
     }
 
     my $adapter = $opt{adapter} || $class->check_adapter('setParticipantList');
@@ -245,14 +245,16 @@ sub reset {
     # Seems that the returned value of the list will be just the meeting
     # faciliator as a moderator.
     #
-    my $meeting = Elive::Entity::Meeting->retrieve([$self->meetingId]);
+    my $meeting = Elive::Entity::Meeting->retrieve([$self->meetingId],
+						   reuse => 1,
+	);
 
     $self->participants([{user => $meeting->facilitatorId, role => 2}]);
 
-    $self->update(undef,
-		  %opt,
-		  resetting => 1,
-		  adapter => 'resetParticipantList');
+    $self->SUPER::update(undef,
+			 adapter => 'resetParticipantList',
+			 %opt,
+	);
 }
 
 sub _readback {

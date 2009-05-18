@@ -1,5 +1,12 @@
 Revision history for Elive
 
+0.19    19th May
+        - Added 'reset' method to Eive::Entity::ParticipantList
+        - Elive::Entity::Group now also accepts semicolon separated
+          strings for group members, eg.
+	    Elive::Entity::Group->insert('my group','david;sue');
+	    Elive::Entity::Group->insert('my group',[qw(david sue)]);
+
 0.18    15th May
         - Fixed connection problems under ActiveState/Win32.
 

@@ -32,9 +32,8 @@ has 'maxTalkers' => (is => 'rw', isa => 'Int',
 
 Elive::Entity::MeetingParameters - Meeting parameters entity class
 
-    my $meeting = Elive::Entity::Meeting->retrieve(\%meeting_data);
     my $meeting_params
-        = Elive::Entity::MeetingParameters->retrieve([$meeting->meetingId]);
+        = Elive::Entity::MeetingParameters->retrieve([$meeting_id]);
 
     $meeting_params->maxTalkers(5);
     $meeting_params->update;

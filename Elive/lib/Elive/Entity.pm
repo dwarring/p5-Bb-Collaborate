@@ -907,8 +907,6 @@ sub retrieve {
     
     my @key_cols =  $class->primary_key;
 
-    my $complete = 0;
-
     for (my $n = 0; $n < @key_cols; $n++) {
 
 	die "incomplete primary key value for: $key_cols[$n]"
