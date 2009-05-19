@@ -236,9 +236,9 @@ sub web_url {
     my $url = $connection->url;
 
     my %Actions = (
-	'join'   => '%s/join_meeting.html?meetingId=%ld',
-	'edit'   => '%s/modify_meeting.event?meetingId=%ld',
-	'delete' => '%s/delete_meeting?meetingId=%ld',
+	'join'   => '%s/join_meeting.html?meetingId=%s',
+	'edit'   => '%s/modify_meeting.event?meetingId=%s',
+	'delete' => '%s/delete_meeting?meetingId=%s',
 	);
 
     my $action = $opt{action} || 'join';
