@@ -1,6 +1,6 @@
 #!perl
 use warnings; use strict;
-use Test::More tests => 34;
+use Test::More tests => 38;
 use Test::Exception;
 
 package main;
@@ -30,7 +30,7 @@ SKIP: {
     my $auth = $result{auth};
 
     skip ($result{reason} || 'unable to find test connection',
-	28)
+	32)
 	unless $auth;
 
     Elive->connect(@$auth);
@@ -132,11 +132,30 @@ SKIP: {
 	}
     };
 
+    #
+    # verify that we can remove a preload
+    #
+    lives_ok( sub {$meeting->remove_preload($preloads[1])},
+	      'meeting->remove_preload - lives');
+
+    lives_ok(sub {$preloads[0]->delete}, 'preloads[0] deletion - lives');
+    #
+    # just directly delete the second preload
+    #
+    # the meeting should be left with one preload
+    #
+
+    my $preloads_list_2;
+    lives_ok(sub {$preloads_list_2 = $meeting->list_preloads},
+             'list_meeting_preloads - lives');
+
+    isa_ok($preloads_list_2, 'ARRAY', 'preloads list');
+
+    ok(@$preloads_list_2 == 1, 'meeting left with one preload');
+    
        # start to tidy up
 
     $meeting->delete;
-
-    lives_ok(sub {$preloads[0]->delete}, 'preloads[0] deletion - lives');
 
     dies_ok(sub {$preloads[0]->retrieve([$preload_id])}, 'attempted retrieval of deleted preload - dies');
 

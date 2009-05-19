@@ -396,6 +396,47 @@ sub _thaw {
     return $data;
 }
 
+=head2 remove_preload
+
+    $meeting_obj->remove_preload($preload_id_or_obj);
+
+Remove a particular preload from the meeting.
+
+Note that the preload object is not actually deleted, just disassociated
+from the meeting.
+
+=cut
+
+sub remove_preload {
+    my $self = shift;
+    my $preload_id = shift;
+    my %opt = @_;
+
+    my $meeting_id = $self->meetingId;
+
+    die 'unable to get a meeting_id'
+	unless $meeting_id;
+
+    $preload_id = $preload_id->preloadId
+	if ref($preload_id);
+
+    die 'unable to get a preload_id'
+	unless $preload_id;
+
+    my $connection = $opt{connection} || $self->connection
+	or die "not connected";
+
+    my $adapter = $self->check_adapter('deleteMeetingPreload');
+
+    my $som = $connection->call($adapter,
+				meetingId => Elive::Util::_freeze($meeting_id, 'Int'),
+				preloadId => Elive::Util::_freeze($preload_id, 'Int'),
+				);
+
+    $self->_check_for_errors($som);
+}
+    
+
 =head2 buildJNLP 
 
     my $jnlp = $meeting_entity->buildJNLP(version => version,

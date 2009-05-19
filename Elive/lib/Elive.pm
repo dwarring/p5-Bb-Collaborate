@@ -7,11 +7,11 @@ Elive -  Elluminate Live (c) client library
 
 =head1 VERSION
 
-Version 0.19
+Version 0.20
 
 =cut
 
-our $VERSION = '0.19';
+our $VERSION = '0.20';
 
 use base qw{Class::Data::Inheritable};
 
@@ -236,7 +236,7 @@ BEGIN {
 addGroupMember addMeetingPreload attendanceNotification changePassword
 buildMeetingJNLP buildRecordingJNLP
 checkMeetingPreload createGroup createMeeting createPreload createRecording
-createUser deleteGroup deleteMeeting deleteParticipant deleteRecording
+createUser deleteGroup deleteMeeting deleteMeetingPreload deleteParticipant deleteRecording
 deletePreload deleteUser getGroup getMeeting getMeetingParameters getPreload
 getPreloadStream getRecording getRecordingStream getServerDetails getServerParameters getUser
 importPreload importRecording listGroups listMeetingPreloads listMeetings listParticipants
