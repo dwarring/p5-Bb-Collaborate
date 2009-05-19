@@ -207,22 +207,28 @@ Note that if you empty the participant list, C<reset> will be called.
 =cut
 
 sub update {
-    my $class = shift;
+    my $self = shift;
     my $data = shift;
     my %opt = @_;
 
     my $participants = $data->{participants};
+    $participants = $self->participants
+	unless defined $participants;
 
     if ((!defined $participants)
 	|| (Elive::Util::_reftype($participants) eq 'ARRAY' && !@$participants)
 	|| $participants eq '') {
 
-	goto sub {$class->reset(%opt)};
+	#
+	# treat an empty list as an implied reset. The 'setParticipantList'
+        # adapter will barf otherwise.
+	#
+	goto sub {$self->reset(%opt)};
     }
 
-    my $adapter = $opt{adapter} || $class->check_adapter('setParticipantList');
+    my $adapter = $opt{adapter} || $self->check_adapter('setParticipantList');
 
-    $class->SUPER::update($data,
+    $self->SUPER::update($data,
 			  adapter => $adapter,
 			  %opt);
 }
