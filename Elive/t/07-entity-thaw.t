@@ -1,6 +1,6 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 47;
+use Test::More tests => 48;
 use Test::Warn;
 
 BEGIN {
@@ -16,6 +16,7 @@ ok(Elive::Util::_thaw('00123456', 'Int') == 123456, 'Int with leading zeros');
 ok(Elive::Util::_thaw('-123456', 'Int') == -123456, 'Int negative');
 ok(Elive::Util::_thaw('-00123456', 'Int') == -123456, 'Int negative, leading zeros');
 ok(Elive::Util::_thaw('+00123456', 'Int') == 123456, 'Int plus sign leading zeros');
+ok(Elive::Util::_thaw('01234567890000', 'HiResDate') eq '1234567890000', 'date, leading zero');
 ok(Elive::Util::_thaw(0, 'Int') == 0, 'Int zero');
 ok(Elive::Util::_thaw('-0', 'Int') == 0, 'Int minus zero');
 ok(Elive::Util::_thaw('+0', 'Int') == 0, 'Int plus zero');

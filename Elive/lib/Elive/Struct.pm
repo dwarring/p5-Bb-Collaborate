@@ -241,17 +241,18 @@ sub _cmp_col {
 	    my $v1 = $v1[$i];
 	    my $v2 = $v2[$i];
 
-	    if ($is_struct || $type =~ m{^(Str|Enum)}i) {
+	    if ($is_struct || $type =~ m{^(Str|Enum|HiResDate)}i) {
 		# string comparision. works on simple strings and
-		# stringified entities.
+		# stringified entities. Also used for hires dates
+		# integer comparision may result in arithmetic overflow
 		# 
 		$cmp ||= $v1 cmp $v2;
 	    }
-	    elsif ($type =~ m{Bool}i) {
+	    elsif ($type =~ m{^Bool}i) {
 		# boolean comparison
 		$cmp ||= ($v1? 1: 0) <=> ($v2? 1: 0);
 	    }
-	    elsif ($type =~ m{Int}i) {
+	    elsif ($type =~ m{^Int}i) {
 		# int comparision
 		$cmp ||= $v1 <=> $v2;
 	    }

@@ -36,12 +36,12 @@ has 'deleted' => (is => 'rw', isa => 'Bool');
 has 'facilitatorId' => (is => 'rw', isa => 'Str',
 			documentation => 'userId of facilator');
 
-has 'start' => (is => 'rw', isa => 'Int', required => 1,
-		documentation => 'meeting start time (hires)');
+has 'start' => (is => 'rw', isa => 'HiResDate', required => 1,
+		documentation => 'meeting start time');
 
 has 'privateMeeting' => (is => 'rw', isa => 'Bool');
 
-has 'end' => (is => 'rw', isa => 'Int', required => 1,
+has 'end' => (is => 'rw', isa => 'HiResDate', required => 1,
 	      documentation => 'meeting end time (hires)');
 
 has 'name' => (is => 'rw', isa => 'Str', required => 1,
@@ -60,8 +60,8 @@ has 'name' => (is => 'rw', isa => 'Str', required => 1,
     # Simple case, single meeting
     #
     my $meeting = Elive::Entity::Meeting->insert({
-        start => hires_time,
-        end => hires_time,
+        start => time,
+        end => time,
         name => string,
         password => string,
         seats => int,
@@ -107,8 +107,8 @@ sub insert {
 =head3 synopsis
 
     my $meeting = Elive::Entity::Meeting->update({
-        start => hires_time,
-        end => hires_time,
+        start => time,
+        end => time,
         name => string,
         password => string,
         seats => int,
@@ -140,6 +140,8 @@ sub update {
 
 =head2 list_user_meetings_by_date
 
+List all meetings over a given date range.
+
 =head3 synopsis
 
    $meetings_array_ref
@@ -155,7 +157,7 @@ sub update {
    my $next_week = $now->clone->add(days => 7);
 
    my $meetings = Elive::Entity::Meeting->list_user_meetings_by_date(
-    [$user_id, $now->epoch * 1000, $next_week->epoch * 1000]
+    [$user_id, $now->epoch.'000', $next_week->epoch.'000']
   )
 
 =head3 description
@@ -178,7 +180,7 @@ sub list_user_meetings_by_date {
     my %fetch_params;
     $fetch_params{userId} = Elive::Util::_freeze(shift @$params,'Str');
     @fetch_params{qw{startDate endDate}}
-    = map {Elive::Util::_freeze($_,'Int')} @$params; 
+    = map {my $d = Elive::Util::_freeze($_,'HiResDate')} @$params; 
 
     my $adapter = $class->check_adapter('listUserMeetingsByDate');
 
@@ -403,7 +405,10 @@ sub _thaw {
 Remove a particular preload from the meeting.
 
 Note that the preload object is not actually deleted, just disassociated
-from the meeting.
+from the meeting and will continue to exist as a resource on the server.
+
+You don't need to call this method if you simply intend to delete the
+preload. This system will remove it from any meetings for you.
 
 =cut
 

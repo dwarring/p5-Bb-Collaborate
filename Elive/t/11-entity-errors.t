@@ -1,6 +1,6 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 18;
+use Test::More tests => 25;
 use Test::Exception;
 
 package main;
@@ -10,6 +10,7 @@ BEGIN {
 	use_ok( 'Elive::Connection' );
 	use_ok( 'Elive::Entity::User' );
 	use_ok( 'Elive::Entity::Preload' );
+	use_ok( 'Elive::Entity::Meeting' );
 	use_ok( 'Elive::Entity::MeetingParameters' );
 }
 
@@ -82,6 +83,43 @@ dies_ok(
     sub {$user_data->set('noSuchField', 'die you ^&*#@')},
     "setter on unknown field - dies"
     );
+
+lives_ok(
+	 sub {Elive::Entity::Meeting->construct
+	     ({
+		 meetingId => 1111111,
+		 name => 'test',
+		 start => '1234567890123',
+		 end   => '1234599990123',
+	      })},
+	      'meeting - valid dates - lives',
+    );
+
+
+dies_ok(
+	 sub {Elive::Entity::Meeting->construct
+	     ({
+		 meetingId => 1111111,
+		 name => 'test',
+		 start => '1234567890',
+		 end => '1234567890',
+	      })},
+	      'meeting - invalid dates - dies',
+    );       
+
+foreach (qw(meetingId name start end)) {
+    my %meeting_data = (meetingId => 1111111,
+			name => 'test',
+			start => '1234567890123',
+			end => '1234567890123'
+	);
+
+    delete $meeting_data{$_};
+    dies_ok(
+	sub {Elive::Entity::Meeting->construct(\%meeting_data)},
+	"meeting with missing $_ - dies"
+	);
+}
 
 lives_ok(
 	 sub {Elive::Entity::MeetingParameters->construct

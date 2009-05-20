@@ -58,10 +58,11 @@ sub _freeze {
 	    $_ =  $_ ? 'true' : 'false'
 		if defined;
 	}
-	elsif ($type =~ m{^Int}i) {
+	elsif ($type =~ m{^(Int|HiResDate)}i) {
 	    
 	    $_ = _tidy_decimal($_)
 		if defined;
+
 	}
     }
 
@@ -90,7 +91,7 @@ sub _thaw {
 	    #
 	    s{^ \s* (.*?) \s* $}{$1}x;
 	}
-	elsif ($type =~ m{^Int}i) {
+	elsif ($type =~ m{^Int|HiResDate}i) {
 
 	    $_ = _tidy_decimal($_);
 

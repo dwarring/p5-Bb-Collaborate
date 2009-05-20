@@ -1,6 +1,6 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 21;
+use Test::More tests => 22;
 use Test::Warn;
 
 use Carp; $SIG{__DIE__} = \&Carp::confess;
@@ -18,6 +18,9 @@ ok(Elive::Util::_freeze('00123456', 'Int') eq '123456', 'Int with leading zeros'
 ok(Elive::Util::_freeze('-123456', 'Int') eq '-123456', 'Int negative');
 ok(Elive::Util::_freeze('-00123456', 'Int') eq '-123456', 'Int negative, leading zeros');
 ok(Elive::Util::_freeze('+00123456', 'Int') eq '123456', 'Int plus sign leading zeros');
+
+ok(Elive::Util::_freeze('1234567890000', 'HiResDate') eq '1234567890000', 'high precision date');
+
 ok(Elive::Util::_freeze(0, 'Int') eq '0', 'Int zero');
 ok(Elive::Util::_freeze('-0', 'Int') eq '0', 'Int minus zero');
 ok(Elive::Util::_freeze('+0', 'Int') eq '0', 'Int plus zero');

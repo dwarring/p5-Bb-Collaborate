@@ -1,6 +1,6 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 31;
+use Test::More tests => 35;
 use Test::Warn;
 
 BEGIN {
@@ -120,4 +120,15 @@ my $members_2 = $member_list_2->members;
 ok($members_2->[0] eq 112233, 'member list user');
 ok($members_2->[1] eq 223344, 'member list user');
 ok($members_2->[2] eq 'trev', 'member list user');
-    ;
+
+my $meeting =  Elive::Entity::Meeting->construct({
+    meetingId => 112233445566,
+    name => 'test meeting',
+    start => '1234567890123',
+    end => '1231231230123',
+						 });
+
+isa_ok($meeting, 'Elive::Entity::Meeting');
+ok($meeting->name eq 'test meeting', 'meeting name');
+ok($meeting->start eq '1234567890123', 'meeting start (hires coercian)');
+ok($meeting->end eq '1231231230123', 'meeting end (hrres explicit)');

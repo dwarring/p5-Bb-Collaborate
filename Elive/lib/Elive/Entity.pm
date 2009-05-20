@@ -1071,6 +1071,20 @@ sub _not_available {
 }
 
 #
+# Shared subtypes
+#
+BEGIN {
+    subtype 'HiResDate'
+	=> as 'Int'
+	=> where {m{^\d+$} && length($_) >= 13}
+        => message {"13 digit high res date expected, found: $_"}
+;
+
+    coerce 'HiResDate'
+	=> from 'Str'
+	=> via {warn "attempting hires coerce of $_";my $d = $_; $d .= '0' while length($d) < 13; $d};
+}
+#
 # Bring all our kids in
 #
 use Elive::Entity::Group;
