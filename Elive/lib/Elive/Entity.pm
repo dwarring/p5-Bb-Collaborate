@@ -154,7 +154,7 @@ sub construct {
     @known_properties{$class->properties} = undef;
 
     foreach (keys %$data) {
-	warn "unknown property $_"
+	warn "$class: unknown property $_"
 	    unless exists $known_properties{$_};
     }
 
@@ -1080,8 +1080,9 @@ BEGIN {
     #
     subtype 'HiResDate'
 	=> as 'Int'
-	=> where {m{^\d+$} && length($_) > 10}
-        => message {"doesn't look like a high res dat: $_"};
+	=> where {m{^\d+$} && length($_) > 10
+			or warn "doesn't look like a hi-res date: $_" }
+        => message {"invalid date: $_"};
 }
 #
 # Bring all our kids in

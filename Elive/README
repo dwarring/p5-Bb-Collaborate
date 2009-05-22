@@ -34,15 +34,19 @@ POST INSTALLATION
         For a Unix server the configration for path http://myserver/mysite/
         should be found under:
 
-             /opt/ElluminateLive/manager/tomcat/webapps/mysite
+             /opt/ElluminateLive/manager/tomcat/webapps
 
-        or if its running from the server root http://myserver/:
+	or under Windows:
 
-             /opt/ElluminateLive/manager/tomcat/webapps/ROOT
+	     C:/Program Files/ElluminateLive/manager/tomcat/webapps
 
         The actual configuration is then in the sub-path:
 
-	     WEB-INF/resources/configuration.xml
+	     ROOT/WEB-INF/resources/configuration.xml
+
+         or for a site built with the instance manager
+
+	     mysite/WEB-INF/resources/configuration.xml
 
         If any adapters are missing, the corresponding Elive calls will
         return the error message 'Unable to determine a command for the key

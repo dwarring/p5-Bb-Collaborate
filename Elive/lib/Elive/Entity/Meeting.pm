@@ -39,10 +39,11 @@ has 'facilitatorId' => (is => 'rw', isa => 'Str',
 has 'start' => (is => 'rw', isa => 'HiResDate', required => 1,
 		documentation => 'meeting start time');
 
-has 'privateMeeting' => (is => 'rw', isa => 'Bool');
+has 'privateMeeting' => (is => 'rw', isa => 'Bool',
+			 documentation => "don't display meeting in public schedule");
 
 has 'end' => (is => 'rw', isa => 'HiResDate', required => 1,
-	      documentation => 'meeting end time (hires)');
+	      documentation => 'meeting end time');
 
 has 'name' => (is => 'rw', isa => 'Str', required => 1,
 	       documentation => 'meeting name',

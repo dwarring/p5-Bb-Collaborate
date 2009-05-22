@@ -350,7 +350,7 @@ sub set {
            $self->{$_} = $data{$_};
        }
        else {
-           die "no such column: $_";
+           die ((ref($self)||$self)."no such column: $_");
        }
     }
 

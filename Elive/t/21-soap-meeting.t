@@ -100,7 +100,7 @@ SKIP: {
     #
     # seats are updated via the updateMeeting adapter
     #
-    ok($meeting->update({seats => 42}), 'can update number of seats in the meeting');
+    ok($meeting->update({seats => 2}), 'can update number of seats in the meeting');
 
     my $server_params = Elive::Entity::ServerParameters->retrieve([$meeting->meetingId]);
 
@@ -112,7 +112,7 @@ SKIP: {
 	ok($server_params->$_ == $meeting_server_data{$_}, "server parameter $_ == $meeting_server_data{$_}");
     }
 
-    ok($server_params->seats == 42, 'server_param - expected number of seats');
+    ok($server_params->seats == 2, 'server_param - expected number of seats');
 
     my $pl = Elive::Entity::ParticipantList->retrieve([$meeting->meetingId]);
     diag ("participants=".$pl->participants->stringify);

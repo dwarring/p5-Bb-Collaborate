@@ -27,6 +27,12 @@ has 'raiseHandOnEnter' => (is => 'rw', isa => 'Bool',
     documentation => 'raise hands automatically when users join');
 has 'maxTalkers' => (is => 'rw', isa => 'Int',
     documentation => 'maximum number of simultaneous talkers');
+#
+# inSessionInvitation seems to be required for Elluminate Live 8.0,
+# but is not available for 9.0(?)
+#
+has 'inSessionInvitation'  => (is => 'rw', isa => 'Bool');
+
 
 =head1 NAME
 
