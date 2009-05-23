@@ -1,5 +1,9 @@
 Revision history for Elive
 
+0.20    24th May
+        - Added HiResDate type for Elluminate dates (meeting start and
+          end times + recording time).
+
 0.19    19th May
         - Added 'reset' method to Eive::Entity::ParticipantList
         - Treat an empty participant list as an implied reset, eg:

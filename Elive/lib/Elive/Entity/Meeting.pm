@@ -28,26 +28,26 @@ __PACKAGE__->collection_name('Meetings');
 has 'meetingId' => (is => 'rw', isa => 'Int', required => 1);
 __PACKAGE__->primary_key('meetingId');
 
+has 'name' => (is => 'rw', isa => 'Str', required => 1,
+	       documentation => 'meeting name',
+    );
+
+has 'start' => (is => 'rw', isa => 'HiResDate', required => 1,
+		documentation => 'meeting start time');
+
+has 'end' => (is => 'rw', isa => 'HiResDate', required => 1,
+	      documentation => 'meeting end time');
+
 has 'password' => (is => 'rw', isa => 'Str',
-		   documentation => 'meeting password (optional)');
+		   documentation => 'meeting password');
 
 has 'deleted' => (is => 'rw', isa => 'Bool');
 
 has 'facilitatorId' => (is => 'rw', isa => 'Str',
 			documentation => 'userId of facilator');
 
-has 'start' => (is => 'rw', isa => 'HiResDate', required => 1,
-		documentation => 'meeting start time');
-
 has 'privateMeeting' => (is => 'rw', isa => 'Bool',
 			 documentation => "don't display meeting in public schedule");
-
-has 'end' => (is => 'rw', isa => 'HiResDate', required => 1,
-	      documentation => 'meeting end time');
-
-has 'name' => (is => 'rw', isa => 'Str', required => 1,
-	       documentation => 'meeting name',
-    );
 
 =head1 METHODS
 
