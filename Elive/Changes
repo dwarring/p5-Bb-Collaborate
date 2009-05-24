@@ -1,5 +1,8 @@
 Revision history for Elive
 
+0.21    25th May
+        - Allow non-numeric Recording ids.
+
 0.20    24th May
         - Added HiResDate type for Elluminate dates (meeting start and
           end times + recording time).
