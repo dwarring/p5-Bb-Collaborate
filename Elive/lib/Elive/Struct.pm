@@ -333,25 +333,24 @@ sub set {
 
     foreach (keys %data) {
 
-       if ($entity_column{$_}) {
+	unless ($entity_column{$_}) {
+	    warn ((ref($self)||$self).": unknown property: $_");
+	    next;
+	}
 
-           if (exists $primary_key{ $_ }) {
+	if (exists $primary_key{ $_ }) {
 
-               my $old_val = $self->{$_};
+	    my $old_val = $self->{$_};
 
-               if (defined $old_val && !defined $data{$_}) {
-                   die "attempt to delete primary key";
+	    if (defined $old_val && !defined $data{$_}) {
+		die "attempt to delete primary key";
                }
-               elsif ($self->_cmp_col($_, $old_val, $data{$_})) {
-                   die "attempt to update primary key";
-               }
-           }
+	    elsif ($self->_cmp_col($_, $old_val, $data{$_})) {
+		die "attempt to update primary key";
+	    }
+	}
 
-           $self->{$_} = $data{$_};
-       }
-       else {
-           warn ((ref($self)||$self).": unknown property: $_");
-       }
+	$self->{$_} = $data{$_};
     }
 
     return $self;

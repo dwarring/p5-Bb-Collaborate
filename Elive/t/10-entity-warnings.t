@@ -1,6 +1,6 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 8;
+use Test::More tests => 10;
 use Test::Warn;
 
 BEGIN {
@@ -22,18 +22,25 @@ warnings_like (\&do_unsaved_update,
 	      'unsaved change gives warning'
     );
 
+my $user_1;
+
 warnings_like(
-    \&construct_unknown_property,
+    sub {$user_1 = construct_unknown_property()},
     qr{unknown property},
     'constructing unknown property gives warning',
     );
 
+ok(!(exists $user_1->{junk1}),"construct discards unknown property");
+
+my $user_2;
+
 warnings_like(
-    \&set_unknown_property,
+sub {$user_2 = set_unknown_property()},
     qr{unknown property},
     "setting unknown property gives warning"
     );
 
+ok(!(exists $user_2->{junk2}),"set discards unknown property");
 
 exit(0);
 
@@ -66,21 +73,24 @@ sub do_unsaved_update {
 }
 
 sub construct_unknown_property {
-    Elive::Entity::User->construct
-	({  userId => 1234,
-	    loginName => 'user',
-	    loginPassword => 'pass',
-	    junk => 'abc',
-	 });
-}
-
-sub set_unknown_property {
     my $user = Elive::Entity::User->construct
 	({  userId => 1234,
 	    loginName => 'user',
 	    loginPassword => 'pass',
+	    junk1 => 'abc',
+	 });
+
+    return $user;
+}
+
+sub set_unknown_property {
+    my $user = Elive::Entity::User->construct
+	({  userId => 5678,
+	    loginName => 'user',
+	    loginPassword => 'pass',
 	});
-    $user->set(junk => 'abc');
+    $user->set(junk2 => 'xyz');
+    return $user;
 }
 
 

@@ -141,7 +141,7 @@ sub construct {
 	unless (Elive::Util::_reftype($data) eq 'HASH');
 
     #
-    # Note: don't seem to have an way of recursively passing options
+    # Note: don't seem to have any way of recursively passing options
     # through mouse/moose contructors.
     # Resort to action at a distance via The construct_opts local variable.
     #
