@@ -73,9 +73,9 @@ has 'data' => (is => 'rw', isa => 'Str',
 	     },
          );
 
-Upload data from a client and create a preload.  If a c<mimeType> is not
-supplied, it will be guessed from the c<fileName> extension, using
-MIME::Types. 
+Upload data from a client and create a preload.  If a C<mimeType> is not
+supplied, it will be guessed from the C<fileName> extension, using
+MIME::Types.
 
 =cut
 
@@ -176,7 +176,7 @@ sub download {
          );
 
 Create a preload from a file that is already present on the server. If
-a c<mimeType> is not supplied, it will be guessed from the c<fileName>
+a C<mimeType> is not supplied, it will be guessed from the C<fileName>
 extension using MIME::Types.
 
 =cut
