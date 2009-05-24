@@ -10,7 +10,7 @@ use Elive::Util;
 __PACKAGE__->entity_name('Recording');
 __PACKAGE__->collection_name('Recordings');
 
-has 'recordingId' => (is => 'rw', isa => 'Int', required => 1);
+has 'recordingId' => (is => 'rw', isa => 'Str', required => 1);
 __PACKAGE__->primary_key('recordingId');
 
 has 'creationDate' => (is => 'rw', isa => 'HiResDate', required => 1);
