@@ -5,8 +5,6 @@ use Test::Warn;
 
 package main;
 
-my $meta_data_tab = \%Elive::Meta_Data;
-
 BEGIN {
     use_ok( 'Elive::Entity::User' );
     use_ok( 'Elive::Entity::Recording' );
@@ -36,4 +34,4 @@ my $meeting_parameter_types = Elive::Entity::MeetingParameters->property_types;
 # inSessionInvitation present in elm 9.0, but not 9.1?
 #
 ok(exists $meeting_parameter_types->{inSessionInvitation},
-   'inSessionInvitation retained for meeting paramaters (9.0 compat)');
+   'inSessionInvitation declared for meeting parameters (9.0 compat)');
