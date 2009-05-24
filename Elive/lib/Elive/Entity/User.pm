@@ -12,7 +12,7 @@ use Elive::Entity::Role;
 __PACKAGE__->entity_name('User');
 __PACKAGE__->collection_name('Users');
 
-has 'userId' => (is => 'rw', isa => 'Str|Int', required => 1,
+has 'userId' => (is => 'rw', isa => 'Str', required => 1,
 		 documentation => 'user identifier (usually numeric)');
 __PACKAGE__->primary_key('userId');
 
