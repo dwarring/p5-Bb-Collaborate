@@ -1,6 +1,6 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 7;
+use Test::More tests => 8;
 use Test::Warn;
 
 BEGIN {
@@ -27,6 +27,13 @@ warnings_like(
     qr{unknown property},
     'constructing unknown property gives warning',
     );
+
+warnings_like(
+    \&set_unknown_property,
+    qr{unknown property},
+    "setting unknown property gives warning"
+    );
+
 
 exit(0);
 
@@ -66,4 +73,14 @@ sub construct_unknown_property {
 	    junk => 'abc',
 	 });
 }
+
+sub set_unknown_property {
+    my $user = Elive::Entity::User->construct
+	({  userId => 1234,
+	    loginName => 'user',
+	    loginPassword => 'pass',
+	});
+    $user->set(junk => 'abc');
+}
+
 

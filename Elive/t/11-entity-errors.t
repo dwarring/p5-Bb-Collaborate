@@ -1,6 +1,6 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 24;
+use Test::More tests => 23;
 use Test::Exception;
 
 package main;
@@ -77,11 +77,6 @@ dies_ok(
 lives_ok(
     sub {$user_data->set('userId', $user_data->userId)},
     "ineffective primary key update - lives"
-    );
-
-dies_ok(
-    sub {$user_data->set('noSuchField', 'die you ^&*#@')},
-    "setter on unknown field - dies"
     );
 
 my %valid_meeting_data = (meetingId => 1111111,

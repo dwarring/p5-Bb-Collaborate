@@ -350,7 +350,7 @@ sub set {
            $self->{$_} = $data{$_};
        }
        else {
-           die ((ref($self)||$self)."no such column: $_");
+           warn ((ref($self)||$self).": unknown property: $_");
        }
     }
 
