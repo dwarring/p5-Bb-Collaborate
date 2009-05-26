@@ -1,6 +1,6 @@
 #!perl
 use warnings; use strict;
-use Test::More tests => 34;
+use Test::More tests => 35;
 use Test::Exception;
 
 package main;
@@ -25,7 +25,7 @@ SKIP: {
     my $auth = $result{auth};
 
     skip ($result{reason} || 'no test connection specified',
-	29)
+	30)
 	unless $auth;
 
     Elive->connect(@$auth);
@@ -152,12 +152,12 @@ SKIP: {
 
     ok(@$participants == 1, 'participant_list - cleared');
 
-    TODO: {
-	local $TODO = "Some problems building JNLP's on my test system";
+    do {
 	my $jnlp;
 	lives_ok(sub {$jnlp = $meeting->buildJNLP(version => '8.0')},
-		'got meeting jnlp');
-	diag("jnlp:$jnlp") if $jnlp;
+		'$meeting->buildJNLP - lives');
+
+	ok(defined $jnlp, 'got jnlp')
     };
 
     isa_ok($user_meetings, 'ARRAY', 'user_meetings');
@@ -166,7 +166,7 @@ SKIP: {
 
     ok(@$user_meetings, 'found user meetings by date');
     ok ((grep {$_->meetingId == $meeting_id} @$user_meetings),
-	'meeting is yin user_meetings_by_date');
+	'meeting is in user_meetings_by_date');
 
     #
     # start to tidy up
