@@ -109,11 +109,11 @@ sub main {
 
     print "Adapters: ";
 
-    foreach my $command (@commands) {
+    foreach (sort {$a->[0] cmp $b->[0]}
+	     map {[$_->{name}[0], $_->{value}[0]]}
+	     @commands) {
 
-	my $name = $command->{name}[0];
-	my $value = $command->{value}[0];
-
+	my ($name, $value) = @$_;
 	next unless $name =~ s{^command\:}{};
 	next unless exists $required_adapters{$name};
 	print "[$name]";
