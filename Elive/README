@@ -44,7 +44,7 @@ POST INSTALLATION
 
 	     ROOT/WEB-INF/resources/configuration.xml
 
-         or for a site built with the instance manager
+         or for any additional sites built with the instance manager:
 
 	     mysite/WEB-INF/resources/configuration.xml
 
@@ -57,7 +57,7 @@ POST INSTALLATION
 	the SDK. This version Elive has only been tested against 9.0
 	and 9.1.
 
-	It's possible that you may be able to manually add the adapter
+	You may be able to get away with manually adding the adapter
 	to the list of adapters in your configuration file.
 
 	For example, if elive_lint_config returned the error:
@@ -66,8 +66,10 @@ POST INSTALLATION
 
 	You'll need to first stop Elluminate services.
 
-	Then an adapter entry can be added to the list of adapters. E.g.
-        to add the getUser adapter:
+	Save a backup copy of configuration.xml Then you can add an adapter
+        entry can be added to the list of adapters.
+
+        E.g., to add the getUser adapter:
 
 	    <elm>
 		...
