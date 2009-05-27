@@ -41,7 +41,7 @@ use Elive::Connection;
 =head1 DESCRIPTION
 
 Elive is a set of Perl modules for the integration and automation of
-Elluminate Live sites. In particular, it aids in the managment of users
+Elluminate Live sites. In particular, it aids in the management of users
 and meetings.
 
 It provides convenient Perl object bindings to entities. These are accessed
