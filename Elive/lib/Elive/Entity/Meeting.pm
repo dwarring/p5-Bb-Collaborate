@@ -262,7 +262,7 @@ Associate a preload with a meeting
 
 =head3 See also
 
-    Elive::Entity::Preload
+Elive::Entity::Preload
 
 =cut
 
@@ -403,13 +403,13 @@ sub _thaw {
 
     $meeting_obj->remove_preload($preload_id_or_obj);
 
-Remove a particular preload from the meeting.
+Disassociate a preload from a meeting.
 
 Note that the preload object is not actually deleted, just disassociated
 from the meeting and will continue to exist as a resource on the server.
 
-You don't need to call this method if you simply intend to delete the
-preload. This system will remove it from any meetings for you.
+You don't need to call this method prior to deleting the preload. The
+deletion will succeed and the preload is disassociated from all meetings.
 
 =cut
 

@@ -193,9 +193,9 @@ sub insert {
 
 =head2 update
 
-    my late_comer = Elive::Entity::Participant->retrieve($user_id);
+    my late_comer = Elive::Entity::Participant->retrieve([$user_id]);
     my $meeting_id = 111111111;
-    my $participant_list = Elive::Entity::User->retrieve($meeting_id);
+    my $participant_list = Elive::Entity::User->retrieve([$meeting_id]);
 
     $participant_list->particpants->add($late_comer);
     $participant_list->update;

@@ -224,8 +224,8 @@ sub _hex_encode {
 
 =head2 string
 
-Try hard to return the object as a string. If it's a simple scalar fine,
-If it's an object, try using the stringify method..
+Try to return the object as a string. If it's a simple scalar fine,
+If it's an object that implements the C<stringify> method, use this.
 
 =cut
 

@@ -79,13 +79,6 @@ to create a meeting, then retrieve on meeting id
 
 sub list {shift->_not_available}
 
-=head1 See Also
-
-Elive::Entity::Meeting
-Elive::Entity::MeetingParameters
-
-=cut
-
 sub _freeze {
     my $class = shift;
     my $data = shift;
@@ -149,5 +142,12 @@ sub update {
     #
     $self->SUPER::update($data, @_, changed => \@required);
 }
+
+=head1 See Also
+
+Elive::Entity::Meeting
+Elive::Entity::MeetingParameters
+
+=cut
 
 1;

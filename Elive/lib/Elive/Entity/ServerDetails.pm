@@ -36,7 +36,7 @@ has 'version' => (is => 'rw', isa => 'Str');
 
 =head2 list
 
-my ($server) = Elive::Entity::ServerDetails->list();
+    my ($server) = Elive::Entity::ServerDetails->list();
 
 Return the server details. Note that this is a singleton record. You
 should always expect to retrieve one record from the server.

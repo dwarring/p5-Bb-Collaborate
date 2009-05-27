@@ -125,19 +125,19 @@ sub insert {
 
 =head2 update
 
-    my $user_obj = Elive::Entity::user->retrieve($user_id);
+    my $user_obj = Elive::Entity::user->retrieve([$user_id]);
 
-    $user_obj->update({fld => new_val,...},[force => 1]);
+    $user_obj->update({fld => new_val,...}, force => 1);
 
     $user_obj->update(role => {roleId => 1}); # make the user an app admin
     $user_obj->lastName('Smith');
-    $user_obj->update(undef,[force => 1]);
+    $user_obj->update(undef, force => 1);
 
 Update an Elluminate user. Everything can be changed, other than userId.
 This includes the loginName. However loginNames must all remain unique.
 
-As a safeguard, you need to pass force => 1 to update
-system administrator accounts
+As a safeguard, you need to pass force => 1 to update users with a Role
+Id of 0, i.e. system administrator accounts
 
 =cut
 
@@ -147,7 +147,7 @@ sub update {
     my %opt = @_;
 
     unless ($opt{force}) {
-	die "Cowardly refusing to update system admin account: (pass force => 1 to override)"
+	die "Cowardly refusing to update system admin account for ".$self->loginName.": (pass force => 1 to override)"
 	    if ($self->role->stringify <= 0);
     }
 
@@ -167,7 +167,7 @@ sub update {
 
 =head2 change_password 
 
-    my $user = Elive::Entity::User->retrieve($user_id);
+    my $user = Elive::Entity::User->retrieve([$user_id]);
     my $new_password = Elive::Util::prompt('Password: ', password => 1);
     $user->change_password($new_password);
 
@@ -206,7 +206,7 @@ sub delete {
     my %opt = @_;
 
     unless ($opt{force}) {
-	die "Cowardly refusing to deleted system admin account: (pass force => 1 to override)"
+	die "Cowardly refusing to delete system admin account for ".$self->loginName.": (pass force => 1 to override)"
 	    if ($self->role <= 0);
     }
 
@@ -215,12 +215,12 @@ sub delete {
 
 =head1 RESTRICTIONS
 
-An Elluminate server can be configured to use LDAP for user authentication.
+Elluminate Live can be configured to use LDAP for user management and
+authentication.
 
-If LDAP has been enabled for a server the fetch and retrieve methods will
-continue to operate via the Elluminate SOAP/XML layer. However updates are
-not currently supported by either Elluminate or Elive. The affected methods
-are: insert, update, delete and change_password.
+If LDAP is in use, the fetch and retrieve methods will continue to operate
+via the Elluminate SOAP/XML layer. However use access becomes read-only. The
+affected methods are: insert, update, delete and change_password.
 
 =cut
 

@@ -19,7 +19,7 @@ BEGIN {use Carp; local $SIG{__DIE__} = \&Carp::cluck}
 
 =head1 NAME
 
-    Elive::Entity - Abstract class for Elive Entities
+    Elive::Entity - Base class for Elive Entities
 
 =head1 DESCRIPTION
 
@@ -686,7 +686,10 @@ sub insert {
 
 =head2 live_entity
 
-Entity has already been loaded. Return it for reuse.
+    my $user_ref
+      = Elive::Entity->live_entity('http://test.org/User/1234567890');
+
+Returns a reference to an object in the Elive::Entity in-memory cache. 
 
 =cut
 
@@ -699,7 +702,12 @@ sub live_entity {
 
 =head2 live_entities
 
-Return the list of live entities
+    my $live_entities = Elive::Entity->live_entities;
+
+    my $user_ref
+      = $live_entities->{'http://test.org/User/1234567890'};
+
+Returns the contents of Elive::Entity in-memory cache. 
 
 =cut
 
@@ -1123,13 +1131,14 @@ sub DEMOLISH {
 
 =head2 Object Reuse
 
-A single unique object is maintained for each entity instance. if you
-re-retrieve or re-construct the object, any other copies of the object
-are also updated.
+An in-memory object cache is used to maintain a single unique copy of
+each object for each entity instance. All references to an entity instance
+are unified. Hence, if you re-retrieve or re-construct the object, any other
+references to the object will see the updates.
 
     my $user = Elive::Entity::User->retrieve([11223344]);
     #
-    # returns another reference to user, but refetches from the database
+    # returns the same reference, but refetches from the database
     #
     my $user_copy = Elive::Entity::User->retrieve([11223344]);
     #
@@ -1137,13 +1146,16 @@ are also updated.
     #
     my $user_copy2 = Elive::Entity::User->retrieve([11223344], reuse => 1);
 
+You can access the in-memory cache using the C<live_entity> and C<live_entities>
+methods.
+
 =head2 Entity Manipulation
 
 Through the magic of inside-out objects, all objects are simply blessed
 structures that contain data and nothing else. You may choose to use the
 accessors, or work directly with the object data.
 
-The following are all equivalent, and all ok:
+The following are all equivalent, and are all ok:
 
     my $p_list = Elive::Entity::ParticipantList->retrieve([98765]);
     my $user = Elive::Entity::User->retrieve([11223344]);
@@ -1158,6 +1170,9 @@ The following are all equivalent, and all ok:
 Entity instance classes are simply Mouse objects that use this class
 (Elive::Entity) as base. It should be quite possible to extend existing
 entity classes.
+
+Mouse is being used instead of Moose, at this stage, just because it's
+smaller and has far fewer dependencies.
 
 =cut
 
