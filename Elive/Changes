@@ -1,5 +1,9 @@
 Revision history for Elive
 
+0.22    28 May
+        - Proof read and refined pod doco.
+        - Sort adapters in 'elive_lint_config' script.
+
 0.21    25th May
         - Allow non-numeric Recording ids.
 
