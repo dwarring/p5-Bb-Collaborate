@@ -44,9 +44,6 @@ Elive is a set of Perl modules for the integration and automation of
 Elluminate Live sites. In particular, it aids in the management of users
 and meetings.
 
-It provides convenient Perl object bindings to entities. These are accessed
-and updated via the Elluminate Live SOAP/XML command interface.
-
 =head1 BACKGROUND
 
 Elluminate Live (c) is is a web tool for virtual online classrooms.
@@ -55,10 +52,15 @@ It is suitable for online collaboration, demonstrations, meetings, web
 conferences, seminars and IT deployment, training and support.
 
 Users, Meetings and other resources are stored in a management database.
-These can managed via the Elluminate Live web interface.
+These can managed via the Elluminate Live SOAP API.
 
-Most actions that can be performed via the web interface are also
-available from Elluminate Live's SOAP/XML command interface.
+Most actions that can be performed via the web interface can also be
+achieved via the SOAP API. This is known as the I<Command Toolkit> and
+is detailed in chapter 4 of the I<Elluminate Live! Software Developers
+Kit>.
+
+This module provides Perl object to entity bindings to Elluminate Live
+databases via the command toolkit..
 
 =cut
 

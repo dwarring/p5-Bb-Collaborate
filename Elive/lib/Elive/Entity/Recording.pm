@@ -156,7 +156,7 @@ sub _thaw {
 Builds a JNLP for the recording.
 
 JNLP is the 'Java Network Launch Protocol', also commonly known as Java
-WebStart. You can render this as a web page with mime type
+WebStart. You can, for example, render this as a web page with mime type
 C<application/x-java-jnlp-file>.
 
 Under Windows, and other desktops, you can save this to a file with extension
