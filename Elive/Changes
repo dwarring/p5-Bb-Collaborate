@@ -1,6 +1,10 @@
 Revision history for Elive
 
-0.22    28 May
+0.23    29th May
+        - Added 'is_participant' and 'list_recordings' methods to
+          Elive::Entity::Meeting
+
+0.22    28th May
         - Proof read and refined pod doco.
         - Sort adapters in 'elive_lint_config' script.
 

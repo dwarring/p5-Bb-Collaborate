@@ -8,6 +8,7 @@ use base qw{ Elive::Entity };
 
 use Elive::Util;
 use Elive::Entity::Preload;
+use Elive::Entity::Recording;
 
 =head1 NAME
 
@@ -337,6 +338,40 @@ sub check_preload {
     return @$results && Elive::Util::_thaw($results->[0], 'Bool');
 }
 
+=head2 is_participant
+
+    my $ok = $meeting_obj->is_participant($user);
+
+Checks that the user is a meeting participant.
+
+=cut
+
+sub is_participant {
+    my $self = shift;
+    my $user_id = shift;
+    my %opt = @_;
+
+    $user_id = $user_id->userId
+        if ref($user_id);
+
+    my $adapter = $self->check_adapter('isParticipant');
+
+    my $connection = $opt{connection} || $self->connection
+        or die "not connected";
+
+    my $som = $connection
+        ->call($adapter,
+               userId => Elive::Util::_freeze($user_id, 'Str'),
+               meetingId => Elive::Util::_freeze($self->meetingId, 'Int'),
+               );
+
+    $self->_check_for_errors($som);
+
+    my $results = $self->_unpack_as_list($som->result);
+
+    return @$results && Elive::Util::_thaw($results->[0], 'Bool');
+}
+
 sub _freeze {
     my $class = shift;
     my $data = shift;
@@ -515,12 +550,29 @@ sub list_preloads {
     my $self = shift;
 
     return Elive::Entity::Preload
-	->list_meeting_preloads($self->meetingId,@_);
+        ->list_meeting_preloads($self->meetingId,@_);
+}
+
+=head2 list_recordings
+
+    my $preloads = $meeting_obj->list_recordings;
+
+Lists all recordings associated with the meeting.
+
+=cut
+
+sub list_recordings {
+    my $self = shift;
+
+    return Elive::Entity::Recording
+	->list(filter => 'meetingId = '.$self->meetingId,
+	       @_);
 }
     
 =head1 SEE ALSO
 
 Elive::Entity::Preload
+Elive::Entity::Recording
 Elive::Entity::MeetingParameters 
 Elive::Entity::ServerParameters
 

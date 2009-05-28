@@ -1,6 +1,6 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 8;
+use Test::More tests => 9;
 use Test::Warn;
 
 package main;
@@ -32,7 +32,8 @@ my $user =  Elive::Entity::User->construct(
 
 my $url = $user->url;
 #
-# we need to trick the perl interpreter into not treating this as a reference
+# we need to trick perl into not counting this as a reference. Otherwise
+# we can't actually destroy it.
 #
 my $refaddr = sprintf("%s",$user->_refaddr) . '';
 my $is_live = defined(Elive::Entity->live_entity($url));
@@ -44,8 +45,12 @@ ok(defined($meta_data_tab->{$refaddr}), 'entity has metadata');
 # right, lets get rid of the object
 #
 $user = undef;
+#
+# just in case we've done somthing kookey
+#
+ok($refaddr, 'refaddr still valid');
 
 my $is_dead = !(Elive::Entity->live_entity($url));
 ok($is_dead, 'entity is dead');
-ok(!$meta_data_tab->{$refaddr}, 'entity metadata destroyed');
+ok(!defined($meta_data_tab->{$refaddr}), 'entity metadata destroyed');
 
