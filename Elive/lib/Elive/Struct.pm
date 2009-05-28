@@ -22,7 +22,7 @@ sub _refaddr {
 
 =head1 NAME
 
-Elive::Struct - Base class for entities and simple structures
+Elive::Struct - Base class for Elive::Entity and entity sub-structures
 
 =head1 DESCRIPTION
 
