@@ -275,6 +275,7 @@ sub _readback {
     my $class = shift;
     my $som = shift;
     my $updates = shift;
+    my $connection = shift;
 
     #
     # sometimes get back an empty response from setParticantList
@@ -291,7 +292,7 @@ sub _readback {
     my $meeting_id = $updates->{meetingId}
     || die "couldn't find meetingId";
 
-    my $self = $class->retrieve([$meeting_id])
+    my $self = $class->retrieve([$meeting_id], connection => $connection)
 	or die "unable to retrieve $class/$meeting_id";
 
     my $rows = [$self];

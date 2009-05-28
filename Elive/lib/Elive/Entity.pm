@@ -615,6 +615,7 @@ sub _readback {
     my $class = shift;
     my $som = shift;
     my $sent_data = shift;
+    my $_connection = shift;
     #
     # Inserts and updates normally return a copy of the entity
     # after an insert or update. Confirm that the output record contains
@@ -673,7 +674,7 @@ sub insert {
 				loginPassword => $login_password,
 	);
 
-    my @rows = $class->_readback($som, $db_data);
+    my @rows = $class->_readback($som, $db_data, $connection);
 
     my @objs = (map {$class->construct( $_, connection => $connection )}
 		@rows);
@@ -788,7 +789,7 @@ sub update {
 				       %{$opt{param} || {}},
 );
 
-    my @rows = $self->_readback($som, \%updates);
+    my @rows = $self->_readback($som, \%updates, $self->connection);
     #
     # refresh the object from the database.
     #
