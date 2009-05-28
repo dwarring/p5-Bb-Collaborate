@@ -47,11 +47,13 @@ t/09-entity-connections.t
 t/10-entity-warnings.t
 t/11-entity-errors.t
 t/12-entity-lifecycle.t
+t/19-entity-compat.t
 t/20-soap-connect.t
-t/21-soap-meeting.t
-t/22-soap-meeting-recurring.t
-t/23-soap-preload.t
-t/24-soap-recording.t
+t/21-soap-entities.t
+t/22-soap-meeting.t
+t/23-soap-meeting-recurring.t
+t/24-soap-preload.t
+t/25-soap-recording.t
 t/29-soap-multi-connect.t
 t/90-pod.t
 t/91-pod-coverage.t
