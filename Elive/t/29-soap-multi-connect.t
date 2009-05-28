@@ -1,6 +1,6 @@
 #!perl
 use warnings; use strict;
-use Test::More tests => 19;
+use Test::More tests => 24;
 use Test::Exception;
 
 package main;
@@ -19,7 +19,7 @@ $data[1] = join('',map {pack('C', $_)} (0..255));
 
 SKIP: {
 
-    my $Skip = 16;
+    my $Skip = 21;
 
     my %result = Elive->_get_test_auth();
     my $auth = $result{auth};
@@ -75,6 +75,22 @@ SKIP: {
 
     ok(my $server_details = $connection->server_details, 'can get connection login');
     isa_ok($server_details, 'Elive::Entity::ServerDetails','server_details');
+
+
+    ok(!$user->is_changed, 'login not yet changed');
+
+    my $userName_old = $user->loginName;
+	
+    my $userName_new = $userName_old.'x';
+    $user->loginName($userName_new);
+
+    ok($user->loginName eq $userName_new, 'login name changed enacted');
+    ok($user->is_changed, 'user object showing as changed');
+
+    ok(!$user_2->is_changed, 'user on second connection - not affected');
+
+    $user->revert;
+    ok(!$user->is_changed, 'user revert');
 
     lives_ok(sub {$connection->disconnect},
 	     'disconnect 1 - lives');

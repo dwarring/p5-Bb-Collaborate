@@ -15,7 +15,6 @@ BEGIN {
 
 ##use Carp; $SIG{__WARN__} = \&Carp::cluck;
 ##use Carp; $SIG{__DIE__} = \&Carp::confess;
-##Elive->debug(1);
 
 my $class = 'Elive::Entity::Meeting' ;
 

@@ -1,6 +1,6 @@
 #!perl
 use warnings; use strict;
-use Test::More tests => 6;
+use Test::More tests => 8;
 use Test::Exception;
 
 package main;
@@ -18,7 +18,7 @@ SKIP: {
     my $auth = $result{auth};
 
     skip ($result{reason} || 'unable to find test connection',
-	4)
+	6)
 	unless $auth;
 
     Elive->connect(@$auth);
@@ -30,20 +30,31 @@ SKIP: {
 
     my %meeting_int_data = (
 	facilitatorId => Elive->login->userId,
-	start => time() * 1000,
-	end => (time()+900) * 1000,
+	start => time() .'000',
+	end => (time()+900) . '000',
 	recurrenceCount => 3,
 	recurrenceDays => 7,
 	
     );
 
+    my $seconds_in_a_week = 7 * 24 * 60 * 60;
+
     my @meetings = ($class->insert({%meeting_int_data, %meeting_str_data}));
 
-    ok(@meetings == 3, 'got three meeting occurences');
+    ok(@meetings == 3, 'got three meeting occurences')
+	or exit;
 
     foreach (@meetings) {
 	isa_ok($_, $class, "meeting occurence");
     }
+
+    my @start_times = map {substr($_->end, 0, -3)} @meetings;
+
+    ok(abs($start_times[1] - $start_times[0] - $seconds_in_a_week) < 900,
+       "meetings 1 & 2 separated by one week (approx)");
+
+    ok(abs($start_times[2] - $start_times[1] - $seconds_in_a_week) < 900,
+       "meetings 2 & 3 separated by one week (approx)");
 
     foreach (@meetings) {
 	$_->delete;
