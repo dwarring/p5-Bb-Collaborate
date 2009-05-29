@@ -151,7 +151,8 @@ sub _thaw {
 =head2 buildJNLP 
 
     my $jnlp = $recording_entity->buildJNLP(version => version,
-					    userId => $user->userId);
+					    userId => $user->userId,
+					    userIP => $ENV{REMOTE_ADDR});
 
 Builds a JNLP for the recording.
 
@@ -159,8 +160,9 @@ JNLP is the 'Java Network Launch Protocol', also commonly known as Java
 WebStart. You can, for example, render this as a web page with mime type
 C<application/x-java-jnlp-file>.
 
-Under Windows, and other desktops, you can save this to a file with extension
-C<JNLP>.
+The C<userIP> is required by the server and represents the IP address of
+the client. The recording viewer can be launched from a browser that resolvesd
+to the same IP address.
 
 See also L<http://en.wikipedia.org/wiki/JNLP>.
 
@@ -183,14 +185,14 @@ sub buildJNLP {
 
     my %soap_params = (recordingId => $recording_id);
 
-    for (delete $opt{userId} || $connection->login->userId) {
+    for ($opt{userIP}) {
+	$soap_params{'userIP'} = Elive::Util::_freeze($_, 'Str')
+	    if $_;
+    }
+
+    for ($opt{userId} || $connection->login->userId) {
 
 	$soap_params{'userId'} = Elive::Util::_freeze($_, 'Str');
-	#
-	# My version of Elluminate 9.1 complains unless I supply
-	# (sic) 'userIp' !!?
-	#
-	$soap_params{'userIp'} = Elive::Util::_freeze($_, 'Str');
     }
 
     my $adapter = $self->check_adapter('buildRecordingJNLP');

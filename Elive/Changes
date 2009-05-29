@@ -1,6 +1,8 @@
 Revision history for Elive
 
 0.23    29th May
+        - Corrected handling of the 'userIP' argument to the
+          'buildJNLP' method of Elive::Entity::Recording.
         - Added 'is_participant' and 'list_recordings' methods to
           Elive::Entity::Meeting
 
