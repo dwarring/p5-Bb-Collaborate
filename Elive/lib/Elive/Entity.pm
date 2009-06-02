@@ -15,8 +15,6 @@ use Elive::Util;
 use Elive::Array;
 __PACKAGE__->has_metadata('_deleted');
 
-BEGIN {use Carp; local $SIG{__DIE__} = \&Carp::cluck}
-
 =head1 NAME
 
     Elive::Entity - Base class for Elive Entities
@@ -26,30 +24,6 @@ BEGIN {use Carp; local $SIG{__DIE__} = \&Carp::cluck}
 This is an abstract class that is inherited by all Elive Entity instances.
 
 It provides a simple mapping from the objects to database entities.
-
-=head2 Stringification
-
-Database entities evaluate to their primary key, when used in a string
-context.
-
-    if ($user_obj->stringify eq "11223344") {
-        ....
-    }
-
-Arrays of sub-items evaluated, in a string context, to a semi-colon separated
-string of the individual values sorted.
-
-    my $group = Elive::Entity::Group->retrieve([98765]);
-    if ($group->members->stringify eq "11223344;2222222") {
-         ....
-    }
-
-In particular meeting participants stringify to userId=role, eg
-
-    my $participant_list = Elive::Entity::ParticipantList->retrieve([98765]);
-    if ($participant_list->participants->stringify eq "11223344=3;2222222=2") {
-         ....
-    }
 
 =cut
 

@@ -103,7 +103,7 @@ is_deeply(\%user_contents,
 }
 
 #
-# Do entire process: unpacking, thawing, consrtuctiing
+# Do entire process: unpacking, thawing, consrtucting
 #
 my $participant_data = {
     'ParticipantListAdapter' => {

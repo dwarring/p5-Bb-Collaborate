@@ -32,7 +32,7 @@ Elive::Entity::ServerParameters - Meeting server parameters entity class
     my $meeting_params
         = Elive::Entity::ServerParameters->retrieve([$meeting->meetingId]);
 
-    $meeting_params->boundary(15); # 15 min boundary on start time
+    $meeting_params->boundaryMinute(15); # 15 min boundary
     $meeting_params->update;
     
     #

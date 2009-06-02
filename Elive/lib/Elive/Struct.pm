@@ -37,7 +37,27 @@ This is also used as a base class for Elive::Entity.
 
 =head2 stringify
 
-Return a human readable string representation of an object.
+Return a human readable string representation of an object. For database
+entities, this is the primary key:
+
+    if ($user_obj->stringify eq "11223344") {
+        ....
+    }
+
+Arrays of sub-items evaluated, in a string context, to a semi-colon separated
+string of the individual values sorted.
+
+    my $group = Elive::Entity::Group->retrieve([98765]);
+    if ($group->members->stringify eq "11223344;2222222") {
+         ....
+    }
+
+In particular meeting participants stringify to userId=role, eg
+
+    my $participant_list = Elive::Entity::ParticipantList->retrieve([98765]);
+    if ($participant_list->participants->stringify eq "11223344=3;2222222=2") {
+         ....
+    }
 
 =cut
 
@@ -162,8 +182,7 @@ sub _ordered_attribute_names {
     my $atts = $class->meta->get_attribute_map;
 
     foreach (sort keys %$atts) {
-	$order{$_} = ++$rank
-	    unless exists $order{$_};
+	$order{$_} ||= ++$rank;
     }
 
     return sort {$order{$a} <=> $order{$b}} (keys %order);
@@ -177,7 +196,6 @@ sub _ordered_attributes {
 
     return map {$atts->{$_}} ($class->_ordered_attribute_names);
 }
-
 
 sub _cmp_col {
 
