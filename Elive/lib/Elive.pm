@@ -408,28 +408,6 @@ elive_query is an example simple sql-like script. It is a basic program
 for listing and retrieving entities. It serves as a simple demonstration
 script, and can be used to confirm basic operation of Elive.
 
-elive_query is simply passing where clauses, but through to the Elluminate
-server as filters on SOAP calls.
-
-For example, for the statement
-
-    elive> select * from users where name like smith*
-
-The equivalent Elive method call is:
-
-    my $users = Elive::Entity::User->list(filter => 'name like smith*');
-
-The exception is where clauses of the form C<pkey = val>, where C<pkey> is
-the primary key for the entity table. e.g:
-
-    elive> select * from meetingParticpants where meetingId = 1234567
-
-The equivalent Elive method call for the above is
-
-    my $participants =  Elive::Entity::MeetingParticpant->retrieve([1234567]);
-
-Also be careful to avoid selecting large amounts of data, e.g. all users.
-
 =head2 elive_raise_meeting
 
 This is a demonstration script to create a meeting, set options, assign

@@ -45,7 +45,7 @@ has 'password' => (is => 'rw', isa => 'Str',
 has 'deleted' => (is => 'rw', isa => 'Bool');
 
 has 'facilitatorId' => (is => 'rw', isa => 'Str',
-			documentation => 'userId of facilator');
+			documentation => 'userId of facilitator');
 
 has 'privateMeeting' => (is => 'rw', isa => 'Bool',
 			 documentation => "don't display meeting in public schedule");

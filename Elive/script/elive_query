@@ -33,6 +33,58 @@ elive_query
 
 Simple read-only query shell for Elive. 
 
+=head2 Entity Data Listings
+
+This example script lets you list and filter entity data.
+For example:
+
+    /elive_query -user admin http://myvclass.com/mysite
+    Password: connecting to http://myvclass.com/mysite...ok
+    Elive query 0.XX (Elluminate Live 9.1.0)  - type 'help' for help
+
+    elive> select * from user where loginName like *m* 
+    userId|deleted|email|firstName|lastName|loginName|loginPassword|role
+    mr_miyagi|0|mr_miyagi@hotmail.com|Pups|Miyagi|mr_miyagi||3
+    mr_squiggle|0|mr_squiggle@nonsense.org|S|Squiggle|mr_squiggle||3
+    sebastion_throgmorton|0|sebastion.throgmorton@gmail.com|Sebastion|Throgmorton|sebastion_throgmorton||3
+    elive>
+
+elive_query is simply passing the c<where> clause through as a filter option
+to the entity's C<list> method.
+
+For example, for the above statement, the method call is:
+
+    my $users = Elive::Entity::User->list(filter => 'name like *m*');
+
+The exception is where clauses of the form C<pkey = val>, where C<pkey> is
+the primary key for the entity table. e.g:
+
+    elive> select * from meetingParticpants where meetingId = 1234567
+
+The equivalent Elive method call for the above is:
+
+    my $participants =  Elive::Entity::MeetingParticpant->retrieve([1234567]);
+
+=head2 Entity Structure Dumping
+
+You can also use this script to dump the Elive entity structures:
+
+    elive> show
+    usage: show group|meeting|meetingParameters|participantList|preload|recording|serverDetails|serverParameters|user
+
+    elive> show meeting
+    meeting: Elive::Entity::Meeting:
+    meetingId         : pkey Int        
+    deleted           : Bool            
+    end               : HiResDate    -- meeting end time
+    facilitatorId     : Str          -- userId of facilitator
+    name              : Str          -- meeting name
+    password          : Str          -- meeting password
+    privateMeeting    : Bool         -- don't display meeting in public schedule
+    start             : HiResDate    -- meeting start time
+
+    elive> 
+
 =head1 SEE ALSO
 
 perldoc Elive
@@ -253,14 +305,14 @@ sub _show {
 	my $primary_str = $is_primary? 'pkey ': '';
 	my $array_str = $is_array? ' []': '';
 
-	print "${sp}  $property: ${primary_str}${type}${array_str}";
+	printf("%-21s : %-16s", "$sp$property", "${primary_str}${type}${array_str}");
 	for ($property_doco->{$property}) {
 	    print "\t-- $_" if $_;
 	}
 	print "\n";
 
 	if ($is_entity) {
-	    _show($property, $nesting + 1, $type);
+	    _show($entities, $property, $nesting + 1, $type);
 	}
 
     }

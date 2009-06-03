@@ -1,5 +1,9 @@
 Revision history for Elive
 
+0.24    3rd June
+        - Corrected 'elive_query' output for showing structure of
+          entities with nested structure, E.g. 'show ParticipantList'.
+
 0.23    29th May
         - Corrected handling of the 'userIP' argument to the
           'buildJNLP' method of Elive::Entity::Recording.
@@ -11,7 +15,7 @@ Revision history for Elive
         - Sort adapters in 'elive_lint_config' script.
 
 0.21    25th May
-        - Allow non-numeric Recording ids.
+        - Allow non-numeric Recording primary keys.
 
 0.20    24th May
         - Added HiResDate type for Elluminate dates (meeting start and
@@ -27,7 +31,8 @@ Revision history for Elive
 	    Elive::Entity::Group->insert('my group',[qw(david sue)]);
 
 0.18    15th May
-        - Fixed connection problems under ActiveState/Win32.
+        - Fixed problems with connecting to server from
+          ActiveState/Win32 platforms.
 
 0.17    14th May
         - Added 'buildJNLP' method to Elive::Entity::Recording
