@@ -38,9 +38,9 @@ Simple read-only query shell for Elive.
 This example script lets you list and filter entity data.
 For example:
 
-    /elive_query -user admin http://myvclass.com/mysite
+    % elive_query -user admin http://myvclass.com/mysite
     Password: connecting to http://myvclass.com/mysite...ok
-    Elive query 0.WX (Elluminate Live 9.Y.Z)  - type 'help' for help
+    Elive query 0.WX (Elluminate Live! 9.Y.Z)  - type 'help' for help
 
     elive> select * from user where loginName like *m* 
     userId|deleted|email|firstName|lastName|loginName|loginPassword|role
@@ -105,7 +105,7 @@ sub main {
 
     foreach (keys %$entities) {
 	#
-	# Just want database entities. Omit simple structs
+	# Just want database mapped entities. Omit nested structures
 	#
 	delete $entities->{$_}
 	unless ($entities->{$_}->isa('Elive::Entity'));
@@ -129,7 +129,7 @@ sub main {
 	my $elive_version =  Elive->server_details->version
 	    or warn "unable to get elluminate version";
 
-	$server_version  = "(Elluminate Live $elive_version) "
+	$server_version  = "(Elluminate Live! $elive_version) "
 	    if $elive_version;
     }
 
@@ -150,7 +150,7 @@ sub main {
 
 		if (lc($keyw) eq substr('help',0, length($keyw))) {
 		    print "Elive query $elive_version help:\n\n";
-		    print "connect url [user] - connect to an elluminate server\n";
+		    print "connect url [user] - connect to an Elluminate Live! server\n";
 		    print "show [entity_name] - list/show entities\n";
 		    print "debug = [0|1|2|3] - set debugging level\n";
 		    print "select *|prop[,prop] from entity [where exp]\n";
@@ -280,7 +280,7 @@ sub _show {
     my ($entities, $entity_name, $nesting, $entity_class) = @_;
 
     $nesting ||= 0;
-    my $sp = ' ' x ($nesting * 4);
+    my $sp = ' ' x ($nesting * 2);
 
     $entity_class ||= $entities->{$entity_name}
         or do {
@@ -305,7 +305,7 @@ sub _show {
 	my $primary_str = $is_primary? 'pkey ': '';
 	my $array_str = $is_array? ' []': '';
 
-	printf("%-21s : %-16s", "$sp$property", "${primary_str}${type}${array_str}");
+	printf("%-20s : %-16s", "$sp  $property", "${primary_str}${type}${array_str}");
 	for ($property_doco->{$property}) {
 	    print "\t-- $_" if $_;
 	}

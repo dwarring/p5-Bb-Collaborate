@@ -12,7 +12,7 @@ Elive::Connection -  Manage Elluminate SOAP/XML connections.
 
 =head1 DESCRIPTION
 
-This module handles logical connections to Elluminate Live sites.
+This module handles logical connections to Elluminate I<Live!> sites.
 
 Most of the time, you won't need to use this module directly, rather
 you'll create on default connection via Elive:

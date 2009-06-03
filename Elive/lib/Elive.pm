@@ -3,15 +3,15 @@ use warnings; use strict;
 
 =head1 NAME
 
-Elive -  Elluminate Live (c) client library
+Elive -  Elluminate I<Live!> (c) client library
 
 =head1 VERSION
 
-Version 0.24
+Version 0.25
 
 =cut
 
-our $VERSION = '0.24';
+our $VERSION = '0.25';
 
 use base qw{Class::Data::Inheritable};
 
@@ -41,25 +41,25 @@ use Elive::Connection;
 =head1 DESCRIPTION
 
 Elive is a set of Perl modules for the integration and automation of
-Elluminate Live sites. In particular, it aids in the management of users
+Elluminate I<Live!> sites. In particular, it aids in the management of users
 and meetings.
 
 =head1 BACKGROUND
 
-Elluminate Live (c) is is a web tool for virtual online classrooms.
+Elluminate I<Live!> (c) is is a web tool for virtual online classrooms.
 
 It is suitable for online collaboration, demonstrations, meetings, web
 conferences, seminars and IT deployment, training and support.
 
 Users, Meetings and other resources are stored in a management database.
-These can managed via the Elluminate Live SOAP API.
+These can managed via the Elluminate I<Live!> SOAP API.
 
 Most actions that can be performed via the web interface can also be
 achieved via the SOAP API. This is known as the I<Command Toolkit> and
-is detailed in chapter 4 of the I<Elluminate Live! Software Developers
+is detailed in chapter 4 of the Elluminate I<Live!> Software Developers
 Kit>.
 
-This module provides Perl object to entity bindings to Elluminate Live
+This module provides Perl object to entity bindings to Elluminate I<Live!>
 databases via the command toolkit..
 
 =cut
@@ -83,7 +83,7 @@ BEGIN {
 Connects to an Elluminate server instance. Dies if the connection could
 not be established. For example the connection or user login failed.
 
-The login user must be an Elluminate Live system administrator account.
+The login user must be an Elluminate I<Live!> system administrator account.
 
 See also Elive::Connection.
 
@@ -275,8 +275,8 @@ sub check_adapter {
 
 =head2 known_adapters
 
-    Returns an array of all required Elluminate Live Elive. This
-    list is used by the script elive_lint_config. 
+Returns an array of all Elluminate I<Live!> adapters required by Elive.
+This list is cross-checked by the script elive_lint_config. 
 
 =cut
 
@@ -347,7 +347,7 @@ This may indicate that the particular command adaptor is is not available for
 your site instance.
 
 Check that your Elluminate server software is up-to-date (Elive has been tested
-against Elluminate Live 9.0 and 9.1 only).
+against Elluminate I<Live!> 9.0 and 9.1 only).
 
 If the problem persists, the command entry may be missing from your site
 configuration file. Please follow the instructions in the README file
@@ -465,13 +465,13 @@ Scripts:
 
 =back
 
-Elluminate Live Documentation. This comes with your distribution
+Elluminate I<Live!> Documentation. This comes with your distribution
 
 =over 4
 
 =item ELM2.5_SDK.pdf
 
-General Description of SDK's available for Elluminate Live. In particular
+General Description of SDK's available for Elluminate I<Live!>. In particular
 see section 4 - the SOAP/XML command toolkit.
 
 =item DatabaseSchema.pdf
@@ -506,13 +506,13 @@ Elluminate SOAP/XML interface doesn't provide for locking or transactional
 control. The Elluminate server installs with the Mckoi pure Java database
 which supports JDBC access.
 
-The Elluminate Live advanced configuration guide mentions that it can be
+The Elluminate I<Live!> advanced configuration guide mentions that it can be
 configured to use other databases that support a JDBC bridge (most databases
 in widespread use do). However, it specifically mentions SQL Server or Oracle. 
 
 =item LDAP Authentication
 
-Elluminate Live can also be configured to use an LDAP repository for
+Elluminate I<Live!> can also be configured to use an LDAP repository for
 user authentication.  Users can still be retrieved or listed.
 
 Note also, that if you don't define a LDAP mapping for the userId, the LDAP

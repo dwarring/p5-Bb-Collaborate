@@ -215,7 +215,7 @@ sub delete {
 
 =head1 RESTRICTIONS
 
-Elluminate Live can be configured to use LDAP for user management and
+Elluminate I<Live!> can be configured to use LDAP for user management and
 authentication.
 
 If LDAP is in use, the fetch and retrieve methods will continue to operate

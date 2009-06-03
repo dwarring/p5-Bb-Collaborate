@@ -13,15 +13,29 @@ __PACKAGE__->collection_name('Recordings');
 has 'recordingId' => (is => 'rw', isa => 'Str', required => 1);
 __PACKAGE__->primary_key('recordingId');
 
-has 'creationDate' => (is => 'rw', isa => 'HiResDate', required => 1);
-has 'data' => (is => 'rw', isa => 'Str');
-has 'facilitator' => (is => 'rw', isa => 'Str');
-has 'keywords' => (is => 'rw', isa => 'Str');
-has 'meetingId' => (is => 'rw', isa => 'Int', required => 1);
-has 'open' => (is => 'rw', isa => 'Bool');
-has 'roomName' => (is => 'rw', isa => 'Str');
-has 'size' => (is => 'rw', isa => 'Int');
-has 'version' => (is => 'rw', isa => 'Str');
+has 'creationDate' => (is => 'rw', isa => 'HiResDate', required => 1,
+		       documentation => 'creation date and time of the recording');
+
+has 'data' => (is => 'rw', isa => 'Str',
+	       documentation => 'recording byte-stream');
+
+has 'facilitator' => (is => 'rw', isa => 'Str',
+		      documentation => 'the creator of the meeting');
+
+has 'keywords' => (is => 'rw', isa => 'Str',
+		   documentation => 'keywords for this recording');
+
+has 'meetingId' => (is => 'rw', isa => 'Int', required => 1,
+		    documentation => 'id of the meetting that created this recording');
+
+has 'open' => (is => 'rw', isa => 'Bool',
+	       documentation => 'whether to display this recording on the public page');
+has 'roomName' => (is => 'rw', isa => 'Str',
+		   documentation => 'name of the meeting that created this recording');
+has 'size' => (is => 'rw', isa => 'Int',
+	       documentation => 'download size (bytes');
+has 'version' => (is => 'rw', isa => 'Str',
+		  documentation => 'version of Elluminate Live! that created this recording');
 
 =head1 NAME
 

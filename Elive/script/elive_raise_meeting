@@ -58,7 +58,7 @@ elive_raise_meeting
 
 =head1 DESCRIPTION
 
-Creates a meeting on an Elluminate Live (c) server
+Creates a meeting on an Elluminate I<Live!> server
 
 =head1 SEE ALSO
 
@@ -128,7 +128,7 @@ sub main {
 	$SIG{__DIE__} = \&Carp::confess;
     }
 
-    $url ||= Elive::Util::prompt('Elluminate Server: '),
+    $url ||= Elive::Util::prompt('Elluminate Live! server: '),
     $username ||= Elive::Util::prompt('Username: '),
     $password ||= Elive::Util::prompt('Password: ', password => 1),
 

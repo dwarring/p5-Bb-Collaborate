@@ -1,10 +1,10 @@
 Elive is a set of Perl modules for management and integration of Elluminate
-Live virtual classroom servers.
+Live! virtual classroom servers.
 
 You can, for example, use it to query or add users, create sessions, assign
 users as class participants and change server settings.
 
-This package has been tested against Elluminate Live versions 9.0 thru 9.1.
+This package has been tested against Elluminate Live! versions 9.0 thru 9.1.
 
 You will need to be able to login in to your SOAP service using an Elluminate
 system administrator level account.
