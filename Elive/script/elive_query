@@ -40,16 +40,16 @@ For example:
 
     /elive_query -user admin http://myvclass.com/mysite
     Password: connecting to http://myvclass.com/mysite...ok
-    Elive query 0.XX (Elluminate Live 9.1.0)  - type 'help' for help
+    Elive query 0.WX (Elluminate Live 9.Y.Z)  - type 'help' for help
 
     elive> select * from user where loginName like *m* 
     userId|deleted|email|firstName|lastName|loginName|loginPassword|role
     mr_miyagi|0|mr_miyagi@hotmail.com|Pups|Miyagi|mr_miyagi||3
     mr_squiggle|0|mr_squiggle@nonsense.org|S|Squiggle|mr_squiggle||3
-    sebastion_throgmorton|0|sebastion.throgmorton@gmail.com|Sebastion|Throgmorton|sebastion_throgmorton||3
+    sebastion_throgmorton|0|sthrogmorton@gmail.com|Sebastion|Throgmorton|sthrogmorton||3
     elive>
 
-elive_query is simply passing the c<where> clause through as a filter option
+elive_query is simply passing the C<where> clause through as a filter option
 to the entity's C<list> method.
 
 For example, for the above statement, the method call is:
