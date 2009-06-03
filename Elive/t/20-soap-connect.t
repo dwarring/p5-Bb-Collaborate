@@ -1,7 +1,8 @@
 #!perl
 use warnings; use strict;
-use Test::More tests => 10;
+use Test::More tests => 11;
 use Test::Exception;
+use version;
 
 package main;
 
@@ -22,7 +23,7 @@ SKIP: {
     my $auth = $result{auth};
 
     skip ($result{reason} || 'unable to find test connection',
-	8)
+	9)
 	unless $auth && @$auth;
 
     diag ("connecting: user=$auth->[1], url=$auth->[0]");
@@ -45,7 +46,20 @@ SKIP: {
     ok ($server_details = Elive->server_details, 'got server details');
     isa_ok($server_details, 'Elive::Entity::ServerDetails','server_details');
     ok($server_version = $server_details->version, 'got server version');
-    diag ("Elluminate Live version: $server_version");
+    diag ('Elluminate Live! version: '.qv($server_version));
+
+    my $version_num = version->new($server_version)->numify;
+    ok($version_num >= 9, "Elluminate Live! server is 9.0.0 or higher");
+
+    my $highest_tested_version = 9.001;
+
+    if ($version_num > $highest_tested_version) {
+	diag "************************";
+	diag "Note: Elluminate Live! server version is ".qv($server_version);
+	diag "      This Elive release has been tested against v9.0.0 - v9.1.0";
+	diag "      You might want to check for more Elive upgrades.";
+	diag "************************";
+    }
 }
 
 Elive->disconnect;
