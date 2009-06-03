@@ -1,5 +1,9 @@
 Revision history for Elive
 
+0.25    4th June
+        - added server version checks and warnings to 20-soap-connection.t
+        - pod doco changes.
+
 0.24    3rd June
         - Corrected 'elive_query' output for showing structure of
           entities with nested structure, E.g. 'show ParticipantList'.
