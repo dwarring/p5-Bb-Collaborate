@@ -3,7 +3,7 @@ use warnings; use strict;
 
 =head1 NAME
 
-Elive -  Elluminate I<Live!> (c) client library
+Elive -  Elluminate Live! (c) client library
 
 =head1 VERSION
 
