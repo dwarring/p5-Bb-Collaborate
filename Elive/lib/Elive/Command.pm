@@ -3,7 +3,7 @@ use warnings; use strict;
 
 =head1 NAME
 
-Elive -  Elluminate I<Live!> -  Utilities and Commands
+Elive -  Elluminate Live! -  Utilities and Commands
 
 =head1 DESCRIPTION
 
