@@ -80,6 +80,27 @@ to create a meeting, then retrieve on meeting id
 
 sub list {shift->_not_available}
 
+sub _thaw {
+    my $class = shift;
+    my $db_data = shift;
+
+    my $data = $class->SUPER::_thaw($db_data, @_);
+
+    for (grep {defined} $data->{recordingStatus}) {
+	#
+	# Filter database crud
+	#
+	$_ = uc($_);
+
+	unless (m{^(ON|OFF|REMOTE)$} || $_ eq '') {
+	    warn "unknown recording status: $_";
+	    delete  $data->{recordingStatus};
+	}
+    }
+
+    return $data;
+}
+
 =head1 See Also
 
 Elive::Entity::Meeting

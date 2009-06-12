@@ -26,7 +26,7 @@ has 'keywords' => (is => 'rw', isa => 'Str',
 		   documentation => 'keywords for this recording');
 
 has 'meetingId' => (is => 'rw', isa => 'Int', required => 1,
-		    documentation => 'id of the meetting that created this recording');
+		    documentation => 'id of the meeting that created this recording');
 
 has 'open' => (is => 'rw', isa => 'Bool',
 	       documentation => 'whether to display this recording on the public page');

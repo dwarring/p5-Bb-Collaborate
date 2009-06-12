@@ -41,7 +41,7 @@ has 'type' => (is => 'rw', isa => 'enumPreloadTypes', required => 1,
     );
 
 has 'name' => (is => 'rw', isa => 'Str', required => 1,
-	       documentation => 'preload name',
+	       documentation => 'preload name, e.g. "intro.wbd"',
     );
 
 has 'mimeType' => (is => 'rw', isa => 'Str', required => 1,
@@ -240,6 +240,18 @@ sub _thaw {
 
     if (my $preload_id = delete $db_thawed->{Key}) {
 	$db_thawed->{preloadId} = $preload_id;
+    }
+
+    for (grep {defined} $db_thawed->{type}) {
+	#
+	# Filter database crud
+	#
+	$_ = lc($_);
+
+	unless (m{^media|whiteboard$}) {
+	    warn "ignoring unknown media type: $_";
+	    delete $db_thawed->{type};
+	}
     }
 
     return $db_thawed;

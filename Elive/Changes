@@ -1,8 +1,12 @@
 Revision history for Elive
 
 0.26    13th June
-        - Added 'meeting_parameters' and 'server_parameters' utility
-          methods to Elive::Entity::Meeting.
+        - Increased tolerance with dealing with out of bounds data on
+          soap retrieval. In particular made 'recordingStatus' and media
+          'type' properties case insensitive and produce warnings rather
+          than carping on retrieval.
+        - Added 'parameters' and 'server_parameters' utility methods
+          to Elive::Entity::Meeting.
 
 0.25    4th June
         - added server version checks and warnings to 20-soap-connection.t

@@ -355,6 +355,7 @@ sub _readback_check {
 sub _thaw {
     my $class = shift;
     my $db_data = shift;
+
     my $data = $class->SUPER::_thaw($db_data, @_);
 
     if ($data->{Adapter}) {
@@ -417,6 +418,20 @@ sub remove_preload {
     $self->_check_for_errors($som);
 }
     
+=head2 list_preloads
+
+    my $preloads = $meeting_obj->list_preloads;
+
+Lists all preloads associated with the meeting.
+
+=cut
+
+sub list_preloads {
+    my $self = shift;
+
+    return Elive::Entity::Preload
+        ->list_meeting_preloads($self->meetingId,@_);
+}
 
 =head2 buildJNLP 
 
@@ -540,17 +555,17 @@ sub web_url {
 		   $url, $meeting_id);
 }
 
-=head2 meeting_parameters
+=head2 parameters
 
     my $meeting = Elive::Entity::Meeting->retrieve([$meeting_id]);
-    my $meeting_params = $meeting->meeting_parameters;
+    my $meeting_params = $meeting->parameters;
 
 Utility method to return the meeting parameters associated with a meeting.
 See also L<Elive::Entity::MeetingParameters>.
 
 =cut
 
-sub meeting_parameters {
+sub parameters {
     my $self = shift;
 
     return Elive::Entity::MeetingParameters->retrieve([$self->meetingId],
@@ -572,21 +587,6 @@ sub server_parameters {
 
     return Elive::Entity::ServerParameters->retrieve([$self->meetingId],
 						     @_);
-}
-
-=head2 list_preloads
-
-    my $preloads = $meeting_obj->list_preloads;
-
-Lists all preloads associated with the meeting.
-
-=cut
-
-sub list_preloads {
-    my $self = shift;
-
-    return Elive::Entity::Preload
-        ->list_meeting_preloads($self->meetingId,@_);
 }
 
 =head2 list_recordings
