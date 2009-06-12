@@ -1,6 +1,6 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 10;
+use Test::More tests => 17;
 use Test::Warn;
 
 BEGIN {
@@ -8,6 +8,8 @@ BEGIN {
     use_ok( 'Elive::Connection' );
     use_ok( 'Elive::Entity' );
     use_ok( 'Elive::Entity::User' );
+    use_ok( 'Elive::Entity::Meeting' );
+    use_ok( 'Elive::Entity::Preload' );
 }
 
 Elive->connection(Elive::Connection->connect('http://test.org'));
@@ -41,6 +43,46 @@ sub {$user_2 = set_unknown_property()},
     );
 
 ok(!(exists $user_2->{junk2}),"set discards unknown property");
+
+my $thawed_data;
+
+my $preload_data = {
+    PreloadAdapter => {
+	Id => 1122334455667,
+	Name => 'test.bin',
+	Type => 'MEdia',
+	Mimetype => 'application/octet-stream',
+	OwnerId => 123456789000,
+	Size => 42,
+    },
+};
+
+$thawed_data = Elive::Entity::Preload->_thaw($preload_data);
+ok($thawed_data->{type} eq 'media', "valid media type conversion");
+
+warnings_like(
+    sub {$thawed_data = thaw_with_bad_preload_type($preload_data)},
+    qr(ignoring unknown media type),
+    "thawing unknown media type gives warning"
+    );
+
+ok(!exists $thawed_data->{type}, "unknown media type filtered from data");
+
+my $meeting_parameter_data = {
+    MeetingParametersAdapter => {
+	Id => 11111222233334444,
+	RecordingStatus => 'rEMoTE',
+    },
+};
+
+$thawed_data = Elive::Entity::MeetingParameters->_thaw($meeting_parameter_data);
+ok($thawed_data->{recordingStatus} eq 'REMOTE', "valid recording status conversion");
+
+warnings_like(
+    sub {$thawed_data = thaw_with_bad_recording_status($meeting_parameter_data)},
+    qr(ignoring unknown recording status),
+    "thawing unknown media type gives warning"
+    );
 
 exit(0);
 
@@ -93,4 +135,18 @@ sub set_unknown_property {
     return $user;
 }
 
+sub thaw_with_bad_preload_type {
+    my $preload_data = shift;
 
+    local $preload_data->{PreloadAdapter}{Type} = 'guff';
+
+    return Elive::Entity::Preload->_thaw($preload_data);
+}
+
+sub thaw_with_bad_recording_status {
+    my $preload_data = shift;
+
+    local $preload_data->{MeetingParametersAdapter}{RecordingStatus} = 'guff';
+
+    return Elive::Entity::MeetingParameters->_thaw($preload_data);
+}

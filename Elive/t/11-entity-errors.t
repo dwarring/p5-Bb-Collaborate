@@ -1,6 +1,6 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 23;
+use Test::More tests => 25;
 use Test::Exception;
 
 package main;
@@ -144,7 +144,31 @@ dies_ok(
 		 type => 'crud',
 	      })},
 	      'meeting parameters - invalid type - dies',
-    );       
+    );
+
+lives_ok(
+    sub{Elive::Entity::MeetingParameters->_thaw
+	    ({
+		MeetingParametersAdapter => {
+		    Id => 11111222233334444,
+		    RecordingStatus => 'REMOTE',
+		}})
+    },
+    'thawing valid meeting struct parameters - lives',
+    );
+
+
+dies_ok(
+    sub{Elive::Entity::MeetingParameters->_thaw
+	    ({
+		CrudAdapter => {
+		    Id => 11111222233334444,
+		    RecordingStatus => 'REMOTE',
+		}})
+    },
+    'thawing invalid meeting struct parameters - die',
+    );
+
 
 $user_data->revert;
 Elive->disconnect;

@@ -93,7 +93,7 @@ sub _thaw {
 	$_ = uc($_);
 
 	unless (m{^(ON|OFF|REMOTE)$} || $_ eq '') {
-	    warn "unknown recording status: $_";
+	    warn "ignoring unknown recording status: $_";
 	    delete  $data->{recordingStatus};
 	}
     }
