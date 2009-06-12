@@ -801,7 +801,7 @@ sub list {
 
     my @params;
 
-    if (my $filter = $opt{filter} ) {
+    if (my $filter = delete $opt{filter} ) {
 	push( @params, filter => $filter );
     }
 
@@ -811,7 +811,7 @@ sub list {
 
     my $collection_name = $class->collection_name || $class->entity_name;
 
-    die "class $class has neither a collection_name or entity_name"
+    die "misconfigured class $class - has neither a collection_name or entity_name"
 	unless $collection_name;
 
     my $adapter = $opt{adapter} || 'list'.$collection_name;

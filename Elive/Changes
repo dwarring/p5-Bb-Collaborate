@@ -1,5 +1,9 @@
 Revision history for Elive
 
+0.26    13th June
+        - Added 'meeting_parameters' and 'server_parameters' utility
+          methods to Elive::Entity::Meeting.
+
 0.25    4th June
         - added server version checks and warnings to 20-soap-connection.t
         - pod doco changes.
