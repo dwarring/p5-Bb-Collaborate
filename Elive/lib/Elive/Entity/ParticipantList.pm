@@ -59,6 +59,29 @@ This is the entity class for meeting participants.
 
 The participants property is an array of type Elive::Entity::Participant.
 
+=head2 Participants
+
+The I<participants> property may be specified in the format: userId[=roleId],
+where the role is 3 for a normal participant or 2 for a meeting moderator.
+
+Participants may be specified as a ';' separated string:
+
+    my $participant_list = $meeting->participant_list;
+
+    $participant_list->participants('111111=2;222222');
+    $participant_list->update;
+
+Participants may also be specified as an array of scalars:
+
+    $participant_list->participants(['111111=2', 222222]);
+    $participant_list->update;
+
+Or an array of hashrefs:
+
+    $participant_list->participants([{user => 111111, role =>2},
+                                     {user => 222222}]);
+    $participant_list->update;
+
 =cut
 
 =head1 METHODS
@@ -135,31 +158,10 @@ sub _parse_participant {
 
 =head2 insert
 
-Note that for inserts, you only need to include the userId in the
-user records.  The following will be sufficient to associate two
-participants with a meeting.
-
-Participants are specified in the format: userId[=roleId], where
-the role is 3 for a normal participant or 2 or higher to grant the
-user moderator privileges for the meeting.
-
-The list of participants may be specified as a ';' separated string:
-
-    my $participant_list = Elive::Entity::ParticipantList->insert(
-    {
-	meetingId => 123456,
-	participants => "111111=2;222222"
-    },
-    );
-
-The participants may also be specified as an array ref:
-
-    my $participant_list = Elive::Entity::ParticipantList->insert(
-    {
-	meetingId => 123456,
-	participants => ['111111=2', 222222]
-    },
-    );
+    my $participant_list = Elive::Entity::ParticipantList->insert({
+	meetingId => $meeting_id,
+	participants => '111111=2;33333'
+	});
 
 Note that if you empty the participant list, C<reset> will be called.
 
@@ -174,14 +176,18 @@ sub insert {
 
     #
     # have a peak at the participantList, if it's empty,
-    # we need to call the clearParticipantList adapter.
+    # divert the call to the resetParticipantList adapter.
     #
 
     if ((!defined $participants)
 	|| (Elive::Util::_reftype($participants) eq 'ARRAY' && !@$participants)
 	|| $participants eq '') {
 
-	goto sub {$class->reset(%opt)};
+	my $self
+	    = Elive::Entity::ParticipantList->retrieve([$data->{meetingId}],
+						       reuse => 1);
+
+	goto sub {$self->reset(%opt)};
     }
 
     my $adapter = $class->check_adapter('setParticipantList');
@@ -193,11 +199,9 @@ sub insert {
 
 =head2 update
 
-    my late_comer = Elive::Entity::Participant->retrieve([$user_id]);
-    my $meeting_id = 111111111;
-    my $participant_list = Elive::Entity::User->retrieve([$meeting_id]);
-
-    $participant_list->particpants->add($late_comer);
+    my $participant_list
+         = Elive::Entity::ParticipantList->retrieve([$meeting_id]);
+    $participant_list->add('4444444');
     $participant_list->update;
 
 Update meeting participants.
@@ -232,7 +236,6 @@ sub update {
 			  adapter => $adapter,
 			  %opt);
 }
-
 
 =head2 reset 
 

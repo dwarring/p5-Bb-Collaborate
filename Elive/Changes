@@ -1,10 +1,14 @@
 Revision history for Elive
 
+0.27    20th June
+        - Added 'participant_list' method to Elive::Entity::Meeting
+        - Corrected Elive::Entity::ParticipantList insert of empty list.
+
 0.26    13th June
         - Increased tolerance with dealing with out of bounds data on
           soap retrieval. In particular made 'recordingStatus' and media
-          'type' properties case insensitive and produce warnings rather
-          than carping on retrieval.
+          'type' properties case insensitive. These now produce warnings
+          rather than carping on retrieval of out-of-bounds data.
         - Added 'parameters' and 'server_parameters' utility methods
           to Elive::Entity::Meeting.
 

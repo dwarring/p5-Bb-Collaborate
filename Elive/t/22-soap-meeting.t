@@ -1,6 +1,6 @@
 #!perl
 use warnings; use strict;
-use Test::More tests => 35;
+use Test::More tests => 36;
 use Test::Exception;
 
 package main;
@@ -24,7 +24,7 @@ SKIP: {
     my $auth = $result{auth};
 
     skip ($result{reason} || 'no test connection specified',
-	30)
+	31)
 	unless $auth;
 
     Elive->connect(@$auth);
@@ -143,6 +143,10 @@ SKIP: {
 	 $meeting_int_data{end},
 	 ]
 	);
+
+    lives_ok(sub {Elive::Entity::ParticipantList->insert({meetingId => $meeting->meetingId,
+					     participants => []})},
+             'insert empty participant list - lives');
 
     lives_ok(sub {$participant_list->update({participants => []})},
 	     'clearing participants - lives');

@@ -1058,13 +1058,12 @@ sub _not_available {
 #
 BEGIN {
 
-    #
-    # try to catch using a regular date instead of a hi-res date
-    #
     subtype 'HiResDate'
 	=> as 'Int'
-	=> where {m{^\d+$} && length($_) > 10
-			or warn "doesn't look like a hi-res date: $_" }
+	=> where {m{^\d+$}
+		    && 
+			(length($_) > 10
+			 or warn "doesn't look like a hi-res date: $_")}
         => message {"invalid date: $_"};
 }
 #

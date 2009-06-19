@@ -558,7 +558,7 @@ sub web_url {
 =head2 parameters
 
     my $meeting = Elive::Entity::Meeting->retrieve([$meeting_id]);
-    my $meeting_params = $meeting->parameters;
+    my $meeting_parameters = $meeting->parameters;
 
 Utility method to return the meeting parameters associated with a meeting.
 See also L<Elive::Entity::MeetingParameters>.
@@ -569,13 +569,13 @@ sub parameters {
     my $self = shift;
 
     return Elive::Entity::MeetingParameters->retrieve([$self->meetingId],
-						     @_);
+						     @_, reuse => 1);
 }
 
 =head2 server_parameters
 
     my $meeting = Elive::Entity::Meeting->retrieve([$meeting_id]);
-    my $server_params = $meeting->server_parameters;
+    my $server_parameters = $meeting->server_parameters;
 
 Utility method to return the server parameters associated with a meeting.
 See also L<Elive::Entity::ServerParameters>.
@@ -586,7 +586,24 @@ sub server_parameters {
     my $self = shift;
 
     return Elive::Entity::ServerParameters->retrieve([$self->meetingId],
-						     @_);
+						     @_, reuse => 1);
+}
+
+=head2 participant_list
+
+    my $meeting = Elive::Entity::Meeting->retrieve([$meeting_id]);
+    my $participant_list = $meeting->participant_list;
+
+Utility method to return the participant_list associated with a meeting.
+See also L<Elive::Entity::ParticipantList>.
+
+=cut
+
+sub participant_list {
+    my $self = shift;
+
+    return Elive::Entity::ParticipantList->retrieve([$self->meetingId],
+						    @_, reuse => 1);
 }
 
 =head2 list_recordings

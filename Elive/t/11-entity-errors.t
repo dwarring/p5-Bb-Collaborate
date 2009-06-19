@@ -1,6 +1,6 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 25;
+use Test::More tests => 26;
 use Test::Exception;
 
 package main;
@@ -79,21 +79,21 @@ lives_ok(
     "ineffective primary key update - lives"
     );
 
-my %valid_meeting_data = (meetingId => 1111111,
+my %meeting_data = (meetingId => 1111111,
 		    name => 'test',
 		    start => '1234567890123',
 		    end => '1234567890123'
 	);
 
 lives_ok(
-    sub {Elive::Entity::Meeting->construct(\%valid_meeting_data)},
+    sub {Elive::Entity::Meeting->construct(\%meeting_data)},
 	 'construct meeting with valid data - lives'
     );
 
 
 foreach (qw(meetingId name start end)) {
 
-    my %bad_meeting_data = %valid_meeting_data;
+    my %bad_meeting_data = %meeting_data;
     delete $bad_meeting_data{$_};
 
     dies_ok(
@@ -102,6 +102,14 @@ foreach (qw(meetingId name start end)) {
 	);
 }
 
+dies_ok(
+       sub {
+           local $meeting_data{start} = 'non numeric date';
+           Elive::Entity::Meeting->construct(\%meeting_data);
+       },
+	"meeting with non numeric date - dies"
+	);
+
 lives_ok(
 	 sub {Elive::Entity::MeetingParameters->construct
 	     ({
@@ -109,7 +117,7 @@ lives_ok(
 		 recordingStatus => 'REMOTE',
 	      })},
 	      'meeting parameters - valid recordingStatus - lives',
-    );       
+    );
 
 dies_ok(
     sub {Elive::Entity::MeetingParameters->construct
