@@ -238,6 +238,14 @@ Returns a restful url for the connection.
 
 =cut
 
+=head2 soap
+
+    my $soap_lite_obj = $connection->soap;
+
+Returns the underlying L<SOAP::Lite> object for the connection.
+
+=cut
+
 sub _soap_header_xml {
 
     my $self = shift;
@@ -261,5 +269,11 @@ EOD
 sub DESTROY {
     shift->disconnect;
 }
+
+=head1 SEE ALSO
+
+L<SOAP::Lite>
+
+=cut
 
 1;
