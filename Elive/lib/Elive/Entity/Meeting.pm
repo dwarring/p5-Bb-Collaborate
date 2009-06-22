@@ -418,21 +418,6 @@ sub remove_preload {
     $self->_check_for_errors($som);
 }
     
-=head2 list_preloads
-
-    my $preloads = $meeting_obj->list_preloads;
-
-Lists all preloads associated with the meeting.
-
-=cut
-
-sub list_preloads {
-    my $self = shift;
-
-    return Elive::Entity::Preload
-        ->list_meeting_preloads($self->meetingId,@_);
-}
-
 =head2 buildJNLP 
 
     my $jnlp = $meeting_entity->buildJNLP(version => version,
@@ -606,11 +591,27 @@ sub participant_list {
 						    @_, reuse => 1);
 }
 
+=head2 list_preloads
+
+    my $preloads = $meeting_obj->list_preloads;
+
+Lists all preloads associated with the meeting. See also L<Elive::Entity::Preload>.
+
+=cut
+
+sub list_preloads {
+    my $self = shift;
+
+    return Elive::Entity::Preload
+        ->list_meeting_preloads($self->meetingId,@_);
+}
+
 =head2 list_recordings
 
     my $preloads = $meeting_obj->list_recordings;
 
-Lists all recordings associated with the meeting.
+Lists all recordings associated with the meeting. See also
+L<Elive::Entity::Recording>.
 
 =cut
 

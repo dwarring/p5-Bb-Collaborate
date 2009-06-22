@@ -8,14 +8,14 @@ use base qw{Class::Accessor};
 
 =head1 NAME
 
-Elive::Connection -  Manage Elluminate SOAP/XML connections.
+Elive::Connection -  Manage Elluminate SOAP connections.
 
 =head1 DESCRIPTION
 
 This module handles logical connections to Elluminate I<Live!> sites.
 
 Most of the time, you won't need to use this module directly, rather
-you'll create on default connection via Elive:
+you'll create a default connection via L<Elive>:
 
     Elive->connect('http://someserver.com', 'someuser', 'somepass');
 
@@ -32,13 +32,13 @@ have multiple connections:
                                          'anotherUser', 'anotherPass');
 
 All entity constructor and retrieval methods support an optional connection
-parameter:
+parameter. For example:
 
      my $user = Entity::User->retrieve(
                      [userId => 123456789000],
                      connection => $connection1,
                     );
-                                      
+
 The C<connection> option can be used on all of the following entity methods:
 C<create>, C<insert>, C<list> and C<retrieve>.
 
@@ -58,8 +58,9 @@ __PACKAGE__->mk_accessors( qw{ url user pass soap _login _server_details} );
 =head2 connect
 
     my $ec = Elive::Connection->connect('http://someserver.com/test',
-    'user1', 'pass1',
-    debug => 1)
+                                        'user1', 'pass1', debug => 1);
+
+    my $url = $ec->url;   # should be 'http://someserver.com/test'
 
 Establishes a logical SOAP connection. Retrieves the login user, to verify
 connectivity and authentication details.
@@ -127,9 +128,9 @@ sub disconnect {
 
 =head2 call
 
-    my $som = $ec->call('listUsers', filter => '(givenName like "john%")')
+    my $som = $ec->call('listUsers', filter => '(givenName like "john*")')
 
-Makes an Elluminate SOAP/XML method call. Returns the response as a
+Performs an Elluminate SOAP method call. Returns the response as a
 SOAP::SOM object.
 
 =cut
@@ -170,7 +171,7 @@ sub call {
 
 =head2 login
 
-Returns the login user as an object of type Elive::Entity::User.
+Returns the login user as an object of type L<Elive::Entity::User>.
 
 =cut
 
@@ -199,7 +200,7 @@ sub login {
 
 =head2 server_details
 
-Returns the server details in an object of type Elive::Entity::ServerDetails.
+Returns the server details as an object of type L<Elive::Entity::ServerDetails>.
 
 =cut
 
@@ -228,6 +229,14 @@ sub server_details {
     return $server_details;
 }
 
+=head2 url
+
+    my $url1 = $connection1->url;
+    my $url2 = $connection2->url;
+
+Returns a restful url for the connection.
+
+=cut
 
 sub _soap_header_xml {
 
