@@ -1,6 +1,6 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 35;
+use Test::More tests => 40;
 use Test::Warn;
 
 BEGIN {
@@ -40,16 +40,30 @@ my $participant_list = Elive::Entity::ParticipantList->construct(
     );
 
 isa_ok($participant_list, 'Elive::Entity::ParticipantList', 'participant');
-ok($participant_list->stringify eq "123456", 'particpiant list stringified');
+ok($participant_list->stringify eq "123456", 'participant list stringified');
 
 can_ok($participant_list, 'meetingId');
 can_ok($participant_list, 'participants');
 
 my $participants = $participant_list->participants;
-isa_ok($participants, 'Elive::Array');
+isa_ok($participants, 'Elive::Array::Participants');
 
 ok(@$participants == 3, 'all particpiants constructed');
 isa_ok($participants->[0], 'Elive::Entity::Participant');
+
+$participants->add({
+    user => {userId => 'late_comer',
+	     loginName => 'late_comer',
+	 },
+    role => {roleId => 3},
+});
+
+
+ok(@$participants == 4, 'particpiants added');
+isa_ok($participants->[-1], 'Elive::Entity::Participant');
+ok($participants->[-1]->user->userId eq 'late_comer', 'added participant value');
+
+$participant_list->revert;
 
 ok($participants->[0]->user->stringify eq '112233', 'user stringified');
 
@@ -59,7 +73,7 @@ ok($participants->[0]->stringify eq '112233=2', 'particpiant stringified');
 
 ok($participants->[2]->stringify eq 'dave=3', 'particpiant stringified');
 
-ok($participants->stringify eq '112233=2;223344=3;dave=3',
+ok($participants->stringify eq '112233=2;223344=3;dave=3;late_comer=3',
    'participants stringification');
 
 ok($participant_list->participants->[0]->user->loginName eq 'test_user',
@@ -108,6 +122,12 @@ ok($members_1->[0] eq 212121, 'member list user');
 ok($members_1->[1] eq 222222, 'member list user');
 ok($members_1->[2] eq 'fred', 'member list user');
     ;
+
+$members_1->add('late_comer');
+ok($members_1->[-1] eq 'late_comer', 'member add');
+ok($members_1->stringify eq '212121;222222;fred;late_comer', 'member list stringification');
+
+$member_list_1->revert;
 
 my $member_list_2 = Elive::Entity::Group->construct(
 								   {

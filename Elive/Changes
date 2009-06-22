@@ -1,5 +1,11 @@
 Revision history for Elive
 
+0.28    22nd June
+        - Added Elive::Array::Participant.
+          -- Tweaked coercement rules in Elive::Entity::ParticipantList
+          -- $participants->add(...) now works per pod doco.
+        - Elive::Entity update changed  $self->_readback to $class->_readback
+
 0.27    20th June
         - Added 'participant_list' method to Elive::Entity::Meeting
         - Corrected Elive::Entity::ParticipantList insert of empty list.

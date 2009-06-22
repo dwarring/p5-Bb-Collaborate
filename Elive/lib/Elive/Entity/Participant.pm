@@ -2,6 +2,7 @@ package Elive::Entity::Participant;
 use warnings; use strict;
 
 use Mouse;
+use Mouse::Util::TypeConstraints;
 
 use Elive::Struct;
 use base qw{Elive::Struct};
@@ -23,6 +24,26 @@ has 'role' => (is => 'rw', isa => 'Elive::Entity::Role|Str',
 	       documentation => 'Role of the user within this meeting',
 	       coerce => 1,
     );
+
+sub _parse {
+    my $class = shift;
+    local ($_) = shift;
+
+    return $_ if Scalar::Util::reftype($_);
+
+    m{^ \s* (.*?) \s* (= ([0-3]) \s*)? $}x
+	or die "'$_' not in format: userId=role";
+
+    my $userId = $1;
+    my $roleId = $3;
+    $roleId = 3 unless defined $roleId;
+
+    return {user => {userId => $userId},
+	    role => {roleId => $roleId}};
+}
+
+coerce 'Elive::Entity::Participant' => from 'Str'
+    => via { Elive::Entity::Participant->new(Elive::Entity::Participant->_parse_participant($_)) };
 
 =head1 NAME
 

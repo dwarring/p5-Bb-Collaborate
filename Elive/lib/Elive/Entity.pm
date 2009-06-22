@@ -763,7 +763,9 @@ sub update {
 				       %{$opt{param} || {}},
 );
 
-    my @rows = $self->_readback($som, \%updates, $self->connection);
+    my $class = ref($self);
+
+    my @rows = $class->_readback($som, \%updates, $self->connection);
     #
     # refresh the object from the database.
     #

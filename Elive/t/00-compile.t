@@ -1,12 +1,13 @@
 #!perl -T
 
-use Test::More tests => 17;
+use Test::More tests => 18;
 use Test::Exception;
 
 BEGIN {
     use_ok( 'Elive' );
     use_ok( 'Elive::Connection' );
     use_ok( 'Elive::Array');
+    use_ok( 'Elive::Array::Participants');
     use_ok( 'Elive::Entity' );
     use_ok( 'Elive::Entity::Group' );
     use_ok( 'Elive::Entity::Meeting' );

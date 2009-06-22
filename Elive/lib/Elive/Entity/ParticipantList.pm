@@ -10,42 +10,37 @@ use base qw{Elive::Entity};
 use Elive::Entity::Meeting;
 use Elive::Entity::Participant;
 use Elive::Util;
-use Elive::Array;
+use Elive::Array::Participants;
 
 __PACKAGE__->entity_name('ParticipantList');
 
 has 'meetingId' => (is => 'rw', isa => 'Int', required => 1);
 __PACKAGE__->primary_key('meetingId');
 
-has 'participants' => (is => 'rw', isa => 'ArrayRef[Elive::Entity::Participant]|Elive::Array',
+has 'participants' => (is => 'rw', isa => 'ArrayRef[Elive::Entity::Participant]|Elive::Array::Participants',
     coerce => 1);
 
 coerce 'ArrayRef[Elive::Entity::Participant]' => from 'ArrayRef[HashRef]'
           => via {
 	      my $a = [ map {Elive::Entity::Participant->new($_)} @$_ ];
-	      bless ($a, 'Elive::Array');
+	      bless ($a, 'Elive::Array::Participants');
 	      $a;
 };
 
 coerce 'ArrayRef[Elive::Entity::Participant]' => from 'ArrayRef[Str]'
           => via {
-	      my @participants = map {
-		  _parse_participant($_)
-	      } @$_;
-
-	      my $a = [ map {Elive::Entity::Participant->new($_)} @participants ];
-	      bless ($a, 'Elive::Array');
+	      my @participants = map {Elive::Entity::Participant->_parse($_)} @$_;
+	      my $a = [ map {Elive::Entity::Participant->new($_)} @participants];
+	      bless ($a, 'Elive::Array::Participants');
 	      $a;
 };
 
 coerce 'ArrayRef[Elive::Entity::Participant]' => from 'Str'
           => via {
-	      my @participants = map {
-		  _parse_participant($_)
-	      } split(';');
+	      my @participants = map {Elive::Entity::Participant->_parse($_)} split(';');
 
 	      my $a = [ map {Elive::Entity::Participant->new($_)} @participants ];
-	      bless ($a,'Elive::Array');
+	      bless ($a,'Elive::Array::Participants');
 	      $a;
           };
 
@@ -131,7 +126,7 @@ sub _freeze {
 	my @users = map {
 	    my $p = ref $_
 		? $_
-		: _parse_participant($_);
+		: Elive::Entity::Participant->_parse($_);
 
 	    Elive::Entity::Participant->stringify($p);
 	} @$participants;
@@ -140,20 +135,6 @@ sub _freeze {
     }
 
     return $frozen;
-}
-
-sub _parse_participant {
-    local ($_) = shift;
-
-    m{^ \s* (.*?) \s* (= ([0-3]) \s*)? $}x
-	or die "'$_' not in format: userId=role";
-
-    my $userId = $1;
-    my $roleId = $3;
-    $roleId = 3 unless defined $roleId;
-
-    return {user => {userId => $userId},
-	    role => {roleId => $roleId}};
 }
 
 =head2 insert

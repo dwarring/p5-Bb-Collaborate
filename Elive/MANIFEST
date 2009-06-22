@@ -12,6 +12,7 @@ inc/Module/Install/Win32.pm
 inc/Module/Install/WriteAll.pm
 lib/Elive.pm
 lib/Elive/Array.pm
+lib/Elive/Array/Participants.pm
 lib/Elive/Connection.pm
 lib/Elive/Entity.pm
 lib/Elive/Entity/Group.pm

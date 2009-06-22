@@ -224,7 +224,7 @@ my $participant_list_obj =  Elive::Entity::ParticipantList->construct($participa
     my $p = $participant_list_obj;
     ok($p = $p->$_, "found $_ in data") for('participants');
 
-    isa_ok($p, 'Elive::Array', 'participants');
+    isa_ok($p, 'Elive::Array::Participants', 'participants');
     ok($p = $p->[1], 'found participants->[1]');
 
     foreach (qw{user role roleId}) {
