@@ -3,7 +3,8 @@ use warnings;
 use strict;
 
 use Getopt::Long;
-use DateTime::Format::ISO8601;
+use Date::Parse;
+use Time::Local;
 use Pod::Usage;
 use File::Basename qw{};
 
@@ -39,7 +40,7 @@ elive_raise_meeting
     -name         'meeting name'
     -meeting_pass otherpass      # meeting password
     -start  'YYYY-MM-DD HH:MM'   # start time
-    -end '[YYYY-MM-DD] HH::MM'   # end time
+    -end '[YYYY-MM-DD ]HH::MM'   # end time
 
   Meeting Settings
 
@@ -135,16 +136,15 @@ sub main {
     our $connection = Elive->connect($url, $username, $password);
 
     my $start = $start_str
-	? DateTime::Format::ISO8601->parse_datetime($start_str)
-	: DateTime->now->clone->add(minutes => 15);
+	? timelocal(str2time($start_str))
+	: time() + 15 * 60;
 
     my $end = $end_str
-	? DateTime::Format::ISO8601->parse_datetime($end_str,
-						    base_datetime => $start)
-	: $start->clone->add(minutes => 45);
+	? timelocal(str2time($end_str))
+	: $start + 30 * 60;
 
     die "end time must be later than start time"
-	unless ($end->epoch > $start->epoch);
+	unless ($end > $start);
 
     my $upload_data;
 
@@ -233,8 +233,8 @@ sub main {
     my %meeting_data = (
 	    name => $meeting_name,
 	    facilitatorId => $facilitator_obj->stringify,
-	    start => $start->epoch . '000',
-	    end => $end->epoch . '000',
+	    start => $start . '000',
+	    end => $end . '000',
 	);
 
     $meeting_data{password} = $meeting_password
