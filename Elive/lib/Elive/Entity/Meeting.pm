@@ -1,4 +1,4 @@
-package Elive::Entity::Meeting;
+ackage Elive::Entity::Meeting;
 use warnings; use strict;
 
 use Mouse;
@@ -246,7 +246,7 @@ sub add_preload {
 
 =head2 check_preload
 
-my $ok = $meeting_obj->check_preload($preload);
+    my $ok = $meeting_obj->check_preload($preload);
 
 Checks that the preload is associated with this meeting.
 

@@ -7,11 +7,11 @@ Elive -  Elluminate Live! (c) client library
 
 =head1 VERSION
 
-Version 0.29
+Version 0.30
 
 =cut
 
-our $VERSION = '0.29';
+our $VERSION = '0.30';
 
 use base qw{Class::Data::Inheritable};
 
@@ -52,15 +52,15 @@ It is suitable for online collaboration, demonstrations, meetings, web
 conferences, seminars and IT deployment, training and support.
 
 Users, Meetings and other resources are stored in a management database.
-These can managed via the Elluminate I<Live!> SOAP API.
+These can be accessed via the Elluminate I<Live!> SOAP API.
 
 Most actions that can be performed via the web interface can also be
 achieved via the SOAP API. This is known as the I<Command Toolkit> and
 is detailed in chapter 4 of the Elluminate I<Live!> Software Developers
-Kit>.
+Kit.
 
 This module provides Perl object to entity bindings to Elluminate I<Live!>
-databases via the command toolkit..
+databases via the command toolkit.
 
 =cut
 
@@ -80,8 +80,8 @@ BEGIN {
      Elive->connect('http://myServer.com/test2', user2, pass2);
      my $e2 = Elive->connection;
 
-Connects to an Elluminate server instance. Dies if the connection could
-not be established. For example the connection or user login failed.
+Connects to an Elluminate server instance. Dies if the connection could not
+be established. For example, if the SOAP connection or user login failed.
 
 The login user must be an Elluminate I<Live!> system administrator account.
 
@@ -236,15 +236,17 @@ our %KnownAdapters;
 BEGIN {
     @KnownAdapters{qw(
 addGroupMember addMeetingPreload attendanceNotification changePassword
-buildMeetingJNLP buildRecordingJNLP
-checkMeetingPreload createGroup createMeeting createPreload createRecording
-createUser deleteGroup deleteMeeting deleteMeetingPreload deleteParticipant deleteRecording
-deletePreload deleteUser getGroup getMeeting getMeetingParameters getPreload
-getPreloadStream getRecording getRecordingStream getServerDetails getServerParameters getUser
-importPreload importRecording isParticipant listGroups listMeetingPreloads listMeetings listParticipants
-listPreloads listRecordings listUserMeetingsByDate listUsers resetGroup
-resetParticipantList setParticipantList streamPreload streamRecording
-updateMeeting updateMeetingParameters updateRecording updateServerParameters
+buildMeetingJNLP buildRecordingJNLP checkMeetingPreload createGroup
+createMeeting createPreload createRecording createUser deleteGroup
+deleteMeeting deleteMeetingPreload deleteParticipant deleteRecording
+deletePreload deleteUser getGroup getMeeting getMeetingParameters
+getPreload getPreloadStream getRecording getRecordingStream
+getServerDetails getServerParameters getUser importPreload
+importRecording isParticipant listGroups listMeetingPreloads
+listMeetings listParticipants listPreloads listRecordings
+listUserMeetingsByDate listUsers resetGroup resetParticipantList
+setParticipantList streamPreload streamRecording updateMeeting
+updateMeetingParameters updateRecording updateServerParameters
 updateUser
 )} = undef;
 }
@@ -290,7 +292,7 @@ our %Meta_Data_Accessor;
 
 =head2 has_metadata
 
-Create or reuse an inside-out accessor to hold object metadata.
+Associate an inside-out property with objects of a given class.
 
 =cut
 
