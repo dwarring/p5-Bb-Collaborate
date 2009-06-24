@@ -41,7 +41,6 @@ sub parse_type {
     my $is_array = ($type =~ s{^ArrayRef\[}{}x);
 
     my $is_struct = $type =~ m{^Elive::(Struct||Entity)(::|$)};
-##    my $is_struct = UNIVERSAL::isa($type, 'Elive::Struct');
 
     return ($type, $is_array, $is_struct);
 }
@@ -49,19 +48,17 @@ sub parse_type {
 sub _freeze {
     my ($val, $type, $context) = @_;
 
-    for ($val) {
+    for (grep {defined} $val) {
 	if ($type =~ m{^Bool}i) {
 
 	    #
 	    # DBize boolean flags..
 	    #
-	    $_ =  $_ ? 'true' : 'false'
-		if defined;
+	    $_ =  $_ ? 'true' : 'false';
 	}
 	elsif ($type =~ m{^(Int|HiResDate)}i) {
 	    
-	    $_ = _tidy_decimal($_)
-		if defined;
+	    $_ = _tidy_decimal($_);
 
 	}
     }
@@ -138,7 +135,7 @@ sub _tidy_decimal {
             \+?    # leading plus -discarded 
             (-?)   # leading minus retained (usually)
             0*     # leading zeros discarded
-            (\d+)  # number - retained
+            (\d+?) # number - retained
             $}
 	    {$1$2}x;
 
