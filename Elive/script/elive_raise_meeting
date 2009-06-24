@@ -4,7 +4,6 @@ use strict;
 
 use Getopt::Long;
 use Date::Parse;
-use Time::Local;
 use Pod::Usage;
 use File::Basename qw{};
 
@@ -38,9 +37,9 @@ elive_raise_meeting
 
     -facilitator  userId
     -name         'meeting name'
-    -meeting_pass otherpass      # meeting password
-    -start  'YYYY-MM-DD HH:MM'   # start time
-    -end '[YYYY-MM-DD ]HH::MM'   # end time
+    -meeting_pass otherpass       # meeting password
+    -start '[YYYY-MM-DD ]HH:MM'   # start time
+    -end   '[YYYY-MM-DD ]HH:MM'   # end time
 
   Meeting Settings
 
@@ -135,12 +134,14 @@ sub main {
 
     our $connection = Elive->connect($url, $username, $password);
 
+		    my @t = str2time($start_str); warn "t=@t";
+
     my $start = $start_str
-	? timelocal(str2time($start_str))
+	? str2time($start_str)
 	: time() + 15 * 60;
 
     my $end = $end_str
-	? timelocal(str2time($end_str))
+	? str2time($end_str)
 	: $start + 30 * 60;
 
     die "end time must be later than start time"

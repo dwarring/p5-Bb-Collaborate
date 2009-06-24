@@ -1,10 +1,14 @@
 Revision history for Elive
 
+0.29    24th June
+        - 'elive_raise_meeting' now converts dates via Date::Parse:str2time().
+        - added pod for Elive::Connection 'url' and 'soap' methods. 
+
 0.28    22nd June
-        - Added Elive::Array::Participant.
+        - Added Elive::Array::Participant
           -- Tweaked coercement rules in Elive::Entity::ParticipantList
           -- $participants->add(...) now works per pod doco.
-        - Elive::Entity update changed  $self->_readback to $class->_readback
+        - Elive::Entity::update: changed $self->_readback to $class->_readback
 
 0.27    20th June
         - Added 'participant_list' method to Elive::Entity::Meeting

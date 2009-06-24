@@ -17,8 +17,7 @@ install_script ('elive_query', 'elive_raise_meeting', 'elive_lint_config');
 requires(
     'Class::Accessor'              => 0,
     'Class::Data::Inheritable'     => 0,
-    'DateTime'                     => 0,  # for elive_raise_meeting
-    'DateTime::Format::ISO8601'    => 0,  # for elive_raise_meeting
+    'Date::Parse'                  => 0,
     'Carp'                         => 0,  # for scripts
     'File::Spec'                   => 0,
     'Getopt::Long'                 => 0,  # for scripts
@@ -32,6 +31,7 @@ requires(
     'Term::ReadKey'                => 0,
     'Term::ReadLine'               => 0,
     'Term::ReadLine::Perl'         => 0,  # fallback for elive_query
+    'Time::Local'                  => 0,
     'SOAP::Lite'                   => 0.69,
     'Storable'                     => 0,
     'YAML'                         => 0,
