@@ -1,5 +1,8 @@
 Revision history for Elive
 
+0.30    27th June
+        - 'elive_raise_meeting' - check participants before creating meeting
+
 0.29    24th June
         - 'elive_raise_meeting' now converts dates via Date::Parse:str2time().
         - added pod for Elive::Connection 'url' and 'soap' methods. 
