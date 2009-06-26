@@ -70,7 +70,7 @@ Creates a meeting on an Elluminate I<Live!> server
 my $username = 'serversupport';
 my $password;
 my $debug;
-my $facilitator;
+my $facilitator_id;
 my $start_str;
 my $end_str;
 my $meeting_name = 'elive test meeting';
@@ -97,7 +97,7 @@ sub main {
 	'name|meeting_name=s' => \$meeting_name,
 	'username|user=s' => \$username,
 	'password|pass=s' => \$password,
-	'facilitator|moderator=s' => \$facilitator,
+	'facilitator|moderator=s' => \$facilitator_id,
 	'start=s' => \$start_str,
 	'end=s' => \$end_str,
 	'meeting_password|meeting_pass=s' => \$meeting_password,
@@ -117,7 +117,7 @@ sub main {
 	or die pod2usage(1);
 
     $recording = uc($recording);
-    die pod2usage("recording mode must be 'on', 'off' or 'auto'")
+    die pod2usage("recording mode must be 'on', 'off' or 'auto'\n")
 	unless $recording =~ m{^ ON|OFF|AUTO|REMOTE $}x;
     $recording =~ s{^ AUTO $}{REMOTE}x;
 
@@ -134,8 +134,6 @@ sub main {
 
     our $connection = Elive->connect($url, $username, $password);
 
-		    my @t = str2time($start_str); warn "t=@t";
-
     my $start = $start_str
 	? str2time($start_str)
 	: time() + 15 * 60;
@@ -144,21 +142,21 @@ sub main {
 	? str2time($end_str)
 	: $start + 30 * 60;
 
-    die "end time must be later than start time"
+    die "end time must be later than start time\n"
 	unless ($end > $start);
 
     my $upload_data;
 
     if ($upload) {
 	open(UPLOAD, '<', $upload)
-	    or die "unable to open $upload: $!";
+	    or die "unable to open $upload: $!\n";
 
 	$upload_data = join('', <UPLOAD>);
 	close (UPLOAD);
     }
 
-    my $facilitator_obj = $facilitator
-	? _get_user($facilitator)
+    my $facilitator = $facilitator_id
+	? _get_user($facilitator_id)
 	: Elive->login;
 
     my @participants;
@@ -172,7 +170,7 @@ sub main {
 	my $role;
 
 	if (($user_spec,$role) = ($spec =~ m{^([^=]+)=([^=]+)$}x)) {
-	    die "non-numeric role: $spec"
+	    die "non-numeric role: $spec\n"
 		unless $role =~ m{^\d+$};
 	}
 	else {
@@ -181,26 +179,36 @@ sub main {
 
 	$role = 3 if (!defined $role);
 
-	die "role ($role) not in range 0-3: $spec"
+	die "role ($role) not in range 0-3: $spec\n"
 	    unless ($role >= 0 && $role <= 3);
 
-	die "null username: $spec"
+	die "null username: $spec\n"
 	    if ($user_spec eq '');
 
-	my $user_obj = _resolve_user($user_spec);
+	#
+	# Ignore the facilitator. where going to add them later
+	#
+	next if ($user_spec eq $facilitator->userId
+		 || $user_spec eq $facilitator->loginName);
 
-	if (grep {$_->{user} eq $user_obj} @participants) {
-	    warn "duplicate user: $user_spec"
-	}
-	else {
-	    push (@participants, 
-		  Elive::Entity::Participant->new({
-		      user => $user_obj,
-		      role => $role,
-		      }),
-		);
-	}
+	push (@participants, 
+	      {
+		  user => $user_spec,
+		  role => $role,
+	      },
+	    );
+
     }
+
+    #
+    # include the faciliator as a participant, with a role of moderator
+    #
+    push (@participants, {user => $facilitator->userId, role => 2});
+
+    #
+    # Check out participants
+    #
+    @participants = _resolve_participants(@participants);
 
     my $existing_preload;
 
@@ -216,7 +224,7 @@ sub main {
 	    #
 	    # preload filter appears to be ineffective. Shouldn't get here
 	    # anyway - option has been restricted to integer
-	    die "non numeric preload id";
+	    pod2usage("non numeric preload id");
 	    #
 	    # treat it as a filename.
 	    #
@@ -227,13 +235,13 @@ sub main {
 	    ($existing_preload) = sort {$b->id cmp $a->id} @$preloads;
 	}
 	
-	die "no existing preload: $preload_opt"
+	die "no existing preload: $preload_opt\n"
 	    unless $existing_preload;
     }
 
     my %meeting_data = (
 	    name => $meeting_name,
-	    facilitatorId => $facilitator_obj->stringify,
+	    facilitatorId => $facilitator->stringify,
 	    start => $start . '000',
 	    end => $end . '000',
 	);
@@ -256,7 +264,7 @@ sub main {
     do {
 	
 	my $meeting_parameters
-	    = Elive::Entity::MeetingParameters->retrieve([$meeting->meetingId])
+	    = $meeting->parameters
 	    or die "Unable to retrieve meeting parameters for this meeting";
 	
 	$meeting_parameters->maxTalkers($max_talkers)
@@ -274,7 +282,7 @@ sub main {
     if ($boundary) {
 	
 	my $server_parameters
-	    = Elive::Entity::ServerParameters->retrieve([$meeting->meetingId])
+	    = $meeting->server_parameters
 	    or die "Unable to retrieve server parameters for this meeting";
 
 	$server_parameters->boundaryMinutes($boundary)
@@ -285,7 +293,7 @@ sub main {
 
     if (@participants) {
 
-	setup_participants($meeting->meetingId, @participants);
+	setup_participants($meeting, @participants);
 
     }
     else {
@@ -302,7 +310,7 @@ sub main {
 	my $preload = Elive::Entity::Preload->upload({
 	    name => $upload_basename,
 	    data => $upload_data,
-	    ownerId => $facilitator_obj->stringify,
+	    ownerId => $facilitator->stringify,
 	 });
 
 	printf("adding '%s' preload: %s (%s)\n",
@@ -320,7 +328,7 @@ sub main {
 
 	my $preload = Elive::Entity::Preload->import_from_server({
 	    fileName => $import,
-	    ownerId => $facilitator_obj->stringify,
+	    ownerId => $facilitator->stringify,
 	 });
 
 	printf("adding '%s' preload: %s (%s)\n",
@@ -339,59 +347,94 @@ sub main {
 ########################################################################
 
 sub setup_participants {
-    my $meeting_id = shift;
+    my $meeting = shift;
     my @participants = @_;
-	#
-	# Create participant list
-	#
-	my $participant_list = Elive::Entity::ParticipantList
-	    ->insert({meetingId => $meeting_id,
-		      participants => \@participants,
-		     });
 
-	my @participants_echo;
-	my $participant_objs = $participant_list->participants;
+    #
+    # Create participant list
+    #
+    my $participant_list = Elive::Entity::ParticipantList
+	->insert({meetingId => $meeting->meetingId,
+		  participants => \@participants,
+		 });
 
-	foreach (@$participant_objs) {
-	    my $user_obj = $_->user;
-	    my $loginName = $user_obj->loginName;
-	    my $email = $user_obj->email;
+    my @participants_echo;
+    my $participant_objs = $participant_list->participants;
 
-	    my $participant_str = ($loginName || $user_obj->userId);
-	    $participant_str .= ' <'.$email.'>'
-		if $email;
-	    push (@participants_echo, $participant_str);
-	}
+    foreach (@$participant_objs) {
+	my $user_obj = $_->user;
+	my $loginName = $user_obj->loginName;
+	my $email = $user_obj->email;
 
-	print "participants: ".join(', ', @participants_echo)."\n";
+	my $participant_str = ($loginName || $user_obj->userId);
+	$participant_str .= ' <'.$email.'>'
+	    if $email;
+	push (@participants_echo, $participant_str);
+    }
+
+    print "participants: ".join(', ', @participants_echo)."\n";
 }
 
 ########################################################################
 
-sub _resolve_user {
+sub _resolve_participants {
+    my @participants_in = @_;
+
+    my %user_roles;
+
+    foreach (@participants_in) {
+
+	my $user = $_->{user};
+	my $role = $_->{role};
+	
+	die "bad username: $user\n"
+	    if $user =~ m{'};
+
+	$user_roles{$user} = $role || 3;
+    }
+
+    my $filter = join(' OR ',
+		      map {sprintf("(loginName='%s' OR userId = '%s')",
+				   $_, $_)}
+		      (keys %user_roles)
+	);
+
+    warn "filtering users:$filter";
+
+    my $users = Elive::Entity::User->list(filter => $filter);
+
+    my @participants_out;
+
+    foreach my $user (@$users) {
+
+	my $role = delete($user_roles{$user->loginName})
+	    || delete($user_roles{$user->userId});
+
+	if ($role) {
+	    push (@participants_out, {user => $user->userId,
+				      role => $role});
+	}
+    }
+
+    my @users_not_found = keys %user_roles;
+
+    die "unknown participants(s): @users_not_found\n"
+	if @users_not_found;
+
+    return @participants_out;
+}
+
+########################################################################
+
+sub _get_user {
     my $user_spec = shift;
 
     die 'usage: _get_user($user_name_or_id)'
 	unless (defined $user_spec && $user_spec ne '');
-    #
-    # Try by username
-    #
-    my $user;
+    my $user = Elive::Entity::User->retrieve([$user_spec])
+	|| Elive::Entity::User->get_by_loginName($user_spec);
 
-    if ($user_spec =~ m{^\d+$}) {
-	#
-	# Numeric id. Assume it's a user id
-	#
-	$user = Elive::Entity::User->construct({userId => $user_spec});
-    }
-    else {
-	#
-	# Treat non-numeric as a loginName
-	#
-	$user = Elive::Entity::User->get_by_loginName($user_spec);
-    }
-
-    die "unkown user: $user_spec"
+    die "unkown user: $user_spec\n"
 	unless ($user);
 
     return $user;
