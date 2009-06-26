@@ -1,4 +1,4 @@
-ackage Elive::Entity::Meeting;
+package Elive::Entity::Meeting;
 use warnings; use strict;
 
 use Mouse;
