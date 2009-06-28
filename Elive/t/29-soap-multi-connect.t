@@ -13,10 +13,6 @@ BEGIN {
 
 my $class = 'Elive::Entity::Preload' ;
 
-my @data;
-$data[0] = 'the quick brown fox. %%(&)+(*)+*(_+';
-$data[1] = join('',map {pack('C', $_)} (0..255));
-
 SKIP: {
 
     my $Skip = 21;

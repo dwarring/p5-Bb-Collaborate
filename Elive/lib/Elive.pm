@@ -7,11 +7,11 @@ Elive -  Elluminate Live! (c) client library
 
 =head1 VERSION
 
-Version 0.30
+Version 0.31
 
 =cut
 
-our $VERSION = '0.30';
+our $VERSION = '0.31';
 
 use base qw{Class::Data::Inheritable};
 
@@ -81,7 +81,7 @@ BEGIN {
      my $e2 = Elive->connection;
 
 Connects to an Elluminate server instance. Dies if the connection could not
-be established. For example, if the SOAP connection or user login failed.
+be established. If, for example, the SOAP connection or user login failed.
 
 The login user must be an Elluminate I<Live!> system administrator account.
 

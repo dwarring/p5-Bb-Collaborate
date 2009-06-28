@@ -13,7 +13,7 @@ BEGIN {
 use Scalar::Util;
 
 my $URL1 = 'http://test1.org';
-my $URL2 = 'http://test2.org/test_dw';
+my $URL2 = 'http://test2.org/test_site';
 
 my $K1 = 123456123456;
 my $K2 = 112233445566;

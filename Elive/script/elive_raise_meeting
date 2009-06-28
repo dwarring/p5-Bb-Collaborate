@@ -399,8 +399,6 @@ sub _resolve_participants {
 		      (keys %user_roles)
 	);
 
-    warn "filtering users:$filter";
-
     my $users = Elive::Entity::User->list(filter => $filter);
 
     my @participants_out;
