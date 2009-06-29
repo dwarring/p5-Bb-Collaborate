@@ -18,7 +18,7 @@ Elive::Entity::Meeting - Elluminate Meeting instance class
 
 =head1 DESCRIPTION
 
-This is the main entity for meetings.
+This is the main entity class for meetings.
 
 Note that there are additional meeting settings contained in both
 Elive::Entity::MeetingParameters and Elive::Entity::ServerParameters.
@@ -182,9 +182,9 @@ sub list_user_meetings_by_date {
 		&& $params->[0] && @$params <= 3);
 
     my %fetch_params;
-    $fetch_params{userId} = Elive::Util::_freeze(shift @$params,'Str');
-    @fetch_params{qw{startDate endDate}}
-    = map {my $d = Elive::Util::_freeze($_,'HiResDate')} @$params; 
+    $fetch_params{userId}    = Elive::Util::_freeze(shift @$params,'Str');
+    $fetch_params{startDate} = Elive::Util::_freeze(shift @$params,'HiResDate');
+    $fetch_params{endDate} = Elive::Util::_freeze(shift @$params,'HiResDate');
 
     my $adapter = $class->check_adapter('listUserMeetingsByDate');
 
@@ -339,7 +339,6 @@ sub _readback_check {
     #
     # password not included in readback record - skip it
     #
-
     delete $updates{password};
 
     #
@@ -360,7 +359,7 @@ sub _thaw {
 
     if ($data->{Adapter}) {
 	#
-	# meeting giving us unexpected Adapter property. Turf it
+	# meeting giving us unexpected Adapter property. Ignore it
 	#
 
 	if ($class->debug) {
@@ -492,7 +491,6 @@ available as both class level and object level methods.
                      meeting_id => $meeting_id,
                      action => 'join',    # join|edit|...
                      connection => $my_connection);  # optional
-
 
     #
     # Object level.
