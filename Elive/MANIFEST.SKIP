@@ -2,6 +2,8 @@
 lib/Elive/Command.pm
 # Subversion
 \B\.svn\b
+\.mine$
+\.r[0-9]+$
 # Makemaker generated files and dirs.
 ^MANIFEST\.
 ^Makefile$
