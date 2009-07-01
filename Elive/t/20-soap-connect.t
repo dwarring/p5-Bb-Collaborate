@@ -13,10 +13,6 @@ BEGIN {
 
 my $class = 'Elive::Entity::Preload' ;
 
-my @data;
-$data[0] = 'the quick brown fox. %%(&)+(*)+*(_+';
-$data[1] = join('',map {pack('C', $_)} (0..255));
-
 SKIP: {
 
     my %result = Elive->_get_test_auth();
@@ -56,8 +52,8 @@ SKIP: {
     if ($version_num > $highest_tested_version) {
 	diag "************************";
 	diag "Note: Elluminate Live! server version is ".qv($server_version);
-	diag "      This Elive release has been tested against v9.0.0 - v9.1.0";
-	diag "      You might want to check for more Elive upgrades.";
+	diag "      This Elive release ($Elive::VERSION) has been tested against v9.0.0 - v9.1.0";
+	diag "      You might want to check CPAN for a more recent version of Elive.";
 	diag "************************";
     }
 }
