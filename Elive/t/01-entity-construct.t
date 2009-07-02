@@ -151,4 +151,4 @@ my $meeting =  Elive::Entity::Meeting->construct({
 isa_ok($meeting, 'Elive::Entity::Meeting');
 ok($meeting->name eq 'test meeting', 'meeting name');
 ok($meeting->start eq '1234567890123', 'meeting start (hires coercian)');
-ok($meeting->end eq '1231231230123', 'meeting end (hrres explicit)');
+ok($meeting->end eq '1231231230123', 'meeting end (hires explicit)');

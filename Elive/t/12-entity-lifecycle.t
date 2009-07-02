@@ -19,8 +19,6 @@ use Scalar::Util;
 my $URL1 = 'http://test1.org';
 
 my $K1 = 123456123456;
-my $K2 = 112233445566;
-my $K3 = 111222333444;
 my $C1 = Elive::Connection->connect($URL1);
 
 Elive->connection($C1);
@@ -31,23 +29,22 @@ my $user =  Elive::Entity::User->construct(
     );
 
 my $url = $user->url;
-#
-# we need to trick perl into not counting this as a reference. Otherwise
-# we can't actually destroy it.
-#
-my $refaddr = sprintf("%s",$user->_refaddr) . '';
 my $is_live = defined(Elive::Entity->live_entity($url));
 ok($is_live, 'entity is live');
+
+#
+# NB _refaddr uses Scalar::Util::refaddr - doesn't count as a reference.
+#
+my $refaddr = $user->_refaddr;;
 
 ok(defined($meta_data_tab->{$refaddr}), 'entity has metadata');
 
 #
 # right, lets get rid of the object
 #
+
 $user = undef;
-#
-# just in case we've done somthing kookey
-#
+
 ok($refaddr, 'refaddr still valid');
 
 my $is_dead = !(Elive::Entity->live_entity($url));

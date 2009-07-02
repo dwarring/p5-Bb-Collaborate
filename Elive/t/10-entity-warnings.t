@@ -94,8 +94,8 @@ sub meeting_with_lowres_dates {
 	({
 	    meetingId => 11223344,
 	    name => 'test meeting',
-	    start => 1234567890, #good
-	    end => 1244668890000, #bad
+	    start => 1234567890,  #too short
+	    end => 1244668890000, #good
          },
 	);
 }

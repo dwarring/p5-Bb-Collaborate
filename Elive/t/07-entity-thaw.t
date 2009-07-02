@@ -94,7 +94,7 @@ is_deeply(\%user_contents,
 
 {
     #
-    # try toogling a boolean flag, while we're at it
+    # try toggling a boolean flag, while we're at it
     #
     local $user_data->{UserAdapter}{Deleted} = 'true';
     my $user2_thawed = Elive::Entity::User->_thaw($user_data);
@@ -103,7 +103,7 @@ is_deeply(\%user_contents,
 }
 
 #
-# Do entire process: unpacking, thawing, consrtucting
+# Do entire process: unpacking, thawing, constructing
 #
 my $participant_data = {
     'ParticipantListAdapter' => {

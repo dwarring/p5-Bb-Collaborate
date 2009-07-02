@@ -42,5 +42,5 @@ my $group_k1 = Elive::Entity::Group->construct(
     },
     );
 
-ok($user_k1->url ne $user_k2->url, 'distinct entitys have distinct urls');
+ok($user_k1->url ne $user_k2->url, 'distinct entities have distinct urls');
 ok($user_k1->url ne $group_k1->url, 'urls distinct between entity classes');
