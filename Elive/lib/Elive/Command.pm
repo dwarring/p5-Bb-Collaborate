@@ -7,7 +7,7 @@ Elive -  Elluminate Live! -  Utilities and Commands
 
 =head1 DESCRIPTION
 
-This module contains a number of miscellenous commands. These are as listed
+This module contains a number of miscellanous commands. These are as listed
 in section 4.1.9 of the Elluminate I<Live!> SDK.
 
 =cut

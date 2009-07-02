@@ -175,8 +175,8 @@ WebStart. You can, for example, render this as a web page with mime type
 C<application/x-java-jnlp-file>.
 
 The C<userIP> is required by the server and represents the IP address of
-the client. The recording viewer can be launched from a browser that resolvesd
-to the same IP address.
+the client. It is expected recording is expected launched from a browser
+that resolves to the same IP address.
 
 See also L<http://en.wikipedia.org/wiki/JNLP>.
 

@@ -52,11 +52,11 @@ Elive::Entity::Particpiant - A Single Meeting Participant
 =head1 DESCRIPTION
 
 This class cannot be retrieved directly. Rather it is a container
-class for participants in an Elive::Entity::ParticpiantList
+class for participants in an L<Elive::Entity::ParticipantList>.
 
 =head1 SEE ALSO
 
-Elive::Entity::ParticpiantList
+L<Elive::Entity::ParticipantList>
 
 =cut
 
