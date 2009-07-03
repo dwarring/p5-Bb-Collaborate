@@ -3,7 +3,8 @@ use warnings; use strict;
 use Test::More tests => 8;
 use Test::Exception;
 
-package main;
+use lib '.';
+use t::Elive;
 
 BEGIN {
     use_ok( 'Elive' );
@@ -14,7 +15,7 @@ my $class = 'Elive::Entity::Meeting' ;
 
 SKIP: {
 
-    my %result = Elive->_get_test_auth();
+    my %result = t::Elive->auth();
     my $auth = $result{auth};
 
     skip ($result{reason} || 'unable to find test connection',

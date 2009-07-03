@@ -4,7 +4,8 @@ use Test::More tests => 11;
 use Test::Exception;
 use version;
 
-package main;
+use lib '.';
+use t::Elive;
 
 BEGIN {
     use_ok( 'Elive' );
@@ -15,7 +16,7 @@ my $class = 'Elive::Entity::Preload' ;
 
 SKIP: {
 
-    my %result = Elive->_get_test_auth();
+    my %result = t::Elive->auth();
     my $auth = $result{auth};
 
     skip ($result{reason} || 'unable to find test connection',

@@ -3,7 +3,8 @@ use warnings; use strict;
 use Test::More tests => 36;
 use Test::Exception;
 
-package main;
+use lib '.';
+use t::Elive;
 
 BEGIN {
     use_ok( 'Elive' );
@@ -13,14 +14,11 @@ BEGIN {
     use_ok( 'Elive::Entity::ParticipantList' );
 };
 
-##use Carp; $SIG{__WARN__} = \&Carp::cluck;
-##use Carp; $SIG{__DIE__} = \&Carp::confess;
-
 my $class = 'Elive::Entity::Meeting' ;
 
 SKIP: {
 
-    my %result = Elive->_get_test_auth();
+    my %result = t::Elive->auth();
     my $auth = $result{auth};
 
     skip ($result{reason} || 'no test connection specified',

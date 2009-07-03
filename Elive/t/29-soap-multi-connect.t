@@ -3,7 +3,8 @@ use warnings; use strict;
 use Test::More tests => 24;
 use Test::Exception;
 
-package main;
+use lib '.';
+use t::Elive;
 
 BEGIN {
     use_ok( 'Elive' );
@@ -17,14 +18,14 @@ SKIP: {
 
     my $Skip = 21;
 
-    my %result = Elive->_get_test_auth();
+    my %result = t::Elive->auth();
     my $auth = $result{auth};
 
     skip ($result{reason} || 'unable to find test connection',
 	$Skip)
 	unless $auth && @$auth;
 
-    my %result_2 = Elive->_get_test_auth(suffix => '_2');
+    my %result_2 = t::Elive->auth(suffix => '_2');
     my $auth_2 = $result_2{auth};
 
     skip ($result_2{reason} || 'unable to find secondary test connection',
