@@ -469,19 +469,15 @@ David Warring, C<< <david.warring at gmail.com> >>
 
 =over 4
 
-=item Elive is a new module
+=item Elive is a newish module
 
 I have so far run it against a limited number of Elluminate 9.0 and 9.1
 installations.
 
-So far it does not implement all SOAP/XML calls, but concentrates on users,
-meetings and meeting participants.
+So far it does not implement all SOAP calls, but concentrates on entities
+such as users, meetings, preloads and meeting participants.
 
 =item Database Access
-
-Elluminate SOAP/XML interface doesn't provide for locking or transactional
-control. The Elluminate server installs with the Mckoi pure Java database
-which supports JDBC access.
 
 The Elluminate I<Live!> advanced configuration guide mentions that it can be
 configured to use other databases that support a JDBC bridge (most databases
@@ -492,12 +488,16 @@ in widespread use do). However, it specifically mentions SQL Server or Oracle.
 Elluminate I<Live!> can also be configured to use an LDAP repository for
 user authentication.  Users can still be retrieved or listed.
 
-Note also, that if you don't define a LDAP mapping for the userId, the LDAP
-DAO aliases the userId to loginName.
+Note:
 
-However updates and deletes are not supported by the LDAP DAO adapter. You
-may also want to consider using another module such as Net::LDAP, to access
-and maintain the repository.
+=over 4
+
+=item  * You can map both of the user's I<userId> and I<loginName> to the
+LDAP I<uid> attribute.
+
+=item * Updates and deletes are not supported by the LDAP DAO adapter.
+
+=back
 
 =back
 

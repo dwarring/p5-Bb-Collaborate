@@ -1,7 +1,12 @@
 Revision history for Elive
 
+0.31    2nd July
+        - Some work on pod doco.
+        - Moved Elive::_get_test_auth() to t::Elive::auth()
+
 0.30    27th June
-        - 'elive_raise_meeting' - check participants before creating meeting
+        - 'elive_raise_meeting' - checkall participants ae valid before
+           attempting to created meeting
 
 0.29    24th June
         - 'elive_raise_meeting' now converts dates via Date::Parse:str2time().
