@@ -1,6 +1,6 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 22;
+use Test::More tests => 27;
 use Test::Warn;
 
 use Carp; $SIG{__DIE__} = \&Carp::confess;
@@ -9,6 +9,7 @@ BEGIN {
     use_ok( 'Elive::Connection' );
     use_ok( 'Elive::Entity::User' );
     use_ok( 'Elive::Entity::ParticipantList' );
+    use_ok( 'Elive::Entity::ServerParameters' );
     use_ok( 'Elive::Util');
 };
 
@@ -124,4 +125,27 @@ is_deeply($participant_list_frozen2,
 	  'participant_list freeze from object'
     );
 
+my $server_parameter_data = {
+    meetingId => 123456789000,
+    boundaryMinutes => 42,
+    fullPermissions => 1,
+};
+
+my $aliases = Elive::Entity::ServerParameters->_aliases;
+
+##use YAML; die YAML::Dump($aliases);
+
+ok($aliases, 'got server_parameter aliases');
+ok($aliases->{boundary}, 'got server_parameter alias for boundary');
+is_deeply($aliases->{boundary}, {
+    to => 'boundaryMinutes',
+    freeze => 1},
+    'server_parameter alias for boundaryMinutes - as expected');
+
+my $server_parameter_frozen = Elive::Entity::ServerParameters->_freeze($server_parameter_data);
+is_deeply( $server_parameter_frozen, {
+    meetingId => 123456789000,
+    boundary => 42,
+    permissionsOn => 'true'},
+    'server parameter freeze from data');
 

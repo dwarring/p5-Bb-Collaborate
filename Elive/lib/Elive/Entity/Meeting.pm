@@ -52,6 +52,13 @@ has 'facilitatorId' => (is => 'rw', isa => 'Str',
 has 'privateMeeting' => (is => 'rw', isa => 'Bool',
 			 documentation => "don't display meeting in public schedule");
 
+has  'allModerators' => (is => 'rw', isa => 'Bool',
+			 documentation => "all participants can moderate");
+
+has  'restrictedMeeting' => (is => 'rw', isa => 'Bool',
+			     documentation => "Restricted meeting");
+
+
 =head1 METHODS
 
 =cut

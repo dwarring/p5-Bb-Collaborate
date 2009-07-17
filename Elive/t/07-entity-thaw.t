@@ -84,6 +84,8 @@ is_deeply(\%user_contents,
 	      userId => '1239260932',
 	      deleted => 0,
 	      lastName => 'Bill',
+	      domain => undef,
+	      groups => undef,
 	      role => bless (
 		  {
 		      roleId => '3',

@@ -36,6 +36,12 @@ has 'firstName' => (is => 'rw', isa => 'Str',
 has 'lastName' => (is => 'rw', isa => 'Str',
 		   documentation => 'users surname');
 
+has 'groups' => (is => 'rw', isa => 'Str',
+		documentation => 'groups?');
+
+has 'domain' => (is => 'rw', isa => 'Str',
+		 documentation => 'domain?');
+
 
 coerce 'Elive::Entity::User' => from 'HashRef'
           => via {Elive::Entity::User->construct($_,

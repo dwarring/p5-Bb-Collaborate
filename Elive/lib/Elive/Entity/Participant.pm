@@ -25,6 +25,11 @@ has 'role' => (is => 'rw', isa => 'Elive::Entity::Role|Str',
 	       coerce => 1,
     );
 
+#
+# name change under 9.5
+#
+__PACKAGE__->_alias(participant => 'user');
+
 sub _parse {
     my $class = shift;
     local ($_) = shift;

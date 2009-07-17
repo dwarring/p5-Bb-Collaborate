@@ -34,6 +34,7 @@ __PACKAGE__->collection_name('Preloads');
 
 has 'preloadId' => (is => 'rw', isa => 'Int', required => 1);
 __PACKAGE__->primary_key('preloadId');
+__PACKAGE__->_alias(key => 'preloadId');
 
 enum enumPreloadTypes => qw(media whiteboard);
 has 'type' => (is => 'rw', isa => 'enumPreloadTypes', required => 1,
@@ -238,13 +239,9 @@ sub _thaw {
     #
     my $db_thawed = $class->SUPER::_thaw($db_data, @_);
 
-    if (my $preload_id = delete $db_thawed->{Key}) {
-	$db_thawed->{preloadId} = $preload_id;
-    }
-
     for (grep {defined} $db_thawed->{type}) {
 	#
-	# Filter database crud
+	# Just to pass type constraints
 	#
 	$_ = lc($_);
 
@@ -257,13 +254,11 @@ sub _thaw {
     return $db_thawed;
 }
 
-our $mime_types;
-
 sub _guess_mimetype {
     my $class = shift;
     my $filename = shift;
 
-    $mime_types ||= MIME::Types->new;
+    our $mime_types ||= MIME::Types->new;
 
     my $mime_type = $mime_types->mimeTypeOf($filename);
 

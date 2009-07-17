@@ -48,7 +48,7 @@ SKIP: {
     my $version_num = version->new($server_version)->numify;
     ok($version_num >= 9, "Elluminate Live! server is 9.0.0 or higher");
 
-    my $highest_tested_version = 9.001;
+    my $highest_tested_version = 9.005;
 
     if ($version_num > $highest_tested_version) {
 	diag "************************";

@@ -9,6 +9,7 @@ use Elive::Util;
 
 BEGIN {
     __PACKAGE__->mk_classdata('_entities' => {});
+    __PACKAGE__->mk_classdata('_aliases');
     __PACKAGE__->mk_classdata('_entity_name');
     __PACKAGE__->mk_classdata('_primary_key', []);
     __PACKAGE__->mk_classdata('collection_name');
@@ -83,7 +84,6 @@ sub stringify {
     return $string;
 }
 
-
 =head2 entity_name
 
     my $entity_name = MyApp::Entity::User->entity_name
@@ -110,6 +110,63 @@ sub entity_name {
     }
 
     return $entity_class->_entity_name;
+}
+
+# _alias, _get_aliases
+#
+#    MyApp::Entity::Meeting->_set_data_mapping(requiredSeats => 'seats');
+#
+# Return or set data mappings.
+#
+# These methods assist with the handling of data inconsistancies that
+# sometimes exist between freeze/thaw property names; or between versions.
+# These are always trapped at the data level (_freeze & _thaw).
+#
+
+sub _alias {
+    my $entity_class = shift;
+    my $from = lcfirst(shift);
+    my $to = lcfirst(shift);
+
+    die 'usage: $entity_class->_set_data_mapping(alias, prop, %opts)'
+	unless ($entity_class
+		&& $from && !ref($from)
+		&& $to && !ref($to));
+
+    my %opt = @_;
+
+    my $aliases = $entity_class->_get_aliases;
+
+    #
+    # Set our entity name. Register it in our parent
+    #
+    die "$entity_class: attempted redefinition of alias: $from"
+	if $aliases->{$from};
+
+    die "$entity_class: can't alias $from it's already a property!"
+	if $entity_class->meta->get_attribute_map->{$from};
+
+    die "$entity_class: attempt to alias $from to non-existant property $to - check spelling and declaration order"
+	unless $entity_class->meta->get_attribute_map->{$to};
+
+    $opt{to} = $to;
+    $aliases->{$from} = \%opt;
+
+    return \%opt;
+}
+
+sub _get_aliases {
+
+    my $entity_class = shift;
+
+    my $aliases = $entity_class->_aliases;
+
+    unless ($aliases) {
+	$aliases = {};
+	$entity_class->_aliases( $aliases );
+    }
+
+    return $aliases
 }
 
 =head2 id
@@ -162,7 +219,6 @@ sub entities {
 
     return $entity_class->_entities;
 }
-
 
 sub _ordered_attribute_names {
     my $class = shift;

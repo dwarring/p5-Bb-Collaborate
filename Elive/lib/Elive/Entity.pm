@@ -196,7 +196,7 @@ sub _freeze {
 
     foreach (keys %db_data) {
 
-	die "unknown property: $_: expected: @properties"
+	die "$class: unknown property: $_: expected: @properties"
 	    unless exists $property_types->{$_};
 
 	my ($type, $is_array, $is_struct) = Elive::Util::parse_type($property_types->{$_});
@@ -218,6 +218,23 @@ sub _freeze {
 	    }
 	}
     } 
+
+    #
+    # apply any freeze alias mappings
+    #
+
+    my $aliases = $class->_aliases;
+
+    foreach my $alias (keys %$aliases) {
+	if ($aliases->{$alias}{freeze}) {
+	    my $to = $aliases->{$alias}{to}
+	    or die "malformed alias: $alias";
+	    #
+	    # Freeze with this alias
+	    #
+	    $db_data{ $alias } = delete $db_data{ $to };
+	}
+    }
 
     return \%db_data;
 }
@@ -255,6 +272,7 @@ sub _thaw {
 
     my %data;
     my @properties = $class->properties;
+    my $aliases = $class->_aliases;
 
     #
     # Fix up a couple of inconsistancies with the fetched data versus
@@ -262,10 +280,18 @@ sub _thaw {
     # (inserts, updates, querys):
     # 1. Entity names returned capitalised: 'LoginName' => 'loginName
     # 2. Primary key returned as Id, rather than <entity_name>Id
+    # 3. Aliases. Usually a result of name name changes between versions
     #
     my %prop_key_map = map {ucfirst($_) => $_} @properties;
 
     $prop_key_map{Id} = lcfirst($class->entity_name).'Id';
+
+    foreach my $alias (keys %$aliases) {
+	my $to = $aliases->{$alias}{to}
+	|| die "malformed alias: $alias";
+
+	$prop_key_map{ ucfirst($alias) } = $to;
+    }
 
     foreach my $key (keys %$entity_data) {
 

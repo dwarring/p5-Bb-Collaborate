@@ -1,8 +1,22 @@
 package t::Elive;
 use warnings; use strict;
-#
-# auth - locate test authorization from the environment
-#
+
+=head1 NAME
+
+t::Elive
+
+=head1 DESCRIPTION
+
+Testing support package for Elive
+
+=cut
+
+=head2 auth
+
+locate test authorization from the environment
+
+=cut
+
 sub auth {
     my $class = shift;
     my %opt = @_;

@@ -95,48 +95,75 @@ sub main {
     }
 
     my @adapters = _get_elems($config, qw/elm adapters adapter/);
-    my @classes = map {_get_elems($_, 'class')} @adapters;
-
-    my ($command_adapter)
-	= (grep {my ($class) = _get_elems($_, 'class');
-		 $class =~ m{CommandAdapter}}
-	   @adapters);
-
-    die "Unable to locate adapter commands"
-	unless $command_adapter;
-
-    my @commands = _get_elems($command_adapter, 'argument');
 
     print "Adapters: ";
 
-    foreach (sort {$a->[0] cmp $b->[0]}
-	     map {[$_->{name}[0], $_->{value}[0]]}
-	     @commands) {
+    if (my @default = map {_get_elems($_, 'default')} @adapters) {
+	#
+	# elluminate v 9.5
+	#
+	@adapters = @default;
 
-	my ($name, $value) = @$_;
-	next unless $name =~ s{^command\:}{};
-	next unless exists $required_adapters{$name};
-	print "[$name]";
+	my ($command_adapter)
+	    = (grep {my ($class) = _get_elems($_, 'class');
+		     $class =~ m{CommandAdapter}}
+	       @adapters);
 
-	if (exists $found{$name}) {
-	    push(@errors, "Duplicate entries for command: $name");
-	    next;
+	die "assuming elm 9.5, but unable to find elements of class =~ /CommandAdapter/"
+	    unless $command_adapter;
+
+	my @commands = _get_elems($command_adapter, 'commands');
+
+	die "assumming elm 9.5, but unable to find 'commands' elements"
+	    unless @commands;
+
+	my ($command, @_guff) = map {_get_elems($_, 'command')} @commands;
+
+	die "assumming elm 9.5, but unable to find 'command' element"
+	    unless $command;
+
+	my @command_keys = sort keys %$command;
+	print "[$_]" for @command_keys;
+
+	@found{@command_keys} = undef;
+    }
+    else {
+	#
+	# elluminate v9.0 - 9.1
+	#
+	my ($command_adapter)
+	    = (grep {my ($class) = _get_elems($_, 'class');
+		     $class =~ m{CommandAdapter}}
+	       @adapters);
+
+	die "Unable to locate adapter commands"
+	    unless $command_adapter;
+
+	my @commands = _get_elems($command_adapter, 'argument');
+	
+	foreach (sort {$a->[0] cmp $b->[0]}
+		 map {[$_->{name}[0], $_->{value}[0]]}
+		 @commands) {
+
+	    my ($name, $value) = @$_;
+	    next unless $name =~ s{^command\:}{};
+	    next unless exists $required_adapters{$name};
+	    print "[$name]";
+
+	    if (exists $found{$name}) {
+		push(@errors, "Duplicate entries for command: $name");
+		next;
+	    }
+	    else {
+		$found{$name} = undef;
+	    }
+
+	    unless ($value) {
+		push(@errors, "Could not find a value for adapter command: $name");
+		next;
+	    }
+
 	}
-	else {
-	    $found{$name} = undef;
-	}
-
-	unless ($value) {
-	    push(@errors, "Could not find a value for adapter command: $name");
-	    next;
-	}
-
-##
-## this test doesn't work for certain adapters - disable
-##	my $expected_value = 'com.elluminate.adapter.command.'.ucfirst($name).'Command';
-##	unless ($value eq $expected_value) {
-##	    push (@errors, "command: $name\n    Expected value: $expected_value\n    Actual value: $value");
-##	}
     }
 
     my @missing = sort grep {!exists $found{$_}} (keys %required_adapters);
@@ -156,10 +183,9 @@ sub _get_elems {
     my $tag = shift;
 
     my $elem = $struct->{$tag};
-    die "unable to get: $tag"
-	unless ($elem);
 
-    my @got = @$elem;
+    my @got = ref($elem) eq 'ARRAY' ? @$elem
+	: defined $elem? ($elem) : ();
 
     return @_
 	? map {_get_elems($_, @_)} @got

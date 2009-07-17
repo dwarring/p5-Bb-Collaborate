@@ -214,7 +214,7 @@ sub main {
 
 			my $entity = $2;
 			my $filter = $4;
-			my @props = split(m{\s* , \s*}x, $1);
+			my @props = split(m{\s* ,|\| \s*}x, $1);
 
 			my $entity_class = $entities->{$entity};
 

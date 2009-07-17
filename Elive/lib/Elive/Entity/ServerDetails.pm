@@ -38,8 +38,8 @@ has 'version' => (is => 'rw', isa => 'Str');
 
     my ($server) = Elive::Entity::ServerDetails->list();
 
-Return the server details. Note that this is a singleton record. You
-should always expect to retrieve one record from the server.
+Return the server details. Note that this is a singleton record. You should
+always expect to retrieve one record from the server.
 
 =cut
 
@@ -50,7 +50,34 @@ sub list {
     die "filter not applicable to class $class"
 	if ($opt{filter});
 
-    return $class->_fetch({}, %opt);
+    my $connection = $opt{connection} || $class->connection
+	|| die "not connected";
+
+    my $server_details_list;
+
+    if (($ENV{ELIVE_FORCE}||'') eq '9.5.0') {
+	#
+	# Elluminate Live release 9.5.0 is not currently supported due
+	# to some unresolved problems. In particular getServerDetails
+        # and getMeetingsByDate. Set ELIVE_FORCE to dummy up a server
+	# details record, so we can at least connect and login to the
+	# server.
+	#
+	my $looks_like_elm_9_5 = defined $connection->login->domain;
+
+	if ($looks_like_elm_9_5) {
+	    #
+	    # Ouch, we haven't been able to a server details record,
+	    # but this is broken in elm 9.5. Return a dummy, so that
+	    # we can at least keep going!
+   
+	    $server_details_list = [Elive::Entity::ServerDetails->new({serverDetailsId => 'server-details-broken-in-elm-9.5', version => '9.5.0'})];
+	}
+    }
+
+    $server_details_list ||= $class->_fetch({}, %opt);
+
+    return $server_details_list;
 }
 
 1;

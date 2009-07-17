@@ -29,9 +29,17 @@ has 'maxTalkers' => (is => 'rw', isa => 'Int',
     documentation => 'maximum number of simultaneous talkers');
 #
 # inSessionInvitation - required by ElluminateLive 8.0 - 9.10?
+# took a walk in 9.1, but back in 9.5 as inSessionInvitations
 #
 has 'inSessionInvitation'  => (is => 'rw', isa => 'Bool');
+# v9.5
+__PACKAGE__->_alias('inSessionInvitations' => 'inSessionInvitation');
 
+has 'followModerator'  => (is => 'rw', isa => 'Bool');
+has 'videoWindow'  => (is => 'rw', isa => 'Bool');
+has 'recordingObfuscation'  => (is => 'rw', isa => 'Bool');
+has 'recordingResolution'  => (is => 'rw', isa => 'Str');
+has 'profile'  => (is => 'rw', isa => 'Str');
 
 =head1 NAME
 

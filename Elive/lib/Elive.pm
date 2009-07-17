@@ -7,15 +7,13 @@ Elive -  Elluminate Live! (c) client library
 
 =head1 VERSION
 
-Version 0.31
+Version 0.32
 
 =cut
 
-our $VERSION = '0.31';
+our $VERSION = '0.32';
 
 use base qw{Class::Data::Inheritable};
-
-use Elive::Connection;
 
 =head1 SYNOPSIS
 
@@ -97,6 +95,9 @@ sub connect {
     die "usage: ${class}->new(url, login_name[, pass])"
 	unless ($class && $url && $login_name);
 
+    eval "use Elive::Connection";
+    die $@ if $@;
+
     my $connection = Elive::Connection->connect(
 	$url,
 	$login_name,
@@ -172,8 +173,9 @@ do this prior to exiting your program.
 
 sub disconnect {
     my $class = shift;
+    my %opt = @_;
 
-    if (my $connection = $class->connection) {
+    if (my $connection = $opt{connection} || $class->connection) {
 	$connection->disconnect;
 	$class->connection(undef);
     }
@@ -323,8 +325,8 @@ Elluminate Services Errors:
 This may indicate that the particular command adaptor is is not available for
 your site instance.
 
-Check that your Elluminate server software is up-to-date (Elive has been tested
-against Elluminate I<Live!> 9.0 and 9.1 only).
+Check that your Elluminate I<Live!> server software version; Elive supports
+9.0 and 9.1.
 
 If the problem persists, the command entry may be missing from your site
 configuration file. Please follow the instructions in the README file
@@ -347,7 +349,7 @@ sub _check_for_errors {
 
     if(!Elive::Util::_reftype($result)) {
 	#
-	# Simple scalar
+	# Simple scalar - we're done
 	#
 	return;
     }
@@ -404,7 +406,7 @@ Perl Modules:
 
 =over 4
 
-=item Elive::Connection - SOAP/XML connection to Elluminate
+=item Elive::Connection - Elluminate SOAP connection
 
 =item Elive::Struct - base class for Elive::Entity
 
@@ -449,7 +451,7 @@ Elluminate I<Live!> Documentation. This comes with your distribution
 =item ELM2.5_SDK.pdf
 
 General Description of SDK's available for Elluminate I<Live!>. In particular
-see section 4 - the SOAP/XML command toolkit.
+see section 4 - the SOAP command toolkit.
 
 =item DatabaseSchema.pdf
 
@@ -457,7 +459,7 @@ Elluminate Database Schema Documentation.
 
 =item InstanceManager.pdf
 
-Describes setting up multiple instances.
+Describes setting up multiple site instances.
 
 =back
 
@@ -481,7 +483,7 @@ such as users, meetings, preloads and meeting participants.
 
 The Elluminate I<Live!> advanced configuration guide mentions that it can be
 configured to use other databases that support a JDBC bridge (most databases
-in widespread use do). However, it specifically mentions SQL Server or Oracle. 
+in widespread use do). It specifically mentions SQL Server or Oracle. 
 
 =item LDAP Authentication
 
@@ -492,7 +494,7 @@ Note:
 
 =over 4
 
-=item  * You can map both of the user's I<userId> and I<loginName> to the
+=item * You can map both of the user's I<userId> and I<loginName> to the
 LDAP I<uid> attribute.
 
 =item * Updates and deletes are not supported by the LDAP DAO adapter.

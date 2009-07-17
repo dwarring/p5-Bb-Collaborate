@@ -6,6 +6,9 @@ use Class::Data::Inheritable;
 
 use base qw{Class::Accessor};
 
+use Elive;
+use Elive::Entity;
+
 =head1 NAME
 
 Elive::Connection -  Manage Elluminate SOAP connections.
@@ -25,7 +28,6 @@ have multiple connections:
     my $connection1
             = Elive::Connection->connect('http://someserver.com/site1',
                                         'someUser', 'somePass');
-
 
     my $connection2
             = Elive::Connection->connect('http://someserver.com/site2',
@@ -214,8 +216,7 @@ sub server_details {
 	eval "use  Elive::Entity::ServerDetails";
 	die $@ if $@;
 
-	my $server_details_list
-	    = Elive::Entity::ServerDetails->list(connection => $self);
+	my $server_details_list = Elive::Entity::ServerDetails->list(connection => $self);
 
 	die "unable to get server details"
 	    unless (Elive::Util::_reftype($server_details_list) eq 'ARRAY'

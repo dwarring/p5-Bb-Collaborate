@@ -75,11 +75,9 @@ POST INSTALLATION
 		...
 		<adapters>
 		   <adapter>
-		      ...
-		      <argument>
-			   <name>command:getUser</name>
-			   <value>com.elluminate.adapter.command.GetUserCommand</value>
-		       </argument>
+                      <commands>
+		        ...
+                        <command name="getUser" class="com.elluminate.adapter.command.GetUserCommand" />
 
 
     elive_query

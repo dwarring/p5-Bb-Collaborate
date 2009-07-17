@@ -15,12 +15,38 @@ __PACKAGE__->primary_key('meetingId');
 
 has 'seats' => (is => 'rw', isa => 'Int',
     documentation => 'Number of available seats');
-has 'boundaryMinutes' => (is => 'rw', isa => 'Int', required => 1,
+has 'boundaryMinutes' => (is => 'rw', isa => 'Int',
     documentation => 'meeting boundary time');
 has 'fullPermissions' => (is => 'rw', isa => 'Bool', required => 1,
     documentation => 'whether participants can perform activities (e.g. use whiteboard) before the supervisor arrives');
 has 'supervised' => (is => 'rw', isa => 'Bool',
     documentation => 'whether the moderator can see private messages');
+
+has 'enableTelephony' => (is => 'rw', isa => 'Bool');
+has 'telephonyType' => (is => 'rw', isa => 'Str');
+has 'moderatorTelephonyAddress' => (is => 'rw', isa => 'Str');
+has 'moderatorTelephonyPIN' => (is => 'rw', isa => 'Str');
+has 'participantTelephonyAddress' => (is => 'rw', isa => 'Str');
+has 'participantTelephonyPIN' => (is => 'rw', isa => 'Str');
+has 'serverTelephonyAddress' => (is => 'rw', isa => 'Str');
+has 'serverTelephonyPIN' => (is => 'rw', isa => 'Str');
+has 'serverTelephonyAddress' => (is => 'rw', isa => 'Str');
+has 'redirectURL' => (is => 'rw', isa => 'Str');
+
+#
+# maintain aliases for version compatibility and freeze/thaw inconsistancies
+#
+
+__PACKAGE__->_alias(requiredSeats => 'seats');
+__PACKAGE__->_alias(boundaryTime => 'boundaryMinutes'); # v 9.5.0 +
+__PACKAGE__->_alias(boundary => 'boundaryMinutes', freeze => 1);
+__PACKAGE__->_alias(permissionsOn => 'fullPermissions', freeze => 1);
+
+#
+# Some mispellings in the 9.50 SDK - ouch!!
+#
+__PACKAGE__->_alias(ModertatorTelephonyPIN => 'ModeratorTelephonyPIN');
+__PACKAGE__->_alias(ModertatorTelephonyAddress => 'ModeratorTelephonyAddress');
 
 =head1 NAME
 
@@ -32,7 +58,7 @@ Elive::Entity::ServerParameters - Meeting server parameters entity class
     my $meeting_params
         = Elive::Entity::ServerParameters->retrieve([$meeting->meetingId]);
 
-    $meeting_params->boundaryMinute(15); # 15 min boundary
+    $meeting_params->boundaryMinutes(15); # 15 min boundary
     $meeting_params->update;
     
     #
@@ -78,22 +104,6 @@ to create a meeting, then retrieve on meeting id
 =cut
 
 sub list {shift->_not_available}
-
-sub _freeze {
-    my $class = shift;
-    my $data = shift;
-
-    my $frozen = $class->SUPER::_freeze($data, @_);
-    #
-    # Some properties require aliasing. The update names are
-    # different to the fetched names.
-    #
-    $frozen->{boundary} = delete $frozen->{boundaryMinutes};
-    $frozen->{permissionsOn} = delete $frozen->{fullPermissions};
-
-    return $frozen;
-
-}
 
 =head2 update
 

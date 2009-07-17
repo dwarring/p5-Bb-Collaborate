@@ -27,6 +27,7 @@ has 'keywords' => (is => 'rw', isa => 'Str',
 
 has 'meetingId' => (is => 'rw', isa => 'Int', required => 1,
 		    documentation => 'id of the meeting that created this recording');
+__PACKAGE__->_alias(meetingRoomId => 'meetingId');
 
 has 'open' => (is => 'rw', isa => 'Bool',
 	       documentation => 'whether to display this recording on the public page');
@@ -147,19 +148,6 @@ sub web_url {
 
     return sprintf($Actions{$action},
 		   $url, $recording_id);
-}
-
-sub _thaw {
-    my $class = shift;
-    my $data = shift;
-
-    my $data_thawed = $class->SUPER::_thaw($data, @_);
-
-    if (exists $data_thawed->{MeetingRoomId}) {
-	$data_thawed->{meetingId} = delete $data_thawed->{MeetingRoomId};
-    }
-
-    return $data_thawed;
 }
 
 =head2 buildJNLP 

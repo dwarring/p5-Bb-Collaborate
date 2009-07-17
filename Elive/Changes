@@ -1,5 +1,20 @@
 Revision history for Elive
 
+0.32    18th July
+        Getting ready for Elluminate Live release 9.5.y (y > 0)
+        - elive_lint_config now supports 9.5 configuration files
+        - added Elive::Struct::_alias method to support some renamed files.
+        - new meeting properties: allModerators restrictedMeeting
+        - new serverParameters properties: enableTelephony, telephonyType,
+          {moderator|participant|server}TelephonyAddress,
+          {moderator|participant|server}TelephonyPIN, redirectURL
+        - new meetingParameterProperties: followModerator, videoWindow,
+          recordingObfuscation, recordingResolution, profile
+        Note: elluminate release 9.5.0 is not yet supported by this module.
+        If you want to try to run against it, set the environment variable
+        $ELIVE_FORCE=9.5.0. Watch for upgrades, both for this module and
+        for Elluminate.
+
 0.31    2nd July
         - Some work on pod doco.
         - Moved Elive::_get_test_auth() to t::Elive::auth()
@@ -61,8 +76,8 @@ Revision history for Elive
           $participant_list->update({participants => []});
         - Elive::Entity::Group now also accepts semicolon separated
           strings for group members, eg.
-	    Elive::Entity::Group->insert('my group','david;sue');
-	    Elive::Entity::Group->insert('my group',[qw(david sue)]);
+            Elive::Entity::Group->insert('my group','david;sue');
+            Elive::Entity::Group->insert('my group',[qw(david sue)]);
 
 0.18    15th May
         - Fixed problems with connecting to server from
@@ -80,8 +95,8 @@ Revision history for Elive
 0.15    9th May
         - Elive::Entity::ParticipantList constructors now accepts strings
           and arrays of strings as constructors, egs:
-	    Elive::Entity::ParticipantList->insert($mtg,'12345=2;456778');
-	    Elive::Entity::ParticipantList->insert($mtg,['12345=2',456778]);
+            Elive::Entity::ParticipantList->insert($mtg,'12345=2;456778');
+            Elive::Entity::ParticipantList->insert($mtg,['12345=2',456778]);
         - Added a number of tests, in particular testing and debugging
           multiple connections.
         - Widthdrew redundant Elive::Entity 'retrieve_all' method.
@@ -92,7 +107,7 @@ Revision history for Elive
 0.13    5th May
         - login & server_details now stored with connection handle. This
           is a prelude to allowing multiple active SOAP connections.
-	- Added -use_preload option to elive_raise_meeting script.
+        - Added -use_preload option to elive_raise_meeting script.
 
 0.12    2nd May
         - Added recording 'download' and 'web_url' methods
@@ -135,7 +150,7 @@ Revision history for Elive
         - Enhancements to elive_query
 
 0.02    14th April
-	Added
+        Added
         - Elive::Entity::Preload
         - elive_raise_meeting (script)
         - elive_lint_config (script)
