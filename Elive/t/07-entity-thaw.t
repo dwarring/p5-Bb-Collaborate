@@ -1,6 +1,6 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 48;
+use Test::More tests => 72;
 use Test::Warn;
 
 BEGIN {
@@ -23,9 +23,9 @@ ok(Elive::Util::_thaw('+0', 'Int') == 0, 'Int plus zero');
 ok(Elive::Util::_thaw('0000', 'Int') == 0, 'Int multiple zeros');
 
 ok(!Elive::Util::_thaw('false', 'Bool'), 'Bool false => 0');
-ok(Elive::Util::_thaw('true', 'Bool'), 'Bool true => true');
+ok(Elive::Util::_thaw('true', 'Bool'), 'Bool true => 1');
 
-ok(Elive::Util::_thaw('  abc ', 'Str') eq 'abc', 'String l-r trimmed');
+ok(Elive::Util::_thaw('  abc efg ', 'Str') eq 'abc efg', 'String l-r trimmed');
 
 Elive->connection(Elive::Connection->connect('http://test.org'));
 
@@ -105,6 +105,53 @@ is_deeply(\%user_contents,
 }
 
 #
+# Try another simple struct, but this time pick on something that
+# includes field alises
+#
+
+my $aliases = Elive::Entity::ServerParameters->_get_aliases;
+ok($aliases->{requiredSeats}{to} eq 'seats', 'alias: requiredSeats => seats');
+ok($aliases->{permissionsOn}{to} eq 'fullPermissions', 'alias: permissionsOn => fullPermissions');
+
+my $server_parameters_data = {
+    ServerParametersAdapter
+	=> {
+	    Id            => 1239260937,
+	    RequiredSeats      => 42,  #alias for seats
+	    PermissionsOn => 'true',   # alias for fullPermissions
+    },
+};
+
+my $server_parameters_thawed = Elive::Entity::ServerParameters->_thaw($server_parameters_data);
+
+is_deeply($server_parameters_thawed,
+	  {
+	      meetingId       => 1239260937,
+	      seats           => 42,     #alias for seats
+	      fullPermissions => 1,      # alias for fullPermissions
+	  },
+	  'server parameters thawed',
+    );
+
+#
+# General nested record level tests, including aliased sub-structures.
+# Pick on ParticipantList. This includes Participant and User as
+# sub-structure aliases.
+#
+
+my @user_alias = ('Participant' => 'User');
+my @user_role = (2,3);
+
+#
+# Check our underlaying assumptions. Our remaing checks will fail
+# unless the Participant -> User alias is defined
+#
+
+$aliases = Elive::Entity::Participant->_get_aliases;
+ok($aliases, 'got participant list aliases');
+ok(my $alias = $aliases->{lcfirst($user_alias[0])}, 'got participant alias');
+ok($alias->{to} eq lcfirst($user_alias[1]), 'Participant aliased to user');
+#
 # Do entire process: unpacking, thawing, constructing
 #
 my $participant_data = {
@@ -118,10 +165,10 @@ my $participant_data = {
 			    'ParticipantAdapter' => {
 				'Role' => {
 				    'RoleAdapter' => {
-					'RoleId' => '3'
+					'RoleId' => $user_role[0]
 				    }
 				},
-				'User' => {
+				$user_alias[0] => {
 				    'UserAdapter' => {
 					'FirstName' => 'David',
 					'Role' => {
@@ -146,15 +193,15 @@ my $participant_data = {
 			    'ParticipantAdapter' => {
 				'Role' => {
 				    'RoleAdapter' => {
-					'RoleId' => '3'
+					'RoleId' => $user_role[1],
 				    }
 				},
-				'User' => {
+				$user_alias[1] => {
 				    'UserAdapter' => {
 					'FirstName' => 'Blinky',
 					'Role' => {
 					    'RoleAdapter' => {
-						'RoleId' => '2'
+						'RoleId' => '3'
 					    }
 					},
 					'Id' => '1239260932',
@@ -175,6 +222,10 @@ my $participant_data = {
     }
 };
 
+##use YAML; die YAML::Dump({user_role => \@user_role,
+##			  user_alias => \@user_alias,
+##			  participant_list => $participant_data});
+
 my $participant_list_sorbet  = Elive::Entity::ParticipantList->_unpack_results($participant_data);
 
 #
@@ -187,13 +238,18 @@ my $participant_list_sorbet  = Elive::Entity::ParticipantList->_unpack_results($
 	foreach(qw{ParticipantListAdapter Participants});
 
     isa_ok($p, 'ARRAY', 'ParticipantListAdapter->Participants');
-    ok($p = $p->[1], 'found ParticipantListAdapter->Participant->[1]');
 
-    foreach (qw{ParticipantAdapter User UserAdapter Role RoleAdapter RoleId}) {
-	ok($p = $p->{$_}, "hash deref $_");
+    foreach my $n (0..1) {
+	ok(my $pn = $p->[$n], "found ParticipantListAdapter->Participant->[$n]");
+
+	foreach ('ParticipantAdapter', $user_alias[$n],
+		 qw{UserAdapter Role RoleAdapter RoleId}) {
+	    ok($pn = $pn->{$_}, "hash deref $_");
+	}
+
+	ok($pn == $_, "sorbet participant ${n}'s role is $_")
+	    for $user_role[$n];
     }
-
-    ok($p == $_, "sorbet 2nd participants role is $_") for (2);
 }
 
 my $participant_list_thawed = Elive::Entity::ParticipantList->_thaw($participant_list_sorbet);
@@ -206,13 +262,17 @@ my $participant_list_thawed = Elive::Entity::ParticipantList->_thaw($participant
     ok($p = $p->{$_}, "found $_ in data") for('participants');
 
     isa_ok($p, 'ARRAY', 'participants');
-    ok($p = $p->[1], 'found participants->[1]');
 
-    foreach (qw{user role roleId}) {
-	ok($p = $p->{$_}, "hash deref $_");
+    for my $n (0..1) {
+	ok(my $pn = $p->[$n], "found participants->[$n]");
+
+	foreach (qw{user role roleId}) {
+	    ok($pn = $pn->{$_}, "participant $n: hash deref $_");
+	}
+
+	ok($pn == $_, "thawed participant ${n}'s role is $_")
+	    for $user_role[$n];
     }
-
-    ok($p == $_, "thawed 2nd participants role is $_") for (2);
 }
 
 #
@@ -227,15 +287,19 @@ my $participant_list_obj =  Elive::Entity::ParticipantList->construct($participa
     ok($p = $p->$_, "found $_ in data") for('participants');
 
     isa_ok($p, 'Elive::Array::Participants', 'participants');
-    ok($p = $p->[1], 'found participants->[1]');
 
-    foreach (qw{user role roleId}) {
-	ok($p = $p->$_, "method deref $_");
+    foreach my $n (0..1) {
+	ok(my $pn = $p->[$n], "found participants->[$n]");
+
+	foreach (qw{user role roleId}) {
+	    ok($pn = $pn->$_, "method deref $_");
+	}
+
+	ok($pn == $_, "thawed 2nd participants role is $_")
+	    for $user_role[$n];
     }
-
-    ok($p == $_, "thawed 2nd participants role is $_") for (2);
 }
 
-
-
-
+#
+# Some tests on detecting and applying aliases
+#

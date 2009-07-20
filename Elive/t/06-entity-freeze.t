@@ -131,7 +131,7 @@ my $server_parameter_data = {
     fullPermissions => 1,
 };
 
-my $aliases = Elive::Entity::ServerParameters->_aliases;
+my $aliases = Elive::Entity::ServerParameters->_get_aliases;
 
 ##use YAML; die YAML::Dump($aliases);
 

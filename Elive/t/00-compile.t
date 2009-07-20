@@ -36,6 +36,3 @@ sub load{do('script/elive_lint_config')};
 package elive_raise_meeting;
 sub load{do('script/elive_raise_meeting')};
 
-
-
-
