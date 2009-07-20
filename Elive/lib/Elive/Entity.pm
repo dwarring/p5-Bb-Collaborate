@@ -223,7 +223,7 @@ sub _freeze {
     # apply any freeze alias mappings
     #
 
-    my $aliases = $class->_aliases;
+    my $aliases = $class->_get_aliases;
 
     foreach my $alias (keys %$aliases) {
 	if ($aliases->{$alias}{freeze}) {
@@ -272,7 +272,7 @@ sub _thaw {
 
     my %data;
     my @properties = $class->properties;
-    my $aliases = $class->_aliases;
+    my $aliases = $class->_get_aliases;
 
     #
     # Fix up a couple of inconsistancies with the fetched data versus
@@ -284,7 +284,10 @@ sub _thaw {
     #
     my %prop_key_map = map {ucfirst($_) => $_} @properties;
 
-    $prop_key_map{Id} = lcfirst($class->entity_name).'Id';
+    my @primary_key = $class->primary_key;
+
+    $prop_key_map{Id} = lcfirst($primary_key[0])
+	if @primary_key;
 
     foreach my $alias (keys %$aliases) {
 	my $to = $aliases->{$alias}{to}
