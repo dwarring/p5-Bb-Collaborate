@@ -1,5 +1,9 @@
 Revision history for Elive
 
+0.33    22nd July
+        - added tests for freze thaw aliases. Fixed some pontential
+          problems with alias usage in Elive::Enity::_freeze & _thaw.
+
 0.32    18th July
         Getting ready for Elluminate Live release 9.5.y (y > 0)
         - elive_lint_config now supports 9.5 configuration files

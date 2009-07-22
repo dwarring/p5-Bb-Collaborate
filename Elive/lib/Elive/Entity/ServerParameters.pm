@@ -42,12 +42,6 @@ __PACKAGE__->_alias(boundaryTime => 'boundaryMinutes'); # v 9.5.0 +
 __PACKAGE__->_alias(boundary => 'boundaryMinutes', freeze => 1);
 __PACKAGE__->_alias(permissionsOn => 'fullPermissions', freeze => 1);
 
-#
-# Some mispellings in the 9.50 SDK - ouch!!
-#
-__PACKAGE__->_alias(ModertatorTelephonyPIN => 'ModeratorTelephonyPIN');
-__PACKAGE__->_alias(ModertatorTelephonyAddress => 'ModeratorTelephonyAddress');
-
 =head1 NAME
 
 Elive::Entity::ServerParameters - Meeting server parameters entity class
