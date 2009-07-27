@@ -1,5 +1,5 @@
-Elive is a set of Perl modules for management and integration of Elluminate
-Live! virtual classroom servers.
+Elive is a set of Perl modules for scripting management and integration
+of Elluminate Live! virtual classroom servers.
 
 You can, for example, use it to query or add users, create sessions, assign
 users as class participants and change server settings.
@@ -10,17 +10,39 @@ You will need to be able to login in to your SOAP service using an Elluminate
 system administrator level account.
 
 Note that Elluminate installs with 'serversupport' and 'legacyadapter' as
-preset system adminstrator accounts. Don't forget to change password for
+preset system adminstrator accounts. Don't forget to change passwords on
 both these accounts before use!
 
 INSTALLATION
 
-To install this module, run the following commands:
+    To install this module, run the following commands:
 
-	perl Makefile.PL
-	make
-	make test
-	make install
+        perl Makefile.PL
+        make
+        make test
+        make install
+
+TESTING
+
+    There are additional live tests in t/20-soap-*.t. These are skipped by
+    default, but may be run by setting up some enviroment variables to
+    reference an Elluminate Live! user and site instance.
+
+    WARNING: These tests will both create and delete various entities
+    on the site instances. For this reason you should avoid running
+    tests on production sites.
+
+    To run these additional tests:
+
+        perl Makefile.PL
+        make
+        export ELIVE_TEST_URL=http://some_server.com/some_test_instance
+        export ELIVE_TEST_USER=some_admin_user
+        export ELIVE_TEST_PASS=some_password
+        make test
+
+    Again, please restrict your testing to designated development and
+    test sites, or newly created site instances!
 
 POST INSTALLATION
 
@@ -36,47 +58,46 @@ POST INSTALLATION
 
              /opt/ElluminateLive/manager/tomcat/webapps
 
-	or under Windows:
+        or under Windows:
 
-	     C:/Program Files/ElluminateLive/manager/tomcat/webapps
+             C:/Program Files/ElluminateLive/manager/tomcat/webapps
 
         The actual configuration is then in the sub-path:
 
-	     ROOT/WEB-INF/resources/configuration.xml
+             ROOT/WEB-INF/resources/configuration.xml
 
          or for any additional sites built with the instance manager:
 
-	     mysite/WEB-INF/resources/configuration.xml
+             mysite/WEB-INF/resources/configuration.xml
 
         If any adapters are missing, the corresponding Elive calls will
         return the error message 'Unable to determine a command for the key
         Xxxxx'.
 
-	If you get this error, please check that your Elluminate Live
-	software is up-to-date. I.e. you've installed all upgrades and
-	the SDK. This version Elive has only been tested against 9.0
-	and 9.1.
+        If you get this error, please check that your Elluminate Live
+        software is up-to-date. This version Elive has only been tested
+        against Elluminate Live! 9.0 and 9.1.
 
-	You may be able to get away with manually adding the adapter
-	to the list of adapters in your configuration file.
+        You may be able to get away with manually adding the adapter to
+        the list of adapters in your configuration file.
 
-	For example, if elive_lint_config returned the error:
+        For example, if elive_lint_config returned the error:
 
-	    "missing adapter command: getUser"
+            "missing adapter command: getUser"
 
-	You'll need to first stop Elluminate services.
+        You'll need to first stop Elluminate services.
 
-	Save a backup copy of configuration.xml Then you can add an adapter
+        Save a backup copy of configuration.xml Then you can add an adapter
         entry can be added to the list of adapters.
 
         E.g., to add the getUser adapter:
 
-	    <elm>
-		...
-		<adapters>
-		   <adapter>
+            <elm>
+                ...
+                <adapters>
+                   <adapter>
                       <commands>
-		        ...
+                        ...
                         <command name="getUser" class="com.elluminate.adapter.command.GetUserCommand" />
 
 
@@ -87,11 +108,11 @@ POST INSTALLATION
 
         Usage is: elive_query --user SomeAdmin http://myserver/mysite
 
-	Where SomeAdmin is an Elluminate system administrator account.
+        Where SomeAdmin is an Elluminate system administrator account.
 
         You will need to enter a password. You should then get:
 
-	    connecting to http://myserver/mysite...done
+            connecting to http://myserver/mysite...done
             Elive query 0.nn (Elluminate Live 9.x.y) - type 'help' for help
             elive>
 
@@ -105,7 +126,7 @@ SUPPORT AND DOCUMENTATION
 See the Elluminate Live documentation. In particular, this package
 follows the entities and relationships described in DatabaseSchema.pdf.
 
-You will find a copy on the installation disk. Or if you have access to the
+You will find a copy on the installation disk; or if you have access to the
 server, you will will typically find this in /opt/Elluminate/documentation. 
 
 After installing, you can find documentation for this module with the

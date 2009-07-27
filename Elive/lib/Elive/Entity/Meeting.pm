@@ -613,7 +613,7 @@ sub list_preloads {
 
 =head2 list_recordings
 
-    my $preloads = $meeting_obj->list_recordings;
+    my $recordings = $meeting_obj->list_recordings;
 
 Lists all recordings associated with the meeting. See also
 L<Elive::Entity::Recording>.

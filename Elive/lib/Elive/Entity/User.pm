@@ -76,7 +76,7 @@ sub _readback_check {
 
 =head2 get_by_loginName
 
-    my $user = Elive::Entity::User->retrieve_loginName('joebloggs');
+    my $user = Elive::Entity::User->get_by_loginName('joebloggs');
 
 Retrieve on loginName, which is a co-key for the users table.
 
@@ -225,8 +225,8 @@ Elluminate I<Live!> can be configured to use LDAP for user management and
 authentication.
 
 If LDAP is in use, the fetch and retrieve methods will continue to operate
-via the Elluminate SOAP/XML layer. However use access becomes read-only. The
-affected methods are: insert, update, delete and change_password.
+via the Elluminate SOAP command layer. However use access becomes read-only.
+The affected methods are: insert, update, delete and change_password.
 
 =cut
 

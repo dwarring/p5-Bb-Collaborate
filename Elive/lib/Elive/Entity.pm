@@ -890,7 +890,7 @@ sub _fetch {
     my $rows = $class->_process_results($results, %opt);
     #
     # 0 results => not found. Would be treated by readback as an error,
-    # but actually ok here.
+    # but perfectly valid here. Just means we didn't find a matching entity.
     #
     return []
 	unless @$rows;
