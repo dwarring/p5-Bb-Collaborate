@@ -1,13 +1,17 @@
 Revision history for Elive
 
+0.34    28th July
+        - fixes and amendments to pod doco and README file
+        - fixed a potential problem with ParticipantList update
+
 0.33    22nd July
-        - added tests for freze thaw aliases. Fixed some pontential
+        - added tests for freze thaw aliases. Fixed some potential
           problems with alias usage in Elive::Enity::_freeze & _thaw.
 
 0.32    18th July
         Getting ready for Elluminate Live release 9.5.y (y > 0)
         - elive_lint_config now supports 9.5 configuration files
-        - added Elive::Struct::_alias method to support some renamed files.
+        - added Elive::Struct::_alias method to support data aliasing.
         - new meeting properties: allModerators restrictedMeeting
         - new serverParameters properties: enableTelephony, telephonyType,
           {moderator|participant|server}TelephonyAddress,
