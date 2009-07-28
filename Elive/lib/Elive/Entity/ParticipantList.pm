@@ -276,12 +276,13 @@ sub _readback {
     my $meeting_id = $updates->{meetingId}
     || die "couldn't find meetingId";
 
-    my $self = $class->retrieve([$meeting_id], connection => $connection)
+    my $row = $class->retrieve([$meeting_id],
+			       connection => $connection,
+			       raw => 1,
+	)
 	or die "unable to retrieve $class/$meeting_id";
 
-    my $rows = [$self];
-
-    $class->SUPER::_readback_check($updates, $rows, @_);
+    $class->SUPER::_readback_check($updates, [$row], @_);
 }
 
 =head2 list
