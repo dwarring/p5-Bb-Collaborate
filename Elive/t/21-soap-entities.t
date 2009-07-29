@@ -1,6 +1,6 @@
 #!perl
 use warnings; use strict;
-use Test::More tests => 10;
+use Test::More tests => 15;
 use Test::Exception;
 use Scalar::Util;
 
@@ -20,12 +20,13 @@ SKIP: {
     my $auth = $result{auth};
 
     skip ($result{reason} || 'unable to find test connection',
-	8)
+	13)
 	unless $auth && @$auth;
 
     Elive->connect(@$auth);
 
     my $login = Elive->login;
+    ok(Scalar::Util::blessed($login), 'login is a blessed object');
 
     #
     # just retest some of our entity management in a live
@@ -44,15 +45,16 @@ SKIP: {
 
     my $login_refetch;
 
+    #
+    # check the -reuse option
+    #
+
     lives_ok(
 	     sub {$login_refetch = Elive::Entity::User->retrieve([$login->userId], reuse => 1)},
 	     're-retrieve of updated object with reuse - lives');
 
     ok(Scalar::Util::refaddr($login_refetch) == Scalar::Util::refaddr($login_refetch),
-       "login objects unified");
-
-    ok($login->loginName eq $loginName_new,
-       '"reuse => 1" option repected on retrieve');
+       "login objects unified to cache");
 
     ok($login->is_changed, 'login object still showing as changed');
 
@@ -60,7 +62,28 @@ SKIP: {
 	     sub {$login_refetch = Elive::Entity::User->retrieve([$login->userId], reuse => 0)},
 	     're-retrieve of updated object without reuse - dies');
 
+    #
+    # check the -raw option
+    #
+    my $login_raw_data;
+
+    lives_ok(
+	     sub {$login_raw_data = Elive::Entity::User->retrieve([$login->userId], raw => 1)},
+	     're-retrieve of updated object with reuse - lives');
+
+    ok(!Scalar::Util::blessed($login_raw_data), 'raw retrieval returns unblessed data');
+    
+    ok($login_raw_data->{loginName} eq $loginName_old,
+       'raw retrieval bypasses cache');
+
+    ok($login->loginName eq $loginName_new,
+       'changed data held in cache');
+
     $login->revert;
+
+    ok($login->loginName eq $loginName_old,
+       '$login->revert restores old value');
+
 
 }
 
