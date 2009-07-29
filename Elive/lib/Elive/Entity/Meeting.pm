@@ -48,9 +48,11 @@ has 'deleted' => (is => 'rw', isa => 'Bool');
 
 has 'facilitatorId' => (is => 'rw', isa => 'Str',
 			documentation => 'userId of facilitator');
+__PACKAGE__->_alias(facilitator => 'facilitatorId', freeze => 1);
 
 has 'privateMeeting' => (is => 'rw', isa => 'Bool',
 			 documentation => "don't display meeting in public schedule");
+__PACKAGE__->_alias(private => 'privateMeeting', freeze => 1);
 
 has  'allModerators' => (is => 'rw', isa => 'Bool',
 			 documentation => "all participants can moderate");
@@ -317,25 +319,6 @@ sub is_participant {
     my $results = $self->_unpack_as_list($som->result);
 
     return @$results && Elive::Util::_thaw($results->[0], 'Bool');
-}
-
-sub _freeze {
-    my $class = shift;
-    my $data = shift;
-    #
-    # facilitor -> facilitatorId
-    #
-    my $frozen = $class->SUPER::_freeze($data, @_);
-
-    if (my $facilitatorId = delete $frozen->{facilitatorId}) {
-	$frozen->{facilitator} =  $facilitatorId;
-    }
-
-    if (defined(my $privateMeeting = delete $frozen->{privateMeeting})) {
-	$frozen->{private} =  $privateMeeting;
-    }
-
-    return $frozen;
 }
 
 sub _readback_check {
