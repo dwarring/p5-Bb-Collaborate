@@ -3,8 +3,6 @@ use warnings; use strict;
 use Test::More tests => 27;
 use Test::Warn;
 
-use Carp; $SIG{__DIE__} = \&Carp::confess;
-
 BEGIN {
     use_ok( 'Elive::Connection' );
     use_ok( 'Elive::Entity::User' );
@@ -20,7 +18,7 @@ ok(Elive::Util::_freeze('-123456', 'Int') eq '-123456', 'Int negative');
 ok(Elive::Util::_freeze('-00123456', 'Int') eq '-123456', 'Int negative, leading zeros');
 ok(Elive::Util::_freeze('+00123456', 'Int') eq '123456', 'Int plus sign leading zeros');
 
-ok(Elive::Util::_freeze('1234567890000', 'HiResDate') eq '1234567890000', 'high precision date');
+ok(Elive::Util::_freeze('01234567890000', 'HiResDate') eq '1234567890000', 'high precision date');
 
 ok(Elive::Util::_freeze(0, 'Int') eq '0', 'Int zero');
 ok(Elive::Util::_freeze('-0', 'Int') eq '0', 'Int minus zero');
@@ -126,14 +124,12 @@ is_deeply($participant_list_frozen2,
     );
 
 my $server_parameter_data = {
-    meetingId => 123456789000,
-    boundaryMinutes => 42,
+    meetingId => '0123456789000',
+    boundaryMinutes => '+42',
     fullPermissions => 1,
 };
 
 my $aliases = Elive::Entity::ServerParameters->_get_aliases;
-
-##use YAML; die YAML::Dump($aliases);
 
 ok($aliases, 'got server_parameter aliases');
 ok($aliases->{boundary}, 'got server_parameter alias for boundary');

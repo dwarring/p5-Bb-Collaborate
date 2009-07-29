@@ -222,10 +222,6 @@ my $participant_data = {
     }
 };
 
-##use YAML; die YAML::Dump({user_role => \@user_role,
-##			  user_alias => \@user_alias,
-##			  participant_list => $participant_data});
-
 my $participant_list_sorbet  = Elive::Entity::ParticipantList->_unpack_results($participant_data);
 
 #
@@ -299,7 +295,3 @@ my $participant_list_obj =  Elive::Entity::ParticipantList->construct($participa
 	    for $user_role[$n];
     }
 }
-
-#
-# Some tests on detecting and applying aliases
-#

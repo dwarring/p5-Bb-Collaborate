@@ -84,7 +84,6 @@ SKIP: {
     ok($login->loginName eq $loginName_old,
        '$login->revert restores old value');
 
-
 }
 
 Elive->disconnect;
