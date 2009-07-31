@@ -52,7 +52,7 @@ coerce 'Elive::Entity::Participant' => from 'Str'
 
 =head1 NAME
 
-Elive::Entity::Particpiant - A Single Meeting Participant
+Elive::Entity::Participant - A Single Meeting Participant
 
 =head1 DESCRIPTION
 

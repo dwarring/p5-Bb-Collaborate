@@ -963,7 +963,7 @@ sub retrieve {
 =head2 _retrieve_all
 
     my $participants
-          = Elive::Entity::ParticpiantList->_retrieve_all($meeting_id)
+          = Elive::Entity::ParticipantList->_retrieve_all($meeting_id)
 
 Retrieve entity objects by partial primary key.
 
