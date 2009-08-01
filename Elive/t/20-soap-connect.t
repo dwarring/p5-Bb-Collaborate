@@ -35,7 +35,8 @@ SKIP: {
 
     ok ($login = Elive->login, 'got login');
     isa_ok($login, 'Elive::Entity::User','login');
-    ok($login->loginName eq $auth->[1], 'username matches login');
+    # case insenstive comparision
+    ok(uc($login->loginName) eq uc($auth->[1]), 'username matches login');
 
     my $server_details;
     my $server_version;
