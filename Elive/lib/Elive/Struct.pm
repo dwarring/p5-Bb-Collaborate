@@ -260,16 +260,17 @@ sub _cmp_col {
     #
 
     my $class = shift;
-    my $col = shift;
+    my $data_type = shift;
     my $_v1 = shift;
     my $_v2 = shift;
+    my %opt = @_;
 
     return undef
 	unless (defined $_v1 && defined $_v2);
 
     my $cmp;
 
-    my ($type, $is_array, $is_struct) = Elive::Util::parse_type($class->property_types->{$col});
+    my ($type, $is_array, $is_struct) = Elive::Util::parse_type($data_type);
     my @v1 = ($is_array? @$_v1: ($_v1));
     my @v2 = ($is_array? @$_v2: ($_v2));
 
@@ -316,11 +317,14 @@ sub _cmp_col {
 	    my $v2 = $v2[$i];
 
 	    if ($is_struct || $type =~ m{^(Str|Enum|HiResDate)}i) {
+		#
 		# string comparision. works on simple strings and
 		# stringified entities. Also used for hires dates
 		# integer comparision may result in arithmetic overflow
 		# 
-		$cmp ||= $v1 cmp $v2;
+		$cmp ||= ($opt{case_insensitive}
+			  ? uc($v1) cmp uc($v2)
+			  : $v1 cmp $v2);
 	    }
 	    elsif ($type =~ m{^Bool}i) {
 		# boolean comparison
@@ -331,7 +335,7 @@ sub _cmp_col {
 		$cmp ||= $v1 <=> $v2;
 	    }
 	    else {
-		die "class $class: column $col has unknown type: $type";
+		die "class $class: unknown type: $type";
 	    }
 	}
     }
@@ -419,7 +423,8 @@ sub set {
 	    if (defined $old_val && !defined $data{$_}) {
 		die "attempt to delete primary key";
                }
-	    elsif ($self->_cmp_col($_, $old_val, $data{$_})) {
+	    elsif ($self->_cmp_col($self->property_types->{$_},
+				   $old_val, $data{$_})) {
 		die "attempt to update primary key";
 	    }
 	}

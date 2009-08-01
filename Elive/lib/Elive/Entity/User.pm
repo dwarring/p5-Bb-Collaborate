@@ -71,7 +71,7 @@ sub _readback_check {
 
     delete $updates{loginPassword};
 
-    $class->SUPER::_readback_check(\%updates, @_);
+    $class->SUPER::_readback_check(\%updates, @_, case_insensitive => 1);
 }
 
 =head2 get_by_loginName
