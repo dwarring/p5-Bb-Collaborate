@@ -268,8 +268,6 @@ sub _cmp_col {
     return undef
 	unless (defined $_v1 && defined $_v2);
 
-    my $cmp;
-
     my ($type, $is_array, $is_struct) = Elive::Util::parse_type($data_type);
     my @v1 = ($is_array? @$_v1: ($_v1));
     my @v2 = ($is_array? @$_v2: ($_v2));
@@ -280,62 +278,72 @@ sub _cmp_col {
 	#
 	for (@v1, @v2) {
 	    #
-	    # autobless references
-	    if (Scalar::Util::refaddr($_)) {
-
-		$_ = $type->stringify($_);
-	    }
+	    # stringify references
+	    #
+	    $_ = $type->stringify($_)
 	}
     }
-
-    @v1 = sort @v1;
-    @v2 = sort @v2;
 
     #
     # unequal arrays lengths => unequal
     #
 
-    $cmp ||= scalar @v1 <=> scalar @v2;
+    my $cmp = scalar @v1 <=> scalar @v2;
 
-    if ($cmp) {
-    }
-    elsif (scalar @v1 == 0) {
+    unless ($cmp) {
 
-	#
-	# Empty arrays => equal
-	#
+	if (scalar @v1 == 0) {
 
-	$cmp = undef;
-    }
-    else {
-	#
-	# compare values
-	#
-	for (my $i = 0; $i < @v1; $i++) {
+	    #
+	    # Empty arrays => equal
+	    #
 
-	    my $v1 = $v1[$i];
-	    my $v2 = $v2[$i];
+	    $cmp = undef;
+	}
+	else {
+	    #
+	    # arrays are of equal lengths. compare values
+	    #
 
-	    if ($is_struct || $type =~ m{^(Str|Enum|HiResDate)}i) {
+	    if ($is_array) {
+
 		#
-		# string comparision. works on simple strings and
-		# stringified entities. Also used for hires dates
-		# integer comparision may result in arithmetic overflow
-		# 
-		$cmp ||= ($opt{case_insensitive}
-			  ? uc($v1) cmp uc($v2)
-			  : $v1 cmp $v2);
+		# Order of elements does not matter
+		#
+
+		@v1 = sort {$class->_cmp_col($type, $a, $b, %opt)} @v1;
+		@v2 = sort {$class->_cmp_col($type, $a, $b, %opt)} @v2;
 	    }
-	    elsif ($type =~ m{^Bool}i) {
-		# boolean comparison
-		$cmp ||= ($v1? 1: 0) <=> ($v2? 1: 0);
-	    }
-	    elsif ($type =~ m{^Int}i) {
-		# int comparision
-		$cmp ||= $v1 <=> $v2;
-	    }
-	    else {
-		die "class $class: unknown type: $type";
+
+	    for (my $i = 0; $i < @v1; $i++) {
+
+		my $v1 = $v1[$i];
+		my $v2 = $v2[$i];
+
+		if ($is_struct || $type =~ m{^(Str|Enum|HiResDate)}i) {
+		    #
+		    # string comparision. works on simple strings and
+		    # stringified entities. Also used for hires dates
+		    # integer comparision may result in arithmetic overflow
+		    #
+		    $_ = Elive::Util::_freeze($_, $type)
+			for ($v1, $v2);
+
+		    $cmp ||= ($opt{case_insensitive}
+			      ? uc($v1) cmp uc($v2)
+			      : $v1 cmp $v2);
+		}
+		elsif ($type =~ m{^Bool}i) {
+		    # boolean comparison
+		    $cmp ||= ($v1? 1: 0) <=> ($v2? 1: 0);
+		}
+		elsif ($type =~ m{^Int}i) {
+		    # int comparision
+		    $cmp ||= $v1 <=> $v2;
+		}
+		else {
+		    die "class $class: unknown type: $type";
+		}
 	    }
 	}
     }

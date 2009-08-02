@@ -24,13 +24,13 @@ INSTALLATION
 
 TESTING
 
-    There are additional live tests in t/20-soap-*.t. These are skipped by
+    There are additional live tests in t/2?-soap-*.t. These are skipped by
     default, but may be run by setting up some enviroment variables to
     reference an Elluminate Live! user and site instance.
 
     WARNING: These tests will both create and delete various entities
-    on the site instances. For this reason you should avoid running
-    tests on production sites.
+    instances. For this reason you should avoid running tests on production
+    sites.
 
     To run these additional tests:
 

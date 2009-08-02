@@ -7,11 +7,11 @@ Elive -  Elluminate Live! (c) client library
 
 =head1 VERSION
 
-Version 0.34
+Version 0.35
 
 =cut
 
-our $VERSION = '0.34';
+our $VERSION = '0.35';
 
 use base qw{Class::Data::Inheritable};
 
@@ -463,6 +463,32 @@ Describes setting up multiple site instances.
 
 =back
 
+=head1 USAGE NOTES
+
+=over 4
+
+=item Database Access
+
+The Elluminate I<Live!> advanced configuration guide mentions that it can be
+configured to use other databases that support a JDBC bridge (most databases
+in widespread use do). It specifically mentions SQL Server or Oracle. 
+
+=item LDAP Authentication
+
+Elluminate I<Live!> can also be configured to use an LDAP repository for
+user authentication.  Users can still be retrieved or listed.
+
+=over 4
+
+=item * You can map both of the user's I<userId> and I<loginName> to the
+LDAP I<uid> attribute.
+
+=item * Updates and deletes are not supported by the LDAP DAO adapter.
+
+=back
+
+=back
+
 =head1 AUTHOR
 
 David Warring, C<< <david.warring at gmail.com> >>
@@ -479,27 +505,11 @@ installations.
 So far it does not implement all SOAP calls, but concentrates on entities
 such as users, meetings, preloads and meeting participants.
 
-=item Database Access
+=item Elive does not support hosted (SAS) systems
 
-The Elluminate I<Live!> advanced configuration guide mentions that it can be
-configured to use other databases that support a JDBC bridge (most databases
-in widespread use do). It specifically mentions SQL Server or Oracle. 
-
-=item LDAP Authentication
-
-Elluminate I<Live!> can also be configured to use an LDAP repository for
-user authentication.  Users can still be retrieved or listed.
-
-Note:
-
-=over 4
-
-=item * You can map both of the user's I<userId> and I<loginName> to the
-LDAP I<uid> attribute.
-
-=item * Updates and deletes are not supported by the LDAP DAO adapter.
-
-=back
+The package currently supports only the installed server version of Elluminate
+Live which uses the ELM management layer. It does not yet support the hosted
+servers deployed with SAS (Session Administration System).
 
 =back
 

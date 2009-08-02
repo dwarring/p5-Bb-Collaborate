@@ -1,5 +1,10 @@
 Revision history for Elive
 
+0.35    03rd August
+        - User search is case insensitive when confgiured for LDAP.
+          Altered entity fetch consistancy checks to be case insenstive
+          to avoid spurious consistance check failures.
+
 0.34    28th July
         - fixes and amendments to pod doco and README file
         - fixed a potential problem with ParticipantList update
