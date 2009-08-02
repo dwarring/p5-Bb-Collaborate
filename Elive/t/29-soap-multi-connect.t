@@ -67,12 +67,14 @@ SKIP: {
     ok(Scalar::Util::refaddr($user) != Scalar::Util::refaddr($user_2),
 	'users are distinct objects');
 
-    ok($user->loginName eq $auth->[1], 'login name for first connection as expected');
-    ok($user_2->loginName eq $auth_2->[1], 'login name for second connection as expected');
+    #
+    # LDAP login names may be case insensitive
+    #
+    ok(uc($user->loginName) eq uc($auth->[1]), 'login name for first connection as expected');
+    ok(uc($user_2->loginName) eq uc($auth_2->[1]), 'login name for second connection as expected');
 
     ok(my $server_details = $connection->server_details, 'can get connection login');
     isa_ok($server_details, 'Elive::Entity::ServerDetails','server_details');
-
 
     ok(!$user->is_changed, 'login not yet changed');
 
