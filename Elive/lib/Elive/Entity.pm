@@ -964,14 +964,11 @@ sub retrieve {
     return $all->[0];
 }
 
-=head2 _retrieve_all
-
-    my $participants
-          = Elive::Entity::ParticipantList->_retrieve_all($meeting_id)
-
-Retrieve entity objects by partial primary key.
-
-=cut
+# _retrieve_all() - Retrieve entity objects by partial primary key.
+#
+#    my $participants
+#          = Elive::Entity::ParticipantList->_retrieve_all($meeting_id)
+#
 
 sub _retrieve_all {
     my $class = shift;
