@@ -6,6 +6,8 @@ use Term::ReadLine;
 use Scalar::Util;
 use Storable;
 
+use YAML;
+
 use UNIVERSAL;
 
 =head1 NAME
@@ -61,6 +63,9 @@ sub _freeze {
 	    $_ = _tidy_decimal($_);
 
 	}
+	elsif ($type =~ m{^Ref}i) {
+	    die "freezing datatype $type: not implemented";
+	}
     }
 
     warn "undefined value of type $type"
@@ -92,6 +97,8 @@ sub _thaw {
 
 	    $_ = _tidy_decimal($_);
 
+	}
+	elsif ($type =~ m{^Ref}i) {
 	}
 	else {
 	    die "unknown type: $type";
@@ -234,7 +241,7 @@ sub string {
 	return $_->stringify
 	    if UNIVERSAL::can($_,'stringify');
 
-	return $_;
+	return YAML::Dump($_);
     }
 }
 1;

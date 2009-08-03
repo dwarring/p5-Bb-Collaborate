@@ -13,7 +13,10 @@ Version 0.35
 
 our $VERSION = '0.35';
 
+use Class::Data::Inheritable;
 use base qw{Class::Data::Inheritable};
+
+use YAML;
 
 =head1 SYNOPSIS
 

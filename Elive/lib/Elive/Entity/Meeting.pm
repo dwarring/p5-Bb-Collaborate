@@ -12,6 +12,8 @@ use Elive::Entity::Recording;
 use Elive::Entity::MeetingParameters;
 use Elive::Entity::ServerParameters;
 
+use YAML;
+
 =head1 NAME
 
 Elive::Entity::Meeting - Elluminate Meeting instance class

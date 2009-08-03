@@ -7,6 +7,8 @@ use base qw{Elive};
 use Elive::Array;
 use Elive::Util;
 
+use YAML;
+
 BEGIN {
     __PACKAGE__->mk_classdata('_entities' => {});
     __PACKAGE__->mk_classdata('_aliases');
@@ -340,6 +342,9 @@ sub _cmp_col {
 		elsif ($type =~ m{^Int}i) {
 		    # int comparision
 		    $cmp ||= $v1 <=> $v2;
+		}
+		elsif ($type =~ m{^Ref}i) {
+		    $cmp ||= YAML::Dump($v1) cmp YAML::Dump($v2);
 		}
 		else {
 		    die "class $class: unknown type: $type";

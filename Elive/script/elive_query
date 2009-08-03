@@ -390,15 +390,9 @@ sub output_row {
     my $row = shift;
 
     my @vals = map {
-	my $val = $row->$_;
-	#
-	# rely on stringification to display sub entities
-	#
-      UNIVERSAL::can($val, 'stringify')
-	    ? $val->stringify
-	    : (defined $val? $val: '(undef)');
-
-    } @$props;
+	defined($_)? Elive::Util::string($_) : '(undef)';
+    }
+    map {$row->$_} @$props;
 
     print join('|', @vals)."\n";
 }

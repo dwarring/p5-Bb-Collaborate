@@ -1,6 +1,6 @@
 #!perl
 use warnings; use strict;
-use Test::More tests => 11;
+use Test::More tests => 12;
 use Test::Exception;
 use version;
 
@@ -20,7 +20,7 @@ SKIP: {
     my $auth = $result{auth};
 
     skip ($result{reason} || 'unable to find test connection',
-	9)
+	10)
 	unless $auth && @$auth;
 
     diag ("connecting: user=$auth->[1], url=$auth->[0]");
@@ -58,6 +58,8 @@ SKIP: {
 	diag "      You might want to check CPAN for a more recent version of Elive.";
 	diag "************************";
     }
+
+    ok(ref($server_details->sessions), 'ServerDetails sessions is a reference');
 }
 
 Elive->disconnect;

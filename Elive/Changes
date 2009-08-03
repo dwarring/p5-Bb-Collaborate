@@ -1,9 +1,17 @@
 Revision history for Elive
 
-0.35    03rd August
-        - User search is case insensitive when confgiured for LDAP.
+0.36    4th August
+        - Added Elive Live 9.5 (ELM 3.0) support for serverdetails
+          fields sessions, serverStatus and iNetAddress. These are
+          currently only supported as references, not full blown objects.
+        - Also added support for 'Ref' datatypes to handle the above. This
+          is a standard Moose/Moose datatype.
+        - Widthdrew $ELIVE_FORCE flag (introduced in 0.32).
+
+0.35    3rd August
+        - User search is case insensitive when configured for LDAP.
           Altered entity fetch consistancy checks to be case insenstive
-          to avoid spurious consistance check failures.
+          to avoid spurious consistancy check failures.
 
 0.34    28th July
         - fixes and amendments to pod doco and README file

@@ -29,6 +29,15 @@ has 'name' => (is => 'rw', isa => 'Str');
 has 'seats' => (is => 'rw', isa => 'Int');
 has 'port' => (is => 'rw', isa => 'Int');
 has 'version' => (is => 'rw', isa => 'Str');
+has 'lastTime' => (is => 'rw', isa => 'HiResDate');
+#
+# The following are introduced in Elluminate Live 9.5 (ELM 3.0).
+# These are currently only supported as references, but may be
+# promoted to objects in later versions of Elive.
+#
+has 'sessions' => (is => 'rw', isa => 'Ref');
+has 'serverStatus' => (is => 'rw', isa => 'Ref');
+has 'iNetAddress' => (is => 'rw', isa => 'Ref');
 	
 =head1 METHODS
 
@@ -53,31 +62,7 @@ sub list {
     my $connection = $opt{connection} || $class->connection
 	|| die "not connected";
 
-    my $server_details_list;
-
-    if (($ENV{ELIVE_FORCE}||'') eq '9.5.0') {
-	#
-	# Elluminate Live release 9.5.0 is not currently supported due
-	# to some unresolved problems. In particular getServerDetails
-        # and getMeetingsByDate. Set ELIVE_FORCE to dummy up a server
-	# details record, so we can at least connect and login to the
-	# server.
-	#
-	my $looks_like_elm_9_5 = defined $connection->login->domain;
-
-	if ($looks_like_elm_9_5) {
-	    #
-	    # Ouch, we haven't been able to a server details record,
-	    # but this is broken in elm 9.5. Return a dummy, so that
-	    # we can at least keep going!
-   
-	    $server_details_list = [Elive::Entity::ServerDetails->new({serverDetailsId => 'server-details-broken-in-elm-9.5', version => '9.5.0'})];
-	}
-    }
-
-    $server_details_list ||= $class->_fetch({}, %opt);
-
-    return $server_details_list;
+    return $class->_fetch({}, %opt);
 }
 
 1;
