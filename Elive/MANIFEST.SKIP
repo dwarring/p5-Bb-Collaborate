@@ -16,7 +16,9 @@ Makefile.old
 ~$
 .*#$
 \.#
-.log$
+\.log$
+\.tmp$
+^preload\.txt$
 #
 # Devel::Cover junk
 #

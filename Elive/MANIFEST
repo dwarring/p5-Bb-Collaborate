@@ -7,7 +7,6 @@ inc/Module/Install/Can.pm
 inc/Module/Install/Fetch.pm
 inc/Module/Install/Makefile.pm
 inc/Module/Install/Metadata.pm
-inc/Module/Install/Scripts.pm
 inc/Module/Install/Win32.pm
 inc/Module/Install/WriteAll.pm
 lib/Elive.pm
@@ -35,7 +34,8 @@ README
 script/elive_lint_config
 script/elive_query
 script/elive_raise_meeting
-t/00-compile.t
+t/00-0-struct.t
+t/00-1-compile.t
 t/01-entity-construct.t
 t/02-entity-update.t
 t/03-entity-changes.t
