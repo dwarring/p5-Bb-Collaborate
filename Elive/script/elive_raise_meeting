@@ -47,7 +47,10 @@ elive_raise_meeting
                                  # or leave after the scheduled meeting times.
     -max_talkers  n              # max no. of simultaneous talkers
     -recording    on|off|auto    # set recording status
-    -raise_hands                 # automatically raise hands on entry
+    -[no]private                 # whether to show on public schedule
+    -[no]raise_hands             # automatically raise hands on entry
+    -[no]permissions             # let participants perform activities
+    -[no]supervised              # whether the moderator can see private messages
     -seats        count          # number of seats to reserve
 
   Preloads
@@ -86,6 +89,8 @@ my $url;
 my $help;
 my $boundary = 15;
 my $seats;
+my $permissions;
+my $supervised;
 
 main(@ARGV) unless caller;
 
@@ -102,8 +107,10 @@ sub main {
 	'end=s' => \$end_str,
 	'meeting_password|meeting_pass=s' => \$meeting_password,
 	'max_talkers=i' => \$max_talkers,
-	'raise_hands' => \$raise_hands,
-	'private' => \$private,
+	'raise_hands!' => \$raise_hands,
+	'private!' => \$private,
+	'supervised!' => \$supervised,
+	'permissions!' => \$permissions,
 	'debug=i' => \$debug,
 	'help|?' => \$help,
 	'upload=s' => \$upload,
@@ -278,12 +285,14 @@ sub main {
 	$meeting_parameters->update;
     };
 
+    do {
+	my $server_parameters = $meeting->server_parameters;
 
-    if ($boundary) {
-	
-	my $server_parameters
-	    = $meeting->server_parameters
-	    or die "Unable to retrieve server parameters for this meeting";
+	$server_parameters->fullPermissions($permissions)
+	    if defined $permissions;
+
+	$server_parameters->supervised($supervised)
+	    if defined $supervised;
 
 	$server_parameters->boundaryMinutes($boundary)
 	    if defined $boundary;
