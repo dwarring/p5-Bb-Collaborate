@@ -544,18 +544,15 @@ sub _readback_check {
 	    if (exists $updates->{$_} && exists $row->{$_}) {
 		my $write_val =  $updates->{$_};
 		my $read_val = $row->{$_};
+		my $property_type = $class->property_types->{$_};
 
-		if ($class->_cmp_col($class->property_types->{$_},
+		if ($class->_cmp_col($property_type,
 				     $write_val,  $read_val, %opt)) {
+
 		    warn YAML::Dump({read => $read_val, write => $write_val})
 			if ($class->debug);
 
-		    foreach ($read_val, $write_val) {
-			bless $_, 'Elive::Array'  # gives a nice stringified digest
-			    if (Elive::Util::_reftype($_) eq 'ARRAY'
-				&& !Scalar::Util::blessed($_));
-		    }
-		    die "$class: Update consistancy check failed on $_: wrote:".Elive::Util::string($write_val).", read-back:".Elive::Util::string($read_val);
+		    die "$class: Update consistancy check failed on $_: wrote:".Elive::Util::string($write_val, $property_type).", read-back:".Elive::Util::string($read_val, $property_type);
 		}
 	    }
 	}

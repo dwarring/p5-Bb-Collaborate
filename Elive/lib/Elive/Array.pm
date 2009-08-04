@@ -33,13 +33,14 @@ Stringifies arrays members by joining their sting values with ';'.
 
 sub stringify {
     my $self = shift;
+    my $arr = shift || $self;
+    my $type = shift;
 
     my $class = ref($self) || $self;
-    my $arr = shift || $self;
     #
     # Rely on sub entities stringifying and sorting correctly
     #
-    my $string = join(';', sort map {Elive::Util::string($_)} @$arr);
+    my $string = join(';', sort map {Elive::Util::string($_, $type)} @$arr);
 
     return $string;
 }
