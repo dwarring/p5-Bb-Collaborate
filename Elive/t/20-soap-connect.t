@@ -59,7 +59,10 @@ SKIP: {
 	diag "************************";
     }
 
-    ok(ref($server_details->sessions), 'ServerDetails sessions is a reference');
+    ok(do {
+	my $sessions = $server_details->sessions;
+	!defined $sessions || ref($sessions)
+       }, 'ServerDetails sessions - undef or a reference');
 }
 
 Elive->disconnect;
