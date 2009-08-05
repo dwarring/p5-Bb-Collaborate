@@ -33,16 +33,10 @@ Stringifies arrays members by joining their sting values with ';'.
 
 sub stringify {
     my $self = shift;
-    my $arr = shift || $self;
-    my $type = shift;
+    my $arr  = shift || $self;
+    my $type = shift || $self->element_class;
 
-    my $class = ref($self) || $self;
-    #
-    # Rely on sub entities stringifying and sorting correctly
-    #
-    my $string = join(';', sort map {Elive::Util::string($_, $type)} @$arr);
-
-    return $string;
+    return Elive::Util::string($arr, $type);
 }
 
 =head2 new

@@ -5,7 +5,6 @@ use Term::ReadKey;
 use Term::ReadLine;
 use Scalar::Util;
 use Storable;
-use Elive::Array;
 use UNIVERSAL;
 
 use YAML;
@@ -240,14 +239,15 @@ sub string {
     my $data_type = shift;
 
     for ($obj) {
+
+	return join(';', sort map {string($_, $data_type)} @$_)
+	    if UNIVERSAL::isa($_, 'ARRAY');
+
 	return $_
 	    unless _reftype($_);
 
 	return $_->stringify
 	    if (Scalar::Util::blessed($_) && $_->can('stringify'));
-
-	return Elive::Array::stringify($_, undef, $data_type)
-	    if UNIVERSAL::isa($_, 'ARRAY');
 
 	if ($data_type) {
 	    my ($type, $is_array, $is_struct) =parse_type($data_type);
