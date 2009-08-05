@@ -1,6 +1,6 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 72;
+use Test::More tests => 74;
 use Test::Warn;
 
 BEGIN {
@@ -26,6 +26,14 @@ ok(!Elive::Util::_thaw('false', 'Bool'), 'Bool false => 0');
 ok(Elive::Util::_thaw('true', 'Bool'), 'Bool true => 1');
 
 ok(Elive::Util::_thaw('  abc efg ', 'Str') eq 'abc efg', 'String l-r trimmed');
+
+my $some_href = {a=> 1111, b=> [1,2,3], c => 'abc'};
+is_deeply(Elive::Util::_thaw($some_href, 'Ref'), $some_href,
+	  'Ref hash - passed through');
+
+my $some_aref = [10, $some_href, 'xyz'];
+is_deeply(Elive::Util::_thaw($some_aref, 'Ref'), $some_aref,
+	  'Ref array - passed through');
 
 Elive->connection(Elive::Connection->connect('http://test.org'));
 
