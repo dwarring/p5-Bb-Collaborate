@@ -1,5 +1,9 @@
 Revision history for Elive
 
+0.37    6th August
+        - Added -permissions and -supervised options for 'elive_raise_meeting'
+        - Tweaks to Elive::Util::string()
+
 0.36    4th August
         - Added Elive Live 9.5 (ELM 3.0) support for serverdetails
           fields sessions, serverStatus and iNetAddress. These are
@@ -10,7 +14,7 @@ Revision history for Elive
 
 0.35    3rd August
         - User search is case insensitive when configured for LDAP.
-          Altered entity fetch consistancy checks to be case insenstive
+          Altered entity fetch consistancy checks to be case insensitive
           to avoid spurious consistancy check failures.
 
 0.34    28th July
