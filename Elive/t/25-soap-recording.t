@@ -1,5 +1,6 @@
 #!perl
 use warnings; use strict;
+use Test::Builder;
 use Test::More tests => 11;
 use Test::Exception;
 
@@ -89,9 +90,10 @@ SKIP: {
 ##    ok($recording->facilitator == Elive->login->userId, 'expected user id');
 
     if ($recording->size >= 1_000_000) {
-	ok(1, sprintf("skipping download test 1. excessive size of %0.1fmb",
+	my $t = Test::Builder->new;
+	$t->skip(sprintf("skipping download test 1. excessive size of %0.1fmb",
 		      $recording->size / 1_000_000));
-	ok(1, 'skipping download test 2');
+	$t->skip('skipping download test 2');
     }
     else {
 	my $data_download = $recording->download;
@@ -113,7 +115,7 @@ SKIP: {
 
     ok($recordingJNLP, 'got recording JNLP');
 		
-##    $recording = undef;
+    $recording = undef;
 
     ok($recording = Elive::Entity::Recording->retrieve([$recording_id]), 'recording retrieval');
 
