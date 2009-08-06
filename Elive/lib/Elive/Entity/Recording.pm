@@ -162,9 +162,10 @@ JNLP is the 'Java Network Launch Protocol', also commonly known as Java
 WebStart. You can, for example, render this as a web page with mime type
 C<application/x-java-jnlp-file>.
 
-The C<userIP> is required by the server and represents the IP address of
-the client. It is expected recording is expected launched from a browser
-that resolves to the same IP address.
+The C<userIP> is required for elm 9.0+ when C<recordingJNLPIPCheck> has
+been set to C<true> in C<configuration.xml>.
+
+It represents a fixed client IP address for launching the recording playback.
 
 See also L<http://en.wikipedia.org/wiki/JNLP>.
 
@@ -187,9 +188,10 @@ sub buildJNLP {
 
     my %soap_params = (recordingId => $recording_id);
 
-    for ($opt{userIP}) {
-	$soap_params{'userIP'} = Elive::Util::_freeze($_, 'Str')
-	    if $_;
+    for (map {Elive::Util::_freeze($_, 'Str')} grep {$_} $opt{userIP}) {
+
+	$soap_params{'userIp'} = $_; # elm 9.0 compat
+	$soap_params{'userIP'} = $_; # elm 9.1+ compat
     }
 
     for ($opt{userId} || $connection->login->userId) {
