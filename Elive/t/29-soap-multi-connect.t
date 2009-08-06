@@ -21,7 +21,7 @@ SKIP: {
     my %result = t::Elive->auth();
     my $auth = $result{auth};
 
-    skip ($result{reason} || 'unable to find test connection',
+    skip ($result{reason} || 'unable to find primary test connection',
 	$Skip)
 	unless $auth && @$auth;
 
@@ -98,6 +98,4 @@ SKIP: {
 	     'disconnect 2 - lives');
     
 }
-
-Elive->disconnect;
 
