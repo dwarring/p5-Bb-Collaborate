@@ -1,5 +1,10 @@
 Revision history for Elive
 
+0.38    21st August
+        - Aligned 'elive_query' output columns for reability. Also
+          allow '*?' selection to supress output of empty columns.
+        - Added tests to t/25-soap-recording.t
+
 0.37    6th August
         - Added -permissions and -supervised options for 'elive_raise_meeting'
         - Tweaks to Elive::Util::string()
@@ -13,7 +18,7 @@ Revision history for Elive
         - Widthdrew $ELIVE_FORCE flag (introduced in 0.32).
 
 0.35    3rd August
-        - User search is case insensitive when configured for LDAP.
+        - Made users handling case-insensitive - match LDAP policy.
           Altered entity fetch consistancy checks to be case insensitive
           to avoid spurious consistancy check failures.
 
@@ -22,7 +27,7 @@ Revision history for Elive
         - fixed a potential problem with ParticipantList update
 
 0.33    22nd July
-        - added tests for freze thaw aliases. Fixed some potential
+        - added tests for freeze/thaw aliases. Fixed some potential
           problems with alias usage in Elive::Enity::_freeze & _thaw.
 
 0.32    18th July
