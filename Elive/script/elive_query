@@ -155,9 +155,9 @@ sub main {
 		    print "debug = [0|1|2|3] - set debugging level\n";
 		    print "select <expr> from entity [where exp]\n";
 		    print "    where expr is:\n";
-		    print "      - prop1,prop2,.. - a list of properties\n";
+		    print "      - prop1,prop2,.. - selected properties\n";
 		    print "      - *              - all properties\n";
-		    print "      - *?             - defined properties\n";
+		    print "      - *?             - skip undefined properties\n";
 		}
 		elsif ($keyw  =~ m{^(connect)$}i) {
 		    my ($url, $user) = split(m{\s+}, $args);
@@ -390,6 +390,10 @@ sub _select {
     if ($@) {
 	print "error:$@";
     }
+    elsif (!@$rows) {
+	print "No results.\n";
+	return;
+    }
     else {
 	foreach my $row (@$rows) {
 	    
@@ -437,6 +441,7 @@ sub _select {
     #
     # pass 3: output
     #
+
     my @hrule = map {'-' x ($_||0)} @widths;
 
     foreach my $row ($props, \@hrule, @output) {
