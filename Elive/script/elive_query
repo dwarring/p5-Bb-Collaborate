@@ -153,7 +153,11 @@ sub main {
 		    print "connect url [user] - connect to an Elluminate Live! server\n";
 		    print "show [entity_name] - list/show entities\n";
 		    print "debug = [0|1|2|3] - set debugging level\n";
-		    print "select *|prop[,prop] from entity [where exp]\n";
+		    print "select <expr> from entity [where exp]\n";
+		    print "    where expr is:\n";
+		    print "      - prop1,prop2,.. - a list of properties\n";
+		    print "      - *              - all properties\n";
+		    print "      - *?             - defined properties\n";
 		}
 		elsif ($keyw  =~ m{^(connect)$}i) {
 		    my ($url, $user) = split(m{\s+}, $args);
@@ -215,6 +219,7 @@ sub main {
 			my $entity = $2;
 			my $filter = $4;
 			my @props = split(m{\s* ,|\| \s*}x, $1);
+			my $hide_undef = 0;
 
 			my $entity_class = $entities->{$entity};
 
@@ -223,10 +228,12 @@ sub main {
 			    $valid = 0;
 			}
 			else {
-			    if (@props == 1 && $props[0] eq '*') {
+			    if (@props == 1 && $props[0] =~ m{^(\*)(\??)$}) {
 				#
-				# '*' selection
+				# '*'  select all
+				# '*?' select all defined
 				#
+				$hide_undef = $2? 1: 0;
 				@props = $entity_class->properties;
 			    }
 			    else {
@@ -244,7 +251,9 @@ sub main {
 				print STDERR "you'll need to connect first - see help connect\n";
 			    }
 			    else {
-				_select($entity_class, $filter, @props); 
+				_select($entity_class, \@props,
+				    filter => $filter,
+				    hide_undef => $hide_undef); 
 			    }
 			}
 		    }
@@ -320,13 +329,18 @@ sub _show {
 
 sub _select {
 
-    my ($entity_class, $filter, @props) = @_;
+    my $entity_class = shift;
+    my $props = shift;
+    my %opt = @_;
+
+    my $filter = $opt{filter};
+    my $hide_undef = $opt{hide_undef};
 
     my $property_types = $entity_class->property_types;
     my $entity_name = $entity_class->entity_name;
     my ($pkey) = $entity_class->primary_key;
 
-    foreach (@props) {
+    foreach (@$props) {
 	
 	unless (exists $property_types->{$_}) {
 	    print STDERR "unknown $entity_name property: $_\n";
@@ -361,8 +375,7 @@ sub _select {
 	}
     }
 
-    print join('|', @props)."\n";
-
+    my @output;
     my $rows;
 
     eval {
@@ -380,21 +393,83 @@ sub _select {
     else {
 	foreach my $row (@$rows) {
 	    
-	    output_row(\@props,$row);
+	    my $row =  _output_row($props, $row);
+	    push(@output, $row);
 	}
+    }
+
+    #
+    # pass 1: filter columns
+    #
+
+    my @show;
+
+    foreach my $row (@output) {
+
+	my $col = 0;
+
+	foreach (@$row) {
+	    $show[ $col++ ] ||= !$hide_undef || defined $_
+	}
+    }
+
+    #
+    # pass 2: compute output widths
+    #
+
+    my @widths;
+
+    foreach  my $row ($props,@output) {
+
+	my $col = 0;
+
+	foreach (@$row) {
+
+	    my $this_width = length(defined($_)? $_ : '(undef)');
+
+	    for ($widths[ $col++ ]) {
+		$_ = $this_width
+		    if (!defined || $this_width > $_);
+	    }
+	}
+    }
+
+    #
+    # pass 3: output
+    #
+    my @hrule = map {'-' x ($_||0)} @widths;
+
+    foreach my $row ($props, \@hrule, @output) {
+
+	my $col = 0;
+	my @cols = (
+
+	    grep {$_}
+
+	    map {
+		my $v = defined($_) ? $_ : '(undef)';
+		my $s = $show[ $col ];
+		my $w = $widths[ $col ];
+		++$col;
+		$s ? sprintf('%-*s', $w, $v)
+		    : undef;
+	    }
+
+	    @$row);
+
+	print join('|', map{defined($_) ? $_ : '(undef)'} @cols)."\n"; 
     }
 }
 
-sub output_row {
+sub _output_row {
     my $props = shift;
     my $row = shift;
 
-    my @vals = map {
-	defined($_)? Elive::Util::string($_) : '(undef)';
-    }
-    map {$row->$_} @$props;
+    my @vals = (map {defined($_) ? Elive::Util::string($_) : undef}
+		map {$row->$_}
+		@$props);
 
-    print join('|', @vals)."\n";
+    return \@vals;
 }
 
 sub _getopt {
