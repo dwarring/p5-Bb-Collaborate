@@ -200,9 +200,8 @@ sub update {
     my $data = shift;
     my %opt = @_;
 
-    my $participants = $data->{participants};
-    $participants = $self->participants
-	unless defined $participants;
+    my $participants = ($data->{participants}
+			|| $self->participants);
 
     if ((!defined $participants)
 	|| (Elive::Util::_reftype($participants) eq 'ARRAY' && !@$participants)
@@ -266,8 +265,12 @@ sub _readback {
     my $connection = shift;
 
     #
-    # sometimes get back an empty response from setParticantList
-    # if this happens we'll have to handle it ourselves.
+    # sometimes get back an empty response from setParticipantList,
+    # however, the data hash being saved. Seems to be a problem in
+    # elm circa 9.0.
+    #
+    # If this happens, retrieve the data that we just saved and
+    # complete the readback check.
     #
     my $result = $som->result;
     return $class->SUPER::_readback($som, $updates, @_)
