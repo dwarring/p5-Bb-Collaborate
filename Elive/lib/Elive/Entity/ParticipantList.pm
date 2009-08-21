@@ -19,6 +19,10 @@ __PACKAGE__->primary_key('meetingId');
 
 has 'participants' => (is => 'rw', isa => 'ArrayRef[Elive::Entity::Participant]|Elive::Array::Participants',
     coerce => 1);
+# NOTE: thawed data may be returned as the 'participants' property.
+# but for frozen data the parameter name is 'users'. Also
+
+__PACKAGE__->_alias(users => 'participants', freeze => 1);
 
 coerce 'ArrayRef[Elive::Entity::Participant]' => from 'ArrayRef[HashRef]'
           => via {
@@ -103,35 +107,35 @@ sub _freeze {
 
     my $frozen = $class->SUPER::_freeze($data, %opt);
 
-    if (my $participants = delete $frozen->{participants}) {
+    if (my $users = $frozen->{users}) {
 	#
-	# NOTE: thawed data is returned as the 'participants' property.
-	# but for frozen data the parameter name is 'users'. Also
-	# setter methods expect a stringified digest in the form
-	#  userid=roleid[;userid=roleid]
+	# Need to flatten our users struct.
 	#
-	my $reftype = Elive::Util::_reftype($participants);
+	# Setter methods expect a stringified digest in the form:
+	# userid=roleid[;userid=roleid]
+	#
+	my $reftype = Elive::Util::_reftype($users);
 
 	if ($reftype) {
-	    die "expected participants to be an ARRAY, found $reftype"
+	    die "expected users to be an ARRAY, found $reftype"
 		unless ($reftype eq 'ARRAY');
 	}
 	else {
 	    #
 	    # participant list passed as a string.
 	    #
-	    $_ = [split(';')] for ($participants);
+	    $_ = [split(';')] for ($users);
 	}
 
-	my @users = map {
+	my @users_stringified = map {
 	    my $p = ref $_
 		? $_
 		: Elive::Entity::Participant->_parse($_);
 
 	    Elive::Entity::Participant->stringify($p);
-	} @$participants;
+	} @$users;
 	
-	$frozen->{users} = join(';', @users);
+	$frozen->{users} = join(';', @users_stringified);
     }
 
     return $frozen;
