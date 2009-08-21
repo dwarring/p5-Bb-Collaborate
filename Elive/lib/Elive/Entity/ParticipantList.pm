@@ -106,7 +106,7 @@ sub _freeze {
     if (my $participants = delete $frozen->{participants}) {
 	#
 	# NOTE: thawed data is returned as the 'participants' property.
-	# but for frozen data the parmeter name is 'users'. Also
+	# but for frozen data the parameter name is 'users'. Also
 	# setter methods expect a stringified digest in the form
 	#  userid=roleid[;userid=roleid]
 	#

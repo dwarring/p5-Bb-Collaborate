@@ -152,7 +152,7 @@ sub _tidy_decimal {
     $i = 0 if ($i eq '-0');
 
     #
-    # should get here. just a sanity check.
+    # sanity check.
     #
     die "bad integer: $_[0]"
 	unless $i =~ m{^[+-]?\d+$};
@@ -199,6 +199,11 @@ sub _clone {
     return Storable::dclone(shift);
 }
 
+#
+# Hex encoding/decoding. Use for data streaming. E.g. upload & download
+# of preload data.
+#
+
 sub _hex_decode {
     my $data = shift;
 
@@ -229,8 +234,28 @@ sub _hex_encode {
 
 =head2 string
 
-Try to return the object as a string. If it's a simple scalar fine,
-If it's an object that implements the C<stringify> method, use this.
+    print Elive::Util::string($myscalar);
+    print Elive::Util::string($myobj);
+    print Elive::Util::string($myref, $datatype);
+
+Return a string for an object.
+
+=over 4
+
+=item
+
+If it's a simple scalar, just pass the value back.
+
+=item
+
+If it's an object use the C<stringify> method.
+
+=item
+
+If it's a reference, resolve datatype to a class, and use its
+C<stringify> method.
+
+=back
 
 =cut
 
@@ -250,7 +275,7 @@ sub string {
 	    if (Scalar::Util::blessed($_) && $_->can('stringify'));
 
 	if ($data_type) {
-	    my ($type, $is_array, $is_struct) =parse_type($data_type);
+	    my ($type, $is_array, $is_struct) = parse_type($data_type);
 	    return $type->stringify($_)
 		if ($is_struct && $type->can('stringify'));
 	}
