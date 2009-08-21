@@ -20,9 +20,9 @@ has 'moderatorNotes' => (is => 'rw', isa => 'Str',
 has 'userNotes' => (is => 'rw', isa => 'Str',
     documentation => 'meeting instructions for all participants');
 
-enum enumRecordingStates => '', qw(ON OFF REMOTE);
+enum enumRecordingStates => '', qw(on off remote);
 has 'recordingStatus' => (is => 'rw', isa => 'enumRecordingStates',
-    documentation => 'recording status; ON, OFF or REMOTE (start/stopped by moderator)');
+    documentation => 'recording status; on, off or remote (start/stopped by moderator)');
 has 'raiseHandOnEnter' => (is => 'rw', isa => 'Bool',
     documentation => 'raise hands automatically when users join');
 has 'maxTalkers' => (is => 'rw', isa => 'Int',
@@ -95,12 +95,10 @@ sub _thaw {
     my $data = $class->SUPER::_thaw($db_data, @_);
 
     for (grep {defined} $data->{recordingStatus}) {
-	#
-	# Filter database crud
-	#
-	$_ = uc($_);
 
-	unless (m{^(ON|OFF|REMOTE)$} || $_ eq '') {
+	$_ = lc($_);
+
+	unless (m{^(on|off|remote)$} || $_ eq '') {
 	    warn "ignoring unknown recording status: $_";
 	    delete  $data->{recordingStatus};
 	}
