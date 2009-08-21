@@ -64,7 +64,7 @@ SKIP: {
 	costCenter => 'testing',
 	moderatorNotes => 'test moderator notes',
 	userNotes => 'test user notes',
-	recordingStatus => 'REMOTE',
+	recordingStatus => 'remote',
     );
     
     my %parameter_int_data = (

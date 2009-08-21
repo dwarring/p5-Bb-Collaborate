@@ -76,7 +76,7 @@ my $meeting_parameter_data = {
 };
 
 $thawed_data = Elive::Entity::MeetingParameters->_thaw($meeting_parameter_data);
-ok($thawed_data->{recordingStatus} eq 'REMOTE', "valid recording status conversion");
+ok($thawed_data->{recordingStatus} eq 'remote', "valid recording status conversion");
 
 warnings_like(
     sub {$thawed_data = thaw_with_bad_recording_status($meeting_parameter_data)},

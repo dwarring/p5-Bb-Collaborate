@@ -43,21 +43,24 @@ elive_raise_meeting
 
   Meeting Settings
 
-    -boundary     0|15|30|..     # number minutes participants can arrive before
-                                 # or leave after the scheduled meeting times.
+    -boundary     0|15|30|..     # minutes participants can arrive before or
+                                 # leave after the scheduled meeting times.
     -max_talkers  n              # max no. of simultaneous talkers
-    -recording    on|off|auto    # set recording status
+    -recording    off|remote|on  # set recording status
+                                 #  - off:    recording disabled
+                                 #  - on:     starts automatically
+                                 #  - manual: recording started by moderator
     -[no]private                 # whether to show on public schedule
     -[no]raise_hands             # automatically raise hands on entry
     -[no]permissions             # let participants perform activities
-    -[no]supervised              # whether the moderator can see private messages
-    -seats        count          # number of seats to reserve
+    -[no]supervised              # whether moderator can see private messages
+    -seats        count          # number of seats to reserve on server
 
   Preloads
 
-    -upload      local_file      # upload a meeting preload file
-    -import_from_server  file    # import a meeting preload from the server
-    -use_preload preload_id      # use an existing preload for the meeting
+    -upload              local_file  # upload a file from the client
+    -import_from_server  file        # import a file on the server
+    -use_preload         preload_id  # reuse a preload in the database
 
 =head1 DESCRIPTION
 
@@ -79,7 +82,7 @@ my $end_str;
 my $meeting_name = 'elive test meeting';
 my $meeting_password;
 my $max_talkers = 1;
-my $recording = 'auto';
+my $recording = 'remote';
 my $raise_hands;
 my $import;
 my $private;
@@ -116,17 +119,24 @@ sub main {
 	'upload=s' => \$upload,
 	'import_from_server=s' => \$import,
 	'use_preload=i' => \$preload_opt,
-	'recording' => \$recording,
+	'recording=s' => \$recording,
 	'boundary=i' => \$boundary,
 	'seats=i' => \$seats,
     )
 	&& (($help && pod2usage(2)) || ($url = shift @ARGV))
 	or die pod2usage(1);
 
-    $recording = uc($recording);
-    die pod2usage("recording mode must be 'on', 'off' or 'auto'\n")
-	unless $recording =~ m{^ ON|OFF|AUTO|REMOTE $}x;
-    $recording =~ s{^ AUTO $}{REMOTE}x;
+    $recording = lc($recording);
+    #
+    # accept some of the other terms for the various modes as seen
+    # in documentation and elluminate's web interface..
+    #
+    $recording =~ s{^none|disabled$}{off}x;
+    $recording =~ s{^manual$}{remote}x;
+    $recording =~ s{^auto(matic)?$}{on}x;
+
+    die pod2usage("recording mode must be on/auto, off/none/disabled or manual/remote\n")
+	unless $recording =~ m{^on|off|remote$}x;
 
     Elive->debug($debug);
 

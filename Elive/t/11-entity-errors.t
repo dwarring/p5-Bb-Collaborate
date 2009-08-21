@@ -114,7 +114,7 @@ lives_ok(
 	 sub {Elive::Entity::MeetingParameters->construct
 	     ({
 		 meetingId => 1111111,
-		 recordingStatus => 'REMOTE',
+		 recordingStatus => 'remote',
 	      })},
 	      'meeting parameters - valid recordingStatus - lives',
     );

@@ -14,8 +14,6 @@ use Pod::Usage;
 
 use UNIVERSAL;
 
-local $SIG{__DIE__};# = \&Carp::cluck;
-
 =head1 NAME
 
 elive_query
@@ -39,18 +37,19 @@ This example script lets you list and filter entity data.
 For example:
 
     % elive_query -user admin http://myvclass.com/mysite
-    Password: connecting to http://myvclass.com/mysite...ok
+    Password: ********
+    connecting to http://myvclass.com/mysite...ok
     Elive query 0.WX (Elluminate Live! 9.Y.Z)  - type 'help' for help
 
-    elive> select * from user where loginName like *m* 
-    userId|deleted|email|firstName|lastName|loginName|loginPassword|role
-    mr_miyagi|0|mr_miyagi@hotmail.com|Pups|Miyagi|mr_miyagi||3
-    mr_squiggle|0|mr_squiggle@nonsense.org|S|Squiggle|mr_squiggle||3
-    sebastion_throgmorton|0|sthrogmorton@gmail.com|Sebastion|Throgmorton|sthrogmorton||3
+    elive> select loginName,email,firstName,lastName,role from user where loginName like *m* 
+    loginName   |email                 |firstName|lastName   |role
+    ------------|----------------------|---------|-----------|----
+    mr_miyagi   |mr_miyagi@hotmail.com |Pups     |Miyagi     |3
+    sthrogmorton|sthrogmorton@gmail.com|Sebastion|Throgmorton|2
+
     elive>
 
-elive_query is simply passing the C<where> clause through as a filter option
-to the entity's C<list> method.
+elive_query calls the C<list> method for the corresponding entity.
 
 For example, for the above statement, the method call is:
 
@@ -75,7 +74,7 @@ You can also use this script to dump the Elive entity structures:
     elive> show meeting
     meeting: Elive::Entity::Meeting:
     meetingId         : pkey Int        
-    deleted           : Bool            
+    deleted           : Bool
     end               : HiResDate    -- meeting end time
     facilitatorId     : Str          -- userId of facilitator
     name              : Str          -- meeting name
