@@ -1,6 +1,6 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 27;
+use Test::More tests => 30;
 use Test::Warn;
 
 BEGIN {
@@ -29,6 +29,10 @@ ok(Elive::Util::_freeze(0, 'Bool') eq 'false', 'Bool 0 => false');
 ok(Elive::Util::_freeze(1, 'Bool') eq 'true', 'Bool 1 => true');
 
 ok(Elive::Util::_freeze('abc', 'Str') eq 'abc', 'String echoed');
+
+ok(Elive::Util::_freeze('on', 'enumRecordingStates') eq 'on', 'recording status - on (lc)');
+ok(Elive::Util::_freeze('OFF', 'enumRecordingStates') eq 'off', 'recording status - off (uc)');
+ok(Elive::Util::_freeze('rEMotE', 'enumRecordingStates') eq 'remote', 'recording status - remote (mixed)');
 
 Elive->connection(Elive::Connection->connect('http://test.org'));
 
@@ -122,6 +126,8 @@ is_deeply($participant_list_frozen2,
 	  },
 	  'participant_list freeze from object'
     );
+
+$participant_list_obj = undef;
 
 my $server_parameter_data = {
     meetingId => '0123456789000',

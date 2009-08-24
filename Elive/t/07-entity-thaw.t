@@ -1,6 +1,6 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 74;
+use Test::More tests => 77;
 use Test::Warn;
 
 BEGIN {
@@ -26,6 +26,10 @@ ok(!Elive::Util::_thaw('false', 'Bool'), 'Bool false => 0');
 ok(Elive::Util::_thaw('true', 'Bool'), 'Bool true => 1');
 
 ok(Elive::Util::_thaw('  abc efg ', 'Str') eq 'abc efg', 'String l-r trimmed');
+
+ok(Elive::Util::_thaw('on', 'enumRecordingStates') eq 'on', 'recording status - on (lc)');
+ok(Elive::Util::_thaw('OFF', 'enumRecordingStates') eq 'off', 'recording status - off (uc)');
+ok(Elive::Util::_thaw('rEMotE', 'enumRecordingStates') eq 'remote', 'recording status - remote (mixed)');
 
 my $some_href = {a=> 1111, b=> [1,2,3], c => 'abc'};
 is_deeply(Elive::Util::_thaw($some_href, 'Ref'), $some_href,

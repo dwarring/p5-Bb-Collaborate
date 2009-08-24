@@ -1,6 +1,6 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 29;
+use Test::More tests => 32;
 use Test::Warn;
 
 BEGIN {
@@ -30,6 +30,11 @@ ok($class->_cmp_col('Str', '    aaa bbb    ', ' AAA BBB ') != 0, '_cmp Str white
 ok($class->_cmp_col('Str', ' aaa bbb ', 'AAA BBB') != 0, '_cmp Str white space lhs');
 ok($class->_cmp_col('Str', 'aaa bbb', ' AAA BBB ') != 0, '_cmp Str white space rhs');
 ok($class->_cmp_col('Str', 'aaa', 'AAA', case_insensitive => 1) == 0, '_cmp Str == -i');
+
+
+ok($class->_cmp_col('enumRecordingStates', 'off', 'off') == 0, '_cmp enum ==');
+ok($class->_cmp_col('enumRecordingStates', 'Off', 'off') == 0, '_cmp enum == (case insensitve)');
+ok($class->_cmp_col('enumRecordingStates', 'off', 'on') != 0, '_cmp enum !=');
 
 ok($class->_cmp_col('ArrayRef[Int]', [1,2,3],[1,2,3]) == 0, '_cmp [Int] ==');
 ok($class->_cmp_col('ArrayRef[Int]', [1,2,3],[3,2,1]) == 0, '_cmp [Int] == (unordered)');
