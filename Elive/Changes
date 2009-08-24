@@ -3,7 +3,8 @@ Revision history for Elive
 0.39    25th August
         - Fixed erroneuous readback error when saving untrimmed strings,
           e.g. $meeting->uppdate({name => 'abc '}).
-        - Removed Elive::Entity::ParticipantList 'insert' method. Please
+        - Removed Elive::Entity::ParticipantList 'insert' method for
+          consistancy with meeting parameters and server_details. Please
           use 'retrieve" & 'update' instead.
 
 0.38    22nd August

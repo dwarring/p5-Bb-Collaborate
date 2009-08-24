@@ -59,11 +59,12 @@ sub _freeze {
 	    #
 	    $_ =  $_ ? 'true' : 'false';
 	}
-	elsif ($type =~ m{^(Str|Enum)}i) {
+	elsif ($type =~ m{^(Str|enum)}i) {
 	    #
 	    # l-r trim
 	    #
 	    s{^ \s* (.*?) \s* $}{$1}x;
+	    $_ = lc if $type =~ m{^enum};
 	}
 	elsif ($type =~ m{^(Int|HiResDate)}i) {
 	    
@@ -94,11 +95,12 @@ sub _thaw {
 	    #
 	    $_ = m{true}i ? 1 : 0;
 	}
-	elsif ($type =~ m{^(Str|Enum)}i) {
+	elsif ($type =~ m{^(Str|enum)}i) {
 	    #
 	    # l-r trim
 	    #
 	    s{^ \s* (.*?) \s* $}{$1}x;
+	    $_ = lc if $type =~ m{^enum};
 	}
 	elsif ($type =~ m{^Int|HiResDate}i) {
 

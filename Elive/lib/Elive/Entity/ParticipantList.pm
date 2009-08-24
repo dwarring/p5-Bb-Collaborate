@@ -183,9 +183,21 @@ sub update {
 
     my $adapter = $opt{adapter} || $self->check_adapter('setParticipantList');
 
-    $self->SUPER::update($data,
-			  adapter => $adapter,
-			  %opt);
+    if ($self->is_changed) {
+	$self->SUPER::update($data,
+			     adapter => $adapter,
+			     %opt);
+    }
+    elsif ($self->_is_lazy) {
+	#
+	# input participants list may contain user objects, or just
+	# user ids. Note update, but stimulate the side effect of
+	# returning fully stantiating objects.
+	#
+	my $class = ref($self);
+	$class->retrieve([$self->id]);
+	$self;
+    }
 }
 
 =head2 reset 
@@ -226,12 +238,12 @@ sub reset {
 }
 
 #
-# &_is_changed
+# &_is_lazy
 # require a round trip to stantiate objects and users and roles
 # from elm.
 #
 
-sub is_changed {
+sub _is_lazy {
     my $self = shift;
 
     my @changed = $self->SUPER::is_changed(@_);
