@@ -1,6 +1,6 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 20;
+use Test::More tests => 25;
 use Test::Warn;
 
 BEGIN {
@@ -23,10 +23,19 @@ ok(exists $user_props{userId}
 my $user1 = Elive::Entity::User->construct({
 	userId => 12345,
 	loginName => 'someuser',
-	loginPassword => 'somepass'
+	loginPassword => 'somepass',
+	deleted => 0,
      },
     );
 isa_ok($user1, 'Elive::Entity::User');
+ok(!$user1->is_changed, 'freshly consrtucted user - !changed');
+
+$user1->deleted(1);
+ok($user1->deleted, 'deleted user => deleted');
+ok($user1->is_changed, 'deleted user => changed');
+$user1->revert;
+ok(!$user1->deleted, 'undeleted user => !deleted');
+ok(!$user1->is_changed, 'undeleted user => !changed');
 
 my %group_props = (map {$_ => 1}  Elive::Entity::Group->properties);
 

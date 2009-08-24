@@ -61,7 +61,7 @@ is_deeply($user_frozen,
 
 $user_data->{deleted} = 1;
 ok(Elive::Entity::User->_freeze($user_data)->{deleted} eq 'true',
-   'freeze true boolean value');
+   'freeze boolean non-zero => "true"');
 
 my $participant_list_frozen = Elive::Entity::ParticipantList->_freeze(
     {

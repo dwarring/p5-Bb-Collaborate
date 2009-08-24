@@ -372,15 +372,16 @@ sub setup_participants {
     #
     # Create participant list
     #
-    my $participant_list = Elive::Entity::ParticipantList
-	->insert({meetingId => $meeting->meetingId,
+    my $participant_list = $meeting->participant_list;
+
+    $participant_list
+	->update({meetingId => $meeting->meetingId,
 		  participants => \@participants,
 		 });
 
-    my @participants_echo;
     my $participant_objs = $participant_list->participants;
 
-    foreach (@$participant_objs) {
+    my @participants_display = map  {
 	my $user_obj = $_->user;
 	my $loginName = $user_obj->loginName;
 	my $email = $user_obj->email;
@@ -388,10 +389,11 @@ sub setup_participants {
 	my $participant_str = ($loginName || $user_obj->userId);
 	$participant_str .= ' <'.$email.'>'
 	    if $email;
-	push (@participants_echo, $participant_str);
-    }
 
-    print "participants: ".join(', ', @participants_echo)."\n";
+	$participant_str;
+    } @$participant_objs;
+
+    print "participants: ".join(', ', @participants_display)."\n";
 }
 
 ########################################################################

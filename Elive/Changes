@@ -1,12 +1,18 @@
 Revision history for Elive
 
+0.39    25th August
+        - Fixed erroneuous readback error when saving untrimmed strings,
+          e.g. $meeting->uppdate({name => 'abc '}).
+        - Removed Elive::Entity::ParticipantList 'insert' method. Please
+          use 'retrieve" & 'update' instead.
+
 0.38    22nd August
         - Elive::Entity::MeetingParameters. Recording status enumerations
           changed from from upper to lowercase. I.E. they are now: 'off',
           'on', 'remote'.
         - 'elive_raise_meeting': corrected '-recording' flag. Now
           accepts 'on', 'off', 'auto'.
-        - 'elive_query': output columns for readability. Also
+        - 'elive_query': align output columns for readability. Also
           allow '*?' selection to supress output of empty columns.
         - Added tests to t/25-soap-recording.t
 
@@ -18,8 +24,7 @@ Revision history for Elive
         - Added Elive Live 9.5 (ELM 3.0) support for serverdetails
           fields sessions, serverStatus and iNetAddress. These are
           currently only supported as references, not blessed objects.
-        - Also added support for 'Ref' datatypes to handle the above. This
-          is a standard Moose/Moose datatype.
+        - Also added support for 'Ref' datatypes to handle the above.
         - Widthdrew $ELIVE_FORCE flag (introduced in 0.32).
 
 0.35    3rd August

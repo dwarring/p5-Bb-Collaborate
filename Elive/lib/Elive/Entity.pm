@@ -117,7 +117,7 @@ sub construct {
     #
     # Note: don't seem to have any way of recursively passing options
     # through mouse/moose contructors.
-    # Resort to action at a distance via The construct_opts local variable.
+    # Resort to action at a distance via construct_opts local variable.
     #
     local (%Elive::_construct_opts) = %opt;
 
@@ -166,7 +166,7 @@ sub construct {
 	# Overwrite the cached object, then reuse it.
 	#
 	die "attempted overwrite of object with unsaved changes ($obj_url)"
-	    if $cached->is_changed;
+	    if !$opt{overwrite} && $cached->is_changed;
 
 	%{$cached} = %{$self};
 	$self = $cached;
@@ -791,15 +791,15 @@ sub update {
     my $som =  $self->connection->call($adapter,
 				       %$db_updates,
 				       %{$opt{param} || {}},
-);
+	);
 
     my $class = ref($self);
 
     my @rows = $class->_readback($som, \%updates, $self->connection);
     #
-    # refresh the object from the database.
+    # refresh the object from the database read-back
     #
-    $self->set(%{$rows[0]})
+    $class->construct($rows[0], overwrite => 1)
 	if (@rows && Elive::Util::_reftype($rows[0]) eq 'HASH');
 
     #

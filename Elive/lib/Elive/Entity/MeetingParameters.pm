@@ -61,14 +61,14 @@ This class contains additional meeting information.
 
 =cut
 
-=head2 create
+=head2 insert
 
-The create method is not applicable. The meeting parameters table is
+The insert method is not applicable. The meeting parameters table is
 automatically created when you create a table.
 
 =cut
 
-sub create {shift->_not_available}
+sub insert {shift->_not_available}
 
 =head2 delete
 

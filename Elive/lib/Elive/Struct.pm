@@ -274,25 +274,13 @@ sub _cmp_col {
     my @v1 = ($is_array? @$_v1: ($_v1));
     my @v2 = ($is_array? @$_v2: ($_v2));
 
-    if ($is_struct) {
-	#
-	# Normalise objects and references to simple strings
-	#
-	for (@v1, @v2) {
-	    #
-	    # stringify references
-	    #
-	    $_ = $type->stringify($_)
-	}
-    }
-
-    #
-    # unequal arrays lengths => unequal
-    #
-
     my $cmp = scalar @v1 <=> scalar @v2;
 
     unless ($cmp) {
+
+	#
+	# unequal arrays lengths => unequal
+	#
 
 	if (scalar @v1 == 0) {
 
@@ -306,6 +294,14 @@ sub _cmp_col {
 	    #
 	    # arrays are of equal lengths. compare values
 	    #
+	    for (@v1, @v2) {
+		#
+		# work with normalised frozen values
+		#
+		$_ = ($is_struct
+		      ? $type->stringify($_)
+		  : Elive::Util::_freeze($_, $type));
+	    }
 
 	    if ($is_array) {
 
@@ -328,16 +324,13 @@ sub _cmp_col {
 		    # stringified entities. Also used for hires dates
 		    # integer comparision may result in arithmetic overflow
 		    #
-		    $_ = Elive::Util::_freeze($_, $type)
-			for ($v1, $v2);
-
 		    $cmp ||= ($opt{case_insensitive}
 			      ? uc($v1) cmp uc($v2)
 			      : $v1 cmp $v2);
 		}
 		elsif ($type =~ m{^Bool}i) {
 		    # boolean comparison
-		    $cmp ||= ($v1? 1: 0) <=> ($v2? 1: 0);
+		    $cmp ||= ($v1 eq 'true'? 1: 0) <=> ($v2 eq 'true'? 1: 0);
 		}
 		elsif ($type =~ m{^Int}i) {
 		    # int comparision

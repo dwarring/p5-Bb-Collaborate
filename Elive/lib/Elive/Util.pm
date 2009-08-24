@@ -59,6 +59,12 @@ sub _freeze {
 	    #
 	    $_ =  $_ ? 'true' : 'false';
 	}
+	elsif ($type =~ m{^(Str|Enum)}i) {
+	    #
+	    # l-r trim
+	    #
+	    s{^ \s* (.*?) \s* $}{$1}x;
+	}
 	elsif ($type =~ m{^(Int|HiResDate)}i) {
 	    
 	    $_ = _tidy_decimal($_);

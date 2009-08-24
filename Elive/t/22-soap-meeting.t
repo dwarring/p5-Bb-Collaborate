@@ -1,6 +1,6 @@
 #!perl
 use warnings; use strict;
-use Test::More tests => 36;
+use Test::More tests => 37;
 use Test::Exception;
 
 use lib '.';
@@ -22,7 +22,7 @@ SKIP: {
     my $auth = $result{auth};
 
     skip ($result{reason} || 'no test connection specified',
-	31)
+	32)
 	unless $auth;
 
     Elive->connect(@$auth);
@@ -119,47 +119,59 @@ SKIP: {
     #
     # NB. It's no neccessary to insert prior to update, but since we allow it
     lives_ok(
-	     sub {Elive::Entity::ParticipantList->insert
+	     sub {$pl->update
 		      (
 		       {meetingId => $meeting->meetingId,
 			participants => $participants},
-		       )
+		      )
 		  },
 	     'update of participant list - lives');
 
     my $participant_list = Elive::Entity::ParticipantList->retrieve([$meeting->meetingId]);
 
-
     isa_ok($participant_list, 'Elive::Entity::ParticipantList', 'server_params');
-
-    #
-    # check that we can access our meeting by user and date range.
-    #
-    my $user_meetings = Elive::Entity::Meeting->list_user_meetings_by_date(
-	[$meeting_str_data{facilitatorId},
-	 $meeting_int_data{start},
-	 $meeting_int_data{end},
-	 ]
-	);
-
-    lives_ok(sub {Elive::Entity::ParticipantList->insert({meetingId => $meeting->meetingId,
-					     participants => []})},
-             'insert empty participant list - lives');
 
     lives_ok(sub {$participant_list->update({participants => []})},
 	     'clearing participants - lives');
 
     my $p = $participant_list->participants;
 
-    ok(@$participants == 1, 'participant_list - cleared');
+    #
+    # check our reset policy. Updating/creating an empty participant
+    # list is effectively the same as a reset. Ie, we end up with
+    # the facilitator as the sole participant, with a role of moderator (2).
+    #
+
+    ok(@$p == 1, 'participant_list reset - single participant');
+
+    ok($p->[0]->user && $p->[0]->user->userId eq $meeting->facilitatorId,
+       'participant_list reset - single participant is the facilitator');
+
+    ok($p->[0]->role && $p->[0]->role->roleId == 2,
+       'participant_list reset - single participant has moderator role');
 
     do {
+	#
+	# some cursory checks on jnlp construction. Could be a lot
+	# more detailed.
+	#
 	my $jnlp;
 	lives_ok(sub {$jnlp = $meeting->buildJNLP(version => '8.0')},
 		'$meeting->buildJNLP - lives');
 
 	ok(defined $jnlp, 'got jnlp')
     };
+
+    #
+    # check that we can access our meeting by user and date range.
+    #
+
+    my $user_meetings = Elive::Entity::Meeting->list_user_meetings_by_date(
+	[$meeting_str_data{facilitatorId},
+	 $meeting_int_data{start},
+	 $meeting_int_data{end},
+	 ]
+	);
 
     isa_ok($user_meetings, 'ARRAY', 'user_meetings');
 
