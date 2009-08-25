@@ -155,12 +155,10 @@ sub call {
 
 	my $value = $params{$name};
 
-	my $soap_param = UNIVERSAL::isa($value, 'SOAP::Data')
-	    ? $value->name($name)
-	    : (SOAP::Data
-	       ->name($name)
-	       ->type('string')
-	       ->value($value));
+	$value = SOAP::Data->type(string => $value)
+	    unless UNIVERSAL::isa($value, 'SOAP::Data');
+
+	my $soap_param = $value->name($name);
 
 	push (@soap_params, $soap_param);
 
