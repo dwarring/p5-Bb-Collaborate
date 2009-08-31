@@ -164,11 +164,19 @@ Note that if you empty the participant list, C<reset> will be called.
 
 sub update {
     my $self = shift;
-    my $data = shift;
+    my $update_data = shift;
     my %opt = @_;
 
-    my $participants = ($data->{participants}
-			|| $self->participants);
+    if ($update_data) {
+
+	die 'usage: $obj->update( \%data )'
+	    unless (Elive::Util::_reftype($update_data) eq 'HASH');
+
+	$self->set( %$update_data)
+	    if (keys %$update_data);
+    }
+
+    my $participants = $self->participants;
 
     if ((!defined $participants)
 	|| (Elive::Util::_reftype($participants) eq 'ARRAY' && !@$participants)
@@ -184,15 +192,14 @@ sub update {
     my $adapter = $opt{adapter} || $self->check_adapter('setParticipantList');
 
     if ($self->is_changed) {
-	$self->SUPER::update($data,
+	$self->SUPER::update(undef,
 			     adapter => $adapter,
 			     %opt);
     }
     elsif ($self->_is_lazy) {
 	#
-	# input participants list may contain user objects, or just
-	# user ids. Note update, but stimulate the side effect of
-	# returning fully stantiating objects.
+	# input participants list may have been lazily populated. 
+	# Reread from database to fully stantiate objects.
 	#
 	my $class = ref($self);
 	$class->retrieve([$self->id]);
