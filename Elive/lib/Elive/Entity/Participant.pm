@@ -88,4 +88,10 @@ sub stringify {
     return Elive::Entity::User->stringify($data->{user}).'='.Elive::Entity::Role->stringify($data->{role});
 }
 
+=head1 SEE ALSO
+
+Elive::Entity::ParticipantList
+
+=cut
+
 1;

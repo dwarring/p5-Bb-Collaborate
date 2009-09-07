@@ -143,12 +143,6 @@ sub _freeze {
     return $frozen;
 }
 
-=head2 insert
-
-=cut
-
-sub insert {shift->_not_available}
-
 =head2 update
 
     my $participant_list
@@ -301,6 +295,15 @@ sub _readback {
     $class->SUPER::_readback_check($updates, [$row], @_);
 }
 
+=head2 insert
+
+The insert method is not for participants lists. This entity is created
+automatically, when meetings are created.
+
+=cut
+
+sub insert {shift->_not_available}
+
 =head2 list
 
 The list method is not available for participant lists. You'll need
@@ -309,5 +312,17 @@ to retrieve on a meeting id.
 =cut
 
 sub list {shift->_not_available}
+
+=head1 SEE ALSO
+
+=over 4
+
+=item Elive::Entity::Meeting
+
+=item Elive::Entity::Participant
+
+=item 
+
+=cut
 
 1;

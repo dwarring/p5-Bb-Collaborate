@@ -174,7 +174,7 @@ dies_ok(
 		    RecordingStatus => 'REMOTE',
 		}})
     },
-    'thawing invalid meeting struct parameters - die',
+    'thawing invalid meeting struct parameters - dies',
     );
 
 

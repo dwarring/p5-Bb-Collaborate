@@ -615,10 +615,17 @@ sub list_recordings {
     
 =head1 SEE ALSO
 
-Elive::Entity::Preload
-Elive::Entity::Recording
-Elive::Entity::MeetingParameters 
-Elive::Entity::ServerParameters
+=over 4
+
+=item Elive::Entity::Preload
+
+=item Elive::Entity::Recording
+
+=item Elive::Entity::MeetingParameters 
+
+=item Elive::Entity::ServerParameters
+
+=back
 
 =cut
 

@@ -45,9 +45,9 @@ ok(defined($meta_data_tab->{$refaddr}), 'entity has metadata');
 
 $user = undef;
 
-ok($refaddr, 'refaddr still valid');
+ok($refaddr, 'object destroyed => refaddr still valid');
 
 my $is_dead = !(Elive::Entity->live_entity($url));
-ok($is_dead, 'entity is dead');
-ok(!defined($meta_data_tab->{$refaddr}), 'entity metadata destroyed');
+ok($is_dead, 'object destroyed => entity is dead');
+ok(!defined($meta_data_tab->{$refaddr}), 'object destroyed => entity metadata purged');
 
