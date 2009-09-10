@@ -160,9 +160,16 @@ sub update {
 
 Delete the meeting.
 
-Note: With Elluminate 9.5 onwards: meetings, meeting parameters and server
-parameters remain accessable via the SOAP inteface, but have the I<deleted>
-flag set to 'true'. For example to retrieve undeleted mettings:
+Note: With Elluminate 9.5 onwards, deleting a meetings simply sets the
+I<deleted> property to true. Meetings, Meeting Parameters and Server
+Parameters remain accessable via the SOAP inteface.
+
+If you only want live meetings, you'll need to filter:
+
+    my $meeting =  Elive::Entity::Meeting->retreive([$meeting_id]);
+    my $is_live = $meeting->deleted;
+
+or check individual meetings:
 
     my $live_meetings =  Elive::Entity::Meeting->list(filter => 'deleted = false');
 
