@@ -1,5 +1,12 @@
 Revision history for Elive
 
+0.40    11th September
+        Some minor changes for Elluminate Live 9.5.1 release:
+        - added displayName argument to buildJNLP method
+        - meeting deletion now just sets the deleted attribute on meetings.
+          The meeting, server parameters, and meeting paramters remain
+          retrieveable. Adjusted tests in t/22-meeting.t.
+
 0.39    30th August
         - Fixed erroneuous readback error when saving untrimmed strings,
           e.g. $meeting->uppdate({name => 'abc '}).
@@ -81,7 +88,7 @@ Revision history for Elive
 
 0.26    13th June
         - Increased tolerance with dealing with out of bounds data on
-          soap retrieval. In particular made 'recordingStatus' and media
+          SOAP retrieval. In particular made 'recordingStatus' and media
           'type' properties case insensitive. These now produce warnings
           rather than carping on retrieval of out-of-bounds data.
         - Added 'parameters' and 'server_parameters' utility methods

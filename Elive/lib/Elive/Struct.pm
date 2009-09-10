@@ -298,9 +298,9 @@ sub _cmp_col {
 		#
 		# work with normalised frozen values
 		#
-		$_ = ($is_struct
-		      ? $type->stringify($_)
-		  : Elive::Util::_freeze($_, $type));
+		$_ = ($is_struct       ? $type->stringify($_)
+		      : $type eq 'Ref' ? YAML::Dump($_) # no freeze method avail
+		      : Elive::Util::_freeze($_, $type));
 	    }
 
 	    if ($is_array) {

@@ -1,6 +1,6 @@
 #!perl
 use warnings; use strict;
-use Test::More tests => 37;
+use Test::More tests => 36;
 use Test::Exception;
 
 use lib '.';
@@ -22,7 +22,7 @@ SKIP: {
     my $auth = $result{auth};
 
     skip ($result{reason} || 'no test connection specified',
-	32)
+	31)
 	unless $auth;
 
     Elive->connect(@$auth);
@@ -156,7 +156,10 @@ SKIP: {
 	# more detailed.
 	#
 	my $jnlp;
-	lives_ok(sub {$jnlp = $meeting->buildJNLP(version => '8.0')},
+	lives_ok(sub {$jnlp = $meeting->buildJNLP(
+			  version => '8.0',
+			  displayName => 'Elive Test',
+			  )},
 		'$meeting->buildJNLP - lives');
 
 	ok(defined $jnlp, 'got jnlp')
@@ -192,12 +195,17 @@ SKIP: {
     # are deleted when the meeting is deleted.
     #
     $meeting_params = undef;
-    dies_ok( sub {Elive::Entity::MeetingParameters->retrieve([$meeting_id])},
-	     'cascaded delete of meeting parameters');
 
-    $server_params = undef;
-    dies_ok( sub {Elive::Entity::ServerParameters->retrieve([$meeting_id])},
-	     'cascaded delete of server parameters');
+    $meeting = undef;
+
+    my $deleted_meeting;
+    eval {$deleted_meeting = Elive::Entity::Meeting->retrieve([$meeting_id])};
+    #
+    # Change in policy with elluminate 9.5.1. Deleted meetings remain
+    # retrievable, they just have the deleted flag set
+    #
+    ok($@ || ($deleted_meeting && $deleted_meeting->deleted),
+       'cascaded delete of meeting parameters');
 }
 
 Elive->disconnect;

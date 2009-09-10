@@ -153,6 +153,21 @@ sub update {
     $self->SUPER::update($data, %opt);
 }
 
+=head2 delete
+
+    my $meeting = Elive::Entity::Meeting->retrieve([$meeting_id]);
+    $meeting->delete
+
+Delete the meeting.
+
+Note: With Elluminate 9.5 onwards: meetings, meeting parameters and server
+parameters remain accessable via the SOAP inteface, but have the I<deleted>
+flag set to 'true'. For example to retrieve undeleted mettings:
+
+    my $live_meetings =  Elive::Entity::Meeting->list(filter => 'deleted = false');
+
+=cut
+
 =head2 list_user_meetings_by_date
 
 List all meetings over a given date range.
@@ -411,9 +426,11 @@ sub remove_preload {
     
 =head2 buildJNLP 
 
-    my $jnlp = $meeting_entity->buildJNLP(version => version,
-					  user => userId|userName,
-					  pass => password);
+    my $jnlp = $meeting_entity->buildJNLP(version => $version,
+					  user => $userId||$userName,
+					  pass => $password,
+                                          displayName => 'Display Name'
+    );
 
 Builds a JNLP for the meeting.
 
@@ -445,10 +462,10 @@ sub buildJNLP {
 
     my %soap_params = (meetingId => $meeting_id);
 
-    foreach my $param (qw(version password)) {
+    foreach my $param (qw(version password displayName)) {
 	my $val = delete $opt{$param};
 	$soap_params{$param} = Elive::Util::_freeze($val, 'Str')
-	    if $val;
+	    if defined $val;
     }
 
     for (delete $opt{user} || $connection->login->userId) {
