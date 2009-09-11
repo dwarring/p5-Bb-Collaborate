@@ -155,16 +155,23 @@ sub main {
 		    print "select <expr> from entity [where exp]\n";
 		    print "    where expr is:\n";
 		    print "      - prop1,prop2,.. - selected properties\n";
-		    print "      - *              - all properties\n";
-		    print "      - *?             - skip undefined properties\n";
+		    print "      - *              - show all properties\n";
+		    print "      - *?             - show defined properties\n";
 		}
 		elsif ($keyw  =~ m{^(connect)$}i) {
 		    my ($url, $user) = split(m{\s+}, $args);
 
 		    if ($url) {
-			_connect($url,
-				 username => $user,
-				 %options);
+
+			my $new_connection
+			    = _connect($url,
+				       username => $user,
+				       %options);
+
+			if ($new_connection) {
+			    $connection->disconnect if $connection;
+			    $connection = $new_connection;
+			}
 		    }
 		    else {
 			print STDERR "usage: connect url [user]\n";
