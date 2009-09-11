@@ -70,7 +70,7 @@ sub download {
 
     my $adapter = Elive->check_adapter('getRecordingStream');
 
-    my $connection = $opt{connection} || $self->connection
+    my $connection = $self->connection
 	or die "not connected";
 
     my $som = $connection->call($adapter,
@@ -116,7 +116,7 @@ sub web_url {
     my %opt = @_;
 
     my $recording_id = $opt{recording_id};
-    my $connection = $opt{connection} || $self->connection
+    my $connection = $self->connection || $opt{connection}
 	or die "not connected";
 
     if (ref($self)) {
@@ -131,9 +131,6 @@ sub web_url {
 
     die "no recording_id given"
 	unless $recording_id;
-
-    die "not connected"
-	unless $connection;
 
     my $url = $connection->url;
 
@@ -175,7 +172,7 @@ sub buildJNLP {
     my $self = shift;
     my %opt = @_;
 
-    my $connection = $opt{connection} || $self->connection
+    my $connection = $self->connection
 	or die "not connected";
 
     my $recording_id = $opt{recording_id};

@@ -265,7 +265,7 @@ sub add_preload {
 
     my $adapter = $self->check_adapter('addMeetingPreload');
 
-    my $connection = $opt{connection} || $self->connection
+    my $connection = $self->connection
 	or die "not connected";
 
     my $som = $connection
@@ -295,7 +295,7 @@ sub check_preload {
 
     my $adapter = $self->check_adapter('checkMeetingPreload');
 
-    my $connection = $opt{connection} || $self->connection
+    my $connection = $self->connection
 	or die "not connected";
 
     my $som = $connection
@@ -329,7 +329,7 @@ sub is_participant {
 
     my $adapter = $self->check_adapter('isParticipant');
 
-    my $connection = $opt{connection} || $self->connection
+    my $connection = $self->connection
         or die "not connected";
 
     my $som = $connection
@@ -418,7 +418,7 @@ sub remove_preload {
     die 'unable to get a preload_id'
 	unless $preload_id;
 
-    my $connection = $opt{connection} || $self->connection
+    my $connection = $self->connection
 	or die "not connected";
 
     my $adapter = $self->check_adapter('deleteMeetingPreload');
@@ -456,7 +456,7 @@ sub buildJNLP {
     my $self = shift;
     my %opt = @_;
 
-    my $connection = $opt{connection} || $self->connection
+    my $connection = $self->connection
 	or die "not connected";
 
     my $meeting_id = $opt{meeting_id};
@@ -521,7 +521,7 @@ sub web_url {
     my %opt = @_;
 
     my $meeting_id = $opt{meeting_id};
-    my $connection = $opt{connection} || $self->connection
+    my $connection = $self->connection || $opt{connection}
 	or die "not connected";
 
     if (ref($self)) {
@@ -567,8 +567,12 @@ See also L<Elive::Entity::MeetingParameters>.
 sub parameters {
     my $self = shift;
 
-    return Elive::Entity::MeetingParameters->retrieve([$self->meetingId],
-						     @_, reuse => 1);
+    return Elive::Entity::MeetingParameters
+	->retrieve([$self->meetingId],
+		   reuse => 1,
+		   connection => $self->connection,
+		   @_,
+	);
 }
 
 =head2 server_parameters
@@ -584,8 +588,12 @@ See also L<Elive::Entity::ServerParameters>.
 sub server_parameters {
     my $self = shift;
 
-    return Elive::Entity::ServerParameters->retrieve([$self->meetingId],
-						     @_, reuse => 1);
+    return Elive::Entity::ServerParameters
+	->retrieve([$self->meetingId],
+		   reuse => 1,
+		   connection => $self->connection,
+		   @_,
+	);
 }
 
 =head2 participant_list
@@ -601,8 +609,12 @@ See also L<Elive::Entity::ParticipantList>.
 sub participant_list {
     my $self = shift;
 
-    return Elive::Entity::ParticipantList->retrieve([$self->meetingId],
-						    @_, reuse => 1);
+    return Elive::Entity::ParticipantList
+	->retrieve([$self->meetingId],
+		   reuse => 1,
+		   connection => $self->connection,
+		   @_,
+	);
 }
 
 =head2 list_preloads
@@ -617,7 +629,9 @@ sub list_preloads {
     my $self = shift;
 
     return Elive::Entity::Preload
-        ->list_meeting_preloads($self->meetingId,@_);
+        ->list_meeting_preloads($self->meetingId,
+				connection => $self->connection,
+				@_);
 }
 
 =head2 list_recordings
@@ -634,6 +648,7 @@ sub list_recordings {
 
     return Elive::Entity::Recording
 	->list(filter => 'meetingId = '.$self->meetingId,
+	       connection => $self->connection,
 	       @_);
 }
     

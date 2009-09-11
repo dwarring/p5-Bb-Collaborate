@@ -109,7 +109,7 @@ sub upload {
 
 	my $adapter = Elive->check_adapter('streamPreload');
 
-	my $connection = $opt{connection} || $self->connection
+	my $connection = $self->connection
 	    or die "not connected";
 
 	my $som = $connection->call($adapter,
@@ -148,7 +148,7 @@ sub download {
 
     my $adapter = Elive->check_adapter('getPreloadStream');
 
-    my $connection = $opt{connection} || $self->connection
+    my $connection = $self->connection
 	or die "not connected";
 
     my $som = $connection->call($adapter,

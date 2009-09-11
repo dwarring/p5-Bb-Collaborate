@@ -21,9 +21,10 @@ __PACKAGE__->primary_key('meetingId');
 
 has 'participants' => (is => 'rw', isa => 'ArrayRef[Elive::Entity::Participant]|Elive::Array::Participants',
     coerce => 1);
+#
 # NOTE: thawed data may be returned as the 'participants' property.
-# but for frozen data the parameter name is 'users'. Also
-
+# but for frozen data the parameter name is 'users'.
+#
 __PACKAGE__->_alias(users => 'participants', freeze => 1);
 
 coerce 'ArrayRef[Elive::Entity::Participant]' => from 'ArrayRef[HashRef]'
@@ -111,7 +112,7 @@ sub _freeze {
 
     if (my $users = $frozen->{users}) {
 	#
-	# Need to flatten our users struct.
+	# May need to flatten our users struct.
 	#
 	# Setter methods expect a stringified digest in the form:
 	# userid=roleid[;userid=roleid]
@@ -166,7 +167,7 @@ sub update {
 	die 'usage: $obj->update( \%data )'
 	    unless (Elive::Util::_reftype($update_data) eq 'HASH');
 
-	$self->set( %$update_data)
+	$self->set( %$update_data )
 	    if (keys %$update_data);
     }
 
@@ -196,7 +197,8 @@ sub update {
 	# Reread from database to fully stantiate objects.
 	#
 	my $class = ref($self);
-	$class->retrieve([$self->id]);
+	$class->retrieve([$self->id],
+			 connection => $self->connection);
 	$self;
     }
 }
@@ -217,13 +219,15 @@ sub reset {
     my $meeting_id = $self->meetingId
 	or die "unable to get meetingId";
 
-    my $meeting = Elive::Entity::Meeting->retrieve([$meeting_id],
-						   reuse => 1)
+    my $meeting = Elive::Entity::Meeting
+	->retrieve([$meeting_id],
+		   reuse => 1,
+		   connection => $self->connection,
+	)
 	or die "meeting not found: ".$meeting_id;
 
     my $facilitator_id = $meeting->facilitatorId
 	or die "no facilitator found for meeting: $meeting_id";
-
     #
     # Expect the list to be set to just include the meeting facilitator
     # as a moderator (role = 2). Set it now, and confirm this in the
