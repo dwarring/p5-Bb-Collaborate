@@ -7,11 +7,11 @@ Elive -  Elluminate Live! (c) client library
 
 =head1 VERSION
 
-Version 0.41
+Version 0.42
 
 =cut
 
-our $VERSION = '0.41';
+our $VERSION = '0.42';
 
 use Class::Data::Inheritable;
 use base qw{Class::Data::Inheritable};
@@ -60,8 +60,8 @@ achieved via the SOAP API. This is known as the I<Command Toolkit> and
 is detailed in chapter 4 of the Elluminate I<Live!> Software Developers
 Kit.
 
-This module provides Perl object to entity bindings to Elluminate I<Live!>
-databases via the command toolkit.
+This module provides Perl object to bindings to Elluminate I<Live!> entities
+via the command toolkit.
 
 =cut
 
@@ -389,6 +389,28 @@ sub _check_for_errors {
 elive_query is an example simple sql-like script. It is a basic program
 for listing and retrieving entities. It serves as a simple demonstration
 script, and can be used to confirm basic operation of Elive.
+
+It servers a secondary function of querying entity metadata. For example,
+to show the user entity:
+
+    $> elive_query
+    Elive query 0.xx  - type 'help' for help
+
+    elive> show
+    usage: show group|meeting|meetingParameters|participantList|preload|recording|serverDetails|serverParameters|use
+
+    elive> show meeting
+    meeting: Elive::Entity::Meeting:
+      meetingId          : pkey Int        
+      allModerators      : Bool      -- all participants can moderate
+      deleted            : Bool            
+      end                : HiResDate -- meeting end time
+      facilitatorId      : Str       -- userId of facilitator
+      name               : Str       -- meeting name
+      password           : Str       -- meeting password
+      privateMeeting     : Bool      -- don't display meeting in public schedule
+      restrictedMeeting  : Bool      -- Restricted meeting
+      start              : HiResDate -- meeting start time
 
 =head2 elive_raise_meeting
 
