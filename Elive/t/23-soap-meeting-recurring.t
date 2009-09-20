@@ -38,8 +38,6 @@ SKIP: {
 	
     );
 
-    my $seconds_in_a_week = 7 * 24 * 60 * 60;
-
     my @meetings = ($class->insert({%meeting_int_data, %meeting_str_data}));
 
     ok(@meetings == 3, 'got three meeting occurences')
@@ -51,15 +49,39 @@ SKIP: {
 
     my @start_times = map {substr($_->end, 0, -3)} @meetings;
 
-    ok(abs($start_times[1] - $start_times[0] - $seconds_in_a_week) < 900,
-       "meetings 1 & 2 separated by one week (approx)");
+    #
+    # very approximate test on the dates being about a week apart.
+    # The times could be out by over half an hour due to daylight 
 
-    ok(abs($start_times[2] - $start_times[1] - $seconds_in_a_week) < 900,
+    ok(a_week_between($start_times[0], $start_times[1]),
+		       "meetings 1 & 2 separated by one week (approx)");
+
+    ok(a_week_between($start_times[1], $start_times[2]),
        "meetings 2 & 3 separated by one week (approx)");
 
     foreach (@meetings) {
 	$_->delete;
     }
+}
+
+sub a_week_between {
+    my $start = shift;
+    my $end = shift;
+
+    #
+    # A very rough test of times being about a week apart. Anything more
+    # precise is going to require time-zone aware date/time calculations.
+    #
+    my $seconds_in_a_week = 7 * 24 * 60 * 60;
+    #
+    # just test that the dates are a week apart to within an
+    # hour and a half, or so. This should accomodate daylight savings
+    # adjustments of up to 1.5 hours.
+    #
+    my $delta = 1.6 * 60 * 60; # a little over 1.5 hours
+    my $ok = abs ($end - $start - $seconds_in_a_week) < $delta;
+
+    return $ok;
 }
 
 Elive->disconnect;
