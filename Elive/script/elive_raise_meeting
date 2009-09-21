@@ -50,9 +50,10 @@ elive_raise_meeting
                                  #  - off:    recording disabled
                                  #  - on:     starts automatically
                                  #  - manual: recording started by moderator
-    -[no]private                 # whether to show on public schedule
-    -[no]raise_hands             # automatically raise hands on entry
+    -[no]invites                 # allow in-session invitations
+    -[no]private                 # hide from public schedule
     -[no]permissions             # let participants perform activities
+    -[no]raise_hands             # automatically raise hands on entry
     -[no]supervised              # whether moderator can see private messages
     -seats        count          # number of seats to reserve on server
 
@@ -94,6 +95,7 @@ my $boundary = 15;
 my $seats;
 my $permissions;
 my $supervised;
+my $invites;
 
 main(@ARGV) unless caller;
 
@@ -122,6 +124,7 @@ sub main {
 	'recording=s' => \$recording,
 	'boundary=i' => \$boundary,
 	'seats=i' => \$seats,
+	'invites!' => \$invites,
     )
 	&& (($help && pod2usage(2)) || ($url = shift @ARGV))
 	or die pod2usage(1);
@@ -223,7 +226,7 @@ sub main {
     push (@participants, {user => $facilitator->userId, role => 2});
 
     #
-    # Check out participants
+    # Vet participants
     #
     @participants = _get_participants(@participants);
 
@@ -290,7 +293,11 @@ sub main {
 	$meeting_parameters->raiseHandOnEnter($raise_hands)
 	    if defined $raise_hands;
 
+	$meeting_parameters->inSessionInvitation($invites)
+	    if defined $invites;
+
 	$meeting_parameters->recordingStatus($recording);
+
 
 	$meeting_parameters->update;
     };
@@ -450,11 +457,10 @@ sub _get_user {
 
     die 'usage: _get_user($user_name_or_id)'
 	unless (defined $user_spec && $user_spec ne '');
-    my $user = Elive::Entity::User->retrieve([$user_spec])
-	|| Elive::Entity::User->get_by_loginName($user_spec);
 
-    die "unkown user: $user_spec\n"
-	unless ($user);
+    my $user = (Elive::Entity::User->retrieve([$user_spec])
+		|| Elive::Entity::User->get_by_loginName($user_spec))
+	or die "unkown user: $user_spec\n";
 
     return $user;
 }
