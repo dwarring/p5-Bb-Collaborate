@@ -36,12 +36,16 @@ has 'firstName' => (is => 'rw', isa => 'Str',
 has 'lastName' => (is => 'rw', isa => 'Str',
 		   documentation => 'users surname');
 
+#
+# 'groups' and 'domain' propreties made a brief appearence in Elm 9.5.0
+# but haven't survived to 9.5.2. Will cull these shortly.
+#
+
 has 'groups' => (is => 'rw', isa => 'Str',
 		documentation => 'groups?');
 
 has 'domain' => (is => 'rw', isa => 'Str',
 		 documentation => 'domain?');
-
 
 coerce 'Elive::Entity::User' => from 'HashRef'
           => via {Elive::Entity::User->construct($_,

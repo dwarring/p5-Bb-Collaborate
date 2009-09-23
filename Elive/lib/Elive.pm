@@ -328,8 +328,8 @@ Elluminate Services Errors:
 This may indicate that the particular command adaptor is is not available for
 your site instance.
 
-Check that your Elluminate I<Live!> server software version; Elive supports
-9.0 and 9.1.
+Check that your Elluminate I<Live!> server software version; This module
+has been tested against 9.0, 9.1 and 9.5.2
 
 If the problem persists, the command entry may be missing from your site
 configuration file. Please follow the instructions in the README file
@@ -496,7 +496,8 @@ Describes setting up multiple site instances.
 
 The Elluminate I<Live!> advanced configuration guide mentions that it can be
 configured to use other databases that support a JDBC bridge (most databases
-in widespread use do). It specifically mentions SQL Server or Oracle. 
+in widespread use). It specifically mentions SQL Server or Oracle. MySQL
+is supported with 9.5.0 
 
 =item LDAP Authentication
 
@@ -524,8 +525,8 @@ David Warring, C<< <david.warring at gmail.com> >>
 
 =item Elive is a newish module
 
-I have so far run it against a limited number of Elluminate 9.0 and 9.1
-installations.
+I have so far run it against a limited number of Elluminate 9.0, 9.1
+and 9.5 installations.
 
 So far it does not implement all SOAP calls, but concentrates on entities
 such as users, meetings, preloads and meeting participants.

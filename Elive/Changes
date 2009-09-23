@@ -1,10 +1,18 @@
 Revision history for Elive
 
-0.40    11th September
+0.42    24th September
+        - elive_raise_meeting: Added -invites flag for in session invitations.
+
+0.41    12th September
+        - elive_query: Fixed connection/reconnection logic.
+        - Fixed passing through of connection on some utility retrieval
+          methods, e.g. Elive::Entity::Meeting's 'parameters' method.
+
+0.40    9th September
         Some minor changes for Elluminate Live 9.5.1 release:
-        - added displayName argument to buildJNLP method
-        - meeting deletion now just sets the deleted attribute on meetings.
-          The meeting, server parameters, and meeting paramters remain
+        - Added displayName argument to buildJNLP method
+        - Meeting deletion now just sets the deleted attribute on meetings.
+          The meeting, server parameters, and meeting parameters remain
           retrieveable. Adjusted tests in t/22-meeting.t.
 
 0.39    30th August

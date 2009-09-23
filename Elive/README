@@ -4,14 +4,15 @@ of Elluminate Live! virtual classroom servers.
 You can, for example, use it to query or add users, create sessions, assign
 users as class participants and change server settings.
 
-This package has been tested against Elluminate Live! versions 9.0 thru 9.1.
+This package has been tested against Elluminate Live! versions 9.0, 9.1 and
+9.5.1.
 
 You will need to be able to login in to your SOAP service using an Elluminate
 system administrator level account.
 
-Note that Elluminate installs with 'serversupport' and 'legacyadapter' as
-preset system adminstrator accounts. Don't forget to change passwords on
-both these accounts before use!
+Note that Elluminate installs with 'serversupport' and 'legacyadapter' (9.0
+9.1) or elmconfig (9.5) as preset system administrator accounts. Don't forget
+to change passwords on both these accounts before use!
 
 INSTALLATION
 
@@ -74,10 +75,6 @@ POST INSTALLATION
         return the error message 'Unable to determine a command for the key
         Xxxxx'.
 
-        If you get this error, please check that your Elluminate Live
-        software is up-to-date. This version Elive has only been tested
-        against Elluminate Live! 9.0 and 9.1.
-
         You may be able to get away with manually adding the adapter to
         the list of adapters in your configuration file.
 
@@ -106,9 +103,9 @@ POST INSTALLATION
         This is a simple shell that can be used to test basic access
         to your Elluminate Live server
 
-        Usage is: elive_query --user SomeAdmin http://myserver/mysite
+        Usage is: elive_query --user admin_user http://myserver/mysite
 
-        Where SomeAdmin is an Elluminate system administrator account.
+        Where admin_user is an Elluminate system administrator account.
 
         You will need to enter a password. You should then get:
 
