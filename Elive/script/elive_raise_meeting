@@ -50,18 +50,18 @@ elive_raise_meeting
                                  #  - off:    recording disabled
                                  #  - on:     starts automatically
                                  #  - manual: recording started by moderator
+    -seats        count          # number of seats to reserve on server
     -[no]invites                 # allow in-session invitations
     -[no]private                 # hide from public schedule
     -[no]permissions             # let participants perform activities
     -[no]raise_hands             # automatically raise hands on entry
     -[no]supervised              # whether moderator can see private messages
-    -seats        count          # number of seats to reserve on server
 
   Preloads
 
-    -upload              local_file  # upload a file from the client
-    -import_from_server  file        # import a file on the server
-    -use_preload         preload_id  # reuse a preload in the database
+    -upload              local_file     # upload a file from the client
+    -import_from_server  path_on_server # import a file already on the server
+    -use_preload         preload_id     # reuse a preload in the database
 
 =head1 DESCRIPTION
 
@@ -124,15 +124,15 @@ sub main {
 	'recording=s' => \$recording,
 	'boundary=i' => \$boundary,
 	'seats=i' => \$seats,
-	'invites!' => \$invites,
+	'invites|invitations!' => \$invites,
     )
 	&& (($help && pod2usage(2)) || ($url = shift @ARGV))
 	or die pod2usage(1);
 
     $recording = lc($recording);
     #
-    # accept some of the other terms for the various modes as seen
-    # in documentation and elluminate's web interface..
+    # accept some of the other symonymns for the various modes as
+    # in seen documentation and elluminate's web interface..
     #
     $recording =~ s{^none|disabled$}{off}x;
     $recording =~ s{^manual$}{remote}x;
