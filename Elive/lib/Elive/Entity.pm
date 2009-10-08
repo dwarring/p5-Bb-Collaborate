@@ -799,7 +799,7 @@ sub update {
     #
     # refresh the object from the database read-back
     #
-    $class->construct($rows[0], overwrite => 1)
+    $class->construct($rows[0], overwrite => 1, connection => $self->connection)
 	if (@rows && Elive::Util::_reftype($rows[0]) eq 'HASH');
 
     #

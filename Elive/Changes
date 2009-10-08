@@ -1,7 +1,8 @@
 Revision history for Elive
 
-0.42    24th September
+0.42    8th October
         - elive_raise_meeting: Added -invites flag for in session invitations.
+        - Elive::Entity::update() - fixing handling of connection option.
 
 0.41    12th September
         - elive_query: Fixed connection/reconnection logic.
