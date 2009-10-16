@@ -164,12 +164,12 @@ Note: With Elluminate 9.5 onwards, deleting a meetings simply sets the
 I<deleted> property to true. Meetings, Meeting Parameters and Server
 Parameters remain accessable via the SOAP inteface.
 
-If you only want live meetings, you'll need to filter:
+If you only want live meetings, you'll need to check for deleted meetings:
 
-    my $meeting =  Elive::Entity::Meeting->retreive([$meeting_id]);
+    my $meeting =  Elive::Entity::Meeting->retrieve([$meeting_id]);
     my $is_live = $meeting->deleted;
 
-or check individual meetings:
+or filter out deleted meetings:
 
     my $live_meetings =  Elive::Entity::Meeting->list(filter => 'deleted = false');
 
