@@ -111,21 +111,17 @@ SKIP: {
 
     ok($server_params->seats == 2, 'server_param - expected number of seats');
 
-    my $pl = Elive::Entity::ParticipantList->retrieve([$meeting->meetingId]);
-    diag ("participants=".$pl->participants->stringify);
-
     my $participants = [{user => Elive->login->userId,
 			 role => 1}];
     #
-    # NB. It's no neccessary to insert prior to update, but since we allow it
+    # NB. It's not neccessary to insert prior to update, but since we allow it
     lives_ok(
-	     sub {$pl->update
-		      (
-		       {meetingId => $meeting->meetingId,
-			participants => $participants},
-		      )
-		  },
-	     'update of participant list - lives');
+	sub {my $p1 = Elive::Entity::ParticipantList->insert(
+		 {meetingId => $meeting->meetingId,
+		  participants => $participants});
+	     diag ("participants=".$p1->participants->stringify);
+	},
+	'insert of participant list - lives');
 
     my $participant_list = Elive::Entity::ParticipantList->retrieve([$meeting->meetingId]);
 

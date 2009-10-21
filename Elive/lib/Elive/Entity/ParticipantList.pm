@@ -242,6 +242,40 @@ sub reset {
 	);
 }
 
+=head2 insert
+ 
+    my $participant_list = Elive::Entity::ParticipantList->insert({
+       meetingId => $meeting_id,
+       participants => '111111=2;33333'
+       });
+
+Note that if you empty the participant list, C<reset> will be called.
+
+=cut
+
+sub insert {
+    my $class = shift;
+    my $data = shift;
+    my %opt = @_;
+
+    my $self;
+
+    if (Scalar::Util::blessed($class)) {
+	$self = $class;
+	$class = ref($self);
+    }
+    else {
+	my $meeting_id = delete $data->{meetingId}
+	or die "can't insert participant list without meetingId";
+	$self = $class->retrieve([$meeting_id],
+				 reuse => 1);
+    }
+
+    $self->update($data, %opt);
+
+    return $self;
+}
+
 #
 # &_is_lazy
 # require a round trip to stantiate objects and users and roles
@@ -298,15 +332,6 @@ sub _readback {
 
     $class->SUPER::_readback_check($updates, [$row], @_);
 }
-
-=head2 insert
-
-The insert method is not for participants lists. This entity is created
-automatically, when meetings are created.
-
-=cut
-
-sub insert {shift->_not_available}
 
 =head2 list
 

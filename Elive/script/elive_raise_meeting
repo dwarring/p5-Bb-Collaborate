@@ -46,7 +46,7 @@ elive_raise_meeting
     -boundary     0|15|30|..     # minutes participants can arrive before or
                                  # leave after the scheduled meeting times.
     -max_talkers  n              # max no. of simultaneous talkers
-    -recording    off|remote|on  # set recording status
+    -recording    off|on|manual  # set recording status
                                  #  - off:    recording disabled
                                  #  - on:     starts automatically
                                  #  - manual: recording started by moderator
@@ -132,7 +132,7 @@ sub main {
     $recording = lc($recording);
     #
     # accept some of the other symonymns for the various modes as
-    # in seen documentation and elluminate's web interface..
+    # seen in documentation and elluminate's web interface.
     #
     $recording =~ s{^none|disabled$}{off}x;
     $recording =~ s{^manual$}{remote}x;
