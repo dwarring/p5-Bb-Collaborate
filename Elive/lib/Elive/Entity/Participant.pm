@@ -36,7 +36,7 @@ sub _parse {
 
     return $_ if Scalar::Util::reftype($_);
 
-    m{^ \s* (.*?) \s* (= ([0-3]) \s*)? $}x
+    m{^ \s* (.*?) \s* (= (\d) \s*)? $}x
 	or die "'$_' not in format: userId=role";
 
     my $userId = $1;
@@ -80,7 +80,7 @@ sub stringify {
     my $self = shift;
     my $data = shift || $self;
 
-    return $data
+    $data = $self->_parse($data)
 	unless Scalar::Util::refaddr($data);
     #
     # Stringify to the format used for updates: userId=role

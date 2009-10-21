@@ -1,8 +1,11 @@
 Revision history for Elive
 
+0.44    22nd October
+        - Fixed a bug that was causing erroneous read-back errors on
+          ParticipantList inserts and updates.
+
 0.43    21st October
-        - Reintroduced ParticipantList 'insert' method. This method is
-	  being used.
+        - Reinstated ParticipantList 'insert' method. This method is
 
 0.42    8th October
         - elive_raise_meeting: Added -invites flag for in session invitations.

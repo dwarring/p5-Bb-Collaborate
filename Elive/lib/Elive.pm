@@ -7,11 +7,11 @@ Elive -  Elluminate Live! (c) client library
 
 =head1 VERSION
 
-Version 0.43
+Version 0.44
 
 =cut
 
-our $VERSION = '0.43';
+our $VERSION = '0.44';
 
 use Class::Data::Inheritable;
 use base qw{Class::Data::Inheritable};
@@ -574,8 +574,8 @@ L<http://search.cpan.org/dist/Elive/>
 
 =head1 ACKNOWLEDGEMENTS
 
-Thanks to Lex Lucas and Simon Haidley for their support and direction
-during the construction of this module.
+Thanks to Lex Lucas and Simon Haidley for their testing, support and
+direction during the construction of this module.
 
 =head1 COPYRIGHT & LICENSE
 

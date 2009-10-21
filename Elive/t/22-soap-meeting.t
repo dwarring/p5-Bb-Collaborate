@@ -1,6 +1,6 @@
 #!perl
 use warnings; use strict;
-use Test::More tests => 36;
+use Test::More tests => 39;
 use Test::Exception;
 
 use lib '.';
@@ -22,7 +22,7 @@ SKIP: {
     my $auth = $result{auth};
 
     skip ($result{reason} || 'no test connection specified',
-	31)
+	34)
 	unless $auth;
 
     Elive->connect(@$auth);
@@ -111,21 +111,35 @@ SKIP: {
 
     ok($server_params->seats == 2, 'server_param - expected number of seats');
 
-    my $participants = [{user => Elive->login->userId,
-			 role => 1}];
+    my $participants_deep_ref = [{user => Elive->login->userId,
+				  role => 0}];
     #
     # NB. It's not neccessary to insert prior to update, but since we allow it
     lives_ok(
-	sub {my $p1 = Elive::Entity::ParticipantList->insert(
+	sub {my $_p = Elive::Entity::ParticipantList->insert(
 		 {meetingId => $meeting->meetingId,
-		  participants => $participants});
-	     diag ("participants=".$p1->participants->stringify);
+		  participants => $participants_deep_ref});
+	     diag ("participants=".$_p->participants->stringify);
 	},
-	'insert of participant list - lives');
+	'insert of participant deep list - lives');
 
     my $participant_list = Elive::Entity::ParticipantList->retrieve([$meeting->meetingId]);
 
     isa_ok($participant_list, 'Elive::Entity::ParticipantList', 'server_params');
+    ok($participant_list->participants->stringify eq Elive->login->userId.'=0',
+       'participant deep list - set correctly');
+
+    $participant_list->update({participants => [Elive->login->userId.'=1']});
+
+    ok($participant_list->participants->stringify eq Elive->login->userId.'=1',
+       'participant shallow list - set correctly');
+
+    $participant_list->update({participants => Elive->login->userId.'=2'});
+
+    diag ("participants=".$participant_list->participants->stringify);
+
+    ok($participant_list->participants->stringify eq Elive->login->userId.'=2',
+       'participant string list - set correctly');
 
     lives_ok(sub {$participant_list->update({participants => []})},
 	     'clearing participants - lives');

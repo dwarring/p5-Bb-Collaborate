@@ -552,7 +552,7 @@ sub _readback_check {
 		    warn YAML::Dump({read => $read_val, write => $write_val})
 			if ($class->debug);
 
-		    die "$class: Update consistancy check failed on $_: wrote:".Elive::Util::string($write_val, $property_type).", read-back:".Elive::Util::string($read_val, $property_type);
+		    die "$class::$property_type: Update consistancy check failed on $_: wrote:".Elive::Util::string($write_val, $property_type).", read-back:".Elive::Util::string($read_val, $property_type);
 		}
 	    }
 	}
@@ -653,10 +653,12 @@ generated for you and returned with the newly created object.
 sub insert {
     my $class = shift;
     my $insert_data = shift;
-    my %opt = @_;
 
-    die "usage: ${class}->insert( \\%data )"
-	unless (Elive::Util::_reftype($insert_data) eq 'HASH');
+    die "usage: ${class}->insert( \\%data, %opts )"
+	unless (Elive::Util::_reftype($insert_data) eq 'HASH'
+		&& @_ % 2 == 0);
+
+    my %opt = @_;
 
     my $connection = $opt{connection}
 		      || $class->connection

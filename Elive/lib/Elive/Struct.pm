@@ -435,7 +435,9 @@ sub set {
 	    }
 	}
 
-	$self->{$_} = $data{$_};
+	defined ($data{$_})
+	    ? $self->$_($data{$_})
+	    : delete $self->{$_};
     }
 
     return $self;

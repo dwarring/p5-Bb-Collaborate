@@ -98,6 +98,11 @@ has  'restrictedMeeting' => (is => 'rw', isa => 'Bool',
 sub insert {
     my $class = shift;
     my $data = shift;
+
+    die "usage: $class->insert(\\%data, %opts)"
+	unless (Elive::Util::_reftype($data) eq 'HASH'
+		&& @_ % 2 == 0);
+ 
     my %opt = @_;
 
     my %params = (seats => 'Int',
