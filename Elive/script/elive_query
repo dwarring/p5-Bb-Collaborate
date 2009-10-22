@@ -154,9 +154,9 @@ sub main {
 		    print "debug = [0|1|2|3] - set debugging level\n";
 		    print "select <expr> from entity [where exp]\n";
 		    print "    where expr is:\n";
-		    print "      - prop1,prop2,.. - selected properties\n";
+		    print "      - prop1,prop2,.. - show selected properties\n";
 		    print "      - *              - show all properties\n";
-		    print "      - *?             - show defined properties\n";
+		    print "      - *?             - show only defined properties\n";
 		}
 		elsif ($keyw  =~ m{^(connect)$}i) {
 		    my ($url, $user) = split(m{\s+}, $args);
