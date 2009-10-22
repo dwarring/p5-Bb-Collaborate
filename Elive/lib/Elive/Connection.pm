@@ -51,7 +51,7 @@ use URI;
 use File::Spec::Unix;
 use HTML::Entities;
 
-__PACKAGE__->mk_accessors( qw{ url user pass soap _login _server_details} );
+__PACKAGE__->mk_accessors( qw{url user pass soap _login _server_details} );
 
 =head1 METHODS
 
@@ -117,7 +117,7 @@ sub connect {
 
 =head2 disconnect
 
-Close a connection;
+Closes a connection.
 
 =cut
 
@@ -140,9 +140,11 @@ SOAP::SOM object.
 sub call {
     my $self = shift;
     my $cmd = shift;
-    my %params = @_;
 
-    die "usage: \$obj->call(cmd [, %params])" unless $cmd;
+    die "usage: \$obj->call($cmd , %params])"
+	unless $cmd && !(@_ % 2);
+
+    my %params = @_;
 
     $params{adapter} ||= 'default';
 
