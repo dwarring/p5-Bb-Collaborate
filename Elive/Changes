@@ -1,11 +1,18 @@
 Revision history for Elive
 
+0.46    28th October
+        - Fixed compile checks on scripts in t/00a-compile.t. Follow
+          up to 0.45.
+
+0.45    26th October
+        - Fixed syntax error in elive_raise_meeting.
+
 0.44    22nd October
         - Fixed a bug that was causing erroneous read-back errors on
           ParticipantList inserts and updates.
 
 0.43    21st October
-        - Reinstated ParticipantList 'insert' method. This method is
+        - Reinstated ParticipantList 'insert' method.
 
 0.42    8th October
         - elive_raise_meeting: Added -invites flag for in session invitations.
