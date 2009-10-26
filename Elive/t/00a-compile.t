@@ -28,11 +28,11 @@ foreach (qw/elive_query elive_lint_config elive_raise_meeting/) {
 diag( "Testing Elive $Elive::VERSION, Perl $], $^X" );
 
 package elive_query;
-sub load{do('script/elive_query')};
+sub load{do('script/elive_query'); for ($@, $!) {die $_ if $_}};
 
 package elive_lint_config;
-sub load{do('script/elive_lint_config')};
+sub load{do('script/elive_lint_config'); for ($@, $!) {die $_ if $_}};
 
 package elive_raise_meeting;
-sub load{do('script/elive_raise_meeting')};
+sub load{do('script/elive_raise_meeting'); for ($@, $!) {die $_ if $_}};
 
