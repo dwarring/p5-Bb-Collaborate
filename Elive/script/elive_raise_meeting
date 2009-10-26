@@ -181,7 +181,7 @@ sub main {
 
     my @participants;
 
-    foreach my $spec (map {split(';',$_} @ARGV) {
+    foreach my $spec (map {split(';',$_)} @ARGV) {
 
 	#
 	# parse participant specs: user[=roleId]
