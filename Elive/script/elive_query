@@ -1,9 +1,8 @@
 #!/usr/bin/perl
+package Elive::script::elive_query;
 use warnings; use strict;
-
 use YAML;
 use Carp;
-
 use Getopt::Long qw{};
 
 use Elive;

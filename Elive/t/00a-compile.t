@@ -21,10 +21,10 @@ BEGIN {
 }
 
 foreach my $script (qw/elive_query elive_lint_config elive_raise_meeting/) {
+    my $script_path =  File::Spec->catfile('script', $script);
     lives_ok(sub {
-	my $script_path =  File::Spec->catfile('script', $script);
-	do {eval qq{package $script; require "$script_path";}};
-	for ($@, $!) {die $_ if $_}
+	do "$script_path";
+	for ($@, $!) {die $_ if $_};
     }, "script $script compiles");
 }
 

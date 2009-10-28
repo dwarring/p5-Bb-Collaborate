@@ -1,6 +1,6 @@
 #!/usr/bin/perl
-use warnings;
-use strict;
+package Elive::script::elive_lint_config;
+use warnings; use strict;
 
 use Getopt::Long;
 use XML::Simple;
