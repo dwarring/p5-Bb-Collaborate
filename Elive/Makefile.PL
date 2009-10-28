@@ -24,7 +24,7 @@ requires(
     'HTML::Entities'               => 0,
     'IO::Prompt'                   => 0,
     'MIME::Types'                  => 0,
-    'Mouse'                        => 0.40,
+    'Mouse'                        => 0.29,
     'Pod::Usage'                   => 0,  # for elive_raise_meeting
     'Scalar::Util'                 => 0,
     'Storable'                     => 0,

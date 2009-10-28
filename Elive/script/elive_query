@@ -7,11 +7,22 @@ use Carp;
 use Getopt::Long qw{};
 
 use Elive;
-use Elive::Entity;
 use Elive::Util;
+use Elive::Entity;
+use Elive::Entity::Group;
+use Elive::Entity::Meeting;
+use Elive::Entity::MeetingParameters;
+use Elive::Entity::Participant;
+use Elive::Entity::ParticipantList;
+use Elive::Entity::Preload;
+use Elive::Entity::Recording;
+use Elive::Entity::Role;
+use Elive::Entity::ServerDetails;
+use Elive::Entity::ServerParameters;
+use Elive::Entity::User; 
+
 use Term::ReadLine;
 use Pod::Usage;
-
 use UNIVERSAL;
 
 =head1 NAME

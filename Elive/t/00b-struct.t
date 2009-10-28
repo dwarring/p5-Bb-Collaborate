@@ -1,6 +1,6 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 48;
+use Test::More tests => 54;
 use Test::Warn;
 
 BEGIN {
@@ -61,6 +61,13 @@ _participant_array_tests('deep structs',
 			 {user => {userId => 'mmmm'}, role => {roleId => 3}},
 			 {user => {userId => 'zzzz'}, role => {roleId => 3}},
     );
+
+_participant_array_tests('mixed',
+			 'aaaa',
+			 {user => 'mmmm', role => 3},
+			 {user => {userId => 'zzzz'}, role => {roleId => 3}},
+    );
+
 ########################################################################
 
 sub _participant_array_tests {

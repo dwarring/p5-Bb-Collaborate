@@ -1,5 +1,9 @@
 Revision history for Elive
 
+0.47    29th October
+        - elive_query: Was missing entity classes. Now explicitly loads
+          each entity class: 'use Elive::Entity::Group', etc.
+
 0.46    28th October
         - Fixed 'get_attribute_map() has been deprecated' test failures
           that were occurring with Mouse 0.40+.
