@@ -20,12 +20,12 @@ BEGIN {
     use_ok( 'Elive::Entity::User' );
 }
 
-foreach (qw/elive_query elive_lint_config elive_raise_meeting/) {
+foreach my $script (qw/elive_query elive_lint_config elive_raise_meeting/) {
     lives_ok(sub {
-	local ($@, $!);
-	do( File::Spec->catfile('script', $_) );
+	my $script_path =  File::Spec->catfile('script', $script);
+	do {eval qq{package $script; require "$script_path";}};
 	for ($@, $!) {die $_ if $_}
-    }, "script $_ compiles");
+    }, "script $script compiles");
 }
 
 diag( "Testing Elive $Elive::VERSION, Perl $], $^X" );
