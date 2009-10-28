@@ -118,7 +118,7 @@ is_deeply(\%user_contents,
 
 #
 # Try another simple struct, but this time pick on something that
-# includes field alises
+# includes field aliases
 #
 
 my $aliases = Elive::Entity::ServerParameters->_get_aliases;

@@ -1,6 +1,6 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 26;
+use Test::More tests => 28;
 use Test::Exception;
 
 package main;
@@ -65,7 +65,7 @@ lives_ok(
     );
 
 dies_ok(
-    sub {$user_data->set('userId', undef)},
+    sub {$user_data->set(userId => undef)},
     "clearing primary key field - dies"
     );
 
@@ -82,14 +82,28 @@ lives_ok(
 my %meeting_data = (meetingId => 1111111,
 		    name => 'test',
 		    start => '1234567890123',
-		    end => '1234567890123'
+		    end => '1234567890123',
+		    password => 'work!',
 	);
 
+my $meeting;
+
 lives_ok(
-    sub {Elive::Entity::Meeting->construct(\%meeting_data)},
+    sub {$meeting = Elive::Entity::Meeting->construct(\%meeting_data)},
 	 'construct meeting with valid data - lives'
     );
 
+lives_ok(
+    sub {$meeting->set(password => undef)},
+    "setting optional field to undef - lives"
+    );
+
+dies_ok(
+    sub {$meeting->set(start => undef)},
+    "setting required field to undef - dies"
+    );
+
+$meeting->revert;
 
 foreach (qw(meetingId name start end)) {
 

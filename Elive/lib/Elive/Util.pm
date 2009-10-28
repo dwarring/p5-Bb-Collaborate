@@ -23,7 +23,7 @@ Elive::Util - Utility functions for Elive
 
 =head2 parse_type
 
-   my $att = $my_class->meta->get_attribute_map->{foo};
+   my $att = $my_class->meta->get_attribute->(foo);
 
    my ($primary_type,
        $is_array,
@@ -38,10 +38,17 @@ sub parse_type {
     my $type = shift;
 
     #
-    # ArrayRef[Elive::Entity::User]
+    # Elive::Array::
     #
     ($type) = split(/[ \| \] ]/x, $type);
-    my $is_array = ($type =~ s{^ArrayRef\[}{}x);
+
+    my $is_array = ($type =~ m{^Elive::Array});
+
+    if ($is_array) {
+
+	$type = $type->element_class || 'Str';
+
+    }
 
     my $is_struct = $type =~ m{^Elive::(Struct||Entity)(::|$)};
 

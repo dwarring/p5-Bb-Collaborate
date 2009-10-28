@@ -1,11 +1,12 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 32;
+use Test::More tests => 48;
 use Test::Warn;
 
 BEGIN {
     use_ok( 'Elive::Struct' );
     use_ok( 'Elive::Entity::Role' );
+    use_ok( 'Elive::Array::Participants' );
 }
 
 my $class = 'Elive::Struct';
@@ -36,18 +37,50 @@ ok($class->_cmp_col('enumRecordingStates', 'off', 'off') == 0, '_cmp enum ==');
 ok($class->_cmp_col('enumRecordingStates', 'Off', 'off') == 0, '_cmp enum == (case insensitve)');
 ok($class->_cmp_col('enumRecordingStates', 'off', 'on') != 0, '_cmp enum !=');
 
-ok($class->_cmp_col('ArrayRef[Int]', [1,2,3],[1,2,3]) == 0, '_cmp [Int] ==');
-ok($class->_cmp_col('ArrayRef[Int]', [1,2,3],[3,2,1]) == 0, '_cmp [Int] == (unordered)');
-ok($class->_cmp_col('ArrayRef[Int]', [2,3,4],[1,2,3]) > 0, '_cmp [Int] >');
-ok($class->_cmp_col('ArrayRef[Int]', [1,2,3],[2,3,4]) < 0, '_cmp [Int] <');
+ok($class->_cmp_col('Elive::Array', [1,2,3],[1,2,3]) == 0, '_cmp array ==');
+ok($class->_cmp_col('Elive::Array', [1,2,3],[3,2,1]) == 0, '_cmp array == (unordered)');
+ok($class->_cmp_col('Elive::Array', [2,3,4],[1,2,3]) > 0, '_cmp array >');
+ok($class->_cmp_col('Elive::Array', [1,2,3],[2,3,4]) < 0, '_cmp array <');
 
 ok($class->_cmp_col('Elive::Entity::Role', {roleId => 2},{roleId => 2}) == 0, '_cmp Entity ==');
 ok($class->_cmp_col('Elive::Entity::Role', {roleId => 3},{roleId => 2}) > 0, '_cmp Entity >');
 ok($class->_cmp_col('Elive::Entity::Role', {roleId => 2},{roleId => 3}) < 0, '_cmp Entity <');
 
-ok($class->_cmp_col('ArrayRef[Elive::Entity::Role]', [{roleId => 1}, {roleId => 2}], [{roleId => 1},{roleId => 2}]) == 0, '_cmp [Entity] ==');
-ok($class->_cmp_col('ArrayRef[Elive::Entity::Role]', [{roleId => 1}, {roleId => 3}],[{roleId => 1}, {roleId => 2}]) > 0, '_cmp [Entity] >');
-ok($class->_cmp_col('ArrayRef[Elive::Entity::Role]', [{roleId => 1}, {roleId => 2}],[{roleId => 1}, {roleId => 3}]) < 0, '_cmp [Entity] <');
+#
+# Shallow Tests
 
+_participant_array_tests('strings','aaaa','mmmm', 'zzzz');
+
+_participant_array_tests('shallow structs',
+			 {user => 'aaaa', role => 3},
+			 {user => 'mmmm', role => 3},
+			 {user => 'zzzz', role => 3});
+
+_participant_array_tests('deep structs',
+			 {user => {userId => 'aaaa'}, role => {roleId => 3}},
+			 {user => {userId => 'mmmm'}, role => {roleId => 3}},
+			 {user => {userId => 'zzzz'}, role => {roleId => 3}},
+    );
+########################################################################
+
+sub _participant_array_tests {
+    my $type = shift;
+    my $low    = shift;
+    my $medium = shift;
+    my $high   = shift;
+ 
+    ok(! $class->_cmp_col('Elive::Array::Participants', [$low, $high], [$low, $high]), "_cmp entity array == (simple $type)");
+
+    ok(! $class->_cmp_col('Elive::Array::Participants', [$high, $low], [$low, $high]), "_cmp entity array == (reordered $type)");
+
+    ok(! $class->_cmp_col('Elive::Array::Participants', [], []), "_cmp entity array == (empty $type)");
+
+   ok($class->_cmp_col('Elive::Array::Participants', [$low], [$low, $high]), "_cmp entity array != (different length $type)");
+
+    ok($class->_cmp_col('Elive::Array::Participants', [$low, $medium], [$low, $high]) < 0, "_cmp entity array < (simple $type)");
+
+    ok($class->_cmp_col('Elive::Array::Participants', [$low, $high], [$low, $medium]) > 0, "_cmp entity array > (simple $type)");
+
+};
 # todo some complex nested entities
 

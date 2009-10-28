@@ -2,11 +2,24 @@ package Elive::Array;
 use warnings; use strict;
 
 use Mouse;
+use Mouse::Util::TypeConstraints;
 
 use Elive;
 use base qw{Elive};
 
 __PACKAGE__->mk_classdata('element_class');
+
+coerce 'Elive::Array' => from 'Str'
+          => via {
+	      my $a = [ split(';') ];
+	      bless ($a,'Elive::Array');
+	      $a;
+          };
+
+coerce 'Elive::Array' => from 'ArrayRef[Str]'
+          => via {
+	      bless ($_,'Elive::Array');
+          };
 
 use UNIVERSAL;
 

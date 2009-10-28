@@ -19,37 +19,13 @@ __PACKAGE__->entity_name('ParticipantList');
 has 'meetingId' => (is => 'rw', isa => 'Int', required => 1);
 __PACKAGE__->primary_key('meetingId');
 
-has 'participants' => (is => 'rw', isa => 'ArrayRef[Elive::Entity::Participant]|Elive::Array::Participants',
+has 'participants' => (is => 'rw', isa => 'Elive::Array::Participants',
     coerce => 1);
 #
 # NOTE: thawed data may be returned as the 'participants' property.
 # but for frozen data the parameter name is 'users'.
 #
 __PACKAGE__->_alias(users => 'participants', freeze => 1);
-
-coerce 'ArrayRef[Elive::Entity::Participant]' => from 'ArrayRef[HashRef]'
-          => via {
-	      my $a = [ map {Elive::Entity::Participant->new($_)} @$_ ];
-	      bless ($a, 'Elive::Array::Participants');
-	      $a;
-};
-
-coerce 'ArrayRef[Elive::Entity::Participant]' => from 'ArrayRef[Str]'
-          => via {
-	      my @participants = map {Elive::Entity::Participant->_parse($_)} @$_;
-	      my $a = [ map {Elive::Entity::Participant->new($_)} @participants];
-	      bless ($a, 'Elive::Array::Participants');
-	      $a;
-};
-
-coerce 'ArrayRef[Elive::Entity::Participant]' => from 'Str'
-          => via {
-	      my @participants = map {Elive::Entity::Participant->_parse($_)} split(';');
-
-	      my $a = [ map {Elive::Entity::Participant->new($_)} @participants ];
-	      bless ($a,'Elive::Array::Participants');
-	      $a;
-          };
 
 =head1 NAME
 
@@ -169,6 +145,7 @@ sub update {
 
 	$self->set( %$update_data )
 	    if (keys %$update_data);
+
     }
 
     my $participants = $self->participants;

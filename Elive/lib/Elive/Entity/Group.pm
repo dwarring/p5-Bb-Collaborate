@@ -7,6 +7,8 @@ use Mouse::Util::TypeConstraints;
 use Elive::Entity;
 use base qw{ Elive::Entity };
 
+use Elive::Array;
+
 __PACKAGE__->entity_name('Group');
 __PACKAGE__->collection_name('Groups');
 
@@ -16,17 +18,9 @@ __PACKAGE__->primary_key('groupId');
 has 'name' => (is => 'rw', isa => 'Str', required => 1,
 	       documentation => 'name of the group');
 
-has 'members' => (is => 'rw', isa => 'ArrayRef[Str]|Elive::Array', required => 1,
+has 'members' => (is => 'rw', isa => 'Elive::Array', required => 1,
 		  coerce => 1,
 		  documentation => "ids of users in the group");
-
-coerce 'ArrayRef[Str]' => from 'Str'
-          => via {
-	      my $a = [ split(';') ];
-	      bless ($a,'Elive::Array');
-	      $a;
-          };
-
 
 =head1 NAME
 

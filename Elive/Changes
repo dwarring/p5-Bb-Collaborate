@@ -1,8 +1,8 @@
 Revision history for Elive
 
 0.46    28th October
-        - Fixed compile checks on scripts in t/00a-compile.t. Follow
-          up to 0.45.
+        - Fixed 'get_attribute_map() has been deprecated' test failures
+          that were occurring with Mouse 0.40+.
 
 0.45    26th October
         - Fixed syntax error in elive_raise_meeting.

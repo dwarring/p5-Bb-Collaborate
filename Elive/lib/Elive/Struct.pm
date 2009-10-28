@@ -146,10 +146,10 @@ sub _alias {
 	if $aliases->{$from};
 
     die "$entity_class: can't alias $from it's already a property!"
-	if $entity_class->meta->get_attribute_map->{$from};
+	if $entity_class->meta->get_attribute($from);
 
     die "$entity_class: attempt to alias $from to non-existant property $to - check spelling and declaration order"
-	unless $entity_class->meta->get_attribute_map->{$to};
+	unless $entity_class->meta->get_attribute($to);
 
     $opt{to} = $to;
     $aliases->{$from} = \%opt;
@@ -235,11 +235,11 @@ sub _ordered_attribute_names {
     }
 
     #
-    # Sort remaining field alphabetically
+    # Sort remaining fields alphabetically
     #
-    my $atts = $class->meta->get_attribute_map;
+    my @atts = $class->meta->get_attribute_list;
 
-    foreach (sort keys %$atts) {
+    foreach (sort @atts) {
 	$order{$_} ||= ++$rank;
     }
 
@@ -250,9 +250,8 @@ sub _ordered_attributes {
     my $class = shift;
 
     my $meta = $class->meta;
-    my $atts = $meta->get_attribute_map;
 
-    return map {$atts->{$_}} ($class->_ordered_attribute_names);
+    return map {$meta->get_attribute($_)} ($class->_ordered_attribute_names);
 }
 
 sub _cmp_col {
@@ -367,7 +366,7 @@ sub properties {
    my $user_types = MyApp::Entity::User->property_types;
    my ($type,
        $is_array,
-       $is_data) = Elive::Util::parse_type($user_types->{role})
+       $is_struct) = Elive::Util::parse_type($user_types->{role})
 
 Return a hashref of attribute data types.
 
@@ -376,10 +375,11 @@ Return a hashref of attribute data types.
 sub property_types {
     my $class = shift;
 
-    my $atts = $class->meta->get_attribute_map;
+    my $meta = $class->meta;
+    my @atts = $meta->get_attribute_list;
 
     return {
-	map {$_ => $atts->{$_}->type_constraint} (keys %$atts)
+	map {$_ => $meta->get_attribute($_)->type_constraint} @atts
     };
 }
 
@@ -435,9 +435,22 @@ sub set {
 	    }
 	}
 
-	defined ($data{$_})
-	    ? $self->$_($data{$_})
-	    : delete $self->{$_};
+	my $meta = $self->meta;
+	my $attribute =  $meta->get_attribute($_);
+	my $value = $data{$_};
+
+	if (defined $value) {
+
+	    $self->$_($value);
+
+	}
+	else {
+
+	    die ref($self).": attempt to delete required attribute: $_"
+		if $attribute->is_required;
+
+	    delete $self->{$_};
+	}
     }
 
     return $self;

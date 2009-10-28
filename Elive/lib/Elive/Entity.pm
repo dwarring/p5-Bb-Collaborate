@@ -1098,20 +1098,6 @@ BEGIN {
 			 or warn "doesn't look like a hi-res date: $_")}
         => message {"invalid date: $_"};
 }
-#
-# Bring all our kids in
-#
-use Elive::Entity::Group;
-use Elive::Entity::Meeting;
-use Elive::Entity::MeetingParameters;
-use Elive::Entity::Participant;
-use Elive::Entity::ParticipantList;
-use Elive::Entity::Preload;
-use Elive::Entity::Recording;
-use Elive::Entity::Role;
-use Elive::Entity::ServerDetails;
-use Elive::Entity::ServerParameters;
-use Elive::Entity::User;
 
 # passing some global flags through from our parent constructor:
 # $Elive::_construct_opts       - this is copy don't register it as an object

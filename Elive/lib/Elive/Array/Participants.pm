@@ -1,8 +1,11 @@
 package Elive::Array::Participants;
 use warnings; use strict;
 
+use Mouse;
+use Mouse::Util::TypeConstraints;
+
 use Elive::Array;
-use base qw{Elive::Array};
+extends 'Elive::Array';
 
 use Elive::Entity::Participant;
 
@@ -33,5 +36,23 @@ sub add {
 
     $class->SUPER::add(@participants);
 }
+
+coerce 'Elive::Array::Participants' => from 'ArrayRef'
+          => via {
+	      my @participants = map {Elive::Entity::Participant->_parse($_)} @$_;
+	      my $a = [ map {Scalar::Util::blessed($_)? $_ : Elive::Entity::Participant->new($_)
+			} @participants];
+	      bless ($a, 'Elive::Array::Participants');
+	      $a;
+};
+
+coerce 'Elive::Array::Participants' => from 'Str'
+          => via {
+	      my @participants = map {Elive::Entity::Participant->_parse($_)} split(';');
+
+	      my $a = [ map {Elive::Entity::Participant->new($_)} @participants ];
+	      bless ($a,'Elive::Array::Participants');
+	      $a;
+          };
 
 1;
