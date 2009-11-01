@@ -1,7 +1,6 @@
 #!perl -T
 use Test::More tests => 17;
 use Test::Exception;
-use File::Spec;
 
 BEGIN {
     use_ok( 'Elive' );
@@ -19,6 +18,8 @@ BEGIN {
     use_ok( 'Elive::Entity::ServerParameters' );
     use_ok( 'Elive::Entity::User' );
 }
+
+use lib 'script';
 
 foreach my $script (qw/elive_query elive_lint_config elive_raise_meeting/) {
     lives_ok(sub {

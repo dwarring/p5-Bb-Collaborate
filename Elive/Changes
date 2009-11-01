@@ -1,8 +1,15 @@
 Revision history for Elive
 
+0.48    29th October
+        - Fix for t/00a-compile.t/; was failing to load scripts. Now
+          located via: use lib 'script'; ... require 'elive_query';
+
 0.47    29th October
-        - elive_query: Was missing entity classes. Now explicitly loads
-          each entity class: 'use Elive::Entity::Group', etc.
+        Some work on script packaging:
+        - Each script is declared in its own namespace,
+          'package Elive::script::elive_query', etc.
+        - elive_query: Now explicitly loads each entity class:
+          'use Elive::Entity::Group', etc.
 
 0.46    28th October
         - Fixed 'get_attribute_map() has been deprecated' test failures
