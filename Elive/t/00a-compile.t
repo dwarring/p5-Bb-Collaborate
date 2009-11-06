@@ -3,7 +3,7 @@ use strict;
 use warnings;
 use Test::More;
 
-use_ok('Elive'); # to get version
+use Elive; # to get version
 
 diag( "Testing Elive $Elive::VERSION, Perl $], $^X" );
 

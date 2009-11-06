@@ -25,6 +25,7 @@ requires:
   Class::Accessor: 0
   Class::Data::Inheritable: 0
   Date::Parse: 0
+  File::Basename: 0
   File::Spec: 0
   Getopt::Long: 0
   HTML::Entities: 0
@@ -43,7 +44,6 @@ requires:
   XML::Simple: 0
   YAML: 0
   perl: 5.005
-  version: 0
 resources:
   license: http://dev.perl.org/licenses/
 version: 0.49

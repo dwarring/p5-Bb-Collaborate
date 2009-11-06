@@ -346,11 +346,19 @@ sub _check_for_errors {
     die $som->fault->{ faultstring } if ($som->fault);
 
     my $result = $som->result;
+    my @paramsout = $som->paramsout;
 
-    warn "result: ".YAML::Dump($result)
+    warn "result: ".YAML::Dump($result, @paramsout)
 	if ($class->debug);
 
-    if(!Elive::Util::_reftype($result)) {
+    if (@paramsout >= 2 && !$paramsout[1]) {
+	#
+	# error format sometimes seen with elluminate 9.6+. Can occur
+	# when request is malformed
+	#
+	die join(' ', $paramsout[0]);
+    }
+    elsif(!Elive::Util::_reftype($result)) {
 	#
 	# Simple scalar - we're done
 	#
