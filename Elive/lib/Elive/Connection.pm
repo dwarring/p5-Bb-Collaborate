@@ -148,9 +148,16 @@ sub call {
 
     $params{adapter} ||= 'default';
 
-    my @soap_params = (SOAP::Data->name('_')->uri('')->value(''),
-		       SOAP::Header->type(xml => $self->_soap_header_xml()),
-		       SOAP::Data->name('command')->value($cmd),
+##    $self->soap->default_ns('http://www.soapware.org', 'm');
+
+    my @soap_params = (
+	(SOAP::Data
+	 ->name('request')
+	 ->uri('http://www.soapware.org')
+	 ->prefix('m')
+	 ->value('')),
+	SOAP::Header->type(xml => $self->_soap_header_xml()),
+	SOAP::Data->name('command')->value($cmd),
 	);
 
     foreach my $name (keys %params) {
@@ -163,7 +170,6 @@ sub call {
 	my $soap_param = $value->name($name);
 
 	push (@soap_params, $soap_param);
-
     }
 
     my $som = $self->soap->call( @soap_params );

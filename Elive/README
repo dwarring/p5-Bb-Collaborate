@@ -4,15 +4,14 @@ of Elluminate Live! virtual classroom servers.
 You can, for example, use it to query or add users, create sessions, assign
 users as class participants and change server settings.
 
-This package has been tested against Elluminate Live! versions 9.0, 9.1 and
-9.5.1.
+This package has been tested against Elluminate Live! versions 9.0 - 9.6.
 
-You will need to be able to login in to your SOAP service using an Elluminate
-system administrator level account.
+You will need to be able to login in to your SOAP service using an
+Elluminate system administrator level account.
 
-Note that Elluminate installs with 'serversupport' and 'legacyadapter' (9.0
-9.1) or elmconfig (9.5) as preset system administrator accounts. Don't forget
-to change passwords on both these accounts before use!
+Note that Elluminate installs with 'serversupport' and 'legacyadapter'
+(9.0, 9.1) or elmconfig (9.5) as preset system administrator accounts.
+Don't forget to change passwords on both these accounts before use!
 
 INSTALLATION
 

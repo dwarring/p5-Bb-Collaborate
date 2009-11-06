@@ -20,6 +20,7 @@ requires(
     'Date::Parse'                  => 0,
     'Carp'                         => 0,  # for scripts
     'File::Spec'                   => 0,
+    'File::Basename'               => 0,
     'Getopt::Long'                 => 0,  # for scripts
     'HTML::Entities'               => 0,
     'IO::Prompt'                   => 0,
@@ -28,15 +29,15 @@ requires(
     'Pod::Usage'                   => 0,  # for elive_raise_meeting
     'Scalar::Util'                 => 0,
     'Storable'                     => 0,
+    'SOAP::Lite'                   => 0.69,
+    'Storable'                     => 0,
     'Term::ReadKey'                => 0,
     'Term::ReadLine'               => 0,
     'Term::ReadLine::Perl'         => 0,  # fallback for elive_query
     'Time::Local'                  => 0,
-    'SOAP::Lite'                   => 0.69,
-    'Storable'                     => 0,
-    'YAML'                         => 0,
     'URI'                          => 0,
-    'XML::Simple'                  => 0.
+    'YAML'                         => 0,
+    'XML::Simple'                  => 0,
     );
 
 recommends(

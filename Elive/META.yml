@@ -43,6 +43,7 @@ requires:
   XML::Simple: 0
   YAML: 0
   perl: 5.005
+  version: 0
 resources:
   license: http://dev.perl.org/licenses/
-version: 0.47
+version: 0.49

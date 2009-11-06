@@ -3,15 +3,15 @@ use warnings; use strict;
 
 =head1 NAME
 
-Elive -  Elluminate Live! (c) client library
+Elive - Elluminate Live! (c) client library
 
 =head1 VERSION
 
-Version 0.48
+Version 0.49
 
 =cut
 
-our $VERSION = '0.48';
+our $VERSION = '0.49';
 
 use Class::Data::Inheritable;
 use base qw{Class::Data::Inheritable};

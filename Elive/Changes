@@ -1,13 +1,16 @@
 Revision history for Elive
 
+0.49    6th November
+        Changes to support Elluminate Live 9.6
+
+0.48_1  3rd November
+        - Replaced body of t/00a-compile.t with Test::Strict.
+
 0.48    29th October
-        - Fix for t/00a-compile.t/; was failing to load scripts. Now
-          located via: use lib 'script'; ... require 'elive_query';
+        - Fix for t/00a-compile.t; was failing to load scripts.
 
 0.47    29th October
-        Some work on script packaging:
-        - Each script is declared in its own namespace,
-          'package Elive::script::elive_query', etc.
+        - Gave each script a namespace: 'Elive::script::elive_query', etc.
         - elive_query: Now explicitly loads each entity class:
           'use Elive::Entity::Group', etc.
 

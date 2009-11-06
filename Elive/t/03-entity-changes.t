@@ -27,8 +27,9 @@ my $user1 = Elive::Entity::User->construct({
 	deleted => 0,
      },
     );
+
 isa_ok($user1, 'Elive::Entity::User');
-ok(!$user1->is_changed, 'freshly consrtucted user - !changed');
+ok(!$user1->is_changed, 'freshly constructed user - !changed');
 
 $user1->deleted(1);
 ok($user1->deleted, 'deleted user => deleted');

@@ -46,15 +46,16 @@ SKIP: {
     ok($server_version = $server_details->version, 'got server version');
     diag ('Elluminate Live! version: '.qv($server_version));
 
-    my $version_num = version->new($server_version)->numify;
-    ok($version_num >= 9, "Elluminate Live! server is 9.0.0 or higher");
+    my $server_version_num = version->new($server_version)->numify;
+    ok($server_version_num >= 9, "Elluminate Live! server is 9.0.0 or higher");
 
-    my $highest_tested_version = 9.0051;
+    my $tested_version = '9.6.0';
+    my $tested_version_num = version->new($tested_version)->numify;
 
-    if ($version_num > $highest_tested_version) {
+    if ($server_version_num > $tested_version_num) {
 	diag "************************";
 	diag "Note: Elluminate Live! server version is ".qv($server_version);
-	diag "      This Elive release ($Elive::VERSION) has been tested against v9.0.0 - v9.1.0";
+	diag "      This Elive release ($Elive::VERSION) has been tested against v9.0.0 - ".qv($tested_version);
 	diag "      You might want to check CPAN for a more recent version of Elive.";
 	diag "************************";
     }
