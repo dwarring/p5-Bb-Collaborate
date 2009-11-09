@@ -19,13 +19,17 @@ Elive::Entity::Preload - Elluminate Preload instance class
 
 =head2 DESCRIPTION
 
-This is the accessor class for meeting preloads.
+This is the entity class for meeting preloads.
 
     my $preloads = Elive::Entity::Preload->list(
                         filter =>  'mimeType=application/x-shockwave-flash',
                     );
 
-    my $this_preload = Elive::Entity::Preload->retrieve([$preload_id]);
+    my $preload = Elive::Entity::Preload->retrieve([$preload_id]);
+
+    my $type = $preload->type;
+
+There are three possible types of preloads: media, plan and whiteboard.
 
 =cut
 
@@ -36,9 +40,9 @@ has 'preloadId' => (is => 'rw', isa => 'Int', required => 1);
 __PACKAGE__->primary_key('preloadId');
 __PACKAGE__->_alias(key => 'preloadId');
 
-enum enumPreloadTypes => qw(media whiteboard);
-has 'type' => (is => 'rw', isa => 'enumPreloadTypes', required => 1,
-	       documentation => 'preload type. media or blackboard',
+enum enumPreloadTypes => qw(media whiteboard plan);
+has 'type' => (is => 'rw', isa => 'enumPreloadTypes',# required => 1,
+	       documentation => 'preload type. media, whiteboard or plan',
     );
 
 has 'name' => (is => 'rw', isa => 'Str', required => 1,
@@ -98,9 +102,10 @@ sub upload {
 	    for $insert_data->{name};
 
 	$insert_data->{mimeType} ||= $class->_guess_mimetype($insert_data->{name});
-	$insert_data->{type} ||= $insert_data->{name} =~ m{\.wbd}i
-	    ? 'whiteboard'
-	    : 'media';
+	$insert_data->{type}
+	||= ($insert_data->{name} =~ m{\.wbd}i     ? 'whiteboard'
+	     : $insert_data->{name} =~ m{\.elpx?}i ? 'plan'
+	     : 'media');
     }
 
     my $self = $class->insert($insert_data, %opt);
@@ -245,7 +250,7 @@ sub _thaw {
 	#
 	$_ = lc($_);
 
-	unless (m{^media|whiteboard$}) {
+	unless (m{^media|whiteboard|plan$}) {
 	    warn "ignoring unknown media type: $_";
 	    delete $db_thawed->{type};
 	}
@@ -259,12 +264,15 @@ sub _guess_mimetype {
     my $filename = shift;
 
     our $mime_types ||= MIME::Types->new;
-
-    my $mime_type = $mime_types->mimeTypeOf($filename);
-
+    my $mime_type;
     my $guess;
-    $guess = $mime_type->type
-	if $mime_type;
+
+    unless ($filename =~ m{\.elpx?}) { # plan
+	$mime_type = $mime_types->mimeTypeOf($filename);
+
+	$guess = $mime_type->type
+	    if $mime_type;
+    }
 
     $guess ||= 'application/octet-stream';
 

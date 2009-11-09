@@ -1,5 +1,9 @@
 Revision history for Elive
 
+0.50    10th November
+        - Elive::Entity::Preload: Added support for Elluminate Plan!
+          preloads. Preload types are now: 'media', 'whiteboard', 'plan'.
+
 0.49    6th November
         Changes to support Elluminate Live 9.6
         - Ensure the SOAP request root is strictly formattted as:

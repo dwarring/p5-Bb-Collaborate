@@ -1,6 +1,6 @@
 #!perl
 use warnings; use strict;
-use Test::More tests => 38;
+use Test::More tests => 43;
 use Test::Exception;
 
 use lib '.';
@@ -31,7 +31,7 @@ SKIP: {
     my $auth = $result{auth};
 
     skip ($result{reason} || 'unable to find test connection',
-	32)
+	37)
 	unless $auth;
 
     Elive->connect(@$auth);
@@ -97,6 +97,22 @@ SKIP: {
 
     ok($preloads[2]->mimeType eq 'video/mpeg','expected value for mimeType (set)');
 
+    $preloads[3] = Elive::Entity::Preload->upload(
+    {
+	type => 'plan',
+	name => 'test_plan.elpx',
+	ownerId => Elive->login->userId,
+	data => $data[1],
+    },
+    );
+
+    ok($preloads[3]->type eq 'plan','expected type (plan)');
+    ok($preloads[3]->mimeType eq 'application/octet-stream','expected mimeType for plan');
+
+    $data_download = $preloads[3]->download;
+
+    ok($data_download eq $data[1], 'plan download matches upload');
+
     my $check;
 
     lives_ok(sub {$check = $meeting->check_preload($preloads[0])},
@@ -118,7 +134,7 @@ SKIP: {
 
     isa_ok($preloads_list, 'ARRAY', 'preloads list');
 
-    ok(@$preloads_list == 3, 'meeting has three preloads');
+    ok(@$preloads_list == scalar @preloads, 'meeting has expected number of preloads');
 
     do {
 	my @preload_ids = map {$_->preloadId} @preloads;
@@ -152,7 +168,7 @@ SKIP: {
 
     isa_ok($preloads_list_2, 'ARRAY', 'preloads list');
 
-    ok(@$preloads_list_2 == 1, 'meeting left with one preload');
+    ok(@$preloads_list_2 == scalar(@preloads)-2, 'meeting has expected number of preloads preload');
     
        # start to tidy up
 
@@ -160,9 +176,9 @@ SKIP: {
 
     dies_ok(sub {$preloads[0]->retrieve([$preload_id])}, 'attempted retrieval of deleted preload - dies');
 
-    $preloads[1]->delete;
-    $preloads[2]->delete;
-
+    for my $i (1 .. $#preloads) {
+	$preloads[$i]->delete;
+    }
 }
 
 Elive->disconnect;
