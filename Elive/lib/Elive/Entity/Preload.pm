@@ -41,7 +41,7 @@ __PACKAGE__->primary_key('preloadId');
 __PACKAGE__->_alias(key => 'preloadId');
 
 enum enumPreloadTypes => qw(media whiteboard plan);
-has 'type' => (is => 'rw', isa => 'enumPreloadTypes',# required => 1,
+has 'type' => (is => 'rw', isa => 'enumPreloadTypes', required => 1,
 	       documentation => 'preload type. media, whiteboard or plan',
     );
 
@@ -198,9 +198,10 @@ sub import_from_server {
 	unless $filename;
 
     $insert_data->{mimeType} ||= $class->_guess_mimetype($filename);
-    $insert_data->{type} ||= $filename =~ m{\.wbd}i
-	    ? 'whiteboard'
-	    : 'media';
+    $insert_data->{type} 
+	||= ($filename =~ m{\.wbd}i     ? 'whiteboard'
+	     : $filename =~ m{\.elpx?}i ? 'plan'
+	     : 'media');
     $insert_data->{name} ||= File::Basename::basename($filename);
 
     $opt{param}{fileName} = $filename;
