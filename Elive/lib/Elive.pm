@@ -7,11 +7,11 @@ Elive - Elluminate Live! (c) client library
 
 =head1 VERSION
 
-Version 0.50
+Version 0.51
 
 =cut
 
-our $VERSION = '0.50';
+our $VERSION = '0.51';
 
 use Class::Data::Inheritable;
 use base qw{Class::Data::Inheritable};
@@ -309,9 +309,6 @@ sub DESTROY {
 }
 
 {
-    #
-    # just in case this is a moose/mouse object - grr
-    #
     no strict 'refs';
 
     *{__PACKAGE__.'::DEMOLISH'} = \&DESTROY;
@@ -385,7 +382,9 @@ sub _check_for_errors {
 
 	}
 
-	my @error = grep {defined} ($code, $reason, @stacktrace);
+	my %seen;
+
+	my @error = grep {defined($_) && !$seen{$_}++} ($code, $reason, @stacktrace);
 	die join(' ', @error) || YAML::Dump($result);
     }
 }

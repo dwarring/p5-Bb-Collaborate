@@ -1,8 +1,8 @@
 #!/usr/bin/perl
 use warnings; use strict;
-use Test::More;
 
 my $kwalitee = join('::', qw(Test Kwalitee));
 
 eval "require $kwalitee; $kwalitee->import()";
-plan( skip_all => "$kwalitee not installed; skipping" ) if $@;
+print "1..0 # SKIP $kwalitee not installed; skipping\n"
+    if $@;

@@ -260,6 +260,14 @@ sub _thaw {
     return $db_thawed;
 }
 
+=head2 update
+
+The update method is not available for preloads.
+
+=cut
+
+sub update {shift->_not_available}
+
 sub _guess_mimetype {
     my $class = shift;
     my $filename = shift;
@@ -279,5 +287,14 @@ sub _guess_mimetype {
 
     return $guess;
 }
+
+=head1 BUGS AND LIMITATIONS
+
+Under Elluminate 9.6.0 and LDAP, you may need to abritrarily add a 'DomN:'
+prefix to the owner ID.
+
+    $preload->ownerId('Dom1:freddy');
+
+=cut
 
 1;

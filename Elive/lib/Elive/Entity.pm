@@ -251,7 +251,7 @@ sub _thaw {
 
     my $responseTag = $class->entity_name.'Adapter';
 
-    warn "path $path: response tag for $class: `$responseTag"
+    warn "path $path: response tag for $class: $responseTag"
 	if $class->debug;
 
     my $reftype = Elive::Util::_reftype($db_data) || 'Scalar';
@@ -552,7 +552,7 @@ sub _readback_check {
 		    warn YAML::Dump({read => $read_val, write => $write_val})
 			if ($class->debug);
 
-		    die "$class::$property_type: Update consistancy check failed on $_: wrote:".Elive::Util::string($write_val, $property_type).", read-back:".Elive::Util::string($read_val, $property_type);
+		    die "${class}::${property_type}: Update consistancy check failed on $_: wrote:".Elive::Util::string($write_val, $property_type).", read-back:".Elive::Util::string($read_val, $property_type);
 		}
 	    }
 	}

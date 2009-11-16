@@ -1,11 +1,16 @@
 Revision history for Elive
 
+0.51    13th November
+        Changes to support Elluminate Live 9.6:
+        - Added 'sasId' property to Elive::Entity::Recording
+
 0.50    10th November
+        Changes to support Elluminate Live 9.6:
         - Elive::Entity::Preload: Added support for Elluminate Plan!
           preloads. Preload types are now: 'media', 'whiteboard', 'plan'.
 
 0.49    6th November
-        Changes to support Elluminate Live 9.6
+        Changes to support Elluminate Live 9.6:
         - Ensure the SOAP request root is strictly formattted as:
          <request xmlns:m="http://www.soapware.org">...</request>
         - Altered Elive::check_for_errors() method to detect error
@@ -23,8 +28,8 @@ Revision history for Elive
           'use Elive::Entity::Group', etc.
 
 0.46    28th October
-        - Fixed 'get_attribute_map() has been deprecated' test failures
-          that were occurring with Mouse 0.40+.
+        - Remove Mouse 'get_attribute_map()' usage. Depreciated and
+          producing warnings wit Mouse 0.40+.
 
 0.45    26th October
         - Fixed syntax error in elive_raise_meeting.

@@ -38,6 +38,8 @@ has 'size' => (is => 'rw', isa => 'Int',
 has 'version' => (is => 'rw', isa => 'Str',
 		  documentation => 'version of Elluminate Live! that created this recording');
 
+has  'sasId' => (is => 'rw', isa => 'Int');
+
 =head1 NAME
 
 Elive::Entity::Recording - Elluminate Recording Entity class
