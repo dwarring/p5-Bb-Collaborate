@@ -1,11 +1,15 @@
 Revision history for Elive
 
+0.52    1st December
+        changed 'use UNIVERSAL' to 'require UNIVERSAL' to avoid calling
+        calling UNIVERSAL import method. Depreciated under perl 5.11.2+.
+
 0.51    13th November
-        Changes to support Elluminate Live 9.6:
+        Changes to support Elluminate Live 9.6#3:
         - Added 'sasId' property to Elive::Entity::Recording
 
 0.50    10th November
-        Changes to support Elluminate Live 9.6:
+        Changes to support Elluminate Live 9.6#2:
         - Elive::Entity::Preload: Added support for Elluminate Plan!
           preloads. Preload types are now: 'media', 'whiteboard', 'plan'.
 
