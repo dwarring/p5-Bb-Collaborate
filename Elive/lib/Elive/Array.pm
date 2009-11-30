@@ -21,7 +21,7 @@ coerce 'Elive::Array' => from 'ArrayRef[Str]'
 	      bless ($_,'Elive::Array');
           };
 
-use UNIVERSAL;
+require UNIVERSAL;
 
 =head1 NAME
 

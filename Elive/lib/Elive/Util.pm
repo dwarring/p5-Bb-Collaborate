@@ -5,11 +5,9 @@ use Term::ReadKey;
 use Term::ReadLine;
 use Scalar::Util;
 use Storable;
-use UNIVERSAL;
-
+require UNIVERSAL;
 use YAML;
 
-use UNIVERSAL;
 
 =head1 NAME
 

@@ -8,7 +8,7 @@ use base qw{Elive::Struct};
 
 use YAML;
 use Scalar::Util qw{weaken};
-use UNIVERSAL;
+require UNIVERSAL;
 use Scalar::Util;
 
 use Elive::Util;
