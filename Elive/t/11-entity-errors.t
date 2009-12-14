@@ -1,6 +1,6 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 28;
+use Test::More tests => 29;
 use Test::Exception;
 
 package main;
@@ -116,13 +116,15 @@ foreach (qw(meetingId name start end)) {
 	);
 }
 
-dies_ok(
-       sub {
-           local $meeting_data{start} = 'non numeric date';
-           Elive::Entity::Meeting->construct(\%meeting_data);
-       },
-	"meeting with non numeric date - dies"
+foreach my $fld (qw/meetingId start/) {
+    dies_ok(
+	sub {
+	    local $meeting_data{$fld} = 'non numeric data';
+	    Elive::Entity::Meeting->construct(\%meeting_data);
+	},
+	"meeting with non numeric $fld - dies"
 	);
+}
 
 lives_ok(
 	 sub {Elive::Entity::MeetingParameters->construct

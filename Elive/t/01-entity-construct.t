@@ -142,7 +142,7 @@ ok($members_2->[1] eq 223344, 'member list user');
 ok($members_2->[2] eq 'trev', 'member list user');
 
 my $meeting =  Elive::Entity::Meeting->construct({
-    meetingId => 112233445566,
+    meetingId => '112233445566',
     name => 'test meeting',
     start => '1234567890123',
     end => '1231231230123',

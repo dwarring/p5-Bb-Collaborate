@@ -1,5 +1,9 @@
 Revision history for Elive
 
+0.53    14th December
+        Revised some tests failing test for mouse 0.43. Use strings for
+        long numerics. E.g. '1256168907389', instead of 1256168907389.
+
 0.52    1st December
         changed 'use UNIVERSAL' to 'require UNIVERSAL' to avoid calling
         calling UNIVERSAL import method. Depreciated under perl 5.11.2+.

@@ -3,7 +3,6 @@
 use strict;
 use warnings;
 use inc::Module::Install;
-
 perl_version    5.005;
 
 name           ('Elive');
@@ -51,5 +50,10 @@ test_requires (
     'Test::Exception'              => 0,
     'version'                      => 0,
     );
+
+#
+# Module::Install::Repository magic
+#
+auto_set_repository;
 
 WriteAll;

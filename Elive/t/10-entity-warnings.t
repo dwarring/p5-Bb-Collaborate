@@ -48,11 +48,11 @@ my $thawed_data;
 
 my $preload_data = {
     PreloadAdapter => {
-	Id => 1122334455667,
+	Id => '1122334455667',
 	Name => 'test.bin',
 	Type => 'MEdia',
 	Mimetype => 'application/octet-stream',
-	OwnerId => 123456789000,
+	OwnerId => '123456789000',
 	Size => 42,
     },
 };
@@ -70,7 +70,7 @@ ok(!exists $thawed_data->{type}, "unknown media type filtered from data");
 
 my $meeting_parameter_data = {
     MeetingParametersAdapter => {
-	Id => 11111222233334444,
+	Id => '11111222233334444',
 	RecordingStatus => 'rEMoTE',
     },
 };
@@ -94,8 +94,8 @@ sub meeting_with_lowres_dates {
 	({
 	    meetingId => 11223344,
 	    name => 'test meeting',
-	    start => 1234567890,  #too short
-	    end => 1244668890000, #good
+	    start => '1234567890',  #too short
+	    end => '1244668890000', #good
          },
 	);
 }

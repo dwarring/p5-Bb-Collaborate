@@ -16,9 +16,9 @@ use Scalar::Util;
 my $URL1 = 'http://test1.org';
 my $URL2 = 'http://test2.org/test_site';
 
-my $K1 = 123456123456;
-my $K2 = 112233445566;
-my $K3 = 111222333444;
+my $K1 = '123456123456';
+my $K2 = '112233445566';
+my $K3 = '111222333444';
 
 my $C1 = Elive::Connection->connect($URL1.'/');
 ok($C1->url eq $URL1, 'connection 1 - has expected url');
