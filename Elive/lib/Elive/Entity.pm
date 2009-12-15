@@ -670,7 +670,7 @@ sub insert {
 
     my $adapter = $opt{adapter} || 'create'.$class->entity_name;
 
-    $class->check_adapter($adapter);
+    $class->check_adapter($adapter, 'c');
 
     my $som = $connection->call($adapter,
 				%$db_data,

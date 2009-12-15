@@ -54,6 +54,6 @@ test_requires (
 #
 # Module::Install::Repository magic
 #
-auto_set_repository;
+##auto_set_repository;
 
 WriteAll;

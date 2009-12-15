@@ -162,6 +162,9 @@ sub update {
     }
 
     my $password = $data{loginPassword};
+    unless (defined $password && $password ne '') {
+	$password = delete $self->{loginPassword};
+    }
 
     my $ret = $self->SUPER::update( \%data, %opt );
 

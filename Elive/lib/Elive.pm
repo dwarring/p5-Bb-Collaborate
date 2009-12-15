@@ -203,9 +203,7 @@ sub debug {
     my $class = shift;
 
     if (@_) {
-	my $debug = shift || 0;
-
-	$DEBUG = $debug;
+	$DEBUG = shift || 0;
     }
 
     return $DEBUG || 0;
@@ -214,21 +212,61 @@ sub debug {
 our %KnownAdapters;
 
 BEGIN {
-    @KnownAdapters{qw(
-addGroupMember addMeetingPreload attendanceNotification changePassword
-buildMeetingJNLP buildRecordingJNLP checkMeetingPreload createGroup
-createMeeting createPreload createRecording createUser deleteGroup
-deleteMeeting deleteMeetingPreload deleteParticipant deleteRecording
-deletePreload deleteUser getGroup getMeeting getMeetingParameters
-getPreload getPreloadStream getRecording getRecordingStream
-getServerDetails getServerParameters getUser importPreload
-importRecording isParticipant listGroups listMeetingPreloads
-listMeetings listParticipants listPreloads listRecordings
-listUserMeetingsByDate listUsers resetGroup resetParticipantList
-setParticipantList streamPreload streamRecording updateMeeting
-updateMeetingParameters updateRecording updateServerParameters
-updateUser
-)} = undef;
+    #
+    # classify adaptors as create, read, update or delete
+    #
+    %KnownAdapters = (
+	addGroupMember => 'c',
+	addMeetingPreload => 'c',
+	attendanceNotification => 'r',
+	changePassword => 'u',
+	buildMeetingJNLP => 'r',
+	buildRecordingJNLP => 'r',
+	checkMeetingPreload => 'r',
+	createGroup => 'c',
+	createMeeting => 'c',
+	createPreload => 'c',
+	createRecording => 'c',
+	createUser => 'c',
+	deleteGroup => 'd',
+	deleteMeeting => 'd',
+	deleteMeetingPreload => 'd',
+	deleteParticipant => 'd',
+	deleteRecording => 'd',
+	deletePreload => 'd',
+	deleteUser => 'd',
+	getGroup => 'r',
+	getMeeting => 'r',
+	getMeetingParameters => 'r',
+	getPreload => 'r',
+	getPreloadStream => 'r',
+	getRecording => 'r',
+	getRecordingStream => 'r',
+	getServerDetails => 'r',
+	getServerParameters => 'r',
+	getUser => 'r',
+	importPreload => 'c',
+	importRecording => 'c',
+	isParticipant => 'r',
+	listGroups => 'r',
+	listMeetingPreloads => 'r',
+	listMeetings => 'r',
+	listParticipants => 'r',
+	listPreloads => 'r',
+	listRecordings => 'r',
+	listUserMeetingsByDate => 'r',
+	listUsers => 'r',
+	resetGroup => 'u',
+	resetParticipantList => 'u',
+	setParticipantList => 'u',
+	streamPreload => 'u',
+	streamRecording => 'u',
+	updateMeeting => 'u',
+	updateMeetingParameters => 'u',
+	updateRecording => 'u',
+	updateServerParameters => 'u',
+	updateUser => 'u',
+	);
 }
 
 =head2 check_adapter
@@ -243,14 +281,29 @@ See also: elive_lint_config.
 
 sub check_adapter {
     my $class = shift;
-    my $adapter = shift
-	or die 'usage: $class->known_adapter($name)';
+    my $adapter = shift;
+    my $crud = shift; #create, read, update or delete
 
-    my %known_adapters;
-    @known_adapters{$class->known_adapters} = undef;
+    my $usage = "usage: \$class->check_adapter(\$name[,'c'|'r'|'u'|'d'])";
+    die $usage unless $adapter;
+
+    my %known_adapters = $class->known_adapters;
 
     die "Uknown adapter: $adapter"
 	unless exists $known_adapters{$adapter};
+
+    if ($crud) {
+	$crud = lc(substr($crud,0,1));
+	die $usage
+	    unless $crud =~ m{^[c|r|u|d]$};
+
+	my $adapter_type = $known_adapters{$adapter};
+	die "misconfigured adapter: $adapter"
+	    unless $adapter_type &&  $adapter_type  =~ m{^[c|r|u|d]$};
+
+	die "adapter $adapter. Type mismatch. Expected $crud, found $adapter_type"
+	    unless ($adapter_type eq $crud);
+    }
 
     return $adapter;
 }
@@ -264,7 +317,7 @@ This list is cross-checked by the script elive_lint_config.
 
 sub known_adapters {
     my $class = shift;
-    return sort keys %KnownAdapters;
+    return %KnownAdapters;
 }
 
 our %Meta_Data;

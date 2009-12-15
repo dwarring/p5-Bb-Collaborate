@@ -53,7 +53,7 @@ sub main {
 
     print "Checking: $config_file\n";
 
-    my %required_adapters = map {$_ => 1} (Elive->known_adapters);
+    my %required_adapters = Elive->known_adapters;
     my %found;
 
     my $config = XMLin($config_file,

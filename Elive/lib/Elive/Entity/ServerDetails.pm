@@ -47,8 +47,8 @@ has 'iNetAddress' => (is => 'rw', isa => 'Ref');
 
     my ($server) = Elive::Entity::ServerDetails->list();
 
-Return the server details. Note that this is a singleton record. You should
-always expect to retrieve one record from the server.
+Return the server details. Note that thiere is a single record. You should
+always expect to retrieve one record from each connection.
 
 =cut
 
