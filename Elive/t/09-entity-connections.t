@@ -12,6 +12,7 @@ BEGIN {
 };
 
 use Scalar::Util;
+use lib '.';
 use t::Elive::MockConnection;
 
 my $URL1 = 'http://test1.org';
