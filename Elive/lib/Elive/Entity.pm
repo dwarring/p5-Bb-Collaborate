@@ -935,9 +935,8 @@ sub retrieve {
 	or die "no connected";
 
     if ($opt{reuse}) {
-
 	#
-	# Have we already got the object loaded? if so return it
+	# Have we already got the object cached? If so return it
 	#
 	my %pkey;
 	@pkey{$class->primary_key} = @$vals;
@@ -1030,7 +1029,7 @@ sub delete {
     my $rows =  $self->_process_results( $results );
 
     #
-    # Umm, we do get a read-back of the record, but the contents
+    # Umm, we did get a read-back of the record, but the contents
     # seem to be dubious. Peform candinality checks, but don't do
     # write-back checks.
     #
@@ -1163,8 +1162,8 @@ Entity instance classes are simply Mouse objects that use this class
 (Elive::Entity) as base. It should be quite possible to extend existing
 entity classes.
 
-Mouse is being used instead of Moose, at this stage, just because it's
-smaller and has far fewer dependencies.
+Mouse is being used instead of Moose, at this stage, it does the job, is
+smaller, faster (at this stage) and has far fewer dependencies.
 
 =cut
 

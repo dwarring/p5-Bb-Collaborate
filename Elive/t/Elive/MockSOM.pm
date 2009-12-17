@@ -31,15 +31,16 @@ sub _pack_data {
     my @properties = $class->properties;
     my $property_types =  $class->property_types || {};
 
-    foreach (keys %db_data) {
+    foreach my $prop (keys %db_data) {
 
 	die "$class: unknown property: $_: expected: @properties"
-	    unless exists $property_types->{$_};
+	    unless exists $property_types->{$prop};
 
-	my ($type, $is_array, $is_struct) = Elive::Util::parse_type($property_types->{$_});
+	my ($type, $is_array, $is_struct) = Elive::Util::parse_type($property_types->{$prop});
 
-	for ($db_data{$_}) {
-	    next unless defined;
+	for ($db_data{$prop}) {
+	    die "$class undefined property $prop"
+		unless defined;
 
 	    if ($is_struct) {
 		my ($adapter, $packed_data) = _pack_data($type, $_);

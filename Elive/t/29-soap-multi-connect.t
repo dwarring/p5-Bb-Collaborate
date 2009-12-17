@@ -40,16 +40,12 @@ SKIP: {
 	 $Skip)
 	if ($auth->[1] eq $auth_2->[1]);
 
-    diag ("connecting: user=$auth->[1], url=$auth->[0]");
-
     my $connection_class = $result{class};
     my $connection = $connection_class->connect(@$auth);
 
     ok($connection, 'got first connection');
     isa_ok($connection, 'Elive::Connection','connection')
 	or exit(1);
-
-    diag ("connecting: user=$auth_2->[1], url=$auth_2->[0]");
 
     my $connection_class_2 = $result_2{class};
     my $connection_2 = $connection_class_2->connect(@$auth_2);

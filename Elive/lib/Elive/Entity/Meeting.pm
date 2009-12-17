@@ -140,7 +140,7 @@ sub insert {
 
 sub update {
     my $self = shift;
-    my $data = shift;
+    my $update_data = shift;
     my %opt = @_;
 
     my %params = (seats => 'Int',
@@ -151,11 +151,11 @@ sub update {
 	#
 	# these are parameters, not properties
 	#
-	$opt{param}{$_} = Elive::Util::_freeze(delete $data->{$_}, $type)
-	    if exists $data->{$_}
+	$opt{param}{$_} = Elive::Util::_freeze(delete $update_data->{$_}, $type)
+	    if exists $update_data->{$_}
     }
 
-    $self->SUPER::update($data, %opt);
+    $self->SUPER::update($update_data, %opt);
 }
 
 =head2 delete

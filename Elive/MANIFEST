@@ -60,3 +60,5 @@ t/90-pod.t
 t/91-pod-coverage.t
 t/99-kwalitee.t
 t/Elive.pm
+t/Elive/MockConnection.pm
+t/Elive/MockSOM.pm

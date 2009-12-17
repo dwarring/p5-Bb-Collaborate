@@ -120,11 +120,14 @@ retrieved via this entity, but must be updated via Elive::Entity::Meeting.
 
 sub update {
     my $self = shift;
-    my $data = shift;
+    my $update_data = shift;
+
+    $self->set( %$update_data)
+	if (keys %$update_data);
 
     #
-    # changed to seats are ignored. This needs to be updated via meeting
-    # entity objects.
+    # direct changes to seats are ignored. This needs to be updated
+    # via the meeting entity.
     #
     warn "ignoring changed 'seats' value"
 	if (grep {$_ eq 'seats'} $self->is_changed);
@@ -137,14 +140,14 @@ sub update {
 
     foreach (@required) {
 	die "missing required property: $_"
-	    unless defined $data->{$_} || defined $self->{$_};
+	    unless defined $self->{$_};
     }
 
     #
-    # This adaptor barfs if we don't write values back, whether they've
+    # This adapter barfs if we don't write values back, whether they've
     # changed or not.
     #
-    $self->SUPER::update($data, @_, changed => \@required);
+    $self->SUPER::update(undef, @_, changed => \@required);
 }
 
 =head1 See Also

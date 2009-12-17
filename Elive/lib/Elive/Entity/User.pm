@@ -153,7 +153,7 @@ Id of 0, i.e. system administrator accounts
 
 sub update {
     my $self = shift;
-    my %data = %{shift() || {}};
+    my %update_data = %{shift() || {}};
     my %opt = @_;
 
     unless ($opt{force}) {
@@ -161,19 +161,21 @@ sub update {
 	    if ($self->role->stringify <= 0);
     }
 
-    my $password = $data{loginPassword};
-    unless (defined $password && $password ne '') {
-	$password = delete $self->{loginPassword};
-    }
-
-    my $ret = $self->SUPER::update( \%data, %opt );
-
+    $self->set( %update_data)
+	if (keys %update_data);
+    
     #
-    # seems we have to insert a record, then set the password
+    # A password change requires special handling
     #
-    if (defined $password and $password ne '') {
-	$self->change_password($password);
-    }
+    my @changed = $self->is_changed;
+    my @changed1  = grep {$_ ne 'loginPassword'} @changed;
+    my $password_changed = @changed != @changed1;
+    my $password = delete $self->{loginPassword};
+
+    my $ret = $self->SUPER::update( undef, %opt, changed => \@changed1 );
+
+    $self->change_password($password)
+	if $password_changed;
 
     return $ret;
 }
@@ -192,7 +194,7 @@ sub change_password {
     my %opt = @_;
 
     $self->SUPER::update({loginPassword => $new_password},
-			 adapter => 'ChangePasswordCommand',
+			 adapter => 'changePassword',
 			 %opt,
 	)
 	if (defined $new_password && $new_password ne '');

@@ -1,6 +1,16 @@
 package t::Elive::MockConnection;
 use warnings; use strict;
 
+=head1 NAME
+
+t::Elive::MockConnection
+
+=head1 DESCRIPTION
+
+A partial emulation of the SOAP connection and database backend.
+
+=cut
+
 use Elive::Connection;
 use base 'Elive::Connection';
 
@@ -11,7 +21,7 @@ use Elive::Entity::ServerDetails;
 
 use t::Elive::MockSOM;
 
-__PACKAGE__->mk_accessors( qw{mockdb} );
+__PACKAGE__->mk_accessors( qw{mockdb server_details_id} );
 
 sub connect {
     my ($class, $url,  $user, $pass, %opt) = @_;
@@ -39,21 +49,26 @@ sub connect {
 	connection => $self,
 	);
 
+    #
+    # Pretend that we can insert a server details record. Just for the
+    # purposes of our mockup
+    #
     $Elive::KnownAdapters{createServerDetails} = 'c';
 
-    Elive::Entity::ServerDetails->insert(
-	{serverDetailsId => '__id__',
+    my $server_details = Elive::Entity::ServerDetails->insert(
+	{
 	 version => '9.6.0',
 	 alive => 1,
 	},
 	connection => $self,
 	);
 
+    $self->server_details_id( $server_details->serverDetailsId );
+
     return $self;
 }
 
 sub call {
-
     my $self = shift;
     my $cmd = shift;
 
@@ -70,7 +85,11 @@ sub call {
 
     my $som = bless {}, 't::Elive::MockSOM';
 
-    if (my ($op, $entity_name) = ($cmd =~ m{^(get|create|delete|update)(.*)$})) {
+    my ($_op, $entity_name) = ($cmd =~ m{^(add|get|create|check|delete|update)(.*)$});
+
+    $entity_name = 'user' if $cmd eq 'changePassword';
+
+    if ($entity_name) {
 
 	$entity_name = lcfirst($entity_name);
 
@@ -78,12 +97,14 @@ sub call {
 
 	    my @primary_key = @{ $entity_class->_primary_key };
 
-	    $params{$primary_key[0]} ||= '__id__'
+	    $params{$primary_key[0]} ||= $self->server_details_id
 		if $entity_name eq 'serverDetails';
 
 	    if ($crud eq 'c') {
 		foreach my $fld (@primary_key) {
-		    next if defined $params{$fld};
+
+		    die "not allowing insert with preallocated key $fld for $entity_name"
+			if (defined $params{$fld});
 
 		    $params{$fld} = do {
 			my $id;
@@ -97,13 +118,50 @@ sub call {
 			$self->mockdb->{__IDS__}{$entity_name}{$id} = $id;
 		    }
 		}
-		$self->mockdb->{$entity_name}{ $primary_key[0] } = \%params;
 
-		my $som = t::Elive::MockSOM->make_result($entity_class, %params);
+		foreach (keys %params) {
+		    die "undefed param: $_"
+			unless defined $params{$_};
+		}
+
+		my $pkey = $params{$primary_key[0]};
+		$self->mockdb->{$entity_name}{ $pkey } = \%params;
+		my $data = $self->mockdb->{$entity_name}{ $pkey };
+
+		my $som = t::Elive::MockSOM->make_result($entity_class, %$data);
+		return $som;
+	    }
+	    elsif ($crud eq 'u') {
+
+		foreach my $fld (@primary_key) {
+		    
+		    die "missing key field $fld for $entity_name"
+			if !defined $params{$fld};
+		}
+
+		my $pkey = $params{$primary_key[0]};
+
+		die "entity $entity_name $primary_key[0]=$pkey - not found"
+		    unless $self->mockdb->{$entity_name}{ $pkey };
+
+		foreach (keys %params) {
+		    my $val = $params{$_};
+		    if (defined $val) {
+			$self->mockdb->{$entity_name}{ $pkey }{$_} = $val;
+		    }
+		    else {
+			delete $self->mockdb->{$entity_name}{ $pkey }{$_};
+		    }
+		}
+
+		my $data = $self->mockdb->{$entity_name}{ $pkey };
+		my $som = t::Elive::MockSOM->make_result($entity_class, %$data);
 		return $som;
 	    }
 	    elsif ($crud eq 'r') {
 		my $data;
+
+		my $pkey = $params{$primary_key[0]};
 
 		if (!$params{$primary_key[0]} && $entity_name eq 'user') {
 
@@ -112,27 +170,45 @@ sub call {
 		    # try by login name
 		    #
 		    if ($user) {
-			($data) = grep {$_->{loginName} eq $user} values %{  $self->mockdb->{$entity_name} || {} };
-			die "user not found: $user"
-			    unless $data;
+			my ($_data) = grep {$_->{loginName} eq $user} values %{  $self->mockdb->{$entity_name} || {} };
+			die "user $user not found"
+			    unless $_data;
+			$pkey = $_data->{userId};
+			
 		    }
 		    else {
 			die "attempt to fetch user without loginName or userId"
 		    }
 		}
-		else {
-		    die "get without primary key: $primary_key[0]"
-			unless $data || exists $params{ $primary_key[0] };
-		}
+		
+		die "get without primary key: $primary_key[0]"
+		    unless $pkey;
 
-		$data = $self->mockdb->{$entity_name}{ $primary_key[0] };
+		$data = $self->mockdb->{$entity_name}{ $pkey };
 
-		die "entity not found: $entity_name/$params{$primary_key[0]}"
+		die "entity not found: $entity_name $primary_key[0]=$pkey"
 		    unless $data;
 		return  t::Elive::MockSOM->make_result($entity_class, %$data);
 	    }
+	    elsif ($crud eq 'd') {
+
+		foreach (@primary_key) {
+		    die "attempted delete of $entity_name without primary key value for $_"
+			unless defined $params{$_};
+		}
+
+		my $pkey = $params{$primary_key[0]};
+		my $data = $self->mockdb->{$entity_name}{ $pkey };
+		die "entity not found: $entity_name/$params{$pkey}"
+		    unless $data;
+
+		my $result = t::Elive::MockSOM->make_result($entity_class, %$data);
+		delete $self->mockdb->{$entity_name}{ $pkey };
+
+		return $data;
+	    }
 	    else {
-		die "unable to handle mockup for $cmd";
+		die "unable to handle $crud mockup for $cmd";
 	    }
 	}
     }
