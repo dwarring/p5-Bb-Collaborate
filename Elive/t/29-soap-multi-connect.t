@@ -18,14 +18,14 @@ SKIP: {
 
     my $Skip = 21;
 
-    my %result = t::Elive->auth();
+    my %result = t::Elive->test_connection();
     my $auth = $result{auth};
 
     skip ($result{reason} || 'unable to find primary test connection',
 	$Skip)
 	unless $auth && @$auth;
 
-    my %result_2 = t::Elive->auth(suffix => '_2');
+    my %result_2 = t::Elive->test_connection(suffix => '_2');
     my $auth_2 = $result_2{auth};
 
     skip ($result_2{reason} || 'unable to find secondary test connection',
@@ -42,7 +42,8 @@ SKIP: {
 
     diag ("connecting: user=$auth->[1], url=$auth->[0]");
 
-    my $connection = Elive::Connection->connect(@$auth);
+    my $connection_class = $result{class};
+    my $connection = $connection_class->connect(@$auth);
 
     ok($connection, 'got first connection');
     isa_ok($connection, 'Elive::Connection','connection')
@@ -50,7 +51,8 @@ SKIP: {
 
     diag ("connecting: user=$auth_2->[1], url=$auth_2->[0]");
 
-    my $connection_2 = Elive::Connection->connect(@$auth_2);
+    my $connection_class_2 = $result_2{class};
+    my $connection_2 = $connection_class_2->connect(@$auth_2);
 
     ok($connection_2, 'got second connection');
     isa_ok($connection_2, 'Elive::Connection','connection')

@@ -16,14 +16,16 @@ my $class = 'Elive::Entity::User' ;
 
 SKIP: {
 
-    my %result = t::Elive->auth();
+    my %result = t::Elive->test_connection();
     my $auth = $result{auth};
 
     skip ($result{reason} || 'unable to find test connection',
 	13)
 	unless $auth && @$auth;
 
-    Elive->connect(@$auth);
+    my $connection_class = $result{class};
+    my $connection = $connection_class->connect(@$auth);
+    Elive->connection($connection);
 
     my $login = Elive->login;
     ok(Scalar::Util::blessed($login), 'login is a blessed object');

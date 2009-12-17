@@ -675,7 +675,7 @@ sub insert {
     my $som = $connection->call($adapter,
 				%$db_data,
 				%{$opt{param} || {}},
-				loginPassword => $login_password,
+##				loginPassword => $login_password,
 	);
 
     my @rows = $class->_readback($som, $db_data, $connection);

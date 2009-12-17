@@ -1,5 +1,10 @@
 Revision history for Elive
 
+0.53_1  16th December
+        Added t::Elive::MockConnection and t::Elive::MockSOM to facilate
+        offline testing. This has, so far, been utlised in:
+        20-soap-connect.t, 21-soap-entities.t and 29-multi-connect.t.
+
 0.53    14th December
         Revised some tests failing test for mouse 0.43. Use strings for
         long numerics. E.g. '1256168907389', instead of 1256168907389.

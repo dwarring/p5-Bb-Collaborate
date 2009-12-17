@@ -27,14 +27,16 @@ for (0..1) {
 
 SKIP: {
 
-    my %result = t::Elive->auth();
+    my %result = t::Elive->test_connection(only => 'real');
     my $auth = $result{auth};
 
     skip ($result{reason} || 'unable to find test connection',
 	37)
 	unless $auth;
 
-    Elive->connect(@$auth);
+    my $connection_class = $result{class};
+    my $connection = $connection_class->connect(@$auth);
+    Elive->connection($connection);
 
     my @preloads;
 
