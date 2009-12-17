@@ -1,9 +1,13 @@
 Revision history for Elive
 
-0.53_1  16th December
-        Added t::Elive::MockConnection and t::Elive::MockSOM to facilate
-        offline testing. This has, so far, been utlised in:
-        20-soap-connect.t, 21-soap-entities.t and 29-multi-connect.t.
+0.53_1  18th December
+        This release introduces basic mock testing of elive Connections:
+        - Added t::Elive::MockConnection and t::Elive::MockSOM:
+        - Converted some tests to use a mock connection fallback to live
+          testing: 20-soap-connect.t, 21-soap-entities.t and 29-multi-connect.t
+        - added mock user insert/update tests: 26-soap-user.t
+        - Elive::Entity::User - Fixed password update bugs uncovered by
+          26-soap-user.t 
 
 0.53    14th December
         Revised some tests failing test for mouse 0.43. Use strings for
