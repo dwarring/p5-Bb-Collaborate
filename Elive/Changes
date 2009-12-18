@@ -3,9 +3,9 @@ Revision history for Elive
 0.53_1  18th December
         This release introduces basic mock testing of elive Connections:
         - Added t::Elive::MockConnection and t::Elive::MockSOM:
-        - Converted some tests to use a mock connection fallback to live
-          testing: 20-soap-connect.t, 21-soap-entities.t and 29-multi-connect.t
-        - added mock user insert/update tests: 26-soap-user.t
+        - The following tests can now run on mock or live connections:
+          20-soap-connect.t, 21-soap-entities.t and 29-multi-connect.t
+        - Added mock only user insert/update tests: 26-soap-user.t
         - Elive::Entity::User - Fixed password update bugs uncovered by
           26-soap-user.t 
 
@@ -15,7 +15,7 @@ Revision history for Elive
 
 0.52    1st December
         changed 'use UNIVERSAL' to 'require UNIVERSAL' to avoid calling
-        calling UNIVERSAL import method. Depreciated under perl 5.11.2+.
+        UNIVERSAL::import method. Depreciated under perl 5.11.2+.
 
 0.51    13th November
         Changes to support Elluminate Live 9.6#3:
@@ -29,7 +29,7 @@ Revision history for Elive
 0.49    6th November
         Changes to support Elluminate Live 9.6:
         - Ensure the SOAP request root is strictly formattted as:
-         <request xmlns:m="http://www.soapware.org">...</request>
+          <request xmlns:m="http://www.soapware.org">...</request>
         - Altered Elive::check_for_errors() method to detect error
           messages passed as additional return parameters.
 
