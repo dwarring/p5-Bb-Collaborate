@@ -1,6 +1,6 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 27;
+use Test::More tests => 35;
 use Test::Warn;
 
 BEGIN {
@@ -32,6 +32,7 @@ my $user1 = Elive::Entity::User->construct({
     );
 
 isa_ok($user1, 'Elive::Entity::User');
+ok(!$user1->is_changed, 'freshly constructed user - !changed');
 ok($user1->userId ==  $USER_ID, 'user - userId accessor');
 ok($user1->loginName eq  $LOGIN_NAME, 'constructed user - loginName accessor');
 ok($user1->_db_data, 'user1 has db data');
@@ -44,7 +45,6 @@ ok($user1->loginName eq  $LOGIN_NAME .'_1', 'non-key update');
 ok($user1->is_changed, 'is_changed returns true after change');
 
 $user1->set(email => 'user@test.org');
-ok($user1->is_changed, 'is_changed returns true after 2nd change');
 
 is_deeply([sort $user1->is_changed], [qw/email loginName/], 'is_changed properties');
 
@@ -89,10 +89,27 @@ my $EMAIL = 'tester@test.org';
 $user1->set(email => $EMAIL);
 
 ok($user1->email eq $EMAIL, 'can set additional attributes');
-ok($user1->is_changed, 'Setting additional attributes shows as a change');
+is_deeply([$user1->is_changed], ['email'], 'Setting additional attributes shows as a change');
 
 $user1->set(email => undef);
 ok(!$user1->is_changed, 'Undefing newly added attribute undoes change');
 
 $user1->revert;
 
+ok(!$user1->is_changed, 'Revert 1');
+$user1->role(3);
+is_deeply([$user1->is_changed], ['role'], 'Compound field (role) change recognised');
+
+$user1->revert;
+ok(!$user1->is_changed, 'Revert 2');
+
+$user1->deleted(1);
+ok($user1->deleted, 'deleted user => deleted');
+is_deeply([$user1->is_changed],['deleted'], 'deleted user => changed');
+
+$user1->revert;
+ok(!$user1->is_changed, 'Revert 3');
+ok(!$user1->deleted, 'undeleted user => !deleted');
+ok(!$user1->is_changed, 'undeleted user => !changed');
+
+$user1->revert;
