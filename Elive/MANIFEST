@@ -38,7 +38,7 @@ t/00a-compile.t
 t/00b-struct.t
 t/01-entity-construct.t
 t/02-entity-update.t
-t/03-entity-changes.t
+t/03-entity-update-members.t
 t/04-entity-reuse.t
 t/05-entity-unpack.t
 t/06-entity-freeze.t

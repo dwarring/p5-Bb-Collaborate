@@ -8,6 +8,7 @@ use Elive::Entity;
 use base qw{ Elive::Entity };
 
 use Elive::Entity::Role;
+use Elive::Util;
 
 __PACKAGE__->entity_name('User');
 __PACKAGE__->collection_name('Users');
@@ -222,7 +223,17 @@ sub delete {
 
     unless ($opt{force}) {
 	die "Cowardly refusing to delete system admin account for ".$self->loginName.": (pass force => 1 to override)"
-	    if ($self->role <= 0);
+	    if (Elive::Util::string($self->role) == 0);
+
+	my $connection = $opt{connection} || $self->connection;
+
+	my $login = $connection->login;
+	die "Not loggged in" unless $login;
+	#
+	# Less cowardly, methinks!
+	#
+	die "Refusing to delete the login user ".$login->loginName.": (pass force => 1 to override)"
+	    if $login->userId eq $self->userId;   
     }
 
     return $self->SUPER::delete( %opt );

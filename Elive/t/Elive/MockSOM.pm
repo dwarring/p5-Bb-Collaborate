@@ -4,7 +4,7 @@ use warnings; use strict;
 use Class::Accessor;
 use base qw{Class::Accessor};
 
-__PACKAGE__->mk_accessors( qw{fault faultstring result paramsout} );
+__PACKAGE__->mk_accessors( qw{fault result paramsout} );
 
 sub _pack_data {
     #
@@ -72,10 +72,20 @@ sub make_result {
 
     my ($adapter, $packed_data) = _pack_data($entity_class, \%data);
 
-    my $self = bless{}, $class;
+    my $self = bless {}, $class;
+
     $self->result({$adapter => $packed_data});
 
     $self;
 }
+
+########################################################################
+package t::Elive::MockSOMFault;
+use warnings; use strict;
+
+use Class::Accessor;
+use base qw{Class::Accessor};
+
+__PACKAGE__->mk_accessors( qw{faultstring result paramsout} );
 
 1;

@@ -87,13 +87,15 @@ sub call {
 
     my ($_op, $entity_name) = ($cmd =~ m{^(add|get|create|check|delete|update)(.*)$});
 
-    $entity_name = 'user' if $cmd eq 'changePassword';
+    $entity_name = 'User' if $cmd eq 'changePassword';
 
     if ($entity_name) {
 
 	$entity_name = lcfirst($entity_name);
 
 	if (my $entity_class = $entities->{$entity_name}) {
+
+##	    warn "entity: $entity_name. entries: ". join(' ', keys  %{$self->mockdb->{$entity_name} || {}});
 
 	    my @primary_key = @{ $entity_class->_primary_key };
 
@@ -192,6 +194,8 @@ sub call {
 	    }
 	    elsif ($crud eq 'd') {
 
+##		warn YAML::Dump({params => \%params, primary => \@primary_key, data => $self->mockdb->{$entity_name}});
+
 		foreach (@primary_key) {
 		    die "attempted delete of $entity_name without primary key value for $_"
 			unless defined $params{$_};
@@ -199,17 +203,20 @@ sub call {
 
 		my $pkey = $params{$primary_key[0]};
 		my $data = $self->mockdb->{$entity_name}{ $pkey };
-		die "entity not found: $entity_name/$params{$pkey}"
+		die "entity not found: $entity_name/$pkey"
 		    unless $data;
 
-		my $result = t::Elive::MockSOM->make_result($entity_class, %$data);
 		delete $self->mockdb->{$entity_name}{ $pkey };
 
-		return $data;
+		my $result = t::Elive::MockSOM->make_result($entity_class, %$data);
+		return $result;
 	    }
 	    else {
 		die "unable to handle $crud mockup for $cmd";
 	    }
+	}
+	else {
+	    die "unknown entity: $entity_name";
 	}
     }
 
