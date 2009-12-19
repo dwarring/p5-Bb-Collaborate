@@ -70,11 +70,28 @@ sub make_result {
     my $entity_class = shift;
     my %data = @_;
 
+    if ($entity_class->isa('Elive::Entity::User')
+	&& defined $data{loginPassword}) {
+	#
+	# return of passwrods is supressed
+	#
+	$data{loginPassword} = '';
+    }
+
     my ($adapter, $packed_data) = _pack_data($entity_class, \%data);
 
     my $self = bless {}, $class;
 
     $self->result({$adapter => $packed_data});
+
+    $self;
+}
+
+sub not_found {
+    my $class = shift;
+
+    my $self = bless {}, $class;
+    $self->result('');
 
     $self;
 }

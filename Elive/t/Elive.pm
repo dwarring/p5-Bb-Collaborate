@@ -1,6 +1,7 @@
 package t::Elive;
 use warnings; use strict;
 
+use Elive;
 use t::Elive::MockConnection;
 
 =head1 NAME
@@ -39,7 +40,7 @@ sub test_connection {
 	}
     }
 
-    if (!$opt{only} || $opt{only} eq 'mock') {
+    if (!$result{auth} && (!$opt{only} || $opt{only} eq 'mock')) {
 	delete $result{reason};
 
 	my $user = 'test_user'.$suffix;
@@ -47,6 +48,10 @@ sub test_connection {
 	my $url  = 'http://elive_mock_connection'.$suffix;
 	$result{auth} = [$url, $user, $pass];
 	$result{class} = 't::Elive::MockConnection';
+    }
+
+    if ($result{auth} && (my $debug = Elive->debug)) {
+	push (@{$result{auth}}, debug => $debug);
     }
 
     return %result;
