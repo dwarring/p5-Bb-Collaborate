@@ -473,9 +473,12 @@ sub _unpack_as_list {
 	$results_list = $result;
 
     }
+    elsif ($reftype) {
+	die "unknown type in result set: $reftype";
+    }
     else {
 
-	$results_list = defined ($result)
+	$results_list = defined($result) && $result ne ''
 	    ? [ $result ]
 	    : [];
 

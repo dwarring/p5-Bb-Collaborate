@@ -1,5 +1,11 @@
 Revision history for Elive
 
+0.55    21st December
+        Elive::Entity::User blitz continues:
+        - ensure 26-soap-user.t mock tests are compatible with live server.
+        - Correct handling of get_by_LoginName when user not found.
+          fixed/added sanity checks on deleting login or admin users.
+
 0.54    19th December
         - Elive::Entity::User - Fixed delete logic. In particular,
           fixed/added sanity checks on deleting login or admin users.

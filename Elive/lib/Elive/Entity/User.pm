@@ -43,10 +43,10 @@ has 'lastName' => (is => 'rw', isa => 'Str',
 #
 
 has 'groups' => (is => 'rw', isa => 'Str',
-		documentation => 'groups?');
+		documentation => 'ldap groups?');
 
 has 'domain' => (is => 'rw', isa => 'Str',
-		 documentation => 'domain?');
+		 documentation => 'ldap domain?');
 
 coerce 'Elive::Entity::User' => from 'HashRef'
           => via {Elive::Entity::User->construct($_,
