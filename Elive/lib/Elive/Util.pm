@@ -56,33 +56,42 @@ sub parse_type {
 sub _freeze {
     my ($val, $type, $context) = @_;
 
-    for (grep {defined} $val) {
-	if ($type =~ m{^Bool}i) {
+    for ($val) {
 
-	    #
-	    # DBize boolean flags..
-	    #
-	    $_ =  $_ ? 'true' : 'false';
-	}
-	elsif ($type =~ m{^(Str|enum)}i) {
-	    #
-	    # l-r trim
-	    #
-	    s{^ \s* (.*?) \s* $}{$1}x;
-	    $_ = lc if $type =~ m{^enum};
-	}
-	elsif ($type =~ m{^(Int|HiResDate)}i) {
-	    
-	    $_ = _tidy_decimal($_);
+	if (!defined) {
 
+	    warn "undefined value of type $type"
 	}
-	elsif ($type =~ m{^Ref}i) {
-	    die "freezing datatype $type: not implemented";
+	else {
+	    my $raw_val = $val;
+
+	    if ($type =~ m{^Bool}i) {
+
+		#
+		# DBize boolean flags..
+		#
+		$_ =  $_ ? 'true' : 'false';
+	    }
+	    elsif ($type =~ m{^(Str|enum)}i) {
+		#
+		# l-r trim
+		#
+		s{^ \s* (.*?) \s* $}{$1}x;
+		$_ = lc if $type =~ m{^enum};
+	    }
+	    elsif ($type =~ m{^(Int|HiResDate)}i) {
+		
+		$_ = _tidy_decimal($_);
+		
+	    }
+	    elsif ($type =~ m{^Ref}i) {
+		die "freezing datatype $type: not implemented";
+	    }
+
+	    die "unable to convert $raw_val to $type"
+		unless defined;
 	}
     }
-
-    warn "undefined value of type $type"
-	unless defined $val;
 
     return $val;
 }
