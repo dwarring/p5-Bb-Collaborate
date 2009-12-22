@@ -96,14 +96,13 @@ my $recording = Elive::Entity::Recording->construct
 	({
 	    recordingId => 11223344,
 	    meetingId => 11223344,
-	    name => 'test meeting',
 	    creationDate => '1244668890000',
          },);
 
 warnings_like(
     sub {$recording->web_url},
     qr(depreciated)i,
-    "Elive::Entity::Meeting::web_url() gives 'depreciated' warning");
+    "Elive::Entity::Recording::web_url() gives 'depreciated' warning");
 
 exit(0);
 
