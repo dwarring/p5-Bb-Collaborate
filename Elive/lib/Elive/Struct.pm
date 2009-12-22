@@ -15,6 +15,7 @@ BEGIN {
     __PACKAGE__->mk_classdata('_entity_name');
     __PACKAGE__->mk_classdata('_primary_key', []);
     __PACKAGE__->mk_classdata('collection_name');
+    __PACKAGE__->mk_classdata('isa');
 };
 
 use Scalar::Util;

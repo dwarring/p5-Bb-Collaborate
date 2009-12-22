@@ -18,7 +18,7 @@ SKIP: {
     my %result = t::Elive->test_connection(only => 'real');
     my $auth = $result{auth};
 
-    skip ($result{reason} || 'unable to find test connection',
+    skip ($result{reason} || 'skipping live tests',
 	6)
 	unless $auth;
 

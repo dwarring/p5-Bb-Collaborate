@@ -6,6 +6,9 @@ use Test::Exception;
 use lib '.';
 use t::Elive;
 
+use Carp;
+local($SIG{__DIE__}) = \&Carp::confess;
+
 BEGIN {
     use_ok( 'Elive' );
     use_ok( 'Elive::Entity::Meeting' );
@@ -18,12 +21,8 @@ my $class = 'Elive::Entity::Meeting' ;
 
 SKIP: {
 
-    my %result = t::Elive->test_connection(only => 'real');
+    my %result = t::Elive->test_connection();
     my $auth = $result{auth};
-
-    skip ($result{reason} || 'no test connection specified',
-	34)
-	unless $auth;
 
     my $connection_class = $result{class};
     my $connection = $connection_class->connect(@$auth);
@@ -62,6 +61,7 @@ SKIP: {
 	ok($meeting->$_ == $meeting_int_data{$_}, "meeting $_ == $meeting_int_data{$_}");
     }
 
+
     my %parameter_str_data = (
 	costCenter => 'testing',
 	moderatorNotes => 'test moderator notes',
@@ -89,6 +89,14 @@ SKIP: {
     foreach (keys %parameter_int_data) {
 	ok($meeting_params->$_ == $parameter_int_data{$_}, "meeting parameter $_ == $parameter_int_data{$_}");
     }
+
+    ########################################################################
+    # This is a far as we can currently go with a mock connection
+    ########################################################################
+
+    skip ($result{reason} || 'skipping lives tests',
+	22)
+	unless $connection_class eq 'Elive::Connection';
 
     my %meeting_server_data = (
 	boundaryMinutes => 15,
@@ -167,14 +175,14 @@ SKIP: {
 	# some cursory checks on jnlp construction. Could be a lot
 	# more detailed.
 	#
-	my $jnlp;
-	lives_ok(sub {$jnlp = $meeting->buildJNLP(
+	my $meetingJNLP;
+	lives_ok(sub {$meetingJNLP = $meeting->buildJNLP(
 			  version => '8.0',
 			  displayName => 'Elive Test',
 			  )},
 		'$meeting->buildJNLP - lives');
 
-	ok(defined $jnlp, 'got jnlp')
+	ok($meetingJNLP && !ref($meetingJNLP), 'got meeting JNLP')
     };
 
     #

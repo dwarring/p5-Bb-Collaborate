@@ -1,20 +1,21 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 17;
+use Test::More tests => 13;
 use Test::Warn;
 
-BEGIN {
-    use_ok( 'Elive' );
-    use_ok( 'Elive::Connection' );
-    use_ok( 'Elive::Entity' );
-    use_ok( 'Elive::Entity::User' );
-    use_ok( 'Elive::Entity::Meeting' );
-    use_ok( 'Elive::Entity::Preload' );
-}
+use Elive;
+use Elive::Connection;
+use Elive::Entity;
+use Elive::Entity::User;
+use Elive::Entity::Meeting;
+use Elive::Entity::Preload;
+use Elive::Entity::Recording;
 
 Elive->connection(Elive::Connection->connect('http://test.org'));
 
-warnings_like (\&meeting_with_lowres_dates,
+my $meeting;
+
+warnings_like (sub {$meeting = meeting_with_lowres_dates()},
 	      qr{doesn't look like a hi-res date},
 	      'low-res dates gives warning'
     );
@@ -83,6 +84,26 @@ warnings_like(
     qr(ignoring unknown recording status),
     "thawing unknown media type gives warning"
     );
+
+# todo remove web_url methods. Mid 2011.
+
+warnings_like(
+    sub {$meeting->web_url},
+    qr(depreciated)i,
+    "Elive::Entity::Meeting::web_url() gives 'depreciated' warning");
+
+my $recording = Elive::Entity::Recording->construct
+	({
+	    recordingId => 11223344,
+	    meetingId => 11223344,
+	    name => 'test meeting',
+	    creationDate => '1244668890000',
+         },);
+
+warnings_like(
+    sub {$recording->web_url},
+    qr(depreciated)i,
+    "Elive::Entity::Meeting::web_url() gives 'depreciated' warning");
 
 exit(0);
 

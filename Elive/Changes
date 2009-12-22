@@ -1,5 +1,11 @@
 Revision history for Elive
 
+0.56    1st January 2010
+        - Improved mock testing coverage. Now able to run on much of
+	  the meeting and recoding tests offline.
+        - Depreciating Elive::Entity::Meeting::web_url() and
+          Elive::Entity::Recording::web_url()
+
 0.55    21st December
         - Improved & corrected soap mock tests for 26-soap-user.t
         - Corrected handling of get_by_LoginName when user not found.

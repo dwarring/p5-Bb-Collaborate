@@ -36,7 +36,7 @@ sub test_connection {
 	    $result{class} = 'Elive::Connection';
 	}
 	else {
-	    $result{reason} = 'need to set $ELIVE_TEST_{USER|PASS|URL}'.$suffix;
+	    $result{reason} = 'skipping live tests (set $ELIVE_TEST_{USER|PASS|URL}'.$suffix.' to enable)';
 	}
     }
 

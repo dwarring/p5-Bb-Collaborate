@@ -71,7 +71,10 @@ if (my $existing_user = $class->get_by_loginName('test_admin')) {
     $existing_user->delete;
 }
 
-my $admin_user = $class->insert({loginName => "test_admin", role => 0, loginPassword => _generate_password(), email => 'test@acme.org'},);
+my $admin_user = $class->insert({loginName => "test_admin",
+				 role => 0,
+				 loginPassword => _generate_password(),
+				 email => 'test@acme.org'},);
 my $admin_id = $admin_user->userId;
 
 $admin_user = undef;

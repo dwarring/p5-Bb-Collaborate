@@ -27,13 +27,26 @@ sub _pack_data {
 	if ref($data) eq 'ARRAY';
 
     my %db_data = %$data;
+    #
+    # resolve any aliased properties
+    #
+    my $aliases = $class->_get_aliases;
+
+    foreach my $alias (keys %$aliases) {
+	if ($aliases->{$alias}{freeze}) {
+	    my $to = $aliases->{$alias}{to}
+	    or die "malformed alias: $alias";
+	    $db_data{ $to } = delete $db_data{ $alias }
+	    if exists $db_data{ $alias };
+	}
+    }
 
     my @properties = $class->properties;
     my $property_types =  $class->property_types || {};
 
     foreach my $prop (keys %db_data) {
 
-	die "$class: unknown property: $_: expected: @properties"
+	die "$class: unknown property $prop: expected: @properties"
 	    unless exists $property_types->{$prop};
 
 	my ($type, $is_array, $is_struct) = Elive::Util::parse_type($property_types->{$prop});
@@ -73,7 +86,7 @@ sub make_result {
     if ($entity_class->isa('Elive::Entity::User')
 	&& defined $data{loginPassword}) {
 	#
-	# return of passwrods is supressed
+	# return of passwords is supressed
 	#
 	$data{loginPassword} = '';
     }

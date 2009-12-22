@@ -1,7 +1,7 @@
 #!perl
 use warnings; use strict;
 use Test::Builder;
-use Test::More tests => 11;
+use Test::More tests => 13;
 use Test::Exception;
 
 use lib '.';
@@ -20,49 +20,60 @@ my @data;
 $data[0] = 'the quick brown fox. %%(&)+(*)+*(_+';
 $data[1] = join('',map {pack('C', $_)} (0..255));
 
-SKIP: {
-
-    my %result = t::Elive->test_connection(only => 'real');
+do {
+    my %result = t::Elive->test_connection(only => 'mock');
     my $auth = $result{auth};
 
-    skip ($result{reason} || 'unable to find test connection',
-	7)
-	unless $auth;
-
     my $connection_class = $result{class};
-    my $connection = $connection_class->connect(@$auth);
-    Elive->connection($connection);
+    my $mock_connection = $connection_class->connect(@$auth);
+    Elive->connection($mock_connection);
+    my $now = time();
 
-##
-## ** STUB  ** STUB  ** STUB  ** STUB  ** STUB  ** STUB  ** STUB  ** STUB 
-## Downgraded to perform read-only tests on existing meetings.
+    my $meeting = Elive::Entity::Meeting->insert({
+	name => 'created by t/24-soap-recording.t',
+	facilitatorId => Elive->login->userId,
+	start => $now . '000',
+	end => ($now+900) . '000',
+	privateMeeting => 1,
+    });
+    isa_ok($meeting, 'Elive::Entity::Meeting');
 
-##    ok(my $meeting = Elive::Entity::Meeting->insert({
-##	name => 'created by t/24-soap-recording.t',
-##	facilitatorId => Elive->login->userId,
-##	start => time() . '000',
-##	end => (time()+900) . '000',
-##	privateMeeting => 1,
-##    }));
-
-##    my $recording = Elive::Entity::Recording->insert(
-##    {
-##	facilitator => Elive->login->userId,
-##	meetingId => $meeting->meetingId,
+    my $recording = Elive::Entity::Recording->insert(
+    {
+	facilitator => Elive->login->userId,
+	meetingId => $meeting->meetingId,
 ##	fileName => '/tmp/recording.out',
-##	data => $data[0],
-##	size => length($data[0]),
-##	version => Elive->server_details->version,
-##	roomName => 'room t/24-soap-recording.t',
-##	open => 1,
-##    },
-##    );
+	data => $data[0],
+	size => length($data[0]),
+	version => Elive->server_details->version,
+	roomName => 'room t/24-soap-recording.t',
+	creationDate => $now.'000',
+	open => 1,
+    },
+    );
+    isa_ok($recording, 'Elive::Entity::Recording');
 
 ##    my $recording =  Elive::Entity::Recording->import_from_server
 ##	({fileName => '/dev/null',
 ##	  version => Elive->server_details->version,
 ##	  meetingId => $meeting->meetingId,
 ##	 });
+
+    Elive->disconnect;
+};
+
+SKIP: {
+
+    my %result = t::Elive->test_connection(only => 'real');
+    my $auth = $result{auth};
+
+    skip ($result{reason} || 'skiiping live tests',
+	7)
+	unless $auth;
+
+    my $connection_class = $result{class};
+    my $connection = $connection_class->connect(@$auth);
+    Elive->connection($connection);
 
     my $recordings = Elive::Entity::Recording->list;
 
@@ -115,7 +126,7 @@ SKIP: {
 	     "buildJNLP - lives",
 	);
 
-    ok($recordingJNLP, 'got recording JNLP');
+    ok($recordingJNLP && !ref($recordingJNLP), 'got recording JNLP');
 		
     $recording = undef;
 

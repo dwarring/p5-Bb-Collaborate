@@ -53,7 +53,7 @@ sub connect {
     # Pretend that we can insert a server details record. Just for the
     # purposes of our mockup
     #
-    $Elive::KnownAdapters{createServerDetails} = 'c';
+    local($Elive::KnownAdapters{createServerDetails}) = 'c';
 
     my $server_details = Elive::Entity::ServerDetails->insert(
 	{
@@ -103,8 +103,15 @@ sub call {
 	    if ($crud eq 'c') {
 		foreach my $fld (@primary_key) {
 
-		    die "not allowing insert with preallocated key $fld for $entity_name"
-			if (defined $params{$fld});
+		    if (defined $params{$fld}) {
+			if (my $isa = $entity_class->isa) {
+			    #
+			    # check on existance of primary entity to go here
+			    #
+			    next;
+			}
+			die "not allowing insert with preallocated key $fld for $entity_name";
+		    }
 
 		    $params{$fld} = do {
 			my $id;
@@ -125,10 +132,20 @@ sub call {
 		}
 
 		my $pkey = $params{$primary_key[0]};
+		my $som = t::Elive::MockSOM->make_result($entity_class, %params);		
 		$self->mockdb->{$entity_name}{ $pkey } = \%params;
-		my $data = $self->mockdb->{$entity_name}{ $pkey };
 
-		my $som = t::Elive::MockSOM->make_result($entity_class, %$data);
+		if ($entity_name eq 'meeting') {
+		    local ($Elive::KnownAdapters{createServerParameters}) = 'c';
+		    local ($Elive::KnownAdapters{createMeetingParameters}) = 'c';
+		    $self->call('createServerParameters',
+				meetingId => $pkey,
+				seats => $params{seats}||0);
+		    $self->call('createMeetingParameters',
+				meetingId => $pkey,
+				recordingStatus => 'auto',
+			);
+		}
 		return $som;
 	    }
 	    elsif ($crud eq 'u') {

@@ -21,16 +21,8 @@ SKIP: {
     my %result = t::Elive->test_connection();
     my $auth = $result{auth};
 
-    skip ($result{reason} || 'unable to find primary test connection',
-	$Skip)
-	unless $auth && @$auth;
-
     my %result_2 = t::Elive->test_connection(suffix => '_2');
     my $auth_2 = $result_2{auth};
-
-    skip ($result_2{reason} || 'unable to find secondary test connection',
-	$Skip)
-	unless $auth_2 && @$auth_2;
 
     skip('$ELIVE_TEST_URL and ELIVE_TEST_URL_2 are the same!',
 	 $Skip)

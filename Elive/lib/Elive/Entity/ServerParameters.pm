@@ -8,6 +8,7 @@ use Elive::Entity;
 use base qw{ Elive::Entity };
 
 __PACKAGE__->entity_name('ServerParameters');
+__PACKAGE__->isa('Meeting');
 
 has 'meetingId' => (is => 'rw', isa => 'Int', required => 1,
     documentation => 'associated meeting');

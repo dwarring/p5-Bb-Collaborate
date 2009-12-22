@@ -232,7 +232,8 @@ sub _freeze {
 	    #
 	    # Freeze with this alias
 	    #
-	    $db_data{ $alias } = delete $db_data{ $to };
+	    $db_data{ $alias } = delete $db_data{ $to }
+	    if exists $db_data{ $to };
 	}
     }
 
