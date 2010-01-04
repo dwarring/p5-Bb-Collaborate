@@ -41,9 +41,9 @@ elive_query
 
 Simple read-only query shell for Elive. 
 
-=head2 Entity Data Listings
+=head2 Entity Data Queries
 
-This example script lets you list and filter entity data.
+This example script lets you do simple queries, in a vaugely SQL like manner.
 For example:
 
     % elive_query -user admin http://myvclass.com/mysite
@@ -59,22 +59,7 @@ For example:
 
     elive>
 
-elive_query calls the C<list> method for the corresponding entity.
-
-For example, for the above statement, the method call is:
-
-    my $users = Elive::Entity::User->list(filter => 'name like *m*');
-
-The exception is where clauses of the form C<pkey = val>, where C<pkey> is
-the primary key for the entity table. e.g:
-
-    elive> select * from meetingParticpants where meetingId = 1234567
-
-The equivalent Elive method call for the above is:
-
-    my $participants =  Elive::Entity::MeetingParticpant->retrieve([1234567]);
-
-=head2 Entity Structure Dumping
+=head2 Entity Metadata
 
 You can also use this script to dump the Elive entity structures:
 
@@ -171,20 +156,16 @@ sub main {
 		elsif ($keyw  =~ m{^(connect)$}i) {
 		    my ($url, $user) = split(m{\s+}, $args);
 
-		    if ($url) {
+		    $url ||= Elive::Util::prompt("Url ('http://...'): ");
 
-			my $new_connection
-			    = _connect($url,
-				       username => $user,
-				       %options);
+		    my $new_connection
+			= _connect($url,
+				   username => $user,
+				   %options);
 
-			if ($new_connection) {
-			    $connection->disconnect if $connection;
-			    $connection = $new_connection;
-			}
-		    }
-		    else {
-			print STDERR "usage: connect url [user]\n";
+		    if ($new_connection) {
+			$connection->disconnect if $connection;
+			$connection = $new_connection;
 		    }
 		}
 		elsif ($keyw  =~ m{^(debug)$}i) {
@@ -524,10 +505,15 @@ sub _connect {
     $password ||= Elive::Util::prompt('Password: ', password => 1);
 
     print STDERR "connecting to $url...";
-    my $connection = Elive->connect($url,
-				 $username, $password);
+    my $connection = eval {
+	Elive->connect($url,$username, $password);
+    };
+
+    if ($@) {
+	print "\nerror:$@";
+	return;
+    }
 
     print STDERR "ok\n";
-
     return $connection;
 }
