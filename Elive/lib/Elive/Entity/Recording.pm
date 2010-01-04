@@ -91,8 +91,6 @@ sub download {
 
 =head2 web_url
 
-** DEPRECIATED **
-
 Utility method to return various website links for the recording. This is
 available as both class level and object level methods.
 
@@ -118,8 +116,6 @@ available as both class level and object level methods.
 sub web_url {
     my $self = shift;
     my %opt = @_;
-
-    warn "Elive::Recording::web_url() is depreciated";
 
     my $recording_id = $opt{recording_id};
     my $connection = $self->connection || $opt{connection}

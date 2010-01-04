@@ -498,8 +498,6 @@ sub buildJNLP {
 
 =head2 web_url
 
-** DEPRECIATED **
-
 Utility method to return various website links for the meeting. This is
 available as both class level and object level methods.
 
@@ -524,8 +522,6 @@ available as both class level and object level methods.
 sub web_url {
     my $self = shift;
     my %opt = @_;
-
-    warn "Elive::Meeting::web_url() is depreciated";
 
     my $meeting_id = $opt{meeting_id};
     my $connection = $self->connection || $opt{connection}

@@ -245,7 +245,7 @@ sub main {
 
     my %meeting_data = (
 	    name => $meeting_name,
-	    facilitatorId => $facilitator->stringify,
+	    facilitatorId => $facilitator,
 	    start => $start . '000',
 	    end => $end . '000',
 	);
@@ -338,7 +338,7 @@ sub main {
 
 	my $preload = Elive::Entity::Preload->import_from_server({
 	    fileName => $import,
-	    ownerId => $facilitator->stringify,
+	    ownerId => $facilitator,
 	 });
 
 	printf("adding '%s' preload: %s (%s)\n",

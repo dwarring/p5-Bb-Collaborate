@@ -1,6 +1,6 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 13;
+use Test::More tests => 11;
 use Test::Warn;
 
 use Elive;
@@ -84,25 +84,6 @@ warnings_like(
     qr(ignoring unknown recording status),
     "thawing unknown media type gives warning"
     );
-
-# todo remove web_url methods. Mid 2011.
-
-warnings_like(
-    sub {$meeting->web_url},
-    qr(depreciated)i,
-    "Elive::Entity::Meeting::web_url() gives 'depreciated' warning");
-
-my $recording = Elive::Entity::Recording->construct
-	({
-	    recordingId => 11223344,
-	    meetingId => 11223344,
-	    creationDate => '1244668890000',
-         },);
-
-warnings_like(
-    sub {$recording->web_url},
-    qr(depreciated)i,
-    "Elive::Entity::Recording::web_url() gives 'depreciated' warning");
 
 exit(0);
 

@@ -7,13 +7,10 @@ Revision history for Elive
                                              facilitatorId => $user->userId);
             can now be written:
              Elive::Entity::Meeting->insert( ..., facilitatorId => $user);
-
         - Improved mock testing coverage. Now able to run much of
 	  the meeting and recording tests offline.
         - Pod/doco improvements. In particular, show a meeting insert
           in the introductory example.
-        - Depreciating Elive::Entity::Meeting::web_url() and
-          Elive::Entity::Recording::web_url().
         - Removed some unreachable code from elive_raise_meeting.
 
 0.55    21st December
