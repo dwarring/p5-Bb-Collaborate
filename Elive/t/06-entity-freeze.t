@@ -1,6 +1,6 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 31;
+use Test::More tests => 32;
 use Test::Warn;
 
 BEGIN {
@@ -49,7 +49,8 @@ Elive->connection(Elive::Connection->connect('http://test.org'));
 
 my $user_obj = Elive::Entity::User->construct($user_data);
 
-is_deeply(Elive::Util::_freeze($user_obj,'Elive::Entity::User'), '12345678','object freeze (user)');
+is_deeply(Elive::Util::_freeze($user_obj,'Elive::Entity::User'), '12345678','object freeze (explicit)');
+is_deeply(Elive::Util::_freeze($user_obj,'Int'), '12345678','object freeze (implicit)');
 
 my $user_frozen = Elive::Entity::User->_freeze($user_data);
 
