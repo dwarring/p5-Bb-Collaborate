@@ -1,13 +1,23 @@
 Revision history for Elive
 
-0.56    1st January 2010
-        - Improved mock testing coverage. Now able to run on much of
-	  the meeting and recoding tests offline.
+0.56    4th January 2010
+        - Objects are now automatically stringified on all SOAP calls.
+            For example:
+             Elive::Entity::Meeting->insert( ...,
+                                             facilitatorId => $user->userId);
+            can now be written:
+             Elive::Entity::Meeting->insert( ..., facilitatorId => $user);
+
+        - Improved mock testing coverage. Now able to run much of
+	  the meeting and recording tests offline.
+        - Pod/doco improvements. In particular, show a meeting insert
+          in the introductory example.
         - Depreciating Elive::Entity::Meeting::web_url() and
-          Elive::Entity::Recording::web_url()
+          Elive::Entity::Recording::web_url().
+        - Removed some unreachable code from elive_raise_meeting.
 
 0.55    21st December
-        - Improved & corrected soap mock tests for 26-soap-user.t
+        - Improved & corrected SOAP mock tests for 26-soap-user.t
         - Corrected handling of get_by_LoginName when user not found.
           fixed/added sanity checks on deleting login or admin users.
 

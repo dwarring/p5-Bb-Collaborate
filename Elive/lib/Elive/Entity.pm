@@ -196,25 +196,19 @@ sub _freeze {
 
     foreach (keys %db_data) {
 
-	die "$class: unknown property: $_: expected: @properties"
-	    unless exists $property_types->{$_};
+	my $property = $property_types->{$_};
 
-	my ($type, $is_array, $is_struct) = Elive::Util::parse_type($property_types->{$_});
+	die "$class: unknown property: $_: expected: @properties"
+	    unless $property;
+
+	my ($_type, $is_array, $_is_struct) = Elive::Util::parse_type($property);
 
 	for ($db_data{$_}) {
 
 	    for ($is_array? @$_: $_) {
 
-		if ($is_struct) {
+		$_ = Elive::Util::_freeze($_, $property);
 
-		    if (Scalar::Util::refaddr($_)) {
-
-			$_ = $type->stringify($_);
-		    }
-		}
-		else {
-		    $_ = Elive::Util::_freeze($_, $type);
-		}
 	    }
 	}
     } 

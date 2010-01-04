@@ -18,32 +18,44 @@ use base qw{Class::Data::Inheritable};
 
 use YAML;
 
-=head1 SYNOPSIS
+=head1 EXAMPLE
+
+The following (somewhat contrived) example sets up a meeting of selected
+participants:
 
     use Elive;
     use Elive::Entity::User;
+    use Elive::Entity::Meeting;
+
+    my $MeetingName = 'Meeting of the Smiths';
 
     Elive->connect('http://someEllumServer.com/test',
                    'serversupport', 'mypass');
 
-    my $users = Elive::Entity::User->list(filter => "(lastName = 'Smyth')");
+    my $participants = Elive::Entity::User->list(filter => "(lastName = 'Smith')");
+    die "smithless" unless @$participants;
 
-    foreach my $user (@$users) {
+    my $start = time() + 15 * 60; # starts in 15 minutes
+    my $end   = $start + 30 * 60; # runs for half an hour
 
-        printf ("changing last name for user: %s\n", $user->loginName);
+    my $meeting = Elive::Entity::Meeting->insert({
+	 name           => $MeetingName,
+	 facilitatorId  => Elive->login,
+	 start          => $start . '000',
+	 end            => $end   . '000',
+	 });
 
-        $user->lastName('Smith');
-        $user->update;
-
-    }
+    my $participant_list = $meeting->participant_list;
+    $participant_list->participants($participants);
+    $participant_list->update;
 
     Elive->disconnect;
 
 =head1 DESCRIPTION
 
 Elive is a set of Perl modules for the integration and automation of
-Elluminate I<Live!> sites. In particular, it aids in the management of users
-and meetings.
+Elluminate I<Live!> sites. In particular, it aids in the management of
+users and meetings.
 
 =head1 BACKGROUND
 

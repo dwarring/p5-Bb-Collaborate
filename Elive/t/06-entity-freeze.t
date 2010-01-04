@@ -1,6 +1,6 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 30;
+use Test::More tests => 31;
 use Test::Warn;
 
 BEGIN {
@@ -34,8 +34,6 @@ ok(Elive::Util::_freeze('on', 'enumRecordingStates') eq 'on', 'recording status 
 ok(Elive::Util::_freeze('OFF', 'enumRecordingStates') eq 'off', 'recording status - off (uc)');
 ok(Elive::Util::_freeze('rEMotE', 'enumRecordingStates') eq 'remote', 'recording status - remote (mixed)');
 
-Elive->connection(Elive::Connection->connect('http://test.org'));
-
 my $user_data =  {
 	userId => '12345678',
 	deleted => 0,
@@ -46,6 +44,12 @@ my $user_data =  {
 	firstName => 'Timmee',
 	lastName => 'Tester',
     };
+
+Elive->connection(Elive::Connection->connect('http://test.org'));
+
+my $user_obj = Elive::Entity::User->construct($user_data);
+
+is_deeply(Elive::Util::_freeze($user_obj,'Elive::Entity::User'), '12345678','object freeze (user)');
 
 my $user_frozen = Elive::Entity::User->_freeze($user_data);
 

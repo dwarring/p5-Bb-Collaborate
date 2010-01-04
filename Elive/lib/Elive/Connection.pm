@@ -8,6 +8,7 @@ use base qw{Class::Accessor};
 
 use Elive;
 use Elive::Entity;
+use Elive::Util;
 
 =head1 NAME
 
@@ -162,7 +163,7 @@ sub call {
 
 	my $value = $params{$name};
 
-	$value = SOAP::Data->type(string => $value)
+	$value = SOAP::Data->type(string => Elive::Util::string($value))
 	    unless UNIVERSAL::isa($value, 'SOAP::Data');
 
 	my $soap_param = $value->name($name);

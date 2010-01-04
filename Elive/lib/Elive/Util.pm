@@ -54,7 +54,9 @@ sub parse_type {
 }
 
 sub _freeze {
-    my ($val, $type, $context) = @_;
+    my ($val, $type) = @_;
+
+    $val = string($val, $type);
 
     for ($val) {
 

@@ -11,6 +11,7 @@ use Elive::Entity::Preload;
 use Elive::Entity::Recording;
 use Elive::Entity::MeetingParameters;
 use Elive::Entity::ServerParameters;
+use Elive::Entity::ParticipantList;
 
 use YAML;
 

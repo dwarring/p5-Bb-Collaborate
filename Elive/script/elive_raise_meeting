@@ -221,7 +221,7 @@ sub main {
     }
 
     #
-    # include the faciliator as a participant, with a role of moderator
+    # Include the facilitator as a moderator/participant.
     #
     push (@participants, {user => $facilitator->userId, role => 2});
 
@@ -234,26 +234,10 @@ sub main {
 
     if ($preload_opt) {
 
-	if ($preload_opt =~ m{^\d+$}) {
-	    #
-	    # numeric - assume it's a preload id
-	    #
-	    $existing_preload = Elive::Entity::Preload->retrieve([$preload_opt]);
-	}
-	else {
-	    #
-	    # preload filter appears to be ineffective. Shouldn't get here
-	    # anyway - option has been restricted to integer
-	    pod2usage("non numeric preload id");
-	    #
-	    # treat it as a filename.
-	    #
-	    my $preloads =  Elive::Entity::Preload->list(filter => "name = $preload_opt");
-	    #
-	    # take most recent
-	    #
-	    ($existing_preload) = sort {$b->id cmp $a->id} @$preloads;
-	}
+	pod2usage("non numeric preload id")
+	    unless $preload_opt =~ m{^\d+$};
+
+	$existing_preload = Elive::Entity::Preload->retrieve([$preload_opt]);
 	
 	die "no existing preload: $preload_opt\n"
 	    unless $existing_preload;
