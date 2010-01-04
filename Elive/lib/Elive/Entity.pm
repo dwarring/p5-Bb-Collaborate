@@ -201,13 +201,13 @@ sub _freeze {
 	die "$class: unknown property: $_: expected: @properties"
 	    unless $property;
 
-	my ($_type, $is_array, $_is_struct) = Elive::Util::parse_type($property);
+	my ($type, $is_array, $_is_struct) = Elive::Util::parse_type($property);
 
 	for ($db_data{$_}) {
 
 	    for ($is_array? @$_: $_) {
 
-		$_ = Elive::Util::_freeze($_, $property);
+		$_ = Elive::Util::_freeze($_, $type);
 
 	    }
 	}
@@ -573,11 +573,13 @@ sub is_changed {
     my @updated_properties;
     my $db_data = $self->_db_data;
 
-    #
-    # not mapped to a stored data value. either a scratch object or
-    # sub entity.
-    #
-    return unless ($db_data);
+    unless ($db_data) {
+	#
+	# not mapped to a stored data value. scratch object?, sub entity?
+	#
+	warn ref($self)."->is_changed called on non-database object (".$self->stringify.")";
+	return;
+    }
 
     foreach my $col ($self->properties) {
 

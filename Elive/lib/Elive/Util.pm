@@ -56,8 +56,6 @@ sub parse_type {
 sub _freeze {
     my ($val, $type) = @_;
 
-    $val = string($val, $type);
-
     for ($val) {
 
 	if (!defined) {
@@ -65,6 +63,7 @@ sub _freeze {
 	    warn "undefined value of type $type"
 	}
 	else {
+	    $val = string($val, $type);
 	    my $raw_val = $val;
 
 	    if ($type =~ m{^Bool}i) {
@@ -87,7 +86,7 @@ sub _freeze {
 		
 	    }
 	    elsif ($type =~ m{^Ref}i) {
-		die "freezing datatype $type: not implemented";
+		die "freezing of datatype $type: not implemented";
 	    }
 
 	    die "unable to convert $raw_val to $type"

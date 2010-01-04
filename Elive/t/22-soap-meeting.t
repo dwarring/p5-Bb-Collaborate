@@ -8,6 +8,7 @@ use t::Elive;
 
 use Carp;
 local($SIG{__DIE__}) = \&Carp::confess;
+local($SIG{__WARN__}) = \&Carp::cluck;
 
 BEGIN {
     use_ok( 'Elive' );
@@ -54,11 +55,11 @@ SKIP: {
     foreach ('name') {
 	#
 	# returned record doesn't contain password
-	ok($meeting->$_ eq $meeting_str_data{$_}, "meeting $_ eq $meeting_str_data{$_}");
+	ok($meeting->$_ eq $meeting_str_data{$_}, "meeting $_ as expected");
     }
 
     foreach (keys %meeting_int_data) {
-	ok($meeting->$_ == $meeting_int_data{$_}, "meeting $_ == $meeting_int_data{$_}");
+	ok($meeting->$_ == $meeting_int_data{$_}, "meeting $_ as expected");
     }
 
 
@@ -83,11 +84,11 @@ SKIP: {
     foreach (keys %parameter_str_data) {
 	#
 	# returned record doesn't contain password
-	ok($meeting_params->$_ eq $parameter_str_data{$_}, "meeting parameter $_ eq $parameter_str_data{$_}");
+	ok($meeting_params->$_ eq $parameter_str_data{$_}, "meeting parameter $_ as expected");
     }
 
     foreach (keys %parameter_int_data) {
-	ok($meeting_params->$_ == $parameter_int_data{$_}, "meeting parameter $_ == $parameter_int_data{$_}");
+	ok($meeting_params->$_ == $parameter_int_data{$_}, "meeting parameter $_ as expected");
     }
 
     ########################################################################

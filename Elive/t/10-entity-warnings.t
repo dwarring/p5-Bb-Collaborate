@@ -1,6 +1,6 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 11;
+use Test::More tests => 12;
 use Test::Warn;
 
 use Elive;
@@ -35,6 +35,12 @@ warnings_like(
 
 ok(!(exists $user_1->{junk1}),"construct discards unknown property");
 
+warnings_like(
+    sub {$user_1->_db_data->is_changed},
+    qr{is_changed called on non-database object},
+    'calling is_changed on non-database object produces a warning'
+    );
+
 my $user_2;
 
 warnings_like(
@@ -59,7 +65,7 @@ my $preload_data = {
 };
 
 $thawed_data = Elive::Entity::Preload->_thaw($preload_data);
-ok($thawed_data->{type} eq 'media', "valid media type conversion");
+ok($thawed_data->{type} eq 'media', "type (media) as expected");
 
 warnings_like(
     sub {$thawed_data = thaw_with_bad_preload_type($preload_data)},

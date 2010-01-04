@@ -79,7 +79,7 @@ my $admin_id = $admin_user->userId;
 
 $admin_user = undef;
 $admin_user = $class->retrieve([$admin_id]);
-isa_ok($admin_user, $class, 'can retrieve admin user before delete');
+isa_ok($admin_user, $class, 'admin user before delete');
 
 dies_ok(sub {$admin_user->delete},"delete admin user without -force - dies");
 lives_ok(sub {$admin_user->delete(force => 1)},"delete admin user with -force - lives");

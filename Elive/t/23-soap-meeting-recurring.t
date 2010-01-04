@@ -32,7 +32,7 @@ SKIP: {
     );
 
     my %meeting_int_data = (
-	facilitatorId => Elive->login->userId,
+	facilitatorId => Elive->login,
 	start => time() .'000',
 	end => (time()+900) . '000',
 	recurrenceCount => 3,
@@ -45,8 +45,9 @@ SKIP: {
     ok(@meetings == 3, 'got three meeting occurences')
 	or exit;
 
+    my $n;
     foreach (@meetings) {
-	isa_ok($_, $class, "meeting occurence");
+	isa_ok($_, $class, "meeting occurence ".++$n);
     }
 
     my @start_times = map {substr($_->end, 0, -3)} @meetings;
@@ -72,16 +73,17 @@ sub a_week_between {
 
     #
     # A very rough test of times being about a week apart. Anything more
-    # precise is going to require time-zone aware date/time calculations.
+    # precise is going to require time-zone aware date/time calculations
+    # and will introduce some pretty fat build dependencies.
     #
     my $seconds_in_a_week = 7 * 24 * 60 * 60;
     #
-    # just test that the dates are a week apart to within an
-    # hour and a half, or so. This should accomodate daylight savings
-    # adjustments of up to 1.5 hours.
+    # just test that the dates are a week apart to within an hour and a
+    # half, or so. This should accomodate daylight savings adjustments
+    # of up to 1.5 hours.
     #
-    my $delta = 1.6 * 60 * 60; # a little over 1.5 hours
-    my $ok = abs ($end - $start - $seconds_in_a_week) < $delta;
+    my $drift = 1.6 * 60 * 60; # a little over 1.5 hours
+    my $ok = abs ($end - $start - $seconds_in_a_week) < $drift;
 
     return $ok;
 }

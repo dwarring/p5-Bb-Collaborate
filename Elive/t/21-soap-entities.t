@@ -28,11 +28,11 @@ SKIP: {
     Elive->connection($connection);
 
     my $login = Elive->login;
-    ok(Scalar::Util::blessed($login), 'login is a blessed object');
+    ok(Scalar::Util::blessed($login), 'Elive->login returns an object');
 
     #
-    # just retest some of our entity management in a live
-    # production environment
+    # just retest some of our entity management with active live or mock
+    # connections.
     #
 
     ok(!$login->is_changed, 'login not yet changed');
@@ -48,7 +48,7 @@ SKIP: {
     my $login_refetch;
 
     #
-    # check the -reuse option
+    # check the retrieve -reuse option
     #
 
     lives_ok(
@@ -65,7 +65,7 @@ SKIP: {
 	     're-retrieve of updated object without reuse - dies');
 
     #
-    # check the -raw option
+    # check the retrieve -raw option
     #
     my $login_raw_data;
 
@@ -79,12 +79,12 @@ SKIP: {
        'raw retrieval bypasses cache');
 
     ok($login->loginName eq $loginName_new,
-       'changed data held in cache');
+       'changes held in cache');
 
     $login->revert;
 
     ok($login->loginName eq $loginName_old,
-       '$login->revert restores old value');
+       'revert of login user');
 
 }
 

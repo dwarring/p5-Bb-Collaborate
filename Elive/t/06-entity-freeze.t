@@ -40,7 +40,7 @@ my $user_data =  {
 	loginPassword => 'test',
 	loginName => 'tester',
 	email => 'test@test.org',
-	role => {roleId => '+002'},
+	role => {roleId => '002'},
 	firstName => 'Timmee',
 	lastName => 'Tester',
     };

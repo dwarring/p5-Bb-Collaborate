@@ -143,7 +143,7 @@ sub call {
 				seats => $params{seats}||0);
 		    $self->call('createMeetingParameters',
 				meetingId => $pkey,
-				recordingStatus => 'auto',
+				recordingStatus => 'remote',
 			);
 		}
 		return $som;

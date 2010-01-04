@@ -1,5 +1,11 @@
 Revision history for Elive
 
+0.57    5th January 2010
+        - Altered tests to pass Mouse 0.40+ constraints, '+002' is no longer
+          considered a valid 'Int'(?).
+        - Elive::Entity - Added a warning for attempted use of is_changed on
+          none database objects.
+
 0.56    4th January 2010
         - Objects are now automatically stringified on all SOAP calls.
             For example:

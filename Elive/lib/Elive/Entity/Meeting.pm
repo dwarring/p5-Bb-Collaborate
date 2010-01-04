@@ -667,6 +667,8 @@ sub list_recordings {
 
 =item Elive::Entity::ServerParameters
 
+=item Elive::Entity::ParticipantList
+
 =back
 
 =cut
