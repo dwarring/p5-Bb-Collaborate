@@ -379,7 +379,7 @@ sub _thaw {
 
     if ($data->{Adapter}) {
 	#
-	# meeting result can include a superious Adapter property. Ignore it
+	# meeting result can include a spurious Adapter property. Ignore it
 	#
 
 	if ($class->debug) {
