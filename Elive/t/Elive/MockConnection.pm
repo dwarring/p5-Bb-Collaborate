@@ -75,7 +75,8 @@ sub call {
     my %params = @_;
 
     my %known_adapters = Elive->known_adapters;
-    my $entities = Elive::Entity->_entities;
+    my $entities = Elive::Entity->entities;
+    my $collections = Elive::Entity->collections;
     #
     # Determine an operation for the command
     #
@@ -85,7 +86,7 @@ sub call {
 
     my $som = bless {}, 't::Elive::MockSOM';
 
-    my ($_op, $entity_name) = ($cmd =~ m{^(add|get|create|check|delete|update)(.*)$});
+    my ($op, $entity_name) = ($cmd =~ m{^(add|get|create|check|delete|update|list)(.*)$});
 
     $entity_name = 'User' if $cmd eq 'changePassword';
 
@@ -93,7 +94,7 @@ sub call {
 
 	$entity_name = lcfirst($entity_name);
 
-	if (my $entity_class = $entities->{$entity_name}) {
+	if (my $entity_class = ($entities->{$entity_name} || $collections->{$entity_name})) {
 
 	    my @primary_key = @{ $entity_class->_primary_key };
 
@@ -132,7 +133,7 @@ sub call {
 		}
 
 		my $pkey = $params{$primary_key[0]};
-		my $som = t::Elive::MockSOM->make_result($entity_class, %params);		
+		my $som = t::Elive::MockSOM->make_result($entity_class, \%params);		
 		$self->mockdb->{$entity_name}{ $pkey } = \%params;
 
 		if ($entity_name eq 'meeting') {
@@ -172,8 +173,21 @@ sub call {
 		}
 
 		my $data = $self->mockdb->{$entity_name}{ $pkey };
-		my $som = t::Elive::MockSOM->make_result($entity_class, %$data);
+		my $som = t::Elive::MockSOM->make_result($entity_class, $data);
 		return $som;
+	    }
+	    elsif ($op eq 'list') {
+		#
+		# most common parameter is filter => <expr>. This would take
+		# some work to implement!
+		#
+		die 'mock list with params - not implemented'
+		    if %params || 1;
+		#
+		# dump the entire table
+		#
+		my $data = $self->mockdb->{$entity_name} || [];
+		return t::Elive::MockSOM->make_result($entity_class, @$data);
 	    }
 	    elsif ($crud eq 'r') {
 		my $data;
@@ -211,7 +225,7 @@ sub call {
 		#
 
 		return $data
-		    ? t::Elive::MockSOM->make_result($entity_class, %$data)
+		    ? t::Elive::MockSOM->make_result($entity_class, $data)
 		    : t::Elive::MockSOM->not_found();
 	    }
 	    elsif ($crud eq 'd') {
@@ -228,7 +242,7 @@ sub call {
 
 		delete $self->mockdb->{$entity_name}{ $pkey };
 
-		my $result = t::Elive::MockSOM->make_result($entity_class, %$data);
+		my $result = t::Elive::MockSOM->make_result($entity_class, $data);
 		return $result;
 	    }
 	    else {

@@ -50,7 +50,7 @@ SKIP: {
     my $server_version_num = version->new($server_version)->numify;
     ok($server_version_num >= 9, "Elluminate Live! server is 9.0.0 or higher");
 
-    my $tested_version = '9.6.0';
+    my $tested_version = '9.7.0';
     my $tested_version_num = version->new($tested_version)->numify;
 
     if ($server_version_num > $tested_version_num) {

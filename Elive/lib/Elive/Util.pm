@@ -53,6 +53,10 @@ sub parse_type {
     return ($type, $is_array, $is_struct);
 }
 
+#
+# freezing of elementry datatypes
+#
+
 sub _freeze {
     my ($val, $type) = @_;
 
@@ -63,8 +67,8 @@ sub _freeze {
 	    warn "undefined value of type $type"
 	}
 	else {
-	    $val = string($val, $type);
-	    my $raw_val = $val;
+	    $_ = string($_, $type);
+	    my $raw_val = $_;
 
 	    if ($type =~ m{^Bool}i) {
 
@@ -96,6 +100,10 @@ sub _freeze {
 
     return $val;
 }
+
+#
+# thawing of elementry datatypes
+#
 
 sub _thaw {
     my ($val, $type) = @_;

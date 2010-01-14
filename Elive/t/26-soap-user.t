@@ -28,7 +28,7 @@ Elive->connection($connection);
 
 my %insert_data = (
     loginName => 'some_test_user',
-    loginPassword => _generate_password(),
+    loginPassword => t::Elive::generate_password(),
     email => 'test@acme.org',
     role => 3,
     firstName => 'test',
@@ -73,7 +73,7 @@ if (my $existing_user = $class->get_by_loginName('test_admin')) {
 
 my $admin_user = $class->insert({loginName => "test_admin",
 				 role => 0,
-				 loginPassword => _generate_password(),
+				 loginPassword => t::Elive::generate_password(),
 				 email => 'test@acme.org'},);
 my $admin_id = $admin_user->userId;
 
@@ -97,12 +97,3 @@ my $login_user = $connection->login;
 dies_ok(sub {$login_user->delete},"delete login user - dies");
 
 Elive->disconnect;
-
-########################################################################
-
-sub _generate_password {
-    my @chars = ('a' .. 'z', 'A' .. 'Z', '0' .. '9', '.', '_', '-');
-    my @p = map {$chars[ sprintf("%d", rand(scalar @chars)) ]} (1.. 6);
-
-    return join('', @p);
-}

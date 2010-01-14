@@ -17,10 +17,15 @@ __PACKAGE__->primary_key('groupId');
 
 has 'name' => (is => 'rw', isa => 'Str', required => 1,
 	       documentation => 'name of the group');
+__PACKAGE__->_alias(groupName => 'name', freeze => 1);
 
 has 'members' => (is => 'rw', isa => 'Elive::Array', required => 1,
 		  coerce => 1,
 		  documentation => "ids of users in the group");
+__PACKAGE__->_alias(groupMembers => 'members', freeze => 1);
+
+has 'dn' => (is => 'rw', isa => 'Str',
+	       documentation => 'LDAP Domain (where applicable(');
 
 =head1 NAME
 
@@ -73,5 +78,25 @@ sub construct {
     bless $self->members, 'Elive::Array';
     $self;
 }
+
+#
+# Seems that elluminate 9.7 can return a single element containing
+# the members, each separated by ';'.
+
+sub _thaw {
+    my $class = shift;
+    my $db_data = shift;
+
+    my $data = $class->SUPER::_thaw($db_data, @_);
+    $data->{members} = [map {split(';')} @{ $data->{members} || [] }];
+
+    return $data;
+}
+
+=head1 TODO
+
+The update method has not been implemented yet.
+
+=cut
 
 1;

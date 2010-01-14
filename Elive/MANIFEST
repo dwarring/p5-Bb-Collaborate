@@ -56,6 +56,7 @@ t/23-soap-meeting-recurring.t
 t/24-soap-preload.t
 t/25-soap-recording.t
 t/26-soap-user.t
+t/27-soap-group.t
 t/29-soap-multi-connect.t
 t/90-pod.t
 t/91-pod-coverage.t

@@ -81,17 +81,19 @@ sub _pack_data {
 sub make_result {
     my $class = shift;
     my $entity_class = shift;
-    my %data = @_;
+    my @data = @_;
 
-    if ($entity_class->isa('Elive::Entity::User')
-	&& defined $data{loginPassword}) {
-	#
-	# return of passwords is supressed
-	#
-	$data{loginPassword} = '';
+    if ($entity_class->isa('Elive::Entity::User')) {
+	foreach (@data) {
+	    #
+	    # return of passwords is supressed
+	    #
+	    $_->{loginPassword} = ''
+		if defined $_->{loginPassword};
+	}
     }
 
-    my ($adapter, $packed_data) = _pack_data($entity_class, \%data);
+    my ($adapter, $packed_data) = _pack_data($entity_class, @data > 1? \@data: $data[0]);
 
     my $self = bless {}, $class;
 

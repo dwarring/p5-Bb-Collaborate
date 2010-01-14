@@ -1,8 +1,19 @@
 Revision history for Elive
 
+0.58    14th January 2011
+        Support for Elluminate 9.7 release:
+        - Added new field 'dn' to Elive::Entity::Group - LDAP domain name.
+        - Added Elive::Entity::Group::_thaw(). This was required to handle
+          modified output from Group DAO. We now get a single result with
+          all members separated by ';', instead of a list of individual
+          members.
+        - Fix in Elive::Entity::_thaw(). It was modifying parts of the input
+          struct. Now makes a copy on entry via Storable::dclone.
+        - added 27-soap-group.t - group specific tests.
+
 0.57    5th January 2010
-        - Altered tests to pass Mouse 0.40+ constraints, '+002' is no longer
-          considered a valid 'Int'(?).
+        - Altered tests to pass Mouse 0.40 constraints, '+002' is not
+          considered a valid 'Int'(?). Transient Mouse bug?
         - Elive::Entity - Added a warning for attempted use of is_changed on
           none database objects.
 

@@ -11,10 +11,11 @@ use YAML;
 
 BEGIN {
     __PACKAGE__->mk_classdata('_entities' => {});
+    __PACKAGE__->mk_classdata('_collections' => {});
     __PACKAGE__->mk_classdata('_aliases');
     __PACKAGE__->mk_classdata('_entity_name');
     __PACKAGE__->mk_classdata('_primary_key', []);
-    __PACKAGE__->mk_classdata('collection_name');
+    __PACKAGE__->mk_classdata('_collection_name');
     __PACKAGE__->mk_classdata('isa');
 };
 
@@ -113,6 +114,34 @@ sub entity_name {
     }
 
     return $entity_class->_entity_name;
+}
+
+=head2 collection_name
+
+    my $collection_name = MyApp::Entity::User->collecion_name
+    ok($collection_name eq 'users');
+
+=cut
+
+sub collection_name {
+    my $entity_class = shift;
+
+    if (my $collection_name = shift) {
+
+	#
+	# Set our entity name. Register it in our parent
+	#
+	$entity_class->_collection_name(ucfirst($collection_name));
+
+	my $collections = $entity_class->_collections;
+
+	die "Entity $collection_name redeclared "
+	    if exists $collections->{$collection_name};
+
+	$collections->{lcfirst($collection_name)} = $entity_class;
+    }
+
+    return $entity_class->_collection_name;
 }
 
 # _alias, _get_aliases
@@ -221,6 +250,20 @@ sub entities {
     my $entity_class = shift;
 
     return $entity_class->_entities;
+}
+
+=head2 collections
+
+    my $collections = Entity::Entity->collections;
+
+Return has hash ref of entities that have pluralised names.
+
+=cut
+
+sub collections {
+    my $entity_class = shift;
+
+    return $entity_class->_collections;
 }
 
 sub _ordered_attribute_names {

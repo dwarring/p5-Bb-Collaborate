@@ -85,6 +85,11 @@ sub _readback_check {
 
 Retrieve on loginName, which is a co-key for the users table.
 
+Please note that the Elluminate Web Services raise an error if the user
+was not found. So, if you're not sure if the user exists:
+
+    my $user = eval {Elive::Entity::User->get_by_loginName('joebloggs')};
+
 =cut
 
 sub get_by_loginName {
@@ -147,8 +152,9 @@ sub insert {
 Update an Elluminate user. Everything can be changed, other than userId.
 This includes the loginName. However loginNames must all remain unique.
 
-As a safeguard, you need to pass force => 1 to update users with a Role
-Id of 0, i.e. system administrator accounts
+As a safeguard, you'll need to pass C<force => 1> to update:
+    (a) users with a Role Id of 0, i.e. system administrator accounts
+    (b) the login user
 
 =cut
 
@@ -184,7 +190,6 @@ sub update {
 =head2 change_password 
 
     my $user = Elive::Entity::User->retrieve([$user_id]);
-    my $new_password = Elive::Util::prompt('Password: ', password => 1);
     $user->change_password($new_password);
 
 =cut
@@ -212,8 +217,8 @@ sub change_password {
 
     $user_obj->delete([force => 1]);
 
-Delete user objects. As a safeguard, you need to pass force => 1 to update
-system administrator accounts
+Delete user objects. As a safeguard, you need to pass C<force => 1> to delete
+system administrator accounts, or the login user.
 
 =cut
 

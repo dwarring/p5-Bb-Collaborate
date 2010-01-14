@@ -9,7 +9,7 @@ use base qw{Elive::Struct};
 use YAML;
 use Scalar::Util qw{weaken};
 require UNIVERSAL;
-use Scalar::Util;
+use Storable qw{dclone};
 
 use Elive::Util;
 use Elive::Array;
@@ -187,14 +187,12 @@ sub _freeze {
     # _freeze - construct name/value pairs for database inserts or updates
     #
     my $class = shift;
-    my $data = shift;
-
-    my %db_data = %$data;
+    my $db_data = Storable::dclone(shift);
 
     my @properties = $class->properties;
     my $property_types =  $class->property_types || {};
 
-    foreach (keys %db_data) {
+    foreach (keys %$db_data) {
 
 	my $property = $property_types->{$_};
 
@@ -203,7 +201,7 @@ sub _freeze {
 
 	my ($type, $is_array, $_is_struct) = Elive::Util::parse_type($property);
 
-	for ($db_data{$_}) {
+	for ($db_data->{$_}) {
 
 	    for ($is_array? @$_: $_) {
 
@@ -226,12 +224,12 @@ sub _freeze {
 	    #
 	    # Freeze with this alias
 	    #
-	    $db_data{ $alias } = delete $db_data{ $to }
-	    if exists $db_data{ $to };
+	    $db_data->{ $alias } = delete $db_data->{ $to }
+	    if exists $db_data->{ $to };
 	}
     }
 
-    return \%db_data;
+    return $db_data;
 }
 
 sub _thaw {
