@@ -95,7 +95,7 @@ SKIP: {
     # This is a far as we can currently go with a mock connection
     ########################################################################
 
-    skip ($result{reason} || 'skipping lives tests',
+    skip ($result{reason} || 'skipping live tests',
 	22)
 	unless $connection_class eq 'Elive::Connection';
 
