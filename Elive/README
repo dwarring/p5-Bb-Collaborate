@@ -4,14 +4,10 @@ of Elluminate Live! virtual classroom servers.
 You can, for example, use it to query or add users, create sessions, assign
 users as class participants and change server settings.
 
-This package has been tested against Elluminate Live! versions 9.0 - 9.6.
+This package has been tested against Elluminate Live! versions 9.0 - 9.7.
 
 You will need to be able to login in to your SOAP service using an
 Elluminate system administrator level account.
-
-Note that Elluminate installs with 'serversupport' and 'legacyadapter'
-(9.0, 9.1) or elmconfig (9.5) as preset system administrator accounts.
-Don't forget to change passwords on both these accounts before use!
 
 INSTALLATION
 
@@ -24,15 +20,11 @@ INSTALLATION
 
 TESTING
 
-    There are additional live tests in t/2?-soap-*.t. These are skipped by
-    default, but may be run by setting up some enviroment variables to
-    reference an Elluminate Live! user and site instance.
+    There are additional live tests in t/2?-soap-*.t. By default, these
+    either skipped or run offline.
 
-    WARNING: These tests will both create and delete various entities
-    instances. For this reason you should avoid running tests on production
-    sites.
-
-    To run these additional tests:
+    These may be run against a live server by setting up the environment
+    variables, an running tests, as shown below:
 
         perl Makefile.PL
         make
@@ -41,8 +33,12 @@ TESTING
         export ELIVE_TEST_PASS=some_password
         make test
 
-    Again, please restrict your testing to designated development and
-    test sites, or newly created site instances!
+    WARNING: These tests will both create and delete various entities
+    instances. For this reason you should avoid running tests on production
+    sites.
+
+    Please restrict your testing to designated development and test sites, or
+    newly created site instances!
 
 POST INSTALLATION
 
@@ -147,7 +143,7 @@ You can also look for information at:
 
 COPYRIGHT AND LICENCE
 
-Copyright (C) 2009 David Warring
+Copyright (C) 2009-2010 David Warring
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
