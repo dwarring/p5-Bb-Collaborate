@@ -1,6 +1,6 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 38;
+use Test::More tests => 42;
 use Test::Warn;
 use Scalar::Util;
 
@@ -49,6 +49,7 @@ for my $class(qw{Elive::Connection t::Elive::MockConnection}) {
 	);
     
     isa_ok($group_c1, 'Elive::Entity::Group', 'constructed ');
+    is_deeply($group_c1->connection, $C1, 'group 1 associated with connection 1');
 
 #
 # Check for basic caching
@@ -72,6 +73,7 @@ for my $class(qw{Elive::Connection t::Elive::MockConnection}) {
 	);
 
     isa_ok($group_c2, 'Elive::Entity::Group', 'group');
+    is_deeply($group_c2->connection, $C2, 'group 2 associated with connection 2');
 
     my $group_c2_from_cache
 	= Elive::Entity::Group->retrieve([$K1], connection => $C2, reuse => 1);
