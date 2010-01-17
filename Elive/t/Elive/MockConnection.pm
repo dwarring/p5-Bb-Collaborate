@@ -76,7 +76,12 @@ sub call {
 
     my %known_adapters = Elive->known_adapters;
     my $entities = Elive::Entity->entities;
-    my $collections = Elive::Entity->collections;
+    my %collections =
+	(map {@$_}
+	 grep {$_[0]}
+	 map {[($_->collection_name||'') => $_]}
+	 (values %$entities)
+	);
     #
     # Determine an operation for the command
     #
@@ -94,7 +99,7 @@ sub call {
 
 	$entity_name = lcfirst($entity_name);
 
-	if (my $entity_class = ($entities->{$entity_name} || $collections->{$entity_name})) {
+	if (my $entity_class = ($entities->{$entity_name} || $collections{$entity_name})) {
 
 	    my @primary_key = @{ $entity_class->_primary_key };
 
