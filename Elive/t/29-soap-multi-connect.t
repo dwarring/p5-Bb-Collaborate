@@ -1,16 +1,20 @@
 #!perl
 use warnings; use strict;
-use Test::More tests => 24;
+use Test::More tests => 23;
 use Test::Exception;
 
 use lib '.';
 use t::Elive;
 
-BEGIN {
-    use_ok( 'Elive' );
-    use_ok( 'Elive::Connection' );
-    use_ok( 'Elive::Entity::Preload' );
-};
+#
+# Some rough tests that we can handle multiple connections.
+# Look for evidence of 'crossed wires'. e.g. in the cache, entity
+# updates or comparison functions.
+# 
+
+use Elive;
+use Elive::Connection;
+use Elive::Entity::Preload;
 
 my $class = 'Elive::Entity::Preload' ;
 
@@ -46,7 +50,7 @@ SKIP: {
     isa_ok($connection_2, 'Elive::Connection','connection')
 	or exit(1);
 
-    ok($connection->url ne $connection_2->url, 'Connections have distinct urls');
+    ok($connection->url ne $connection_2->url, 'connections have distinct urls');
     use Carp; $SIG{__DIE__} = \&Carp::confess;
     ok(my $user = $connection->login, 'connection login');
     isa_ok($user, 'Elive::Entity::User','login');
@@ -56,6 +60,9 @@ SKIP: {
 
     ok(Scalar::Util::refaddr($user) != Scalar::Util::refaddr($user_2),
 	'users are distinct objects');
+
+    is_deeply($user->connection, $connection, 'first entity/connection association');
+    is_deeply($user_2->connection, $connection_2, 'second entity/connection association');
 
     #
     # LDAP login names may be case insensitive
@@ -82,10 +89,10 @@ SKIP: {
     ok(!$user->is_changed, 'user revert');
 
     lives_ok(sub {$connection->disconnect},
-	     'disconnect 1 - lives');
+	     'disconnect first connection - lives');
 
     lives_ok(sub {$connection_2->disconnect},
-	     'disconnect 2 - lives');
+	     'disconnect second connection - lives');
     
 }
 
