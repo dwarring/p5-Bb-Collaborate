@@ -18,6 +18,41 @@ INSTALLATION
         make test
         make install
 
+ELLUMINATE CONFIGURATION
+
+If you are running Elm 3.0 / Elluminate 9.5 or higher, you will need to
+grant access to SDK users in the Elluminate configuration.
+
+Firstly stop all Elluminate services.
+
+Then you'll need to edit the configuration.xml for each site instance.
+
+        Under Linux, the configuration can be found under:
+
+             /opt/ElluminateLive/manager/tomcat/webapps
+
+        or under Windows:
+
+             C:/Program Files/ElluminateLive/manager/tomcat/webapps
+
+        The actual configuration is then in the sub-path:
+
+             ROOT/WEB-INF/resources/configuration.xml
+
+         or for any additional sites built with the instance manager:
+
+             mysite/WEB-INF/resources/configuration.xml
+
+Edit the file and add the following to the security section:
+
+      <security adapter-name="default">
+        <permissions>
+          ...
+          <user name="some_user">
+             <allow command="*" />
+          </user>
+        </permissions>
+
 TESTING
 
     There are additional live tests in t/2?-soap-*.t. By default, these
@@ -42,76 +77,59 @@ TESTING
 
 POST INSTALLATION
 
-    elive_lint_config
+    The elive_query script can be used to check basic access to your
+    Elluminate server(s).
 
-        This script will check for missing adapters.
+        % elive_query --user admin_user http://myserver/mysite
 
-        It is recommended that you run this script on your Elluminate
-        Live site configuration files.
+    Where admin_user is an Elluminate system administrator account.
 
-        For a Unix server the configration for path http://myserver/mysite/
-        should be found under:
+    You will need to enter a password. You should then get:
 
-             /opt/ElluminateLive/manager/tomcat/webapps
+	connecting to http://myserver/mysite...done
+	Elive query 0.nn (Elluminate Live 9.x.y) - type 'help' for help
+	elive>
 
-        or under Windows:
+    You can then try a simple query:
 
-             C:/Program Files/ElluminateLive/manager/tomcat/webapps
-
-        The actual configuration is then in the sub-path:
-
-             ROOT/WEB-INF/resources/configuration.xml
-
-         or for any additional sites built with the instance manager:
-
-             mysite/WEB-INF/resources/configuration.xml
-
-        If any adapters are missing, the corresponding Elive calls will
-        return the error message 'Unable to determine a command for the key
-        Xxxxx'.
-
-        You may be able to get away with manually adding the adapter to
-        the list of adapters in your configuration file.
-
-        For example, if elive_lint_config returned the error:
-
-            "missing adapter command: getUser"
-
-        You'll need to first stop Elluminate services.
-
-        Save a backup copy of configuration.xml Then you can add an adapter
-        entry can be added to the list of adapters.
-
-        E.g., to add the getUser adapter:
-
-            <elm>
-                ...
-                <adapters>
-                   <adapter>
-                      <commands>
-                        ...
-                        <command name="getUser" class="com.elluminate.adapter.command.GetUserCommand" />
+	elive> select * from users
 
 
-    elive_query
+TROUBLESHOOTING
 
-        This is a simple shell that can be used to test basic access
-        to your Elluminate Live server
+    If you you get the message 'Unable to determine a command for the key
+    Xxxxx' during testing and/or general usage, then some of the adapters
+    may be missing from  your Elluminate configuration.
 
-        Usage is: elive_query --user admin_user http://myserver/mysite
+    You can use the installed script elive_lint_config to check for
+    missing adapaters.
 
-        Where admin_user is an Elluminate system administrator account.
+	% cd /opt/ElluminateLive/manager/tomcat/webapps
+	% elive_lint_config WEB-INF/resources/configuration.xml
+	missing adapter command: getUser
+	missing adapter command: deletePreload
+	missing adapter command: listPreloads
 
-        You will need to enter a password. You should then get:
+    The adapters can be added to your configuration file.
 
-            connecting to http://myserver/mysite...done
-            Elive query 0.nn (Elluminate Live 9.x.y) - type 'help' for help
-            elive>
+    For example, if elive_lint_config returned the error:
 
-        You can then try a simple query:
+	"missing adapter command: getUser"
 
-            elive> select * from users
+    You'll need to first stop Elluminate services.
 
+    Save a backup copy of configuration.xml Then you can add an adapter
+    entry can be added to the list of adapters.
+
+    E.g., to add the getUser adapter:
+
+	<elm>
+	    ...
+	    <adapters>
+	       <adapter>
+		  <commands>
+		    ...
+		    <command name="getUser" class="com.elluminate.adapter.command.GetUserCommand" />
 
 SUPPORT AND DOCUMENTATION
 

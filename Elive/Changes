@@ -1,5 +1,10 @@
 Revision history for Elive
 
+0.59    23rd January 2011
+        - Updated README file to reflect Elluminate 9.5+ configuration.
+        - Took out Elive->collections method. Easily derivable and only
+          used in testing.
+
 0.58    14th January 2011
         Support for Elluminate 9.7 release:
         - Added new field 'dn' to Elive::Entity::Group - LDAP domain name.
@@ -22,8 +27,10 @@ Revision history for Elive
             For example:
              Elive::Entity::Meeting->insert( ...,
                                              facilitatorId => $user->userId);
-            can now be written:
+
+            Can now be written:
              Elive::Entity::Meeting->insert( ..., facilitatorId => $user);
+
         - Improved mock testing coverage. Now able to run much of
 	  the meeting and recording tests offline.
         - Pod/doco improvements. In particular, show a meeting insert
