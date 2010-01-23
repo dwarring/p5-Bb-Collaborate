@@ -469,8 +469,6 @@ sub _get_user {
 sub _parse_occurs {
     my $occurs = shift;
 
-    warn "occurs raw: @$occurs";
-
     $occurs->[0] ||= 1;
     $occurs->[1] ||= 1;
 
@@ -481,10 +479,9 @@ sub _parse_occurs {
     unless (@$occurs == 2
 	    && $occurs->[0] =~ m{^\d+$}
 	    && $occurs->[1] =~ m{^\d+$}) {
-	warn "incorrect --occurs usage @$occurs: --occurs n days|weeks|fornights|m";
+	warn "incorrect --occurs usage: --occurs n days|weeks|fornights|m";
 	return;
     }
 
     return 1;
 }
-	    
