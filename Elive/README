@@ -20,38 +20,46 @@ INSTALLATION
 
 ELLUMINATE CONFIGURATION
 
-If you are running Elm 3.0 / Elluminate 9.5 or higher, you will need to
-grant access to SDK users in the Elluminate configuration.
+    If you are running Elm 3.0 / Elluminate 9.5 or higher, you will need to
+    grant access to SDK users in the Elluminate configuration.
 
-Firstly stop all Elluminate services.
+    Firstly stop all Elluminate services.
 
-Then you'll need to edit the configuration.xml for each site instance.
+    Then you'll need to edit the configuration.xml for each site instance.
 
-        Under Linux, the configuration can be found under:
+	    Under Linux, the configuration can be found under:
 
-             /opt/ElluminateLive/manager/tomcat/webapps
+		 /opt/ElluminateLive/manager/tomcat/webapps
 
-        or under Windows:
+	    or under Windows:
 
-             C:/Program Files/ElluminateLive/manager/tomcat/webapps
+		 C:/Program Files/ElluminateLive/manager/tomcat/webapps
 
-        The actual configuration is then in the sub-path:
+	    The actual configuration is then in the sub-path:
 
-             ROOT/WEB-INF/resources/configuration.xml
+		 ROOT/WEB-INF/resources/configuration.xml
 
-         or for any additional sites built with the instance manager:
+	     or for any additional sites built with the instance manager:
 
-             mysite/WEB-INF/resources/configuration.xml
+		 mysite/WEB-INF/resources/configuration.xml
 
-Edit the file and add the following to the security section:
+	Edit the file and add a user entry to the security section:
 
-      <security adapter-name="default">
-        <permissions>
-          ...
-          <user name="some_user">
-             <allow command="*" />
-          </user>
-        </permissions>
+	    <elm>
+		...
+	       <proxymanager enable="true">
+		 <proxy name="web" ..>
+		  ...
+		  <security adapter-name="default">
+		    <permissions>
+		      ...
+		      <!-- ++ ADD THIS -->
+		      <user name="some_user">
+			 <allow command="*" />
+		      </user>
+		      <!-- -- ADD THIS -->
+		    </permissions>
+		    ...
 
 TESTING
 
@@ -72,8 +80,8 @@ TESTING
     instances. For this reason you should avoid running tests on production
     sites.
 
-    Please restrict your testing to designated development and test sites, or
-    newly created site instances!
+    Please restrict your testing to designated development and test sites,
+    or newly created site instances!
 
 POST INSTALLATION
 
@@ -93,6 +101,11 @@ POST INSTALLATION
     You can then try a simple query:
 
 	elive> select * from users
+
+    See also elive_raise_meeting. This is a utility script that creates
+    Elluminate meetings.
+
+        % elive_raise_meeting --user admin_user http://myserver/mysite -name 'Test'
 
 
 TROUBLESHOOTING
@@ -129,34 +142,36 @@ TROUBLESHOOTING
 	       <adapter>
 		  <commands>
 		    ...
+                    <!-- ++ ADD COMMANDS HERE -->
 		    <command name="getUser" class="com.elluminate.adapter.command.GetUserCommand" />
+                    <!-- -- ADD COMMANDS HERE -->
 
 SUPPORT AND DOCUMENTATION
 
-See the Elluminate Live documentation. In particular, this package
-follows the entities and relationships described in DatabaseSchema.pdf.
+    See the Elluminate Live documentation. In particular, this package
+    follows the entities and relationships described in DatabaseSchema.pdf.
 
-You will find a copy on the installation disk; or if you have access to the
-server, you will will typically find this in /opt/Elluminate/documentation. 
+    You will find a copy on the installation disk; or if you have access to the
+    server, you will will typically find this in /opt/Elluminate/documentation. 
 
-After installing, you can find documentation for this module with the
-perldoc command.
+    After installing, you can find documentation for this module with the
+    perldoc command.
 
-    perldoc Elive
+	perldoc Elive
 
-You can also look for information at:
+    You can also look for information at:
 
-    RT, CPAN's request tracker
-        http://rt.cpan.org/NoAuth/Bugs.html?Dist=Elive
+	RT, CPAN's request tracker
+	    http://rt.cpan.org/NoAuth/Bugs.html?Dist=Elive
 
-    AnnoCPAN, Annotated CPAN documentation
-        http://annocpan.org/dist/Elive
+	AnnoCPAN, Annotated CPAN documentation
+	    http://annocpan.org/dist/Elive
 
-    CPAN Ratings
-        http://cpanratings.perl.org/d/Elive
+	CPAN Ratings
+	    http://cpanratings.perl.org/d/Elive
 
-    Search CPAN
-        http://search.cpan.org/dist/Elive/
+	Search CPAN
+	    http://search.cpan.org/dist/Elive/
 
 
 COPYRIGHT AND LICENCE
