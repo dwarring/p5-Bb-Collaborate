@@ -26,12 +26,13 @@ sub test_connection {
     my $suffix = $opt{suffix} || '';
     my %result;
 
-    if (!$opt{only} || $opt{only} eq 'real') {
-	my $user = $ENV{'ELIVE_TEST_USER'.$suffix};
-	my $pass = $ENV{'ELIVE_TEST_PASS'.$suffix};
-	my $url  = $ENV{'ELIVE_TEST_URL'.$suffix};
+    my $user = $ENV{'ELIVE_TEST_USER'.$suffix};
+    my $pass = $ENV{'ELIVE_TEST_PASS'.$suffix};
+    my $url  = $ENV{'ELIVE_TEST_URL'.$suffix};
 
-	if ($user && $pass && $url) {
+    if (!$opt{only} || $opt{only} eq 'real') {
+
+	if ($user && $pass && $url && $url !~ m{^mock:}i) {
 	    $result{auth} = [$url, $user, $pass];
 	    $result{class} = 'Elive::Connection';
 	}
@@ -43,9 +44,13 @@ sub test_connection {
     if (!$result{auth} && (!$opt{only} || $opt{only} eq 'mock')) {
 	delete $result{reason};
 
-	my $user = 'test_user'.$suffix;
-	my $pass = 'test_pass'.$suffix;
-	my $url  = 'http://elive_mock_connection'.$suffix;
+	unless ($user && $pass && $url && $url =~ m{^mock:}i) {
+
+	    $user = 'test_user'.$suffix;
+	    $pass = 'test_pass'.$suffix;
+	    $url  = 'mock://elive_test_connection'.$suffix;
+	}
+
 	$result{auth} = [$url, $user, $pass];
 	$result{class} = 't::Elive::MockConnection';
     }
