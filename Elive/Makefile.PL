@@ -20,7 +20,7 @@ requires(
     'Carp'                         => 0,  # for scripts
     'File::Spec'                   => 0,
     'File::Basename'               => 0,
-    'Getopt::Long'                 => 0,  # for scripts
+    'Getopt::Long'                 => 2.35,  # for scripts
     'HTML::Entities'               => 0,
     'IO::Prompt'                   => 0,
     'MIME::Types'                  => 0,

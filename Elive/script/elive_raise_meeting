@@ -57,11 +57,17 @@ elive_raise_meeting
     -[no]raise_hands             # automatically raise hands on entry
     -[no]supervised              # whether moderator can see private messages
 
+  Recurring Meetings
+
+    -occurs 3 days               # schedule on three successive days
+    -occurs 4 weeks              # schedule on four successive weeks
+    -occurs 6 14                 # schedule on six successive fortnights
+
   Preloads
 
     -upload              local_file     # upload a file from the client
-    -import_from_server  path_on_server # import a file already on the server
-    -use_preload         preload_id     # reuse a preload in the database
+    -import_from_server  remote_file    # import a server side file
+    -use_preload         preload_id     # reuse a preload from the database
 
 =head1 DESCRIPTION
 
@@ -96,6 +102,7 @@ my $seats;
 my $permissions;
 my $supervised;
 my $invites;
+my @occurs;
 
 main(@ARGV) unless caller;
 
@@ -125,8 +132,10 @@ sub main {
 	'boundary=i' => \$boundary,
 	'seats=i' => \$seats,
 	'invites|invitations!' => \$invites,
+        'occurs=s{1,2}' => \@occurs,
     )
-	&& (($help && pod2usage(2)) || ($url = shift @ARGV))
+	&& (($help && pod2usage(2))
+	    || ($url = shift @ARGV) && _parse_occurs(\@occurs))
 	or die pod2usage(1);
 
     $recording = lc($recording);
@@ -259,99 +268,105 @@ sub main {
     $meeting_data{privateMeeting} = $private
 	if defined $private;
 
-    my $meeting = Elive::Entity::Meeting->insert(\%meeting_data);
-    
-    print "created meeting: ".$meeting->name." with id ".$meeting->meetingId."\n";
-    $meeting->add_preload($existing_preload)
-	if $existing_preload;
+    if ($occurs[0] > 1) {
+	$meeting_data{recurrenceCount} = $occurs[0];
+	$meeting_data{recurrenceDays} = $occurs[1];
+    }
 
-    do {
+    my @meetings = Elive::Entity::Meeting->insert(\%meeting_data);
+
+    foreach my $meeting (@meetings) {
+	print "created meeting: ".$meeting->name." with id ".$meeting->meetingId."\n";
+	$meeting->add_preload($existing_preload)
+	    if $existing_preload;
+
+	do {
 	
-	my $meeting_parameters
-	    = $meeting->parameters
-	    or die "Unable to retrieve meeting parameters for this meeting";
+	    my $meeting_parameters
+		= $meeting->parameters
+		or die "Unable to retrieve meeting parameters for this meeting";
 	
-	$meeting_parameters->maxTalkers($max_talkers)
-	    if defined $max_talkers;
+	    $meeting_parameters->maxTalkers($max_talkers)
+		if defined $max_talkers;
 
-	$meeting_parameters->raiseHandOnEnter($raise_hands)
-	    if defined $raise_hands;
+	    $meeting_parameters->raiseHandOnEnter($raise_hands)
+		if defined $raise_hands;
 
-	$meeting_parameters->inSessionInvitation($invites)
-	    if defined $invites;
+	    $meeting_parameters->inSessionInvitation($invites)
+		if defined $invites;
 
-	$meeting_parameters->recordingStatus($recording);
+	    $meeting_parameters->recordingStatus($recording);
 
+	    $meeting_parameters->update;
+	};
 
-	$meeting_parameters->update;
-    };
+	do {
+	    my $server_parameters = $meeting->server_parameters;
 
-    do {
-	my $server_parameters = $meeting->server_parameters;
+	    $server_parameters->fullPermissions($permissions)
+		if defined $permissions;
 
-	$server_parameters->fullPermissions($permissions)
-	    if defined $permissions;
+	    $server_parameters->supervised($supervised)
+		if defined $supervised;
 
-	$server_parameters->supervised($supervised)
-	    if defined $supervised;
+	    $server_parameters->boundaryMinutes($boundary)
+		if defined $boundary;
 
-	$server_parameters->boundaryMinutes($boundary)
-	    if defined $boundary;
+	    $server_parameters->update;
+	};
 
-	$server_parameters->update;
-    };
+	if (@participants) {
 
-    if (@participants) {
+	    setup_participants($meeting, @participants);
 
-	setup_participants($meeting, @participants);
+	}
+	else {
+	    print "no participants\n";
+	}
 
+	#
+	# to do - allow multiple uploads
+	#
+	if ($upload) {
+	    
+	    my $upload_basename = File::Basename::basename($upload);
+
+	    my $preload = Elive::Entity::Preload->upload({
+		name => $upload_basename,
+		data => $upload_data,
+		ownerId => $facilitator->stringify,
+							 });
+
+	    printf("adding '%s' preload: %s (%s)\n",
+		   $preload->type, $preload->name, $preload->mimeType);
+
+	    $meeting->add_preload($preload);
+	}
+
+	#
+	# to do - allow multiple imports
+	#
+	if ($import) {
+
+	    print "importing (from server): $import\n";
+
+	    my $preload = Elive::Entity::Preload->import_from_server({
+		fileName => $import,
+		ownerId => $facilitator,
+								     });
+
+	    printf("adding '%s' preload: %s (%s)\n",
+		   $preload->type, $preload->name, $preload->mimeType);
+
+	    $meeting->add_preload($preload);
+	}
+
+	print "meeting address: ".$meeting->web_url."\n";
     }
-    else {
-	print "no participants\n";
-    }
-
-    #
-    # to do - allow multiple uploads
-    #
-    if ($upload) {
-
-	my $upload_basename = File::Basename::basename($upload);
-
-	my $preload = Elive::Entity::Preload->upload({
-	    name => $upload_basename,
-	    data => $upload_data,
-	    ownerId => $facilitator->stringify,
-	 });
-
-	printf("adding '%s' preload: %s (%s)\n",
-	       $preload->type, $preload->name, $preload->mimeType);
-
-	$meeting->add_preload($preload);
-    }
-
-    #
-    # to do - allow multiple imports
-    #
-    if ($import) {
-
-	print "importing (from server): $import\n";
-
-	my $preload = Elive::Entity::Preload->import_from_server({
-	    fileName => $import,
-	    ownerId => $facilitator,
-	 });
-
-	printf("adding '%s' preload: %s (%s)\n",
-	       $preload->type, $preload->name, $preload->mimeType);
-
-	$meeting->add_preload($preload);
-    }
-
-    print "meeting address: ".$meeting->web_url."\n";
 
     Elive->disconnect;
 
-    return $meeting;
+    return @meetings;
 }
 
 ########################################################################
@@ -448,3 +463,28 @@ sub _get_user {
 
     return $user;
 }
+
+########################################################################
+
+sub _parse_occurs {
+    my $occurs = shift;
+
+    warn "occurs raw: @$occurs";
+
+    $occurs->[0] ||= 1;
+    $occurs->[1] ||= 1;
+
+    $occurs->[1] =~ s{^.*day(s?).*$}{1};
+    $occurs->[1] =~ s{^.*week(s?).*$}{7};
+    $occurs->[1] =~ s{^.*fortnight(s?).*$}{14};
+
+    unless (@$occurs == 2
+	    && $occurs->[0] =~ m{^\d+$}
+	    && $occurs->[1] =~ m{^\d+$}) {
+	warn "incorrect --occurs usage @$occurs: --occurs n days|weeks|fornights|m";
+	return;
+    }
+
+    return 1;
+}
+	    
