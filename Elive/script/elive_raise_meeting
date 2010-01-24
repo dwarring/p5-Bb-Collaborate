@@ -30,16 +30,17 @@ elive_raise_meeting
 
   Authentication
 
-    -user someAdminUser         # server login user
-    -pass somepass              # server login password
+    -user someAdminUser          # server login user
+    -pass somepass               # server login password
 
   Basic
 
     -facilitator  userId
     -name         'meeting name'
-    -meeting_pass otherpass       # meeting password
-    -start '[YYYY-MM-DD ]HH:MM'   # start time
-    -end   '[YYYY-MM-DD ]HH:MM'   # end time
+    -meeting_pass otherpass      # meeting password
+    -start  '[YYYY-MM-DD ]HH:MM' # start time
+    -end    '[YYYY-MM-DD ]HH:MM' # end time
+    -occurs {days|weeks}=n       # repeat the meeting over n days/weeks
 
   Meeting Settings
 
@@ -51,7 +52,6 @@ elive_raise_meeting
                                  #  - on:     starts automatically
                                  #  - manual: recording started by moderator
     -seats        count          # number of seats to reserve on server
-    -occurs       {days|weeks}=n # repeat the meeting over n days/weeks
     -[no]invites                 # allow in-session invitations
     -[no]private                 # hide from public schedule
     -[no]permissions             # let participants perform activities
