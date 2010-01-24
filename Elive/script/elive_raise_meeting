@@ -51,17 +51,12 @@ elive_raise_meeting
                                  #  - on:     starts automatically
                                  #  - manual: recording started by moderator
     -seats        count          # number of seats to reserve on server
+    -occurs       {days|weeks}=n # repeat the meeting over n days/weeks
     -[no]invites                 # allow in-session invitations
     -[no]private                 # hide from public schedule
     -[no]permissions             # let participants perform activities
     -[no]raise_hands             # automatically raise hands on entry
-    -[no]supervised              # whether moderator can see private messages
-
-  Recurring Meetings
-
-    -occurs 3 days               # schedule on three successive days
-    -occurs 4 weeks              # schedule on four successive weeks
-    -occurs 6 14                 # schedule on six successive fortnights
+    -[no]supervised              # moderator can see private messages
 
   Preloads
 
@@ -102,7 +97,7 @@ my $seats;
 my $permissions;
 my $supervised;
 my $invites;
-my @occurs;
+my %occurs;
 
 main(@ARGV) unless caller;
 
@@ -132,10 +127,10 @@ sub main {
 	'boundary=i' => \$boundary,
 	'seats=i' => \$seats,
 	'invites|invitations!' => \$invites,
-        'occurs=s{1,2}' => \@occurs,
+        'occurs=i%' => \%occurs,
     )
 	&& (($help && pod2usage(2))
-	    || ($url = shift @ARGV) && _parse_occurs(\@occurs))
+	    || ($url = shift @ARGV))
 	or die pod2usage(1);
 
     $recording = lc($recording);
@@ -149,6 +144,8 @@ sub main {
 
     die pod2usage("recording mode must be on/auto, off/none/disabled or manual/remote\n")
 	unless $recording =~ m{^on|off|remote$}x;
+
+    my ($recurrence_count, $recurrence_days) = _get_occurences(\%occurs);
 
     Elive->debug($debug);
 
@@ -268,9 +265,9 @@ sub main {
     $meeting_data{privateMeeting} = $private
 	if defined $private;
 
-    if ($occurs[0] > 1) {
-	$meeting_data{recurrenceCount} = $occurs[0];
-	$meeting_data{recurrenceDays} = $occurs[1];
+    if ($recurrence_count > 1) {
+	$meeting_data{recurrenceCount} = $recurrence_count;
+	$meeting_data{recurrenceDays} = $recurrence_days || 1;
     }
 
     my @meetings = Elive::Entity::Meeting->insert(\%meeting_data);
@@ -466,22 +463,23 @@ sub _get_user {
 
 ########################################################################
 
-sub _parse_occurs {
+sub _get_occurences {
     my $occurs = shift;
 
-    $occurs->[0] ||= 1;
-    $occurs->[1] ||= 1;
+    my $recurrence_count = 1;
+    my $recurrence_days = 1;
 
-    $occurs->[1] =~ s{^.*day(s?).*$}{1};
-    $occurs->[1] =~ s{^.*week(s?).*$}{7};
-    $occurs->[1] =~ s{^.*fortnight(s?).*$}{14};
+    foreach (keys %$occurs) {
 
-    unless (@$occurs == 2
-	    && $occurs->[0] =~ m{^\d+$}
-	    && $occurs->[1] =~ m{^\d+$}) {
-	warn "incorrect --occurs usage: --occurs n days|weeks|fornights|m";
-	return;
+	$recurrence_count = $occurs{$_};
+
+	$recurrence_days =
+	    m{^.*day(s?).*$}i       ? 1
+	  : m{^.*week(s?).*$}i      ? 7
+          : m{^.*fortnight(s?).*$}i ? 14
+          : die "occurs usage: --occurs days=n  or --occurs weeks=n";
+
     }
 
-    return 1;
+    return ($recurrence_count, $recurrence_days);
 }
