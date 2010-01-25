@@ -1,5 +1,10 @@
 Revision history for Elive
 
+0.61    26th January 2011
+        elive_raise_meeting support for Elluminate 9.7 release
+        - Modified user search/validation filter for Elm 3.2 compatibility.
+        - Added 'quit' command. Also 'describe'; alias for 'show'.
+
 0.60    25th January 2011
         - Added -occurs option to elive_raise_meeting script
         - Further tweaks to README

@@ -418,7 +418,7 @@ sub _get_participants {
     }
 
     my $filter = join(' OR ',
-		      map {sprintf("(loginName='%s' OR userId = '%s')",
+		      map {sprintf("loginName='%s' OR userId='%s'",
 				   $_, $_)}
 		      (keys %user_roles)
 	);

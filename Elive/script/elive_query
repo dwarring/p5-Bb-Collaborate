@@ -130,7 +130,13 @@ sub main {
     print "Elive query $elive_version $server_version - type 'help' for help\n"
 	if $is_tty;
 
-    while (defined (my $cmd = $is_tty? $term->readline($prompt): <STDIN>)) {
+    my $cmd;
+    my $keyw;
+    my $args;
+
+    while (($keyw||'') ne 'quit'
+	   && defined ($cmd = $is_tty? $term->readline($prompt): <STDIN>)
+	) {
 
 	$term->addhistory($cmd);
 	#
@@ -140,18 +146,19 @@ sub main {
 
 	if ($cmd =~ m{\S}) {
 
-	    if (my ($keyw, $args) = ($cmd =~ m{^ (\w+) \s* (.*)? $}x)) {
+	    if (($keyw, $args) = ($cmd =~ m{^ (\w+) \s* (.*)? $}x)) {
 
 		if (lc($keyw) eq substr('help',0, length($keyw))) {
 		    print "Elive query $elive_version help:\n\n";
 		    print "connect url [user] - connect to an Elluminate Live! server\n";
-		    print "show [entity_name] - list/show entities\n";
+		    print "describe [entity_name] - list/show entities\n";
 		    print "debug = [0|1|2|3] - set debugging level\n";
 		    print "select <expr> from entity [where exp]\n";
 		    print "    where expr is:\n";
 		    print "      - prop1,prop2,.. - show selected properties\n";
 		    print "      - *              - show all properties\n";
 		    print "      - *?             - show only defined properties\n";
+		    print "quit                   - exit elive_query\n\n";
 		}
 		elsif ($keyw  =~ m{^(connect)$}i) {
 		    my ($url, $user) = split(m{\s+}, $args);
@@ -189,13 +196,13 @@ sub main {
 			print STDERR "usage: debug = 0..9";
 		    }
 		}
-		elsif ($keyw =~ m{^(show)$}i) {
+		elsif ($keyw =~ m{^(show|describe)$}i) {
 
 		    if (my ($entity_name) = ($args =~ m{^ \s* (\w+) \s* $}x)) {
 			_show($entities, $entity_name);
 		    }
 		    else {
-			print 'usage: show '.join('|', sort keys %$entities)."\n";
+			print 'usage: describe '.join('|', sort keys %$entities)."\n";
 		    }
 		}
 		elsif (lc($keyw) eq 'select') {
@@ -259,7 +266,7 @@ sub main {
 			print STDERR  "usage: select props|* from entity [where filter|id=val];\n";
 		    }
 		}
-		else {
+		elsif ($keyw !~ m{^(quit)$}) {
 		    print STDERR "unrecognised command: $keyw, type 'help' for help\n";
 		}
 	}
