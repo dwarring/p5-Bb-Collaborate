@@ -1,5 +1,8 @@
 Revision history for Elive
 
+0.62    16th February 2011
+        Changes to README doco re troubleshooting and meeting pod.
+
 0.61    26th January 2011
         elive_raise_meeting support for Elluminate 9.7 release
         - Modified user search/validation filter for Elm 3.2 compatibility.

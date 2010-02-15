@@ -70,30 +70,37 @@ has  'restrictedMeeting' => (is => 'rw', isa => 'Bool',
 
 =head2 insert
 
-=head3 synopsis
+    my $start = time() + 15 * 60; # starts in 15 minutes
+    my $end   = $start + 30 * 60; # runs for half an hour
 
-    #
-    # Simple case, single meeting
-    #
     my $meeting = Elive::Entity::Meeting->insert({
-        start => time,
-        end => time,
-        name => string,
-        password => string,
-        seats => int,
-        privateMeeting => 0|1,
-        timeZone => string
-       });
+	 name           => 'Test Meeting',
+	 facilitatorId  => Elive->login,
+	 start          => $start . '000',
+	 end            => $end   . '000',
+         password       => 'secret!',
+         privateMeeting => 1,
+         seats          => 42,
+	 });
 
     #
-    # A recurring series of meetings:
+    # Set the meeting participants
+    #
+    my $participant_list = $meeting->participant_list;
+    $participant_list->participants([qw(smith jones)]);
+    $participant_list->update;
+
+A series of meetings can be created using the C<recurrenceCount> and
+C<recurrenceDays> parameters.
+
+    #
+    # create three weekly meetings
     #
     my @meetings = Elive::Entity::Meeting->insert({
                             ...,
-                            recurrenceCount => n,
+                            recurrenceCount => 3,
                             recurrenceDays => 7,
                         });
-
 =cut
 
 sub insert {
@@ -170,12 +177,12 @@ Note: With Elluminate 9.5 onwards, deleting a meetings simply sets the
 I<deleted> property to true. Meetings, Meeting Parameters and Server
 Parameters remain accessable via the SOAP inteface.
 
-If you only want live meetings, you'll need to check for deleted meetings:
+You'll need to remember to check for deleted meetings:
 
     my $meeting =  Elive::Entity::Meeting->retrieve([$meeting_id]);
     my $is_live = $meeting->deleted;
 
-or filter out deleted meetings:
+or filter them out when listing meetings:
 
     my $live_meetings =  Elive::Entity::Meeting->list(filter => 'deleted = false');
 
@@ -238,7 +245,8 @@ sub list_user_meetings_by_date {
     my $meeting = Elive::Entity::Meeting->retrieve($meeting_id);
     $meeting->add_preload($preload_id);
 
-Associates an existing preload with a meeting.
+Associates a preload with a meeting. This preload must pre-exist in the
+databbase.
 
 =head3 See also
 
@@ -396,12 +404,10 @@ sub _thaw {
 
 =head2 remove_preload
 
-    $meeting_obj->remove_preload($preload_id_or_obj);
+    $meeting_obj->remove_preload($preload_obj);
+    $preload_obj->delete;  # if you don't want it to hang around
 
 Disassociate a preload from a meeting.
-
-Note that the preload object is not actually deleted, just disassociated
-from the meeting and will continue to exist as a resource on the server.
 
 =cut
 
@@ -436,19 +442,38 @@ sub remove_preload {
     
 =head2 buildJNLP 
 
+    # ...
+    use Elive;
+    use Elive::Entity::Meeting;
+
+    use CGI;
+    my $cgi = CGI->new;
+
+    #
+    # [authentication etc goes here] ...
+    #
+
     my $jnlp = $meeting_entity->buildJNLP(version => $version,
 					  user => $userId||$userName,
 					  pass => $password,
-                                          displayName => 'Display Name'
-    );
+                                          displayName => $displayName,
+                                         );
+    #
+    # join this user to the meeting
+    #
+
+    print $cgi->header(-type       => 'application/x-java-jnlp-file',
+                       -attachment => 'my-meeting.jnlp');
+
+    print $jnlp;
 
 Builds a JNLP for the meeting.
 
 JNLP is the 'Java Network Launch Protocol', also commonly known as Java
-WebStart. You can, for example, render this as a web page with mime type
-C<application/x-java-jnlp-file>.
+WebStart. To launch the meeting you can, for example, render this as a web
+page, or send email attachments  with mime type C<application/x-java-jnlp-file>.
 
-Under Windows, and other desktops, you can save this to a file with extension
+Under Windows, and other desktops, files are usually saved  with extension
 C<JNLP>.
 
 See also L<http://en.wikipedia.org/wiki/JNLP>.

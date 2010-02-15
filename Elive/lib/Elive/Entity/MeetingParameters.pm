@@ -46,15 +46,26 @@ has 'profile'  => (is => 'rw', isa => 'Str');
 
 Elive::Entity::MeetingParameters - Meeting parameters entity class
 
+    use Elive::Entity::MeetingParameters;
+
     my $meeting_params
         = Elive::Entity::MeetingParameters->retrieve([$meeting_id]);
 
-    $meeting_params->maxTalkers(5);
-    $meeting_params->update;
+    $meeting_params->update({
+           maxTalkers => 3,
+           costCenter => 'acme',
+           moderatorNotes => 'be there early!',
+           userNotes => "don't be late!",
+           recordingStatus => 'on',
+           raiseHandsOnEnter => 1,
+           inSessionInvitation => 1,
+           followModerator => 0,
+           videoWindow => 0,
+         });
 
 =head1 DESCRIPTION
 
-This class contains additional meeting information.
+This class contains a range of options for a previously created meeting.
 
 =cut
 

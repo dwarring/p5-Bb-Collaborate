@@ -53,9 +53,12 @@ Elive::Entity::ServerParameters - Meeting server parameters entity class
     my $meeting_params
         = Elive::Entity::ServerParameters->retrieve([$meeting->meetingId]);
 
-    $meeting_params->boundaryMinutes(15); # 15 min boundary
-    $meeting_params->update;
-    
+    $meeting_params->update({
+           boundaryMinutes => 15,
+           fullPermissions => 0,
+           supervised      => 1,
+           enableTelephony => 0,
+     });
     #
     # Note: the number of seats is read from this class, but updates
     # are performed through the main meeting class
@@ -65,7 +68,7 @@ Elive::Entity::ServerParameters - Meeting server parameters entity class
 
 =head1 DESCRIPTION
 
-More meeting parameters.
+More meeting options.
 
 =cut
 

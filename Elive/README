@@ -18,49 +18,6 @@ INSTALLATION
         make test
         make install
 
-ELLUMINATE CONFIGURATION
-
-    If you are running Elm 3.0 / Elluminate 9.5 or higher, you will need to
-    grant access to SDK users in the Elluminate configuration.
-
-    Firstly stop all Elluminate services.
-
-    Then you'll need to edit the configuration.xml for each site instance.
-
-	    Under Linux, the configuration can be found under:
-
-		 /opt/ElluminateLive/manager/tomcat/webapps
-
-	    or under Windows:
-
-		 C:/Program Files/ElluminateLive/manager/tomcat/webapps
-
-	    The actual configuration is then in the sub-path:
-
-		 ROOT/WEB-INF/resources/configuration.xml
-
-	     or for any additional sites built with the instance manager:
-
-		 mysite/WEB-INF/resources/configuration.xml
-
-	Edit the file and add a user entry to the security section:
-
-	    <elm>
-		...
-	       <proxymanager enable="true">
-		 <proxy name="web" ..>
-		  ...
-		  <security adapter-name="default">
-		    <permissions>
-		      ...
-		      <!-- ++ ADD THIS -->
-		      <user name="some_user">
-			 <allow command="*" />
-		      </user>
-		      <!-- -- ADD THIS -->
-		    </permissions>
-		    ...
-
 TESTING
 
     There are additional live tests in t/2?-soap-*.t. By default, these
@@ -110,9 +67,60 @@ POST INSTALLATION
 
 TROUBLESHOOTING
 
-    If you you get the message 'Unable to determine a command for the key
-    Xxxxx' during testing and/or general usage, then some of the adapters
-    may be missing from  your Elluminate configuration.
+    'User [<username>], not permitted to access the command {<command>]'
+    --------------------------------------------------------------------
+    Historically, all users with a role of '0' (System Administrator) have
+    been given access to the SDK.
+
+    If your are running Elm 3.0 / Elluminate 9.5 or higher, you can grant
+    SDK access to individual users in the Elluminate configuration.
+
+    You will need to do this if you are using LDAP authentication.
+
+    To do this, firstly stop all Elluminate services.
+
+    Then you'll need to edit the configuration.xml for the site instance.
+
+	    Under Linux, the configuration can be found under:
+
+		 /opt/ElluminateLive/manager/tomcat/webapps
+
+	    or under Windows:
+
+		 C:/Program Files/ElluminateLive/manager/tomcat/webapps
+
+	    The actual configuration is then in the sub-path:
+
+		 ROOT/WEB-INF/resources/configuration.xml
+
+	     or for any additional sites built with the instance manager:
+
+		 mysite/WEB-INF/resources/configuration.xml
+
+	Edit the file and add a user entry to the security section:
+
+	    <elm>
+		...
+	       <proxymanager enable="true">
+		 <proxy name="web" ..>
+		  ...
+		  <security adapter-name="default">
+		    <permissions>
+		      ...
+		      <!-- ++ ADD THIS -->
+		      <user name="some_user">
+			 <allow command="*" />
+		      </user>
+		      <!-- -- ADD THIS -->
+		    </permissions>
+		    ...
+
+    'Unable to determine a command for the key Xxxxx'
+    -------------------------------------------------
+    This may indicate that some of the adapters are missing from
+    your Elluminate configuration. This can be prone to likely to
+    happen with an Elluminate instance that
+    has been through several Elluminate upgrades.
 
     You can use the installed script elive_lint_config to check for
     missing adapaters.
