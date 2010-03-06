@@ -115,9 +115,11 @@ sub construct {
 	unless (Elive::Util::_reftype($data) eq 'HASH');
 
     #
-    # Note: don't seem to have any way of recursively passing options
+    # don't seem to have any way of recursively passing options
     # through mouse/moose contructors.
-    # Resort to action at a distance via construct_opts local variable.
+    #
+    # uumm hang on ..., I think that the Moose/Mouse BUILD method can
+    # sort this?  Todo: remove %Elive::_construct_opts global variable
     #
     local (%Elive::_construct_opts) = %opt;
 
@@ -548,7 +550,7 @@ sub _readback_check {
 		    warn YAML::Dump({read => $read_val, write => $write_val})
 			if ($class->debug);
 
-		    die "${class}::${property_type}: Update consistancy check failed on $_: wrote:".Elive::Util::string($write_val, $property_type).", read-back:".Elive::Util::string($read_val, $property_type);
+		    die "${class}: Update consistancy check failed on $_ (${property_type}), wrote:".Elive::Util::string($write_val, $property_type).", read-back:".Elive::Util::string($read_val, $property_type);
 		}
 	    }
 	}
@@ -676,7 +678,7 @@ sub insert {
 ##				loginPassword => $login_password,
 	);
 
-    my @rows = $class->_readback($som, $db_data, $connection);
+    my @rows = $class->_readback($som, $insert_data, $connection);
 
     my @objs = (map {$class->construct( $_, connection => $connection )}
 		@rows);
@@ -1028,7 +1030,7 @@ sub delete {
 
     #
     # Umm, we did get a read-back of the record, but the contents
-    # seem to be dubious. Peform candinality checks, but don't do
+    # seem to be dubious. Perform candinality checks, but don't do
     # write-back checks.
     #
 

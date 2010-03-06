@@ -54,6 +54,7 @@ elive_raise_meeting
     -seats        count          # number of seats to reserve on server
     -[no]invites                 # allow in-session invitations
     -[no]private                 # hide from public schedule
+    -[no]restricted              # only allow entry to registered users
     -[no]permissions             # let participants perform activities
     -[no]raise_hands             # automatically raise hands on entry
     -[no]supervised              # moderator can see private messages
@@ -75,7 +76,7 @@ Creates a meeting on an Elluminate I<Live!> server
 
 =cut
 
-my $username = 'serversupport';
+my $username;
 my $password;
 my $debug;
 my $facilitator_id;
@@ -88,6 +89,7 @@ my $recording = 'remote';
 my $raise_hands;
 my $import;
 my $private;
+my $restricted;
 my $upload;
 my $preload_opt;
 my $url;
@@ -116,6 +118,7 @@ sub main {
 	'max_talkers=i' => \$max_talkers,
 	'raise_hands!' => \$raise_hands,
 	'private!' => \$private,
+	'restricted!' => \$restricted,
 	'supervised!' => \$supervised,
 	'permissions!' => \$permissions,
 	'debug=i' => \$debug,
@@ -132,6 +135,11 @@ sub main {
 	&& (($help && pod2usage(2))
 	    || ($url = shift @ARGV))
 	or die pod2usage(1);
+
+    unless (defined $username && $username ne '') {
+	$username = 'serversupport';
+	warn "Using default SDK username: $username\n";
+    }
 
     $recording = lc($recording);
     #
@@ -159,6 +167,9 @@ sub main {
     $password ||= Elive::Util::prompt('Password: ', password => 1),
 
     our $connection = Elive->connect($url, $username, $password);
+
+    my $server_version = $connection->server_details->version;
+    my $server_version_num = version->new($server_version)->numify;
 
     my $start = $start_str
 	? str2time($start_str)
@@ -264,6 +275,15 @@ sub main {
 
     $meeting_data{privateMeeting} = $private
 	if defined $private;
+
+    if (defined $restricted) {
+	if ($server_version_num < '9.007001') {
+	    warn "[ignoring -restricted option: not applicable to Elluminate <= 9.7]\n";
+	}
+	else {
+	    $meeting_data{restrictedMeeting} = $restricted;
+	}
+    }
 
     if ($recurrence_count > 1) {
 	$meeting_data{recurrenceCount} = $recurrence_count;

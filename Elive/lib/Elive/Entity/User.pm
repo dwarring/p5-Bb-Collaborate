@@ -152,7 +152,7 @@ sub insert {
 Update an Elluminate user. Everything can be changed, other than userId.
 This includes the loginName. However loginNames must all remain unique.
 
-As a safeguard, you'll need to pass C<force => 1> to update:
+As a safeguard, you'll need to pass C<force =E<gt> 1> to update:
     (a) users with a Role Id of 0, i.e. system administrator accounts
     (b) the login user
 
@@ -187,10 +187,17 @@ sub update {
     return $ret;
 }
 
-=head2 change_password 
+=head2 change_password
+
+Implements the C<changePassword> SDK method.
 
     my $user = Elive::Entity::User->retrieve([$user_id]);
     $user->change_password($new_password);
+
+This is equivalent to:
+
+    my $user = Elive::Entity::User->retrieve([$user_id]);
+    $user->update({loginPassword => $new_password});    
 
 =cut
 
