@@ -88,9 +88,9 @@ BEGIN {
 
 =head2 connect
 
-     my $e1 = Elive->connect('http://myServer.com/test1', user1, pass1);
+     my $e1 = Elive->connect('http://myServer.com/test1', 'user1', 'pass1');
 
-     Elive->connect('http://myServer.com/test2', user2, pass2);
+     Elive->connect('http://myServer.com/test2', 'user2', 'pass2');
      my $e2 = Elive->connection;
 
 Connects to an Elluminate server instance. Dies if the connection could not

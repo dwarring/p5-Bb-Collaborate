@@ -4,6 +4,8 @@ Revision history for Elive
         - Fixed usage/error messages in Elive::Entity '_readback' method.
         - RestrictedMeeting flag appears inoperative in Elm 9.7. Added a
 	  test in 22-entity-meeting.t to catch this in 9.8 onwards.
+        - Added -restricted option to elive_raise_meeting. Will require
+          the above Elm fix to become effective.
 
 0.62    16th February 2011
         Changes to README doco re troubleshooting and meeting pod.
