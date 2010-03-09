@@ -1,30 +1,34 @@
 Revision history for Elive
 
-0.63    7th March 2011
+0.64    11th March 2010
+        - Elive::Entity::Group changed GroupId from Int to Str. Can be
+          non-numeric when groups are configured for LDAP.
+
+0.63    7th March 2010
         - Fixed usage/error messages in Elive::Entity '_readback' method.
         - RestrictedMeeting flag appears inoperative in Elm 9.7. Added a
 	  test in 22-entity-meeting.t to catch this in 9.8 onwards.
         - Added -restricted option to elive_raise_meeting. Will require
           the above Elm fix to become effective.
 
-0.62    16th February 2011
+0.62    16th February 2010
         Changes to README doco re troubleshooting and meeting pod.
 
-0.61    26th January 2011
+0.61    26th January 2010
         elive_raise_meeting support for Elluminate 9.7 release
         - Modified user search/validation filter for Elm 3.2 compatibility.
         - Added 'quit' command. Also 'describe'; alias for 'show'.
 
-0.60    25th January 2011
+0.60    25th January 2010
         - Added -occurs option to elive_raise_meeting script
         - Further tweaks to README
 
-0.59    23rd January 2011
+0.59    23rd January 2010
         - Updated README file to reflect Elluminate 9.5+ configuration.
         - Took out Elive->collections method. Easily derivable and only
           used in testing.
 
-0.58    14th January 2011
+0.58    14th January 2010
         Support for Elluminate 9.7 release:
         - Added new field 'dn' to Elive::Entity::Group - LDAP domain name.
         - Added Elive::Entity::Group::_thaw(). This was required to handle

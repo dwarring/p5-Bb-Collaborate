@@ -7,11 +7,11 @@ Elive - Elluminate Live! (c) client library
 
 =head1 VERSION
 
-Version 0.63
+Version 0.64
 
 =cut
 
-our $VERSION = '0.63';
+our $VERSION = '0.64';
 
 use Class::Data::Inheritable;
 use base qw{Class::Data::Inheritable};
@@ -53,9 +53,12 @@ participants:
 
 =head1 DESCRIPTION
 
-Elive is a set of Perl modules for the integration and automation of
-Elluminate I<Live!> sites. In particular, it aids in the management of
-users and meetings.
+Elive is a set of Perl bindings and entity definitions for the Elluminate
+I<Live!> SDK.
+
+The Elluminate SDK runs as a SOAP service and can be used to automate
+the raising meetings and launching of meetings; as well as managing meetings,
+users, groups, preloads, recordings and other related entities.
 
 =head1 BACKGROUND
 
@@ -65,14 +68,14 @@ It is suitable for online collaboration, demonstrations, meetings, web
 conferences, seminars and IT deployment, training and support.
 
 Users, Meetings and other resources are stored in a management database.
-These can be accessed via the Elluminate I<Live!> SOAP API.
+These can be accessed via the Elluminate I<Live!> SDK.
 
 Most actions that can be performed via the web interface can also be
-achieved via the SOAP API. This is known as the I<Command Toolkit> and
+achieved via the SOAP SDK. This is known as the I<Command Toolkit> and
 is detailed in chapter 4 of the Elluminate I<Live!> Software Developers
 Kit.
 
-This module provides Perl object to bindings to Elluminate I<Live!> entities
+This module provides Perl object bindings to Elluminate I<Live!> entities
 via the command toolkit.
 
 =cut
@@ -322,8 +325,8 @@ sub check_adapter {
 
 =head2 known_adapters
 
-Returns an array of all Elluminate I<Live!> adapters required by Elive.
-This list is cross-checked by the script elive_lint_config. 
+Returns an array of hash-value pairs for all Elluminate I<Live!> adapters
+required by Elive. This list is cross-checked by the script elive_lint_config. 
 
 =cut
 
