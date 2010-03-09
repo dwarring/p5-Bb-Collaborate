@@ -12,7 +12,7 @@ use Elive::Array;
 __PACKAGE__->entity_name('Group');
 __PACKAGE__->collection_name('Groups');
 
-has 'groupId' => (is => 'rw', isa => 'Int', required => 1);
+has 'groupId' => (is => 'rw', isa => 'Str', required => 1);
 __PACKAGE__->primary_key('groupId');
 
 has 'name' => (is => 'rw', isa => 'Str', required => 1,
@@ -25,7 +25,7 @@ has 'members' => (is => 'rw', isa => 'Elive::Array', required => 1,
 __PACKAGE__->_alias(groupMembers => 'members', freeze => 1);
 
 has 'dn' => (is => 'rw', isa => 'Str',
-	       documentation => 'LDAP Domain (where applicable(');
+	       documentation => 'LDAP Domain (where applicable)');
 
 =head1 NAME
 
@@ -92,11 +92,5 @@ sub _thaw {
 
     return $data;
 }
-
-=head1 TODO
-
-The update method has not been implemented yet.
-
-=cut
 
 1;
