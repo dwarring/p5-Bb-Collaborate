@@ -62,7 +62,6 @@ has  'allModerators' => (is => 'rw', isa => 'Bool',
 
 has  'restrictedMeeting' => (is => 'rw', isa => 'Bool',
 			     documentation => "Restricted meeting");
-##__PACKAGE__->_alias(restrict => 'restrictedMeeting', freeze => 1);
 
 
 =head1 METHODS
