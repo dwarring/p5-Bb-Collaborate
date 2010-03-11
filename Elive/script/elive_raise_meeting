@@ -27,12 +27,12 @@ elive_raise_meeting
 
 =head1 SYNOPSIS
 
-  elive_raise_meeting http://myserver.com/my-site[:port] userid[=role] [userid[=role]...]
+  elive_raise_meeting http://myserver.com/my-site[:port] userid[=role] [userid[=role]]...
 
   Authentication
 
     -user someAdminUser          # server login user
-    -pass somepass               # server login password
+    -pass somePass               # server login password
 
   Basic
 
@@ -65,6 +65,11 @@ elive_raise_meeting
     -upload              local_file     # upload a file from the client
     -import_from_server  remote_file    # import a server side file
     -use_preload         preload_id     # reuse a preload from the database
+
+  Information
+
+    -? --help                   # print this help
+    -v --version                # print version and exit
 
 =head1 DESCRIPTION
 
@@ -101,6 +106,7 @@ my $permissions;
 my $supervised;
 my $invites;
 my %occurs;
+my $version;
 
 main(@ARGV) unless caller;
 
@@ -132,8 +138,13 @@ sub main {
 	'seats=i' => \$seats,
 	'invites|invitations!' => \$invites,
         'occurs=i%' => \%occurs,
+	'v|version' => \$version,
     )
 	&& (($help && pod2usage(2))
+	    || ($version and do {
+		print "Elive v${Elive::VERSION} (c) 2009-2010\n";
+		exit(0);
+		})
 	    || ($url = shift @ARGV))
 	or die pod2usage(1);
 

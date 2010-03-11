@@ -35,7 +35,8 @@ elive_query
     -user someuser              # server login user
     -pass somepass              # server login password
     -debug=n                    # 1=some, 2=verbose, 3=verbose + soap
-    -help
+    -? -help                    # obtain help
+    -v -version                 # print Elive version
 
 =head1 DESCRIPTION
 
@@ -49,7 +50,7 @@ For example:
     % elive_query -user admin http://myvclass.com/mysite
     Password: ********
     connecting to http://myvclass.com/mysite...ok
-    Elive query 0.WX (Elluminate Live! 9.Y.Z)  - type 'help' for help
+    Elive query 0.WX (Elluminate Live! 9.Y.Z)  (c) ... - type 'help' for help
 
     elive> select loginName,email,firstName,lastName,role from user where loginName like *m* 
     loginName   |email                 |firstName|lastName   |role
@@ -127,7 +128,7 @@ sub main {
 	    if $elive_version;
     }
 
-    print "Elive query $elive_version $server_version - type 'help' for help\n"
+    print "Elive query $elive_version (c) 2009 - 2010 $server_version. Type 'help' for help\n"
 	if $is_tty;
 
     my $cmd;
@@ -489,10 +490,17 @@ sub _getopt {
 			     'username|user=s',
 			     'password|pass=s',
 			     'debug=i',
+			     'help|?',
+			     'version|v',
 			     'help|?'
 	) or die pod2usage(1);
 
     pod2usage(2) if ($options{help});
+
+    if ($options{version}) {
+	print "Elive v${Elive::VERSION} (c) 2009-2010\n";
+	exit 0;
+    }
 
     my $url = shift(@ARGV);
 

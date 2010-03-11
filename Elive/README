@@ -34,16 +34,16 @@ TESTING
         make test
 
     WARNING: These tests will both create and delete various entities
-    instances. For this reason you should avoid running tests on production
-    sites.
+    instances. For this reason you should by wary of running the live
+    tests on production sites.
 
-    Please restrict your testing to designated development and test sites,
-    or newly created site instances!
+    Consider restricting live testing to designated development and test
+    sites, or newly created site instances!
 
 POST INSTALLATION
 
-    The elive_query script can be used to check basic access to your
-    Elluminate server(s).
+    The elive_query script can be used to check basic operation of Elive
+    and access to your Elluminate server(s).
 
         % elive_query --user admin_user http://myserver/mysite
 

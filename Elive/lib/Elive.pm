@@ -600,8 +600,8 @@ David Warring, C<< <david.warring at gmail.com> >>
 
 =item Elive is a newish module
 
-I have so far run it against a limited number of Elluminate 9.0, 9.1
-and 9.5 installations.
+It has been used and tested against a number of sites running Elluminate 9.0
+to 9.7.
 
 So far it does not implement all SOAP calls, but concentrates on entities
 such as users, meetings, preloads and meeting participants.
