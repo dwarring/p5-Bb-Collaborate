@@ -224,7 +224,7 @@ sub change_password {
 
     $user_obj->delete([force => 1]);
 
-Delete user objects. As a safeguard, you need to pass C<force => 1> to delete
+Delete user objects. As a safeguard, you need to pass C<force =E<gt> 1> to delete
 system administrator accounts, or the login user.
 
 =cut
