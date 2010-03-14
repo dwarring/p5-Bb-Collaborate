@@ -99,7 +99,8 @@ BEGIN {
 Connects to an Elluminate server instance. Dies if the connection could not
 be established. If, for example, the SOAP connection or user login failed.
 
-The login user must be an Elluminate I<Live!> system administrator account.
+The login user must either be an Elluminate I<Live!> system administrator
+account, or a user that has been granted access to the SDK (see README file).
 
 See also Elive::Connection.
 
@@ -388,17 +389,17 @@ Elluminate Services Errors:
 
 =over 4
 
-=item   "Unable to determine a command for the key : listXxxx"
+=item   "Unable to determine a command for the key : Xxxx"
 
-This may indicate that the particular command adaptor is is not available for
-your site instance.
+This may indicate that the particular command adaptor is is not available
+for your site instance. Please follow the instructions in the README file
+for detecting and repairing missing adapters.
 
-Check that your Elluminate I<Live!> server software version; This module
-has been tested against 9.0, 9.1 and 9.5.2
+=item   "User [<username>], not permitted to access the command {<command>]"
 
-If the problem persists, the command entry may be missing from your site
-configuration file. Please follow the instructions in the README file
-for instructions on detecting and repairing missing adapters.
+Please ensure that the user is a sytem administrator account and/or the
+user has been configured for SDK access. See also the instruction in the
+RRADME file.
 
 =back
 
@@ -654,7 +655,7 @@ direction during the construction of this module.
 
 =head1 COPYRIGHT & LICENSE
 
-Copyright 2009 David Warring, all rights reserved.
+Copyright 2009-2010 David Warring, all rights reserved.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
