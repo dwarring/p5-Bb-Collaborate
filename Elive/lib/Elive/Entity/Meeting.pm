@@ -74,13 +74,14 @@ has  'restrictedMeeting' => (is => 'rw', isa => 'Bool',
     my $end   = $start + 30 * 60; # runs for half an hour
 
     my $meeting = Elive::Entity::Meeting->insert({
-	 name           => 'Test Meeting',
-	 facilitatorId  => Elive->login,
-	 start          => $start . '000',
-	 end            => $end   . '000',
-         password       => 'secret!',
-         privateMeeting => 1,
-         seats          => 42,
+	 name              => 'Test Meeting',
+	 facilitatorId     => Elive->login,
+	 start             => $start . '000',
+	 end               => $end   . '000',
+         password          => 'secret!',
+         privateMeeting    => 1,
+         restrictedMeeting => 1,
+         seats             => 42,
 	 });
 
     #
@@ -99,7 +100,7 @@ C<recurrenceDays> parameters.
     my @meetings = Elive::Entity::Meeting->insert({
                             ...,
                             recurrenceCount => 3,
-                            recurrenceDays => 7,
+                            recurrenceDays  => 7,
                         });
 =cut
 
@@ -132,16 +133,15 @@ sub insert {
 
 =head2 update
 
-=head3 synopsis
-
     my $meeting = Elive::Entity::Meeting->update({
-        start => time,
-        end => time,
-        name => string,
-        password => string,
-        seats => int,
-        privateMeeting => 0|1,
-        timeZone => string
+        start             => time,
+        end               => time,
+        name              => string,
+        password          => string,
+        seats             => int,
+        privateMeeting    => 0|1,
+        restrictedMeeting => 0|1,
+        timeZone          => string
        });
 
 =cut
@@ -525,8 +525,6 @@ sub buildJNLP {
 
 Utility method to return various website links for the meeting. This is
 available as both class level and object level methods.
-
-=head3 Examples
 
     #
     # Class level access.
