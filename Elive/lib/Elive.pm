@@ -3,7 +3,7 @@ use warnings; use strict;
 
 =head1 NAME
 
-Elive - Elluminate Live! (c) client library
+Elive - Elluminate Live! (c) SDK interface
 
 =head1 VERSION
 
