@@ -224,8 +224,8 @@ SKIP: {
     lives_ok(sub {$meeting->delete},'meeting deletion');
     #
     # This is an assertion of server behaviour. Just want to verify that
-    # meeting deletion cascades to meeting & server parameters
-    # are deleted when the meeting is deleted.
+    # meeting deletion cascades to meeting & server parameters are deleted
+    # when the meeting is deleted.
     #
     $meeting_params = undef;
 

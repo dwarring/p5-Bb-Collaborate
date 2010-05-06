@@ -48,7 +48,7 @@ can_ok($participant_list, 'participants');
 my $participants = $participant_list->participants;
 isa_ok($participants, 'Elive::Array::Participants');
 
-ok(@$participants == 3, 'all particpiants constructed');
+ok(@$participants == 3, 'all participants constructed');
 isa_ok($participants->[0], 'Elive::Entity::Participant');
 
 $participants->add({
@@ -58,8 +58,7 @@ $participants->add({
     role => {roleId => 3},
 });
 
-
-ok(@$participants == 4, 'particpiants added');
+ok(@$participants == 4, 'participants added');
 isa_ok($participants->[-1], 'Elive::Entity::Participant');
 ok($participants->[-1]->user->userId eq 'late_comer', 'added participant value');
 

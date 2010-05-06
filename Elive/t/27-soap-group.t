@@ -72,7 +72,7 @@ my @expected_members = sort map {$_->userId} @users;
 my @actual_members = sort @{$group->members};
 is_deeply(\@actual_members, \@expected_members, 'members after insert');
 
-## todo: implement group updates
+## todo: implement mock group updates
 ##my @expected_members_1 = ($expected_members[0], $expected_members[2]);
 
 ##$group->members(\@expected_members_1);

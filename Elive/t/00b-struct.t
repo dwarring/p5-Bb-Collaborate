@@ -46,9 +46,6 @@ ok($class->_cmp_col('Elive::Entity::Role', {roleId => 2},{roleId => 2}) == 0, '_
 ok($class->_cmp_col('Elive::Entity::Role', {roleId => 3},{roleId => 2}) > 0, '_cmp Entity >');
 ok($class->_cmp_col('Elive::Entity::Role', {roleId => 2},{roleId => 3}) < 0, '_cmp Entity <');
 
-#
-# Shallow Tests
-
 _participant_array_tests('strings','aaaa','mmmm', 'zzzz');
 
 _participant_array_tests('shallow structs',
@@ -89,5 +86,4 @@ sub _participant_array_tests {
     ok($class->_cmp_col('Elive::Array::Participants', [$low, $high], [$low, $medium]) > 0, "_cmp entity array > (simple $type)");
 
 };
-# todo some complex nested entities
 

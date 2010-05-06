@@ -22,7 +22,7 @@ BEGIN {
     use_ok( 'Elive::Entity' );
 };
 
-my $simple = {
+my $canonical = {
     'UserAdapter' => {
 	'FirstName' => 'Blinky',
 	'Role' => {
@@ -45,33 +45,33 @@ my $simple = {
 
 #------ Simple value
 
-my $simple_unpacked = Elive::Entity->_unpack_as_list($simple);
+my $simple_unpacked = Elive::Entity->_unpack_as_list($canonical);
 isa_ok($simple_unpacked, 'ARRAY');
-is_deeply($simple, $simple_unpacked->[0], 'Simple unpacking');
+is_deeply($canonical, $simple_unpacked->[0], 'Simple unpacking');
 
 #------ Collection
 
 my $collection = {
     Collection => {
 	Entry => [
-	    Storable::dclone($simple),
+	    Storable::dclone($canonical),
 	]
     }
 };
 
 my $collection_unpacked = Elive::Entity->_unpack_as_list($collection);
-is_deeply($simple, $collection_unpacked->[0], 'Collection unpacking');
+is_deeply($canonical, $collection_unpacked->[0], 'Collection unpacking');
 
 #------ Collection - singular
 
 my $collection1 = {
     Collection => {
-	Entry => Storable::dclone($simple),
+	Entry => Storable::dclone($canonical),
     }
 };
 
 my $collection1_unpacked = Elive::Entity->_unpack_as_list($collection1);
-is_deeply($simple, $collection1_unpacked->[0], 'Collection unpacking');
+is_deeply($canonical, $collection1_unpacked->[0], 'Collection unpacking');
 
 #------ Hash Map
 
@@ -80,14 +80,14 @@ my $hash_map = {
 	Entry => [
 	    {
 		Key   => 123456789000,
-		Value => Storable::dclone($simple),
+		Value => Storable::dclone($canonical),
 	    },
 	],
     }
 };
 
 my $hash_map_unpacked = Elive::Entity->_unpack_as_list($hash_map);
-is_deeply($simple, $hash_map_unpacked->[0], 'Hash Map unpacking');
+is_deeply($canonical, $hash_map_unpacked->[0], 'Hash Map unpacking');
 
 #------ Hash Map - singular
 
@@ -95,13 +95,13 @@ my $hash_map1 = {
     Map => {
 	Entry => {
 		Key   => 123456789000,
-		Value => Storable::dclone($simple),
+		Value => Storable::dclone($canonical),
 	    },
     }
 };
 
 my $hash_map1_unpacked = Elive::Entity->_unpack_as_list($hash_map1);
-is_deeply($simple, $hash_map1_unpacked->[0], 'Hash Map unpacking');
+is_deeply($canonical, $hash_map1_unpacked->[0], 'Hash Map unpacking');
 
 #------ Empty Collection (no results)
 

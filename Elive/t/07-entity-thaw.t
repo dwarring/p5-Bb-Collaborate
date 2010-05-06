@@ -155,7 +155,7 @@ my @user_alias = ('Participant' => 'User');
 my @user_role = (2,3);
 
 #
-# Check our underlaying assumptions. Our remaing checks will fail
+# Check our underlying assumptions. Our remaining checks will fail
 # unless the Participant -> User alias is defined
 #
 
@@ -237,7 +237,7 @@ my $participant_data = {
 my $participant_list_sorbet  = Elive::Entity::ParticipantList->_unpack_results($participant_data);
 
 #
-# just some spot checks dereferencing. Tidied up somewhat, but still pretty
+# Just some spot checks dereferencing. Tidied up somewhat, but still pretty
 # verbose!
 #
 {
@@ -288,7 +288,6 @@ my $participant_list_thawed = Elive::Entity::ParticipantList->_thaw($participant
 #
 
 my $participant_list_obj =  Elive::Entity::ParticipantList->construct($participant_list_thawed);
-
 
 {
     my $p = $participant_list_obj;

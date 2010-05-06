@@ -52,13 +52,13 @@ for my $class(qw{Elive::Connection t::Elive::MockConnection}) {
     is_deeply($group_c1->connection, $C1, 'group 1 associated with connection 1');
 
 #
-# Check for basic caching
+# Check for basic cacheing
 #
     my $group_c1_from_cache
 	= Elive::Entity::Group->retrieve([$K1],connection => $C1, reuse => 1);
     
     ok(Scalar::Util::refaddr($group_c1) eq Scalar::Util::refaddr($group_c1_from_cache),
-       'basic caching on connection 1');
+       'basic cacheing on connection 1');
     
 #
 # Same as $group_c1, except for the connection
@@ -79,7 +79,7 @@ for my $class(qw{Elive::Connection t::Elive::MockConnection}) {
 	= Elive::Entity::Group->retrieve([$K1], connection => $C2, reuse => 1);
     
     ok(Scalar::Util::refaddr($group_c2) eq Scalar::Util::refaddr($group_c2_from_cache),
-    'basic caching on connection 1');
+    'basic cacheing on connection 1');
 
     ok(Scalar::Util::refaddr($group_c1) ne Scalar::Util::refaddr($group_c2),
     'distinct caches maintained on connections with distinct urls');
