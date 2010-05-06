@@ -11,7 +11,6 @@ use Elive::Entity;
 use Elive::Entity::Group;
 use Elive::Entity::Meeting;
 use Elive::Entity::MeetingParameters;
-use Elive::Entity::Participant;
 use Elive::Entity::ParticipantList;
 use Elive::Entity::Preload;
 use Elive::Entity::Recording;
@@ -103,7 +102,8 @@ sub main {
 	# Just want database mapped entities. Omit nested structures
 	#
 	delete $entities->{$_}
-	unless ($entities->{$_}->isa('Elive::Entity'));
+	unless ($entities->{$_}->isa('Elive::Entity')
+		&& $entities->{$_}->primary_key);
     }
 
     my $prompt = "elive> ";
