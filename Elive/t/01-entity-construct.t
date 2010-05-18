@@ -76,7 +76,7 @@ ok($participants->stringify eq '112233=2;223344=3;dave=3;late_comer=3',
    'participants stringification');
 
 ok($participant_list->participants->[0]->user->loginName eq 'test_user',
-   'dereference');
+   'participant dereference');
 
 #
 # test participant list coercian

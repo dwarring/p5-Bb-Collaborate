@@ -1,6 +1,6 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 18;
+use Test::More tests => 19;
 use Test::Warn;
 
 BEGIN {
@@ -50,6 +50,9 @@ ok(!$group1->is_changed, 'removing member reverts change');
 
 unshift(@{$group1->members}, pop(@{$group1->members}));
 ok(!$group1->is_changed, 'shuffling members not recognised as change');
+
+$group1->set('members' => [@{$group1->members}]);
+ok(!$group1->is_changed, 're-initalise members - not recognised as a change');
 
 $group1->revert;
 

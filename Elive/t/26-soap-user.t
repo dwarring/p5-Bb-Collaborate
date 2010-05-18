@@ -14,7 +14,7 @@ use Carp;
 $SIG{__DIE__} = \&Carp::confess;
 
 #
-# restrict our user tests to the mock database. Live updates
+# restrict our user tests to the mock connections. Live updates
 # are just to dangerous. There is also the possibility that the
 # live site is running LDAP, in which case user access becomes
 # read only.
