@@ -3,15 +3,15 @@ use warnings; use strict;
 
 =head1 NAME
 
-Elive - Elluminate Live! (c) SDK interface
+Elive - Elluminate Live! (c) SDK bindings
 
 =head1 VERSION
 
-Version 0.64
+Version 0.66
 
 =cut
 
-our $VERSION = '0.64';
+our $VERSION = '0.66';
 
 use Class::Data::Inheritable;
 use base qw{Class::Data::Inheritable};
@@ -62,21 +62,21 @@ users, groups, preloads, recordings and other related entities.
 
 =head1 BACKGROUND
 
-Elluminate I<Live!> (c) is is a web tool for virtual online classrooms.
+Elluminate I<Live!> (c) is software for virtual online classrooms.
 
-It is suitable for online collaboration, demonstrations, meetings, web
-conferences, seminars and IT deployment, training and support.
+It is suitable for meetings, demonstrations web conferences, seminars
+and IT deployment, training and support.
 
 Users, Meetings and other resources are stored in a management database.
-These can be accessed via the Elluminate I<Live!> SDK.
+These can be accessed and manipulated via the Elluminate I<Live!> SDK.
 
 Most actions that can be performed via the web interface can also be
 achieved via the SOAP SDK. This is known as the I<Command Toolkit> and
 is detailed in chapter 4 of the Elluminate I<Live!> Software Developers
 Kit.
 
-This module provides Perl object bindings to Elluminate I<Live!> entities
-via the command toolkit.
+This module provides Perl object bindings to Elluminate Live! entities via
+the Command Toolkit (SDK).
 
 =cut
 
@@ -399,7 +399,7 @@ for detecting and repairing missing adapters.
 
 Please ensure that the user is a sytem administrator account and/or the
 user has been configured for SDK access. See also the instruction in the
-RRADME file.
+README file.
 
 =back
 
@@ -503,7 +503,7 @@ see the README file.
 
 =head1 SEE ALSO
 
-Perl Modules:
+Perl Modules (included in the Elive distribution):
 
 =over 4
 
@@ -533,7 +533,7 @@ Perl Modules:
 
 =back
 
-Scripts:
+Scripts (included in the Elive distribution):
 
 =over 4
 
@@ -545,7 +545,7 @@ Scripts:
 
 =back
 
-Elluminate I<Live!> Documentation. This comes with your distribution
+Elluminate I<Live!> Documentation, installed with Elluminate.
 
 =over 4
 
@@ -610,8 +610,8 @@ such as users, meetings, preloads and meeting participants.
 =item Elive does not support hosted (SAS) systems
 
 The package currently supports only the installed server version of Elluminate
-Live which uses the ELM management layer. It does not yet support the hosted
-servers deployed with SAS (Session Administration System).
+Live which uses the ELM management layer. The current release does not support
+the hosted servers deployed with SAS (Session Administration System).
 
 =back
 

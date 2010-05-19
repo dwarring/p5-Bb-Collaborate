@@ -1,5 +1,9 @@
 Revision history for Elive
 
+0.65    17th May 2010
+        - Hide participants in elive_query script; not directly accessable..
+        - pod tweaks.
+
 0.64    11th March 2010
         - Elive::Entity::Group changed GroupId from Int to Str. Can be
           non-numeric when groups are configured for LDAP.

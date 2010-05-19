@@ -149,6 +149,93 @@ sub web_url {
 		   $url, $recording_id);
 }
 
+=head2 import_from_server
+
+    my $recording1 = Elive::Entity::Recording->import_from_server(
+             {
+		    meetingId => '123456789123',
+                    roomName => "Meeting of the Smiths',
+		    facilitator => 'jbloggs',
+		    creationDate => time().'000',
+                    fileName => $path_on_server,
+                    open => 0,
+	     },
+         );
+
+Create a recording from a file that is already present on the server. If
+a C<mimeType> is not supplied, it will be guessed from the C<fileName>
+extension using MIME::Types.
+
+=cut
+
+sub import_from_server {
+    my $class = shift;
+    my $insert_data = shift;
+    my %opt = @_;
+
+    my $filename = delete $insert_data->{fileName};
+
+    die "missing fileName parameter"
+	unless $filename;
+
+    $opt{param}{fileName} = $filename;
+
+    $class->insert($insert_data,
+		   adapter => 'importRecording',
+		   %opt);
+}
+
+=head2 upload
+
+    my $recording = Elive::Entity:Recording->upload(
+             {
+                    meetingId => '1234567890123',
+                    meetingName => 'Meeting of the Smiths',
+		    facilitator => 'jbloggs',
+		    creationDate => time().'000',
+                    data => $binary_data,
+	     },
+         );
+
+Upload data from a client and create a recording.
+
+=cut
+
+sub upload {
+    my $class = shift;
+    my $insert_data = shift;
+    my %opt = @_;
+
+    my $binary_data = delete $insert_data->{data};
+
+    my $length = (defined($binary_data) && length($binary_data)) || 0;
+
+    $opt{param}{length} = $length
+        if $length;
+
+    my $self = $class->insert($insert_data, %opt);
+
+    if ($length) {
+
+	my $adapter = Elive->check_adapter('streamRecording');
+
+	my $connection = $self->connection
+	    or die "not connected";
+
+	my $som = $connection->call($adapter,
+				    recordingId => $self->recordingId,
+				    length => $length,
+				    stream => (SOAP::Data
+					       ->type('hexBinary')
+					       ->value($binary_data)),
+	    );
+
+	$self->_check_for_errors($som);
+    }
+
+    return $self;
+}
+
 =head2 buildJNLP 
 
     my $jnlp = $recording_entity->buildJNLP(version => version,

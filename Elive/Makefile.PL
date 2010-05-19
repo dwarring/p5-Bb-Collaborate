@@ -10,7 +10,7 @@ module_name    ('Elive');
 author         ('David Warring <david.warring@gmail.com>');
 version_from   ('lib/Elive.pm');
 license	       ('perl');
-abstract       ('Elluminate Live (c) client library');
+abstract       ('Elluminate Live (c) SDK bindings');
 install_script ('elive_query', 'elive_raise_meeting', 'elive_lint_config');
 
 requires(
@@ -54,6 +54,6 @@ test_requires (
 #
 # Module::Install::Repository magic
 #
-##auto_set_repository;
+auto_set_repository;
 
 WriteAll;

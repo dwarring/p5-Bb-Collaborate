@@ -291,7 +291,7 @@ sub _guess_mimetype {
 =head1 BUGS AND LIMITATIONS
 
 Under Elluminate 9.6.0 and LDAP, you may need to abritrarily add a 'DomN:'
-prefix to the owner ID.
+prefix to the owner ID, when creating or updating a meeting.
 
     $preload->ownerId('Dom1:freddy');
 
