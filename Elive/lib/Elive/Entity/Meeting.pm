@@ -3,8 +3,7 @@ use warnings; use strict;
 
 use Mouse;
 
-use Elive::Entity;
-use base qw{ Elive::Entity };
+extends 'Elive::Entity';
 
 use Elive::Util;
 use Elive::Entity::Preload;
@@ -678,6 +677,13 @@ sub list_recordings {
 	       @_);
 }
     
+=head1 BUGS AND LIMITATIONS
+
+Be aware that it does not seem to be possible to individually set meetings
+to be restricted or unrestricted (as of Elluminate 9.7). You may however
+configure your Elluminate instance to make all meetings restricted or
+unrestricted. 
+
 =head1 SEE ALSO
 
 =over 4

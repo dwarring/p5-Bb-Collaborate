@@ -20,7 +20,7 @@ my $class = 'Elive::Entity::Preload' ;
 
 SKIP: {
 
-    my $Skip = 21;
+    my $Skip = 23;
 
     my %result = t::Elive->test_connection();
     my $auth = $result{auth};

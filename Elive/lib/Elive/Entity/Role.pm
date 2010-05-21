@@ -4,8 +4,7 @@ use warnings; use strict;
 use Mouse;
 use Mouse::Util::TypeConstraints;
 
-use Elive::Struct;
-use base qw{Elive::Struct};
+extends 'Elive::Struct';
 
 =head1 NAME
 

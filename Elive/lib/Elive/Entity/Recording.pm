@@ -2,8 +2,7 @@ package Elive::Entity::Recording;
 use warnings; use strict;
 use Mouse;
 
-use Elive::Entity;
-use base qw{ Elive::Entity };
+extends 'Elive::Entity';
 
 use Elive::Util;
 
@@ -25,9 +24,9 @@ has 'facilitator' => (is => 'rw', isa => 'Str',
 has 'keywords' => (is => 'rw', isa => 'Str',
 		   documentation => 'keywords for this recording');
 
-has 'meetingId' => (is => 'rw', isa => 'Int', required => 1,
+has 'meetingId' => (is => 'rw', isa => 'Int',
 		    documentation => 'id of the meeting that created this recording');
-__PACKAGE__->_alias(meetingRoomId => 'meetingId');
+__PACKAGE__->_alias(meetingRoomId => 'meetingId', freeze => 1);
 
 has 'open' => (is => 'rw', isa => 'Bool',
 	       documentation => 'whether to display this recording on the public page');
@@ -47,6 +46,42 @@ Elive::Entity::Recording - Elluminate Recording Entity class
 =cut
 
 =head1 METHODS
+
+=cut
+
+=head2 insert
+
+    my $recordingId = "${meetingId}_import";
+    my $import_filename = sprintf("%s_recordingData.bin", $recording->recordingId);
+
+    #
+    # Somehow import the file to the server. This needs to be uploaded
+    # to ${instancesRoot}/${instanceName}/WEB-INF/resources/recordings
+    # where $instanceRoot is typically /opt/ElluminateLive/manager/tomcat
+    #
+    import_recording($import_filename);
+
+    my $recording = Elive::Entity::Recording->insert({
+        recordingId => $recordingId,
+        roomName => "test recording import",
+        creationDate => time().'000',
+        meetingId => $meetingId,
+        facilitator => $meeting->faciliator,
+        version => Elive->server_details->version,
+        size => length($number_of_bytes),
+   });
+
+
+You'll typically only need to insert recordings yourself if you are importing
+or recovering recordings.
+
+Unlike other entities, the Recording insert method requires that you supply a
+primary key. This is then used to determine the name of the file to look for
+in the recording directory, as in the above example.
+
+The meetingId is optional. Recordings do not have to be associated with a
+particular meetings. They will still be searchable and are available for
+playback.
 
 =cut
 
@@ -149,93 +184,6 @@ sub web_url {
 		   $url, $recording_id);
 }
 
-=head2 import_from_server
-
-    my $recording1 = Elive::Entity::Recording->import_from_server(
-             {
-		    meetingId => '123456789123',
-                    roomName => "Meeting of the Smiths',
-		    facilitator => 'jbloggs',
-		    creationDate => time().'000',
-                    fileName => $path_on_server,
-                    open => 0,
-	     },
-         );
-
-Create a recording from a file that is already present on the server. If
-a C<mimeType> is not supplied, it will be guessed from the C<fileName>
-extension using MIME::Types.
-
-=cut
-
-sub import_from_server {
-    my $class = shift;
-    my $insert_data = shift;
-    my %opt = @_;
-
-    my $filename = delete $insert_data->{fileName};
-
-    die "missing fileName parameter"
-	unless $filename;
-
-    $opt{param}{fileName} = $filename;
-
-    $class->insert($insert_data,
-		   adapter => 'importRecording',
-		   %opt);
-}
-
-=head2 upload
-
-    my $recording = Elive::Entity:Recording->upload(
-             {
-                    meetingId => '1234567890123',
-                    meetingName => 'Meeting of the Smiths',
-		    facilitator => 'jbloggs',
-		    creationDate => time().'000',
-                    data => $binary_data,
-	     },
-         );
-
-Upload data from a client and create a recording.
-
-=cut
-
-sub upload {
-    my $class = shift;
-    my $insert_data = shift;
-    my %opt = @_;
-
-    my $binary_data = delete $insert_data->{data};
-
-    my $length = (defined($binary_data) && length($binary_data)) || 0;
-
-    $opt{param}{length} = $length
-        if $length;
-
-    my $self = $class->insert($insert_data, %opt);
-
-    if ($length) {
-
-	my $adapter = Elive->check_adapter('streamRecording');
-
-	my $connection = $self->connection
-	    or die "not connected";
-
-	my $som = $connection->call($adapter,
-				    recordingId => $self->recordingId,
-				    length => $length,
-				    stream => (SOAP::Data
-					       ->type('hexBinary')
-					       ->value($binary_data)),
-	    );
-
-	$self->_check_for_errors($som);
-    }
-
-    return $self;
-}
-
 =head2 buildJNLP 
 
     my $jnlp = $recording_entity->buildJNLP(version => version,
@@ -298,4 +246,130 @@ sub buildJNLP {
     return @$results && Elive::Util::_thaw($results->[0], 'Str');
 }
 
+#
+# Still working on import_from server and upload methods - dw
+# (see also same methods for preloads)
+#
+#=head2 import_from_server
+#
+#    my $recording1 = Elive::Entity::Recording->import_from_server(
+#             {
+#		    meetingId => '123456789123',
+#                    roomName => "Meeting of the Smiths',
+#		    facilitator => 'jbloggs',
+#		    creationDate => time().'000',
+#                    fileName => $path_on_server,
+#                    open => 0,
+#	     },
+#         );
+#
+#Create a recording from a file that is already present on the server. If
+#a C<mimeType> is not supplied, it will be guessed from the C<fileName>
+#extension using MIME::Types.
+#
+#=cut
+
+sub _tba_import_from_server {
+    my $class = shift;
+    my $update_data = shift;
+    my %opt = @_;
+
+    my $filename = delete $update_data->{fileName};
+
+    die "missing fileName parameter"
+	unless $filename;
+
+    my $version = delete $update_data->{version};
+
+    die "missing version parameter"
+	unless $version;
+
+    my $connection = $opt{connection} || $class->connnection
+	or die "not connected";
+
+    my $adapter = $class->check_adapter('importRecording');
+
+    my $som = $connection->call($adapter,
+		   fileName => $filename,
+                   version => $version,
+	       );
+
+    $class->_check_for_errors($som);
+
+    my $results = $class->_unpack_as_list($som->result);
+
+    my $recordingId =  @$results && Elive::Util::_thaw($results->[0], 'Int');
+
+    die "unable to determine recordingId for upload of $filename"
+       unless $recordingId;
+
+    my $self = $class->retrieve([$recordingId], %opt);
+
+    die "unable to fetch newly inserted recording: id=$recordingId"
+        unless $self;
+
+    $self->update( $update_data, %opt)
+        if keys %$update_data;
+
+    return $self;
+}
+
+#=head2 upload
+#
+#    my $recording = Elive::Entity:Recording->upload(
+#             {
+#                    meetingId => '1234567890123',
+#                    meetingName => 'Meeting of the Smiths',
+#		    facilitator => 'jbloggs',
+#		    creationDate => time().'000',
+#                    data => $binary_data,
+#	     },
+#         );
+#
+#Upload data from a client and create a recording.
+#
+#=cut
+
+sub _tba_upload {
+    my $class = shift;
+    my $insert_data = shift;
+    my %opt = @_;
+
+    my $binary_data = delete $insert_data->{data};
+
+    my $length = (defined($binary_data) && length($binary_data)) || 0;
+
+    $opt{param}{length} = $length
+        if $length;
+
+    my $self = $class->insert($insert_data, %opt);
+
+    if ($length && $binary_data) {
+
+	my $adapter = Elive->check_adapter('streamRecording');
+
+	my $connection = $self->connection
+	    or die "not connected";
+
+	my $som = $connection->call($adapter,
+				    recordingId => $self->recordingId,
+				    length => $length,
+				    stream => (SOAP::Data
+					       ->type('hexBinary')
+					       ->value($binary_data)),
+	    );
+
+	$self->_check_for_errors($som);
+    }
+
+    return $self;
+}
+
+
+=head1 BUGS AND LIMITATIONS
+
+The following methods are not yet available: C<import_from_server>, C<upload>.
+See also: Elive::Entity::Preload, which has these methods implemented.
+
+=cut
 1;

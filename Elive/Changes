@@ -1,5 +1,23 @@
 Revision history for Elive
 
+0.66_1  20th May 2010
+        - Better Mouse/Moosification
+          (*) Entity classes now do "extends 'Elive::Entity' rather than
+              "use base 'Elive::Entity';" 
+        - Allow for object stringification on objection construction
+          (cleaner and more universal implementation of 0.56 changes).
+
+          For example:
+             Elive::Entity::Meeting->new({facilitatorId => $user->userId,
+                # ...
+             });
+
+          Can now be written:
+             Elive::Entity::Meeting->new({facilitatorId => $user,
+                # ...
+             });
+
+
 0.65    17th May 2010
         - Hide participants in elive_query script; not directly accessable..
         - pod tweaks.
@@ -52,11 +70,16 @@ Revision history for Elive
 0.56    4th January 2010
         - Objects are now automatically stringified on all SOAP calls.
             For example:
-             Elive::Entity::Meeting->insert( ...,
-                                             facilitatorId => $user->userId);
+             Elive::Entity::Meeting->insert({
+                    facilitatorId => $user->userId,
+	            # ...
+	      });
 
             Can now be written:
-             Elive::Entity::Meeting->insert( ..., facilitatorId => $user);
+             Elive::Entity::Meeting->insert({
+                    facilitatorId => $user,
+                    # ...
+             });
 
         - Improved mock testing coverage. Now able to run much of
 	  the meeting and recording tests offline.

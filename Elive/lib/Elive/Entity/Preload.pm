@@ -4,8 +4,7 @@ use warnings; use strict;
 use Mouse;
 use Mouse::Util::TypeConstraints;
 
-use Elive::Entity;
-use base qw{ Elive::Entity };
+extends 'Elive::Entity';
 
 use Elive::Util;
 
@@ -110,7 +109,7 @@ sub upload {
 
     my $self = $class->insert($insert_data, %opt);
 
-    if ($length) {
+    if ($length && $binary_data) {
 
 	my $adapter = Elive->check_adapter('streamPreload');
 

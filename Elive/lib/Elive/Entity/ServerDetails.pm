@@ -3,8 +3,8 @@ use warnings; use strict;
 
 use Mouse;
 
-use Elive::Entity;
-use base qw{ Elive::Entity };
+extends 'Elive::Entity';
+
 use Scalar::Util;
 
 =head1 NAME

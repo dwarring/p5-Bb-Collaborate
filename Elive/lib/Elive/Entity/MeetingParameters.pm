@@ -4,8 +4,7 @@ use warnings; use strict;
 use Mouse;
 use Mouse::Util::TypeConstraints;
 
-use Elive::Entity;
-use base qw{ Elive::Entity };
+extends 'Elive::Entity';
 
 __PACKAGE__->entity_name('MeetingParameters');
 __PACKAGE__->isa('Meeting');

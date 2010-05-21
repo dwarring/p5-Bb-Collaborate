@@ -50,7 +50,9 @@ sub parse_type {
 
     my $is_struct = $type =~ m{^Elive::(Struct||Entity)(::|$)};
 
-    return ($type, $is_array, $is_struct);
+    my $is_ref = $is_array || $is_struct || $type eq 'Ref';
+
+    return ($type, $is_array, $is_struct, $is_ref);
 }
 
 #

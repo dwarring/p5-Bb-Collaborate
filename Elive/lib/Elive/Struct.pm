@@ -1,6 +1,7 @@
 package Elive::Struct;
 use warnings; use strict;
 
+use Mouse;
 use Elive;
 use base qw{Elive};
 
@@ -432,6 +433,9 @@ sub set {
 	    next;
 	}
 
+	my $type = $self->property_types->{$_}
+	   or die ((ref($self)||$self).": unable to determine property type for field: $_");
+
 	if (exists $primary_key{ $_ }) {
 
 	    my $old_val = $self->{$_};
@@ -439,7 +443,7 @@ sub set {
 	    if (defined $old_val && !defined $data{$_}) {
 		die "attempt to delete primary key";
                }
-	    elsif ($self->_cmp_col($self->property_types->{$_},
+	    elsif ($self->_cmp_col($type,
 				   $old_val, $data{$_})) {
 		die "attempt to update primary key";
 	    }

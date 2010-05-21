@@ -3,8 +3,9 @@ use warnings; use strict;
 use Mouse;
 use Mouse::Util::TypeConstraints;
 
-use Elive::Struct;
-use base qw{Elive::Struct};
+##use Elive::Struct;
+##use base qw{Elive::Struct};
+extends 'Elive::Struct';
 
 use YAML;
 use Scalar::Util qw{weaken};
@@ -36,6 +37,53 @@ our %Stored_Objects;
 
 foreach my $accessor (qw/_connection _db_data/) {
     __PACKAGE__->has_metadata($accessor);
+}
+
+sub BUILDARGS {
+    my $class = shift;
+    my $raw = shift;
+    my @args = @_;
+
+    warn "$class - ignoring arguments to new: @args"
+	if @args;
+
+    if ($class->can('element_class')
+	&& Elive::Util::_reftype($raw) eq 'ARRAY') {
+	return [map {$class->element_class->BUILDARGS($_, @args)} @$raw];
+    }
+    elsif (Elive::Util::_reftype($raw) eq 'HASH') {
+
+	my $types = $class->property_types;
+	my %cooked;
+
+	foreach my $prop (keys %$raw) {
+	    my $value = $raw->{$prop};
+	    if (my $type = $types->{$prop}) {
+		if (ref($value)) {
+		    #
+		    # inspect the item to see if we need to uncoerce back to
+		    # a simpler type. For example we may have been passed an
+		    # object, rather than just its primary key.
+		    #
+		    my (undef, $is_array, $is_struct, $is_ref)
+			= Elive::Util::parse_type($type);
+
+		    $value = Elive::Util::string($value, $type)
+			unless $is_array || $is_struct || $is_ref;
+		}
+		    
+	    }
+	    else {
+		warn "$class: unknown property $prop";
+	    }
+
+	    $cooked{$prop} = $value;
+	}
+
+	return \%cooked;
+    }
+
+    return $raw;
 }
 
 =head2 connection
@@ -115,10 +163,8 @@ sub construct {
 	unless (Elive::Util::_reftype($data) eq 'HASH');
 
     #
-    # don't seem to have any way of recursively passing options
-    # through mouse/moose contructors.
-    #
-    # uumm hang on ..., I think that the Moose/Mouse BUILD method can
+    # todo: Most if not all of this stuff can be handled via the
+    # moose/mouse BUILD method
     # sort this?  Todo: remove %Elive::_construct_opts global variable
     #
     local (%Elive::_construct_opts) = %opt;
@@ -130,13 +176,11 @@ sub construct {
     @known_properties{$class->properties} = undef;
 
     foreach (keys %$data) {
-	warn "$class: unknown property $_"
-	    unless exists $known_properties{$_};
     }
 
     warn YAML::Dump({construct => $data})
 	if (Elive->debug > 1);
-    
+
     my $self = Scalar::Util::blessed($data)
 	? $data
 	: $class->new($data);
