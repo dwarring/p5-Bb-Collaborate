@@ -111,7 +111,7 @@ sub upload {
 
     if ($length && $binary_data) {
 
-	my $adapter = Elive->check_adapter('streamPreload');
+	my $adapter = $self->check_adapter('streamPreload');
 
 	my $connection = $self->connection
 	    or die "not connected";
@@ -150,7 +150,7 @@ sub download {
     die "unable to get a preload_id"
 	unless $preload_id;
 
-    my $adapter = Elive->check_adapter('getPreloadStream');
+    my $adapter = $self->check_adapter('getPreloadStream');
 
     my $connection = $self->connection
 	or die "not connected";

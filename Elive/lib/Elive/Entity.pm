@@ -3,8 +3,6 @@ use warnings; use strict;
 use Mouse;
 use Mouse::Util::TypeConstraints;
 
-##use Elive::Struct;
-##use base qw{Elive::Struct};
 extends 'Elive::Struct';
 
 use YAML;
@@ -47,11 +45,7 @@ sub BUILDARGS {
     warn "$class - ignoring arguments to new: @args"
 	if @args;
 
-    if ($class->can('element_class')
-	&& Elive::Util::_reftype($raw) eq 'ARRAY') {
-	return [map {$class->element_class->BUILDARGS($_, @args)} @$raw];
-    }
-    elsif (Elive::Util::_reftype($raw) eq 'HASH') {
+    if (Elive::Util::_reftype($raw) eq 'HASH') {
 
 	my $types = $class->property_types;
 	my %cooked;
@@ -165,7 +159,7 @@ sub construct {
     #
     # todo: Most if not all of this stuff can be handled via the
     # moose/mouse BUILD method
-    # sort this?  Todo: remove %Elive::_construct_opts global variable
+    # sort this?  remove %Elive::_construct_opts global variable
     #
     local (%Elive::_construct_opts) = %opt;
 

@@ -42,8 +42,7 @@ coerce 'Elive::Array::Participants' => from 'ArrayRef'
 	      my @participants = map {Elive::Entity::Participant->_parse($_)} @$_;
 	      my $a = [ map {Scalar::Util::blessed($_)? $_ : Elive::Entity::Participant->new($_)
 			} @participants];
-	      bless ($a, 'Elive::Array::Participants');
-	      $a;
+	      Elive::Array::Participants->new($a);
 };
 
 coerce 'Elive::Array::Participants' => from 'Str'
@@ -51,8 +50,7 @@ coerce 'Elive::Array::Participants' => from 'Str'
 	      my @participants = map {Elive::Entity::Participant->_parse($_)} split(';');
 
 	      my $a = [ map {Elive::Entity::Participant->new($_)} @participants ];
-	      bless ($a,'Elive::Array::Participants');
-	      $a;
+	      Elive::Array::Participants->new($a);
           };
 
 1;

@@ -9,6 +9,28 @@ use base qw{Elive};
 
 __PACKAGE__->mk_classdata('element_class');
 
+=for later
+sub BUILDARGS {
+    my $class = shift;
+    my $raw = shift;
+    my @args = @_;
+
+    warn "$class - ignoring arguments to new: @args"
+	if @args;
+
+    if (Elive::Util::_reftype($raw) eq 'ARRAY') {
+
+	my $element_class = $class->element_class
+	    if $class->can('element_class');
+
+	return [map {$element_class->BUILDARGS($_, @args)} @$raw]
+	    if $element_class && $element_class->can('BUILDARGS');
+    }
+
+    return $raw;
+}
+=cut
+
 coerce 'Elive::Array' => from 'Str'
           => via {
 	      my $a = [ split(';') ];

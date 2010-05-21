@@ -105,7 +105,7 @@ sub download {
     die "unable to get a recording_id"
 	unless $recording_id;
 
-    my $adapter = Elive->check_adapter('getRecordingStream');
+    my $adapter = $self->check_adapter('getRecordingStream');
 
     my $connection = $self->connection
 	or die "not connected";
@@ -346,7 +346,7 @@ sub _tba_upload {
 
     if ($length && $binary_data) {
 
-	my $adapter = Elive->check_adapter('streamRecording');
+	my $adapter = $class->check_adapter('streamRecording');
 
 	my $connection = $self->connection
 	    or die "not connected";
