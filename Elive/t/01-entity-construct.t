@@ -154,9 +154,7 @@ ok($meeting->end eq '1231231230123', 'meeting end (hires explicit)');
 
 
 #
-# test uncoercian of complex types.
-# Note: not working on Elive 0.65. Might finally force myself to put
-# a builder method in place for Entities.
+# test uncoercian of objects to simple values (e.g. primary key).
 #
 
 my $participant_list_4 = Elive::Entity::ParticipantList->construct(
@@ -166,5 +164,4 @@ my $participant_list_4 = Elive::Entity::ParticipantList->construct(
 	});
 
 ok($participant_list_4->meetingId == $meeting->meetingId, "uncoercian on construct (primary key)");
-diag("string:".$participant_list_4->participants->stringify);
 ok($participant_list_4->participants->stringify eq '1122=3;2233=2', "participants stringification");

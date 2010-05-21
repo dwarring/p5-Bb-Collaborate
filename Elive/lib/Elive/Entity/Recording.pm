@@ -75,8 +75,8 @@ Elive::Entity::Recording - Elluminate Recording Entity class
 You'll typically only need to insert recordings yourself if you are importing
 or recovering recordings.
 
-Unlike other entities, the Recording insert method requires that you supply a
-primary key. This is then used to determine the name of the file to look for
+The Recording C<insert>, unlike other entities, method requires that you supply
+a primary key. This is then used to determine the name of the file to look for
 in the recording directory, as in the above example.
 
 The meetingId is optional. Recordings do not have to be associated with a
@@ -255,11 +255,11 @@ sub buildJNLP {
 #    my $recording1 = Elive::Entity::Recording->import_from_server(
 #             {
 #		    meetingId => '123456789123',
-#                    roomName => "Meeting of the Smiths',
+#                   roomName => "Meeting of the Smiths',
 #		    facilitator => 'jbloggs',
 #		    creationDate => time().'000',
-#                    fileName => $path_on_server,
-#                    open => 0,
+#                   fileName => $path_on_server,
+#                   open => 0,
 #	     },
 #         );
 #

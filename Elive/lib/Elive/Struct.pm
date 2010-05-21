@@ -10,21 +10,6 @@ use Elive::Util;
 
 use YAML;
 
-BEGIN {
-    __PACKAGE__->mk_classdata('_entities' => {});
-    __PACKAGE__->mk_classdata('_aliases');
-    __PACKAGE__->mk_classdata('_entity_name');
-    __PACKAGE__->mk_classdata('_primary_key', []);
-    __PACKAGE__->mk_classdata('collection_name');
-    __PACKAGE__->mk_classdata('isa');
-};
-
-use Scalar::Util;
-
-sub _refaddr {
-    return Scalar::Util::refaddr( shift() );
-}
-
 =head1 NAME
 
 Elive::Struct - Base class for Elive::Entity and entity sub-structures
@@ -65,6 +50,65 @@ In particular meeting participants stringify to userId=role, eg
     }
 
 =cut
+
+BEGIN {
+    __PACKAGE__->mk_classdata('_entities' => {});
+    __PACKAGE__->mk_classdata('_aliases');
+    __PACKAGE__->mk_classdata('_entity_name');
+    __PACKAGE__->mk_classdata('_primary_key', []);
+    __PACKAGE__->mk_classdata('collection_name');
+    __PACKAGE__->mk_classdata('isa');
+};
+
+use Scalar::Util;
+
+sub _refaddr {
+    my $self = shift;
+    return Scalar::Util::refaddr( $self );
+}
+
+sub BUILDARGS {
+    my $class = shift;
+    my $raw = shift;
+    my @args = @_;
+
+    warn "$class - ignoring arguments to new: @args"
+	if @args;
+
+    if (Elive::Util::_reftype($raw) eq 'HASH') {
+
+	my $types = $class->property_types;
+	my %cooked;
+
+	foreach my $prop (keys %$raw) {
+	    my $value = $raw->{$prop};
+	    if (my $type = $types->{$prop}) {
+		if (ref($value)) {
+		    #
+		    # inspect the item to see if we need to uncoerce back to
+		    # a simpler type. For example we may have been passed an
+		    # object, rather than just its primary key.
+		    #
+		    my (undef, $is_array, $is_struct, $is_ref)
+			= Elive::Util::parse_type($type);
+
+		    $value = Elive::Util::string($value, $type)
+			unless $is_array || $is_struct || $is_ref;
+		}
+		    
+	    }
+	    else {
+		warn "$class: unknown property $prop";
+	    }
+
+	    $cooked{$prop} = $value;
+	}
+
+	return \%cooked;
+    }
+
+    return $raw;
+}
 
 sub stringify {
     my $class = shift;

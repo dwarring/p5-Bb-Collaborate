@@ -1,19 +1,17 @@
 Revision history for Elive
 
 0.66_1  20th May 2010
-        - Better Mouse/Moosification
-          (*) Entity classes now do "extends 'Elive::Entity' rather than
-              "use base 'Elive::Entity';" 
-        - Allow for object stringification on objection construction
-          (cleaner and more universal implementation of 0.56 changes).
+        - Recordings do not have to be associated with a Meeting. Made
+          RecordingId optional.
+        - Allow objects where ids are expected. For example:
 
-          For example:
-             Elive::Entity::Meeting->new({facilitatorId => $user->userId,
+             Elive::Entity::Meeting->new({facilitatorId => $user,
                 # ...
              });
 
-          Can now be written:
-             Elive::Entity::Meeting->new({facilitatorId => $user,
+           Instead of:
+
+             Elive::Entity::Meeting->new({facilitatorId => $user->userId,
                 # ...
              });
 

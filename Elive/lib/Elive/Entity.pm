@@ -37,49 +37,6 @@ foreach my $accessor (qw/_connection _db_data/) {
     __PACKAGE__->has_metadata($accessor);
 }
 
-sub BUILDARGS {
-    my $class = shift;
-    my $raw = shift;
-    my @args = @_;
-
-    warn "$class - ignoring arguments to new: @args"
-	if @args;
-
-    if (Elive::Util::_reftype($raw) eq 'HASH') {
-
-	my $types = $class->property_types;
-	my %cooked;
-
-	foreach my $prop (keys %$raw) {
-	    my $value = $raw->{$prop};
-	    if (my $type = $types->{$prop}) {
-		if (ref($value)) {
-		    #
-		    # inspect the item to see if we need to uncoerce back to
-		    # a simpler type. For example we may have been passed an
-		    # object, rather than just its primary key.
-		    #
-		    my (undef, $is_array, $is_struct, $is_ref)
-			= Elive::Util::parse_type($type);
-
-		    $value = Elive::Util::string($value, $type)
-			unless $is_array || $is_struct || $is_ref;
-		}
-		    
-	    }
-	    else {
-		warn "$class: unknown property $prop";
-	    }
-
-	    $cooked{$prop} = $value;
-	}
-
-	return \%cooked;
-    }
-
-    return $raw;
-}
-
 =head2 connection
 
     my $default_connection = Elive::Entity::User->connection;
@@ -713,7 +670,6 @@ sub insert {
     my $som = $connection->call($adapter,
 				%$db_data,
 				%{$opt{param} || {}},
-##				loginPassword => $login_password,
 	);
 
     my @rows = $class->_readback($som, $insert_data, $connection);
