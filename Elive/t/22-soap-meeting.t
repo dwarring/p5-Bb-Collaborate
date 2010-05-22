@@ -9,8 +9,8 @@ use lib '.';
 use t::Elive;
 
 use Carp;
-local($SIG{__DIE__}) = \&Carp::confess;
-local($SIG{__WARN__}) = \&Carp::cluck;
+##local($SIG{__DIE__}) = \&Carp::confess;
+##local($SIG{__WARN__}) = \&Carp::cluck;
 
 BEGIN {
     use_ok( 'Elive' );

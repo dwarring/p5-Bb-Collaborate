@@ -1,6 +1,10 @@
 Revision history for Elive
 
-0.66_1  20th May 2010
+0.66    22nd May 2010
+        - Moved check of property checks from Elive::Entity to
+          Elive::Struct. Made it a moose /mouse BUILDARGS method.
+        - Added 'type' field to participants method. Newly discovered
+          due to above BUILDARGS check.
         - Recordings do not have to be associated with a Meeting. Made
           RecordingId optional.
         - Allow objects where ids are expected. For example:
@@ -15,9 +19,8 @@ Revision history for Elive
                 # ...
              });
 
-
 0.65    17th May 2010
-        - Hide participants in elive_query script; not directly accessable..
+        - Hide participants in elive_query script - not a retrievable entity.
         - pod tweaks.
 
 0.64    11th March 2010

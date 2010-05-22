@@ -197,7 +197,8 @@ WebStart. You can, for example, render this as a web page with mime type
 C<application/x-java-jnlp-file>.
 
 The C<userIP> is required for elm 9.0+ when C<recordingJNLPIPCheck> has
-been set to C<true> in C<configuration.xml>.
+been set to C<true> in C<configuration.xml> (or set interactively via:
+Preferences E<gt>E<gt> Session Access E<gt>E<gt> Lock Recording Playback to Client IP)
 
 It represents a fixed client IP address for launching the recording playback.
 

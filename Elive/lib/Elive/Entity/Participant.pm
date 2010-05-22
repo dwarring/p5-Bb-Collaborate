@@ -24,6 +24,10 @@ has 'role' => (is => 'rw', isa => 'Elive::Entity::Role|Str',
 	       coerce => 1,
     );
 
+has 'type' => (is => 'rw', isa => 'Int',
+	       documentation => 'Not sure what this is',
+    );
+
 #
 # name change under 9.5
 #

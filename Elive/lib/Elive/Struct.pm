@@ -98,7 +98,7 @@ sub BUILDARGS {
 		    
 	    }
 	    else {
-		warn "$class: unknown property $prop";
+		warn "$class: unknown property: $prop";
 	    }
 
 	    $cooked{$prop} = $value;
