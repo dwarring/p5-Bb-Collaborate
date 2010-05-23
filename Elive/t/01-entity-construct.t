@@ -152,7 +152,6 @@ ok($meeting->name eq 'test meeting', 'meeting name');
 ok($meeting->start eq '1234567890123', 'meeting start (hires coercian)');
 ok($meeting->end eq '1231231230123', 'meeting end (hires explicit)');
 
-
 #
 # test uncoercian of objects to simple values (e.g. primary key).
 #

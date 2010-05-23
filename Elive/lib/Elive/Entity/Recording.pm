@@ -33,7 +33,7 @@ has 'open' => (is => 'rw', isa => 'Bool',
 has 'roomName' => (is => 'rw', isa => 'Str',
 		   documentation => 'name of the meeting that created this recording');
 has 'size' => (is => 'rw', isa => 'Int',
-	       documentation => 'download size (bytes');
+	       documentation => 'recording file size (bytes');
 has 'version' => (is => 'rw', isa => 'Str',
 		  documentation => 'version of Elluminate Live! that created this recording');
 
@@ -260,6 +260,7 @@ sub buildJNLP {
 #		    facilitator => 'jbloggs',
 #		    creationDate => time().'000',
 #                   fileName => $path_on_server,
+#                   version => Elive->server_details->version,
 #                   open => 0,
 #	     },
 #         );
@@ -285,7 +286,7 @@ sub _tba_import_from_server {
     die "missing version parameter"
 	unless $version;
 
-    my $connection = $opt{connection} || $class->connnection
+    my $connection = $opt{connection} || $class->connection
 	or die "not connected";
 
     my $adapter = $class->check_adapter('importRecording');

@@ -1,14 +1,15 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 35;
+use Test::More tests => 38;
 use Test::Warn;
+use Test::Exception;
 
-BEGIN {
-    use_ok( 'Elive' );
-    use_ok( 'Elive::Connection' );
-    use_ok( 'Elive::Entity' );
-    use_ok( 'Elive::Entity::User' );
-}
+use Elive;
+use Elive::Connection;
+use Elive::Entity;
+use Elive::Entity::User;
+use Elive::Entity::Meeting;
+use Elive::Entity::Recording;
 
 Elive->connection(Elive::Connection->connect('http://test.org'));
 
@@ -113,3 +114,36 @@ ok(!$user1->deleted, 'undeleted user => !deleted');
 ok(!$user1->is_changed, 'undeleted user => !changed');
 
 $user1->revert;
+
+my $meetingId1 = '112233445566';
+my $meetingId2 = '223344556677';
+
+my $recording =  Elive::Entity::Recording->construct({
+    recordingId => '123456789000_987654321000',
+    meetingId => $meetingId1,
+    creationDate => time().'000',
+    size => '1024',
+});
+
+my $meeting_obj =  Elive::Entity::Meeting->construct({
+    meetingId => $meetingId2,
+    name => 'test meeting',
+    start => '1234567890123',
+    end => '1231231230123',
+});
+
+#
+# test setting of object foreign key via reference_object
+#
+ 
+ok(!$recording->is_changed, 'recording - not changed before update');
+
+lives_ok(sub{$recording->set(meetingId => $meeting_obj)}, 'setting foreign key via object - lives');
+
+ok($recording->is_changed, 'recording - changed after update');
+ok($recording->meetingId eq $meetingId2,'recording meetingId before revert');
+
+lives_ok(sub{$recording->revert}, 'recording revert - lives');
+
+ok($recording->meetingId eq $meetingId1,'recording meetingId after revert');
+ok(!$recording->is_changed, 'recording - is_changed is false after revert');
