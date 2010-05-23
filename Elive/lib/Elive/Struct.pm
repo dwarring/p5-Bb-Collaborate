@@ -94,8 +94,7 @@ sub BUILDARGS {
 
 		    $value = Elive::Util::string($value, $type)
 			unless $is_array || $is_struct || $is_ref;
-		}
-		    
+		}		    
 	    }
 	    else {
 		warn "$class: unknown property: $prop";
@@ -499,8 +498,20 @@ sub set {
 
 	if (defined $value) {
 
-	    $self->$_($value);
+	    if (ref($value)) {
+		#
+		# inspect the item to see if we need to uncoerce back to
+		# a simpler type. For example we may have been passed an
+		# object, rather than just its primary key.
+		#
+		my (undef, $is_array, $is_struct, $is_ref)
+		    = Elive::Util::parse_type($type);
+		
+		$value = Elive::Util::string($value, $type)
+		    unless $is_array || $is_struct || $is_ref;
+	    }
 
+	    $self->$_($value);
 	}
 	else {
 
