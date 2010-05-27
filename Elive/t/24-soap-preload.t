@@ -22,7 +22,7 @@ $data[1] = join('',map {pack('C', $_)} (0..255));
 for (0..1) {
     #
     # belongs in util tests
-    ok(Elive::Util::_hex_decode(Elive::Util::_hex_encode($data[$_])) eq $data[$_], "encode/decode $_");   
+    ok(Elive::Util::_hex_decode(Elive::Util::_hex_encode($data[$_])) eq $data[$_], "hex encode/decode round-trip [$_]");   
 }
 
 SKIP: {
@@ -44,7 +44,7 @@ SKIP: {
     {
 	type => 'whiteboard',
 	name => 'test.wbd',
-	ownerId => Elive->login->userId,
+	ownerId => Elive->login,
 	data => $data[0],
     },
     );
@@ -53,13 +53,13 @@ SKIP: {
 
     ok($preloads[0]->type eq 'whiteboard', "preload type is 'whiteboard'");
     ok($preloads[0]->mimeType eq 'application/octet-stream','expected value for mimeType (guessed)');
-    ok($preloads[0]->name eq 'test.wbd','expected name');
-    ok($preloads[0]->ownerId eq Elive->login->userId, 'expected user id');
+    ok($preloads[0]->name eq 'test.wbd','preload name, as expected');
+    ok($preloads[0]->ownerId eq Elive->login->userId, 'preload ownerId, as expected');
 
     my $data_download = $preloads[0]->download;
 
     ok($data_download, 'got data download');
-    ok($data_download eq $data[0], 'download matches upload');
+    ok($data_download eq $data[0], 'download data matches upload');
 
     ok (my $preload_id = $preloads[0]->preloadId, 'got preload id');
 
@@ -68,8 +68,8 @@ SKIP: {
     ok($preloads[0] = Elive::Entity::Preload->retrieve([$preload_id]), 'preload retrieval');
 
     ok(my $meeting = Elive::Entity::Meeting->insert({
-	name => 'created by t/23-soap-preload.t',
-	facilitatorId => Elive->login->userId,
+	name => 'created by t/24-soap-preload.t',
+	facilitatorId => Elive->login,
 	start => time() . '000',
 	end => (time()+900) . '000',
 	privateMeeting => 1,
@@ -80,7 +80,7 @@ SKIP: {
     {
 	type => 'whiteboard',
 	name => 'test.wav',
-	ownerId => Elive->login->userId,
+	ownerId => Elive->login,
 	data => $data[1],
     },
     );
@@ -91,7 +91,7 @@ SKIP: {
     {
 	type => 'whiteboard',
 	name => 'test_no_ext',
-	ownerId => Elive->login->userId,
+	ownerId => Elive->login,
 	mimeType => 'video/mpeg',
 	data => $data[1],
     },
@@ -103,7 +103,7 @@ SKIP: {
     {
 	type => 'plan',
 	name => 'test_plan.elpx',
-	ownerId => Elive->login->userId,
+	ownerId => Elive->login,
 	data => $data[1],
     },
     );
@@ -157,7 +157,7 @@ SKIP: {
     lives_ok( sub {$meeting->remove_preload($preloads[1])},
 	      'meeting->remove_preload - lives');
 
-    lives_ok(sub {$preloads[0]->delete}, 'preloads[0] deletion - lives');
+    lives_ok(sub {$preloads[0]->delete}, 'preloads deletion - lives');
     #
     # just directly delete the second preload
     #
@@ -170,7 +170,7 @@ SKIP: {
 
     isa_ok($preloads_list_2, 'ARRAY', 'preloads list');
 
-    ok(@$preloads_list_2 == scalar(@preloads)-2, 'meeting has expected number of preloads preload');
+    ok(@$preloads_list_2 == scalar(@preloads)-2, 'meeting has expected number of preloads');
     
        # start to tidy up
 
