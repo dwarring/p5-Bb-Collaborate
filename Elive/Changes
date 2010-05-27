@@ -1,5 +1,8 @@
 Revision history for Elive
 
+0.68    28th May 2010
+        - Added Elive::Entity::Recording::upload() method.
+
 0.66    22nd May 2010
         - Moved check of property checks from Elive::Entity to
           Elive::Struct. Made it a moose /mouse BUILDARGS method.
