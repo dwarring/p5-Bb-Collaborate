@@ -1,6 +1,6 @@
 #!perl
 use warnings; use strict;
-use Test::More tests => 15;
+use Test::More tests => 21;
 use Test::Exception;
 use Scalar::Util;
 
@@ -20,7 +20,7 @@ SKIP: {
     my $auth = $result{auth};
 
     skip ($result{reason} || 'skipping live tests',
-	13)
+	19)
 	unless $auth && @$auth;
 
     my $connection_class = $result{class};
@@ -86,6 +86,19 @@ SKIP: {
     ok($login->loginName eq $loginName_old,
        'revert of login user');
 
+    #
+    # check refetch, both on object and primary key
+    #
+    my $user_id = $login->userId;
+    my $user_refetched;
+
+    lives_ok(sub {$user_refetched = Elive::Entity::User->retrieve([$login])}, 'refetch by object - lives');
+    isa_ok($user_refetched,'Elive::Entity::User', 'user refetched by object');
+    ok($user_refetched->userId eq $user_id, "user refetch by object, as expected");
+
+    lives_ok(sub {$user_refetched = Elive::Entity::User->retrieve([$user_id])}, 'refetch by id - lives');
+    isa_ok($user_refetched,'Elive::Entity::User', 'user refetched by primary key');
+    ok($user_refetched->userId eq $user_id, "user refetch by id, as expected");
 }
 
 Elive->disconnect;

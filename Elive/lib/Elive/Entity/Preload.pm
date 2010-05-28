@@ -143,9 +143,7 @@ sub download {
     my $self = shift;
     my %opt = @_;
 
-    my $preload_id = $opt{preload_id};
-    $preload_id ||= $self->preloadId
-	if ref($self);
+    my $preload_id = $opt{preload_id} ||= $self->preloadId;
 
     die "unable to get a preload_id"
 	unless $preload_id;
@@ -156,7 +154,7 @@ sub download {
 	or die "not connected";
 
     my $som = $connection->call($adapter,
-				preloadId => $self->preloadId,
+				preloadId => Elive::Util::_freeze($preload_id, 'Int'),
 	);
 
     $self->_check_for_errors($som);
@@ -201,6 +199,7 @@ sub import_from_server {
 	||= ($filename =~ m{\.wbd}i     ? 'whiteboard'
 	     : $filename =~ m{\.elpx?}i ? 'plan'
 	     : 'media');
+
     $insert_data->{name} ||= File::Basename::basename($filename);
 
     $opt{param}{fileName} = $filename;
@@ -225,9 +224,6 @@ sub list_meeting_preloads {
 
     die 'usage: $preload_obj->list_meeting_preloads($meeting)'
 	unless $meeting_id;
-
-    $meeting_id = $meeting_id->meetingId
-	if (ref($meeting_id));
 
     return $self->_fetch({meetingId => $meeting_id},
 			 adapter => 'listMeetingPreloads',

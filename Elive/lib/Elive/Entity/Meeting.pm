@@ -245,7 +245,7 @@ sub list_user_meetings_by_date {
     $meeting->add_preload($preload_id);
 
 Associates a preload with a meeting. This preload must pre-exist in the
-databbase.
+database.
 
 =head3 See also
 
@@ -255,26 +255,16 @@ Elive::Entity::Preload
 
 sub add_preload {
     my $self = shift;
-    my $preload = shift;
+    my $preload_id = shift;
     my %opt = @_;
 
     die 'usage: $meeting_obj->add_preload($preload || $preload_id)'
-	unless $preload;
+	unless $preload_id;
 
-    my $meeting_id = $opt{meeting_id};
-
-    $meeting_id ||= $self->meetingId
-	if ref($self);
+    my $meeting_id = $opt{meeting_id} || $self->meetingId;
 
     die "unable to determine meeting_id"
 	unless $meeting_id;
-
-    my $preload_id = ref($preload)
-	? $preload->preloadId
-	: $preload;
-
-    die "unable to determine preload_id"
-	unless $preload_id;
 
     my $adapter = $self->check_adapter('addMeetingPreload');
 
@@ -303,8 +293,13 @@ sub check_preload {
     my $preload_id = shift;
     my %opt = @_;
 
-    $preload_id = $preload_id->preloadId
-	if ref($preload_id);
+    die 'usage: $meeting_obj->check_preload($preload || $preload_id)'
+	unless $preload_id;
+
+    my $meeting_id = $opt{meeting_id} || $self->meetingId;
+
+    die "unable to determine meeting_id"
+	unless $meeting_id;
 
     my $adapter = $self->check_adapter('checkMeetingPreload');
 
@@ -314,7 +309,7 @@ sub check_preload {
     my $som = $connection
 	->call($adapter,
 	       preloadId => Elive::Util::_freeze($preload_id, 'Int'),
-	       meetingId => Elive::Util::_freeze($self->meetingId, 'Int'),
+	       meetingId => Elive::Util::_freeze($meeting_id, 'Int'),
 	       );
 
     $self->_check_for_errors($som);
@@ -334,11 +329,16 @@ Checks that the user is a meeting participant.
 
 sub is_participant {
     my $self = shift;
-    my $user_id = shift;
+    my $user = shift;
     my %opt = @_;
 
-    $user_id = $user_id->userId
-        if ref($user_id);
+    die 'usage: $meeting_obj->is_preload($user || $user_id)'
+	unless $user;
+
+    my $meeting_id = $opt{meeting_id} || $self->meetingId;
+
+    die "unable to determine meeting_id"
+	unless $meeting_id;
 
     my $adapter = $self->check_adapter('isParticipant');
 
@@ -347,8 +347,8 @@ sub is_participant {
 
     my $som = $connection
         ->call($adapter,
-               userId => Elive::Util::_freeze($user_id, 'Str'),
-               meetingId => Elive::Util::_freeze($self->meetingId, 'Int'),
+               userId => Elive::Util::_freeze($user, 'Str'),
+               meetingId => Elive::Util::_freeze($meeting_id, 'Int'),
                );
 
     $self->_check_for_errors($som);
@@ -415,15 +415,12 @@ sub remove_preload {
     my $preload_id = shift;
     my %opt = @_;
 
-    my $meeting_id = $self->meetingId;
+    my $meeting_id = $opt{meeting_id} || $self->meetingId;
 
     die 'unable to get a meeting_id'
 	unless $meeting_id;
 
-    $preload_id = $preload_id->preloadId
-	if ref($preload_id);
-
-    die 'unable to get a preload_id'
+    die 'unable to get a preload'
 	unless $preload_id;
 
     my $connection = $self->connection
@@ -486,10 +483,7 @@ sub buildJNLP {
     my $connection = $self->connection
 	or die "not connected";
 
-    my $meeting_id = $opt{meeting_id};
-
-    $meeting_id ||= $self->meetingId
-	if ref($self);
+    my $meeting_id = $opt{meeting_id} ||= $self->meetingId;
 
     die "unable to determine meeting_id"
 	unless $meeting_id;

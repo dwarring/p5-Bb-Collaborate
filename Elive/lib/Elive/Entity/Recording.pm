@@ -98,9 +98,7 @@ sub download {
     my $self = shift;
     my %opt = @_;
 
-    my $recording_id = $opt{recording_id};
-    $recording_id ||= $self->recordingId
-	if ref($self);
+    my $recording_id = $opt{recording_id} ||= $self->recordingId;
 
     die "unable to get a recording_id"
 	unless $recording_id;
@@ -111,7 +109,7 @@ sub download {
 	or die "not connected";
 
     my $som = $connection->call($adapter,
-				recordingId => $self->recordingId,
+				recordingId => $recording_id,
 	);
 
     $self->_check_for_errors($som);
@@ -219,22 +217,14 @@ sub web_url {
     my $self = shift;
     my %opt = @_;
 
-    my $recording_id = $opt{recording_id};
-    my $connection = $self->connection || $opt{connection}
-	or die "not connected";
-
-    if (ref($self)) {
-	#
-	# dealing with an object
-	#
-	$recording_id ||= $self->recordingId;
-    }
-    elsif (ref($recording_id)) {  # an object
-	$recording_id = $recording_id->recordingId;
-    }
+    my $recording_id = $opt{recording_id} || $self->recordingId;
+    $recording_id = Elive::Util::_freeze($recording_id, 'Int');
 
     die "no recording_id given"
 	unless $recording_id;
+
+    my $connection = $self->connection || $opt{connection}
+	or die "not connected";
 
     my $url = $connection->url;
 
@@ -280,10 +270,7 @@ sub buildJNLP {
     my $connection = $self->connection
 	or die "not connected";
 
-    my $recording_id = $opt{recording_id};
-
-    $recording_id ||= $self->recordingId
-	if ref($self);
+    my $recording_id = $opt{recording_id} || $self->recordingId;
 
     die "unable to determine recording_id"
 	unless $recording_id;

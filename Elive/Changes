@@ -1,6 +1,10 @@
 Revision history for Elive
 
-0.68    28th May 2010
+0.68    May 2010
+        - Streamlined code for entity classes: preload meeting and recording
+          No longer necessary to dereference objects to primary keys.
+
+0.67    28th May 2010
         - Added Elive::Entity::Recording::upload() method.
 
 0.66    22nd May 2010

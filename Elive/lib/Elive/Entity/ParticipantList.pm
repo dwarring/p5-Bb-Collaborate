@@ -303,7 +303,7 @@ sub _readback {
     $class->_check_for_errors($som);
 
     my $meeting_id = $updates->{meetingId}
-    || die "couldn't find meetingId";
+    or die "couldn't find meetingId";
 
     my $row = $class->retrieve([$meeting_id],
 			       connection => $connection,
