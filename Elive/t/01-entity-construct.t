@@ -71,9 +71,9 @@ ok($participants->[0]->user->stringify eq '112233', 'user stringified');
 
 ok($participants->[0]->role->stringify eq '2', 'role stringified');
 
-ok($participants->[0]->stringify eq '112233=2', 'particpiant stringified');
+ok($participants->[0]->stringify eq '112233=2', 'participant stringified');
 
-ok($participants->[2]->stringify eq 'dave=3', 'particpiant stringified');
+ok($participants->[2]->stringify eq 'dave=3', 'participant stringified');
 
 ok($participants->stringify eq '112233=2;223344=3;dave=3;late_comer=3',
    'participants stringification');
