@@ -15,6 +15,7 @@ use Elive::Entity::ParticipantList;
 use Elive::Entity::Preload;
 use Elive::Entity::Recording;
 use Elive::Entity::Role;
+use Elive::Entity::Report;
 use Elive::Entity::ServerDetails;
 use Elive::Entity::ServerParameters;
 use Elive::Entity::User; 
@@ -34,6 +35,7 @@ elive_query
     -user someuser              # server login user
     -pass somepass              # server login password
     -debug=n                    # 1=some, 2=verbose, 3=verbose + soap
+    -dump=yaml                  # dump format
     -? -help                    # obtain help
     -v -version                 # print Elive version
 
@@ -257,8 +259,10 @@ sub main {
 			    }
 			    else {
 				_select($entity_class, \@props,
-				    filter => $filter,
-				    hide_undef => $hide_undef); 
+					filter => $filter,
+					hide_undef => $hide_undef,
+					dump => $options{dump},
+					); 
 			    }
 			}
 		    }
@@ -397,81 +401,83 @@ sub _select {
     }
     elsif (!@$rows) {
 	print "No results.\n";
-	return;
+    }
+    elsif ($opt{dump} && $opt{dump} =~ /^(yaml)$/i) {
+        print YAML::Dump({$entity_name => [map {_fetch_row_href($props, $_)} @$rows]});
     }
     else {
 	foreach my $row (@$rows) {
 	    
-	    my $row =  _output_row($props, $row);
+	    my $row =  _fetch_row_aref($props, $row);
 	    push(@output, $row);
 	}
-    }
 
-    #
-    # pass 1: filter columns
-    #
+	#
+	# pass 1: filter columns
+	#
 
-    my @show;
+	my @show;
 
-    foreach my $row (@output) {
+	foreach my $row (@output) {
+	    
+	    my $col = 0;
 
-	my $col = 0;
-
-	foreach (@$row) {
-	    $show[ $col++ ] ||= !$hide_undef || defined $_
+	    foreach (@$row) {
+		$show[ $col++ ] ||= !$hide_undef || defined $_
+		}
 	}
-    }
 
-    #
-    # pass 2: compute output widths
-    #
+	#
+	# pass 2: compute output widths
+	#
 
-    my @widths;
+	my @widths;
 
-    foreach  my $row ($props,@output) {
+	foreach  my $row ($props,@output) {
 
-	my $col = 0;
+	    my $col = 0;
 
-	foreach (@$row) {
+	    foreach (@$row) {
 
-	    my $this_width = length(defined($_)? $_ : '(undef)');
+		my $this_width = length(defined($_)? $_ : '(undef)');
 
-	    for ($widths[ $col++ ]) {
-		$_ = $this_width
-		    if (!defined || $this_width > $_);
+		for ($widths[ $col++ ]) {
+		    $_ = $this_width
+			if (!defined || $this_width > $_);
+		}
 	    }
 	}
-    }
+	
+	#
+	# pass 3: output
+	#
 
-    #
-    # pass 3: output
-    #
+	my @hrule = map {'-' x ($_||0)} @widths;
 
-    my @hrule = map {'-' x ($_||0)} @widths;
+	foreach my $row ($props, \@hrule, @output) {
 
-    foreach my $row ($props, \@hrule, @output) {
+	    my $col = 0;
+	    my @cols = (
 
-	my $col = 0;
-	my @cols = (
+			grep {$_}
 
-	    grep {$_}
+			map {
+			    my $v = defined($_) ? $_ : '(undef)';
+			    my $s = $show[ $col ];
+			    my $w = $widths[ $col ];
+			    ++$col;
+			    $s ? sprintf('%-*s', $w, $v)
+				: undef;
+			}
 
-	    map {
-		my $v = defined($_) ? $_ : '(undef)';
-		my $s = $show[ $col ];
-		my $w = $widths[ $col ];
-		++$col;
-		$s ? sprintf('%-*s', $w, $v)
-		    : undef;
-	    }
+			@$row);
 
-	    @$row);
-
-	print join('|', map{defined($_) ? $_ : '(undef)'} @cols)."\n"; 
+	    print join('|', map{defined($_) ? $_ : '(undef)'} @cols)."\n"; 
+	}
     }
 }
 
-sub _output_row {
+sub _fetch_row_aref {
     my $props = shift;
     my $row = shift;
 
@@ -479,7 +485,21 @@ sub _output_row {
 		map {$row->$_}
 		@$props);
 
+
     return \@vals;
+}
+
+sub _fetch_row_href {
+    my $props = shift;
+    my $row = shift;
+
+    my %vals = (map {
+	my $val = $row->$_;
+	$val = defined($val) ? Elive::Util::string($val) : undef;
+	$_ => $val
+	} @$props);
+
+    return \%vals;
 }
 
 sub _getopt {
@@ -489,6 +509,7 @@ sub _getopt {
     Getopt::Long::GetOptions(\%options,
 			     'username|user=s',
 			     'password|pass=s',
+                             'dump=s',
 			     'debug=i',
 			     'help|?',
 			     'version|v',
@@ -500,6 +521,10 @@ sub _getopt {
     if ($options{version}) {
 	print "Elive v${Elive::VERSION} (c) 2009-2010\n";
 	exit 0;
+    }
+
+    if ($options{dump} && $options{dump} !~ /^(yaml)$/i) {
+	pod2usage("unknown dump format: $options{dump}");
     }
 
     my $url = shift(@ARGV);
