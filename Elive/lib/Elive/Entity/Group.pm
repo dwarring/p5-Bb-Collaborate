@@ -61,7 +61,6 @@ for group selection of meeting participants.
      },
     );
 
-
 Inserts a new group from data.
 
 =cut
@@ -71,12 +70,6 @@ Inserts a new group from data.
     $group->update({members => '222222;333333;44444'});
 
 =cut
-
-sub construct {
-    my $self = shift->SUPER::construct(@_);
-    bless $self->members, 'Elive::Array';
-    $self;
-}
 
 #
 # Seems that elluminate 9.7 can return a single element containing

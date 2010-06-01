@@ -31,7 +31,7 @@ isa_ok($group1, 'Elive::Entity::Group');
 
 ok($group1->id ==  1, 'constructed group - id accessor');
 ok($group1->name eq 'group_with_several_members', 'constructed group - name accessor');
-isa_ok($group1->members, 'ARRAY', 'group->members');
+isa_ok($group1->members, 'Elive::Array', 'group->members');
 is_deeply([ @{$group1->members}], \@base_members, 'group members preserved');
 
 ok(!$group1->is_changed, 'is_changed returns false before change');
