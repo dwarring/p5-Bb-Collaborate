@@ -194,8 +194,6 @@ sub upload {
 Utility method to return various website links for the recording. This is
 available as both class level and object level methods.
 
-=head3 Examples
-
     #
     # Class level access.
     #

@@ -6,8 +6,7 @@ use Mouse::Util::TypeConstraints;
 
 use HTML::Entities;
 
-use Elive::Entity;
-use base qw{ Elive::Entity };
+extends 'Elive::Entity';
 
 __PACKAGE__->entity_name('Report');
 __PACKAGE__->collection_name('Reports');

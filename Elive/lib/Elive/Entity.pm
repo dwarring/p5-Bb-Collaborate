@@ -721,8 +721,6 @@ Apply our updates to the server. This call will commit outstanding
 changes to the object and also apply any further updates passed
 as parameters.
 
-=head3 examples
-
     $obj->{foo} = 'Foo';  # change foo directly
     $foo->update;         # save
 

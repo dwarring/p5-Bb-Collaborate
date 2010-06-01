@@ -23,6 +23,7 @@ lib/Elive/Entity/Participant.pm
 lib/Elive/Entity/ParticipantList.pm
 lib/Elive/Entity/Preload.pm
 lib/Elive/Entity/Recording.pm
+lib/Elive/Entity/Report.pm
 lib/Elive/Entity/Role.pm
 lib/Elive/Entity/ServerDetails.pm
 lib/Elive/Entity/ServerParameters.pm
