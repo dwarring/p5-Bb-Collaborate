@@ -4,6 +4,8 @@ use warnings; use strict;
 use Class::Accessor;
 use base qw{Class::Accessor};
 
+use HTML::Entities;
+
 __PACKAGE__->mk_accessors( qw{fault result paramsout} );
 
 sub _pack_data {
@@ -63,6 +65,7 @@ sub _pack_data {
 		for ($is_array? @$_: $_) {
 		    
 		    $_ = Elive::Util::_freeze($_, $type);
+		    $_ = HTML::Entities::encode_entities($_);
 
 		}
 	    }

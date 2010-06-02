@@ -79,13 +79,19 @@ For example, to export all reports on a connected server:
 
 =cut
 
+=head2 update
+
+Updates an existing report.
+
+=cut
+
 sub update {
     my $self = shift;
     my $update_data = shift;
 
     my %changed;
     #
-    # always need to supply these fields to the update adaptor,
+    # always need to supply these fields to the update adapter,
     # wether or not they've changed.
     #
     @changed{$self->is_changed, 'name','description','xml','ownerId'} = undef;
