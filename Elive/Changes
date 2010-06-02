@@ -1,7 +1,9 @@
 Revision history for Elive
 
 0.68    2nd June 2010
-        - Added new entity class: Elive::Entity::Report
+        - Added new entity class: Elive::Entity::Report.
+        - Bug fix: Entity data was being returned with encoded
+          entities. HTML::Entities::decode_entities is now used.
 
 0.67    28th May 2010
         - Added Elive::Entity::Recording::upload() method.

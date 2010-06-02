@@ -77,8 +77,8 @@ SKIP: {
 
     my %parameter_str_data = (
 	costCenter => 'testing',
-	moderatorNotes => 'test moderator notes',
-	userNotes => 'test user notes',
+	moderatorNotes => 'test moderator notes. Here are some entities: & > <',
+	userNotes => 'test user notes; some more entities: &gt;',
 	recordingStatus => 'remote',
     );
     

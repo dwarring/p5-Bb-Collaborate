@@ -22,8 +22,7 @@ BEGIN {
     use_ok( 'Elive::Entity' );
 };
 
-my $canonical = {
-    'UserAdapter' => {
+my %user = (
 	'FirstName' => 'Blinky',
 	'Role' => {
 	    'RoleAdapter' => {
@@ -31,12 +30,22 @@ my $canonical = {
 	    }
 	},
 	'Id' => '123456789000',
-	'LoginPassword' => '',
+	'LoginPassword' => 'a&b',
 	'LastName' => 'Bill',
 	'Deleted' => 'false',
 	'LoginName' => 'bbill',
 	'Email' => 'bbill@test.org'
-    }
+    );
+
+my $canonical = {
+    'UserAdapter' => \%user
+};
+
+my $canonical_encoded = {
+    'UserAdapter' => {
+                   %user,
+                   'LoginPassword' => 'a&amp;b'
+    },
 };
 
 #
@@ -45,7 +54,7 @@ my $canonical = {
 
 #------ Simple value
 
-my $simple_unpacked = Elive::Entity->_unpack_as_list($canonical);
+my $simple_unpacked = Elive::Entity->_unpack_as_list(Storable::dclone($canonical_encoded));
 isa_ok($simple_unpacked, 'ARRAY');
 is_deeply($canonical, $simple_unpacked->[0], 'Simple unpacking');
 
@@ -54,7 +63,7 @@ is_deeply($canonical, $simple_unpacked->[0], 'Simple unpacking');
 my $collection = {
     Collection => {
 	Entry => [
-	    Storable::dclone($canonical),
+	    Storable::dclone($canonical_encoded),
 	]
     }
 };
@@ -66,7 +75,7 @@ is_deeply($canonical, $collection_unpacked->[0], 'Collection unpacking');
 
 my $collection1 = {
     Collection => {
-	Entry => Storable::dclone($canonical),
+	Entry => Storable::dclone($canonical_encoded),
     }
 };
 
@@ -80,7 +89,7 @@ my $hash_map = {
 	Entry => [
 	    {
 		Key   => 123456789000,
-		Value => Storable::dclone($canonical),
+		Value => Storable::dclone($canonical_encoded),
 	    },
 	],
     }
@@ -95,7 +104,7 @@ my $hash_map1 = {
     Map => {
 	Entry => {
 		Key   => 123456789000,
-		Value => Storable::dclone($canonical),
+		Value => Storable::dclone($canonical_encoded),
 	    },
     }
 };

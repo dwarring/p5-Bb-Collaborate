@@ -236,7 +236,7 @@ sub delete {
 	die "Cowardly refusing to delete system admin account for ".$self->loginName.": (pass force => 1 to override)"
 	    if (Elive::Util::string($self->role) == 0);
 
-	my $connection = $opt{connection} || $self->connection;
+	my $connection = $self->connection;
 
 	my $login = $connection->login;
 	die "Not loggged in" unless $login;

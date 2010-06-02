@@ -8,6 +8,8 @@ use HTML::Entities;
 
 extends 'Elive::Entity';
 
+use Elive::Entity::Role;
+
 __PACKAGE__->entity_name('Report');
 __PACKAGE__->collection_name('Reports');
 
@@ -16,12 +18,15 @@ __PACKAGE__->primary_key('reportId');
 
 has 'name' => (is => 'rw', isa => 'Str',
 	      documentation => 'report name');
+__PACKAGE__->_alias(reportName => 'name', freeze => 1);
 
 has 'description' => (is => 'rw', isa => 'Str',
 	      documentation => 'report description');
+__PACKAGE__->_alias(reportDescription => 'description', freeze => 1);
 
 has 'xml' => (is => 'rw', isa => 'Str', required => 1,
 	      documentation => 'report content');
+__PACKAGE__->_alias(reportDefinition => 'xml', freeze => 1);
 
 has 'role' => (is => 'rw', isa => 'Elive::Entity::Role',
                documentation => 'default user role',
@@ -30,6 +35,7 @@ has 'role' => (is => 'rw', isa => 'Elive::Entity::Role',
 has 'parentId' => (is => 'rw', isa => 'Int');
 
 has 'ownerId' => (is => 'rw', isa => 'Int');
+__PACKAGE__->_alias(reportOwner => 'ownerId', freeze => 1);
 
 =head1 NAME
 
@@ -37,7 +43,35 @@ Elive::Entity::Report - Elluminate Report entity instance class
 
 =head1 DESCRIPTION
 
-This is the entity class for server side reports.
+This is the entity class for server side reports. These are visible
+on the Elluminate server under the 'Reports' tab.
+
+Please note that the C<list> method does not return the body of the
+report. The report object needs to be refetched via the C<retrieve> method.
+
+For example, to export all reports on a connected server:
+
+    my $reports = Elive::Entity::Report->list(
+    my @report_ids = map {$_->reportId} @$reports;
+    #
+    # listed objects don't have the report body, cull and refetch them.
+    #
+    $reports = undef;
+
+    foreach my $reportId (@report_ids) {
+
+        my $rpt = Elive::Entity::Report->retrieve([$reportId]);
+
+	my $name = $rpt->name;
+	$name =~ s/[^\w]//g;
+	my $export_file = "/tmp/report_${reportId}_${name}.xml";
+
+	open (XML, '>', $export_file)
+	    or die "unable to open $export_file: $!";
+	print XML $rpt->xml;
+	close (XML);
+
+    }
 
 =cut
 
@@ -45,52 +79,17 @@ This is the entity class for server side reports.
 
 =cut
 
-sub _thaw {
-    my $class = shift;
-    my $db_data = shift;
-  
-    my $data = $class->SUPER::_thaw($db_data, @_);
-
-    for (grep {defined} $data->{xml}) {
-	$_ = HTML::Entities::decode_entities($_);
-	s{\015$}{}mg
-	}
-
-    return $data;
-}
-
-## following is experimental!!
-
-sub _tba_build {
+sub update {
     my $self = shift;
-    my %opt = @_;
+    my $update_data = shift;
 
-    my $connection = $opt{connection} || $self->connection
-	or die "not connected";
-
-    my $report_id = $opt{report_id};
-
-    $report_id ||= $self->reportId
-	if ref($self);
-
-    die "unable to determine report_id"
-	unless $report_id;
-
-    my %soap_params = %{$opt{params} || {}};
-
-    $soap_params{reportId} = $report_id;
-
-    my $adapter = $self->check_adapter('buildReport');
-
-    my $som = $connection->call($adapter,
-				%soap_params,
-				);
-
-    $self->_check_for_errors($som);
-
-    my $results = $self->_unpack_as_list($som->result);
-
-    return @$results && Elive::Util::_thaw($results->[0], 'Str');
+    my %changed;
+    #
+    # always need to supply these fields to the update adaptor,
+    # wether or not they've changed.
+    #
+    @changed{$self->is_changed, 'name','description','xml','ownerId'} = undef;
+    $self->SUPER::update(undef, @_, changed => [sort keys %changed]);
 }
 
 1;

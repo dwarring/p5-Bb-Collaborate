@@ -59,9 +59,6 @@ sub list {
     die "filter not applicable to class $class"
 	if ($opt{filter});
 
-    my $connection = $opt{connection} || $class->connection
-	|| die "not connected";
-
     return $class->_fetch({}, %opt);
 }
 

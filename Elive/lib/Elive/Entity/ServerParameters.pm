@@ -129,17 +129,19 @@ sub update {
 	if (keys %$update_data);
 
     #
-    # direct changes to seats are ignored. This needs to be updated
-    # via the meeting entity.
-    #
-    warn "ignoring changed 'seats' value"
-	if (grep {$_ eq 'seats'} $self->is_changed);
-
-    #
     # SDK seems to require a setting for fullPermissions (aka permissionOns)
     # trap it as an error on our side.
     #
     my @required = qw/boundaryMinutes fullPermissions supervised/;
+    my %changed;
+    @changed{@required, $self->is_changed} = undef;
+
+    #
+    # direct changes to seats are ignored. This needs to be updated
+    # via the meeting entity.
+    #
+    warn "ignoring changed 'seats' value"
+	if (exists $changed{seats});
 
     foreach (@required) {
 	die "missing required property: $_"
@@ -150,7 +152,7 @@ sub update {
     # This adapter barfs if we don't write values back, whether they've
     # changed or not.
     #
-    $self->SUPER::update(undef, @_, changed => \@required);
+    $self->SUPER::update(undef, @_, changed => [sort keys %changed]);
 }
 
 =head1 See Also

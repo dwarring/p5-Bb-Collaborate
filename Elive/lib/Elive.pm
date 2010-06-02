@@ -328,7 +328,7 @@ sub check_adapter {
 
     my %known_adapters = $class->known_adapters;
 
-    die "Uknown adapter: $adapter"
+    die "Unknown adapter: $adapter"
 	unless exists $known_adapters{$adapter};
 
     if ($crud) {

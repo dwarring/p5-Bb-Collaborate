@@ -51,7 +51,6 @@ SKIP: {
 	or exit(1);
 
     ok($connection->url ne $connection_2->url, 'connections have distinct urls');
-    use Carp; $SIG{__DIE__} = \&Carp::confess;
     ok(my $user = $connection->login, 'connection login');
     isa_ok($user, 'Elive::Entity::User','login');
 

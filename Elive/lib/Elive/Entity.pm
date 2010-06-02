@@ -9,6 +9,7 @@ use YAML;
 use Scalar::Util qw{weaken};
 require UNIVERSAL;
 use Storable qw{dclone};
+use HTML::Entities;
 
 use Elive::Util;
 use Elive::Array;
@@ -120,14 +121,8 @@ sub construct {
     #
     local (%Elive::_construct_opts) = %opt;
 
-    $opt{connection} = delete $opt{connection} || $class->connection
-	or die "not connected";
-
     my %known_properties;
     @known_properties{$class->properties} = undef;
-
-    foreach (keys %$data) {
-    }
 
     warn YAML::Dump({construct => $data})
 	if (Elive->debug > 1);
@@ -138,7 +133,9 @@ sub construct {
 
     return $self if ($opt{copy});
 
-    my $connection = $opt{connection};
+    my $connection = delete $opt{connection} || $class->connection
+	or die "not connected";
+
     #
     # Retain one copy of the data for this connection
     #
@@ -374,7 +371,7 @@ sub _unpack_results {
     my $results_type = Elive::Util::_reftype($results);
 
     if (!$results_type) {
-	return $results;
+	return HTML::Entities::decode_entities($results);
     }
     elsif ($results_type eq 'ARRAY') {
 	return [map {$class->_unpack_results($_)} @$results];
@@ -655,9 +652,8 @@ sub insert {
 
     my %opt = @_;
 
-    my $connection = $opt{connection}
-		      || $class->connection
-			  or die "not connected";
+    my $connection = $opt{connection} || $class->connection
+	or die "not connected";
 
     my $db_data = $class->_freeze($insert_data, mode => 'insert');
 
@@ -831,8 +827,7 @@ sub list {
 	push( @params, filter => $filter );
     }
 
-    my $connection = $opt{connection}
-		      || $class->connection
+    my $connection = $opt{connection} || $class->connection
 	or die "no connection active";
 
     my $collection_name = $class->collection_name || $class->entity_name;
@@ -924,7 +919,7 @@ sub retrieve {
     }
 
     my $connection = $opt{connection} || $class->connection
-	or die "no connected";
+	or die "no connection active";
 
     if ($opt{reuse}) {
 	#
