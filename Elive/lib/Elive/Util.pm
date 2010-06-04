@@ -3,11 +3,11 @@ use warnings; use strict;
 
 use Term::ReadKey;
 use Term::ReadLine;
+use IO::Interactive;
 use Scalar::Util;
 use Storable;
 require UNIVERSAL;
 use YAML;
-
 
 =head1 NAME
 
@@ -213,9 +213,10 @@ sub prompt {
 
     do {
 	die "giving up on input of $prompt" if ++$n > 100;
-	print $prompt if -t STDIN;
+	print $prompt if IO::Interactive::is_interactive();
 	$input = ReadLine(0);
-	return undef unless (defined $input);
+	return
+	    unless (defined $input);
 	chomp($input);
     } until (defined($input) && length($input));
 

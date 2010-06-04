@@ -39,6 +39,7 @@ script/elive_query
 script/elive_raise_meeting
 t/00a-compile.t
 t/00b-struct.t
+t/00c-critic.t
 t/01-entity-construct.t
 t/02-entity-update.t
 t/03-entity-update-group.t
@@ -62,6 +63,7 @@ t/26-soap-user.t
 t/27-soap-group.t
 t/28-soap-report.t
 t/29-soap-multi-connect.t
+t/30-soap-exception.t
 t/90-pod.t
 t/91-pod-coverage.t
 t/99-kwalitee.t

@@ -164,7 +164,7 @@ sub download {
     return  Elive::Util::_hex_decode($results->[0])
 	if $results->[0];
 
-    return undef;
+    return;
 }
 
 =head2 import_from_server

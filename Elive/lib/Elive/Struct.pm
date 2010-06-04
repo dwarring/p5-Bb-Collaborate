@@ -297,7 +297,8 @@ sub _ordered_attribute_names {
 	$order{$_} ||= ++$rank;
     }
 
-    return sort {$order{$a} <=> $order{$b}} (keys %order);
+    my @atts_sorted = sort {$order{$a} <=> $order{$b}} (keys %order);
+    return @atts_sorted;
 }
 
 sub _ordered_attributes {
@@ -320,7 +321,7 @@ sub _cmp_col {
     my $_v2 = shift;
     my %opt = @_;
 
-    return undef
+    return
 	unless (defined $_v1 && defined $_v2);
 
     my ($type, $is_array, $is_struct) = Elive::Util::parse_type($data_type);

@@ -9,8 +9,6 @@ use lib '.';
 use t::Elive;
 
 use Carp;
-##local($SIG{__DIE__}) = \&Carp::confess;
-##local($SIG{__WARN__}) = \&Carp::cluck;
 
 BEGIN {
     use_ok( 'Elive' );
@@ -78,7 +76,7 @@ SKIP: {
     my %parameter_str_data = (
 	costCenter => 'testing',
 	moderatorNotes => 'test moderator notes. Here are some entities: & > <',
-	userNotes => 'test user notes; some more entities: &gt;',
+	userNotes => 'test user notes',
 	recordingStatus => 'remote',
     );
     

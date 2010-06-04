@@ -199,7 +199,7 @@ sub disconnect {
 	$class->connection(undef);
     }
 
-    return undef;
+    return;
 }
 
 =head2 debug

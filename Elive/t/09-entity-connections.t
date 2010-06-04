@@ -34,7 +34,7 @@ for my $class(qw{Elive::Connection t::Elive::MockConnection}) {
     ok($C2_dup->url eq $URL2, 'connection 2 dup - has expected url');
 
     ok(Scalar::Util::refaddr($C2) ne Scalar::Util::refaddr($C2_dup),
-					'distinct connections on common url => distinct objects');
+       'distinct connections on common url => distinct objects');
 
     ok($C2->url eq $C2_dup->url,
        'distinct connections on common url => common url');

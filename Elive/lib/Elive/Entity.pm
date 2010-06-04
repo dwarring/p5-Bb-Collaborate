@@ -532,7 +532,7 @@ sub _readback_check {
 	foreach ($class->properties) {
 
 	    if (exists $updates->{$_} && exists $row->{$_}) {
-		my $write_val =  $updates->{$_};
+		my $write_val = $updates->{$_};
 		my $read_val = $row->{$_};
 		my $property_type = $class->property_types->{$_};
 

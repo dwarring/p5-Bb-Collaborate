@@ -24,6 +24,8 @@ use Term::ReadLine;
 use Pod::Usage;
 use UNIVERSAL;
 
+use IO::Interactive;
+
 =head1 NAME
 
 elive_query
@@ -97,7 +99,7 @@ sub main {
     our $elive_version = ${Elive::VERSION};
     our $entities = Elive::Entity->entities;
     our $term = new Term::ReadLine 'elive shell';
-    our $is_tty = -t STDIN;
+    our $is_tty = - IO::Interactive::is_interactive();
 
     foreach (keys %$entities) {
 	#

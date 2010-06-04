@@ -197,11 +197,11 @@ sub main {
     my $upload_data;
 
     if ($upload) {
-	open(UPLOAD, '<', $upload)
+	open(my $upload_fh, '<', $upload)
 	    or die "unable to open $upload: $!\n";
 
-	$upload_data = join('', <UPLOAD>);
-	close (UPLOAD);
+	$upload_data = join('', <$upload_fh>);
+	close ($upload_fh);
     }
 
     my $facilitator = $facilitator_id

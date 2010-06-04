@@ -32,7 +32,7 @@ SKIP: {
 
     unless (@$reports) {
 	#
-	# a bit unusual, because Elluminate comes with built in reports
+	# a bit unexpected, because Elluminate comes with built in reports
 	#
         diag("** Hmmm, No reports on this server - skipping further report tests !!!?");
         skip('No reports found!?', 4);

@@ -46,20 +46,19 @@ Elive::Entity::Report - Elluminate Report entity instance class
 This is the entity class for server side reports. These are visible
 on the Elluminate server under the 'Reports' tab.
 
-Please note that the C<list> method does not return the body of the
-report. The report object needs to be refetched via the C<retrieve> method.
+Please note that the C<list> method (C<listReports> adapter) does not return the body
+of the report. The report object needs to be refetched via the C<retrieve> method.
 
 For example, to export all reports on a connected server:
 
     my $reports = Elive::Entity::Report->list(
     my @report_ids = map {$_->reportId} @$reports;
-    #
-    # listed objects don't have the report body, cull and refetch them.
-    #
-    $reports = undef;
 
     foreach my $reportId (@report_ids) {
 
+	#
+	# listed objects don't have the report body, refetch them.
+	#
         my $rpt = Elive::Entity::Report->retrieve([$reportId]);
 
 	my $name = $rpt->name;

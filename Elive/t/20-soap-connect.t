@@ -27,13 +27,13 @@ SKIP: {
     diag ("connecting: user=$auth->[1], url=$auth->[0]");
 
     my $connection = $connection_class->connect(@$auth);
-    Elive->connection($connection);
     ok($connection, 'got connection');
     isa_ok($connection, 'Elive::Connection','connection')
 	or exit(1);
 
-    my $login;
+    Elive->connection($connection);
 
+    my $login;
     ok ($login = Elive->login, 'got login');
     isa_ok($login, 'Elive::Entity::User','login');
     # case insensitive comparision
