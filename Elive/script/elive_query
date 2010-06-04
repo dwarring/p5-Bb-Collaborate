@@ -45,7 +45,7 @@ Simple read-only query shell for Elive.
 
 =head2 Entity Data Queries
 
-This example script lets you do simple queries, in a vaugely SQL like manner.
+This example script lets you do simple queries, in a vaguely SQL like manner.
 For example:
 
     % elive_query -user admin http://myvclass.com/mysite
