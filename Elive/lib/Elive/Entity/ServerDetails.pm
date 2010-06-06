@@ -53,8 +53,7 @@ always expect to retrieve one record from each connection.
 =cut
 
 sub list {
-    my $class = shift;
-    my %opt = @_;
+    my ($class, %opt) = @_;
 
     die "filter not applicable to class $class"
 	if ($opt{filter});

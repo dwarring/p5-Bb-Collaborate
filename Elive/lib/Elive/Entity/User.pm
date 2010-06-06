@@ -66,8 +66,9 @@ coerce 'Elive::Entity::User' => from 'Str'
 =cut
 
 sub _readback_check {
-    my $class = shift;
-    my %updates = %{shift()};
+    my ($class, $update_href, @args) = @_;
+
+    my %updates = %$update_href;
 
     #
     # password not included in readback record - skip it
@@ -75,7 +76,7 @@ sub _readback_check {
 
     delete $updates{loginPassword};
 
-    $class->SUPER::_readback_check(\%updates, @_, case_insensitive => 1);
+    return $class->SUPER::_readback_check(\%updates, @args, case_insensitive => 1);
 }
 
 =head2 get_by_loginName
@@ -92,14 +93,13 @@ was not found. So, if you're not sure if the user exists:
 =cut
 
 sub get_by_loginName {
-    my $class = shift;
-    my $loginName = shift;
+    my ($class, $loginName, @args) = @_;
     #
     # The entity name is loginName, but the fetch key is userName.
     #
     my $results = $class->_fetch({userName => $loginName},
 				 readback => {loginName => $loginName},
-				 @_,
+				 @args,
 	);
 
     return @$results && $results->[0];
@@ -121,16 +121,14 @@ Insert a new user
 =cut
 
 sub insert {
-    my $class = shift;
-    my %data = %{shift()};
-    my %opt = @_;
+    my ($class, $data_href, %opt) = @_;
 
-    my $self = $class->SUPER::insert( \%data, %opt );
+    my $self = $class->SUPER::insert( $data_href, %opt );
 
     #
     # seems we have to insert a record, then set the password
     #
-    my $password = $data{loginPassword};
+    my $password = $data_href->{loginPassword};
     if (defined $password and $password ne '') {
 	$self->change_password($password);
     }
@@ -158,9 +156,8 @@ As a safeguard, you'll need to pass C<force =E<gt> 1> to update:
 =cut
 
 sub update {
-    my $self = shift;
-    my %update_data = %{shift() || {}};
-    my %opt = @_;
+    my ($self, $data_href, %opt) = @_;
+    my %update_data = %{$data_href || {}};
 
     unless ($opt{force}) {
 	die "Cowardly refusing to update system admin account for ".$self->loginName.": (pass force => 1 to override)"
@@ -201,9 +198,7 @@ This is equivalent to:
 =cut
 
 sub change_password {
-    my $self = shift;
-    my $new_password = shift;
-    my %opt = @_;
+    my ($self, $new_password, %opt) = @_;
 
     $self->SUPER::update({loginPassword => $new_password},
 			 adapter => 'changePassword',
@@ -229,8 +224,7 @@ system administrator accounts, or the login user.
 =cut
 
 sub delete {
-    my $self = shift;
-    my %opt = @_;
+    my ($self, %opt) = @_;
 
     unless ($opt{force}) {
 	die "Cowardly refusing to delete system admin account for ".$self->loginName.": (pass force => 1 to override)"

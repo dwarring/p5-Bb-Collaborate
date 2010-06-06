@@ -76,10 +76,9 @@ Inserts a new group from data.
 # the members, each separated by ';'.
 
 sub _thaw {
-    my $class = shift;
-    my $db_data = shift;
+    my ($class, $db_data, @args) = @_;
 
-    my $data = $class->SUPER::_thaw($db_data, @_);
+    my $data = $class->SUPER::_thaw($db_data, @args);
     $data->{members} = [map {split(';')} @{ $data->{members} || [] }];
 
     return $data;

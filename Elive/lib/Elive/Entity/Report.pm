@@ -85,8 +85,7 @@ Updates an existing report.
 =cut
 
 sub update {
-    my $self = shift;
-    my $update_data = shift;
+    my ($self, $update_data, @args) = @_;
 
     my %changed;
     #
@@ -94,7 +93,8 @@ sub update {
     # wether or not they've changed.
     #
     @changed{$self->is_changed, 'name','description','xml','ownerId'} = undef;
-    $self->SUPER::update(undef, @_, changed => [sort keys %changed]);
+
+    return $self->SUPER::update(undef, @args, changed => [sort keys %changed]);
 }
 
 1;

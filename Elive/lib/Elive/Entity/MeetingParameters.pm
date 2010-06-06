@@ -79,7 +79,7 @@ automatically created when you create a table.
 
 =cut
 
-sub insert {shift->_not_available}
+sub insert {return shift->_not_available}
 
 =head2 delete
 
@@ -88,7 +88,7 @@ when the meeting itself is deleted.
 
 =cut
 
-sub delete {shift->_not_available}
+sub delete {return shift->_not_available}
 
 =head2 list
 
@@ -97,13 +97,12 @@ to create a meeting, then retrieve on meeting id
 
 =cut
 
-sub list {shift->_not_available}
+sub list {return shift->_not_available}
 
 sub _thaw {
-    my $class = shift;
-    my $db_data = shift;
+    my ($class, $db_data, @args) = @_;
 
-    my $data = $class->SUPER::_thaw($db_data, @_);
+    my $data = $class->SUPER::_thaw($db_data, @args);
 
     for (grep {defined} $data->{recordingStatus}) {
 

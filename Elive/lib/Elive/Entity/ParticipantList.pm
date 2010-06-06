@@ -66,9 +66,7 @@ Or an array of hashrefs:
 =cut
 
 sub _retrieve_all {
-    my $class = shift;
-    my $vals = shift;
-    my %opt = @_;
+    my ($class, $vals, %opt) = @_;
 
     #
     # No getXxxx adapter use listXxxx
@@ -79,9 +77,7 @@ sub _retrieve_all {
 }
 
 sub _freeze {
-    my $class = shift;
-    my $data = shift;
-    my %opt = @_;
+    my ($class, $data, %opt) = @_;
 
     my $frozen = $class->SUPER::_freeze($data, %opt);
 
@@ -133,9 +129,7 @@ Note that if you empty the participant list, C<reset> will be called.
 =cut
 
 sub update {
-    my $self = shift;
-    my $update_data = shift;
-    my %opt = @_;
+    my ($self, $update_data, %opt) = @_;
 
     if ($update_data) {
 
@@ -175,8 +169,9 @@ sub update {
 	my $class = ref($self);
 	$class->retrieve([$self->id],
 			 connection => $self->connection);
-	$self;
     }
+
+    return $self;
 }
 
 =head2 reset 
@@ -189,8 +184,7 @@ the only participant, with a role of 2 (moderator).
 =cut
 
 sub reset {
-    my $self = shift;
-    my %opt = @_;
+    my ($self, %opt) = @_;
 
     my $meeting_id = $self->meetingId
 	or die "unable to get meetingId";
@@ -212,7 +206,7 @@ sub reset {
     my %updates
 	= (participants => [{user => $facilitator_id, role => 2}]);
 
-    $self->update(\%updates,
+    return $self->update(\%updates,
 		  adapter => 'resetParticipantList',
 		  %opt,
 	);
@@ -230,14 +224,7 @@ Note that if you empty the participant list, C<reset> will be called.
 =cut
 
 sub insert {
-    my $class = shift;
-    my $data = shift;
-
-    die "usage: $class->insert(\\%data, %opts)"
-	unless (Elive::Util::_reftype($data) eq 'HASH'
-		&& @_ % 2 == 0);
- 
-    my %opt = @_;
+    my ($class, $data, %opt) = @_;
 
     my $self;
 
@@ -281,10 +268,7 @@ sub _is_lazy {
 }
 
 sub _readback {
-    my $class = shift;
-    my $som = shift;
-    my $updates = shift;
-    my $connection = shift;
+    my ($class, $som, $updates, $connection, @args) = @_;
 
     #
     # sometimes get back an empty response from setParticipantList,
@@ -295,7 +279,7 @@ sub _readback {
     # complete the readback check.
     #
     my $result = $som->result;
-    return $class->SUPER::_readback($som, $updates, @_)
+    return $class->SUPER::_readback($som, $updates, @args)
 	if Elive::Util::_reftype($result);
     #
     # Ok, we need to handle our own error checking and readback.
@@ -311,7 +295,7 @@ sub _readback {
 	)
 	or die "unable to retrieve $class/$meeting_id";
 
-    $class->SUPER::_readback_check($updates, [$row], @_);
+    return $class->SUPER::_readback_check($updates, [$row], @args);
 }
 
 =head2 list
@@ -321,7 +305,7 @@ to retrieve on a meeting id.
 
 =cut
 
-sub list {shift->_not_available}
+sub list {return shift->_not_available}
 
 =head1 SEE ALSO
 

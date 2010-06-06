@@ -7,11 +7,11 @@ Elive - Elluminate Live! (c) SDK bindings
 
 =head1 VERSION
 
-Version 0.68
+Version 0.69
 
 =cut
 
-our $VERSION = '0.68';
+our $VERSION = '0.69';
 
 use Class::Data::Inheritable;
 use base qw{Class::Data::Inheritable};
@@ -107,9 +107,7 @@ See also Elive::Connection.
 =cut
 
 sub connect {
-
-    my $class = shift;
-    my ($url, $login_name, $pass) = @_;
+    my ($class, $url, $login_name, $pass) = @_;
 
     die "usage: ${class}->new(url, login_name[, pass])"
 	unless ($class && $url && $login_name);
@@ -154,8 +152,7 @@ Returns the login user for the default connection.
 =cut
 
 sub login {
-    my $class = shift;
-    my %opt = @_;
+    my ($class, %opt) = @_;
 
     my $connection = $opt{connection} || $class->connection;
 
@@ -172,8 +169,7 @@ Returns the server details for the default connection.
 =cut
 
 sub server_details {
-    my $class = shift;
-    my %opt = @_;
+    my ($class, %opt) = @_;
 
     my $connection = $opt{connection} || $class->connection;
 
@@ -191,8 +187,7 @@ do this prior to exiting your program.
 =cut
 
 sub disconnect {
-    my $class = shift;
-    my %opt = @_;
+    my ($class, %opt) = @_;
 
     if (my $connection = $opt{connection} || $class->connection) {
 	$connection->disconnect;
@@ -216,10 +211,10 @@ sub disconnect {
 =cut
 
 sub debug {
-    my $class = shift;
+    my ($class, $level) = @_;
 
-    if (@_) {
-	$DEBUG = shift || 0;
+    if (defined $level) {
+	$DEBUG = $level;
     }
 
     return $DEBUG || 0;
@@ -398,6 +393,7 @@ sub has_metadata {
 sub DESTROY {
     my $self = shift;
     delete  $Meta_Data{Scalar::Util::refaddr($self)};
+    return;
 }
 
 {

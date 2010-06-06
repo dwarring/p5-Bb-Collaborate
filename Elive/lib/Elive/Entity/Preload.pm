@@ -84,9 +84,7 @@ MIME::Types.
 =cut
 
 sub upload {
-    my $class = shift;
-    my $insert_data = shift;
-    my %opt = @_;
+    my ($class, $insert_data, %opt) = @_;
 
     my $binary_data = delete $insert_data->{data};
 
@@ -140,8 +138,7 @@ Download data for a preload.
 =cut
 
 sub download {
-    my $self = shift;
-    my %opt = @_;
+    my ($self, %opt) = @_;
 
     my $preload_id = $opt{preload_id} ||= $self->preloadId;
 
@@ -185,9 +182,7 @@ extension using MIME::Types.
 =cut
 
 sub import_from_server {
-    my $class = shift;
-    my $insert_data = shift;
-    my %opt = @_;
+    my ($class, $insert_data, %opt) = @_;
 
     my $filename = delete $insert_data->{fileName};
 
@@ -204,9 +199,9 @@ sub import_from_server {
 
     $opt{param}{fileName} = $filename;
 
-    $class->insert($insert_data,
-		   adapter => 'importPreload',
-		   %opt);
+    return $class->insert($insert_data,
+			  adapter => 'importPreload',
+			  %opt);
 }
 
 =head2 list_meeting_preloads
@@ -218,9 +213,7 @@ Implements the listMeetingPreloads method
 =cut
 
 sub list_meeting_preloads {
-    my $self = shift;
-    my $meeting_id = shift;
-    my %opt = @_;
+    my ($self, $meeting_id, %opt) = @_;
 
     die 'usage: $preload_obj->list_meeting_preloads($meeting)'
 	unless $meeting_id;
@@ -232,13 +225,11 @@ sub list_meeting_preloads {
 }
 
 sub _thaw {
-    my $class = shift;
-    my $db_data = shift;
-    my %opt = @_;
+    my ($class, $db_data, %opt) = @_;
     #
     # Primary key returned in a field named 'Key'. We require PreloadId
     #
-    my $db_thawed = $class->SUPER::_thaw($db_data, @_);
+    my $db_thawed = $class->SUPER::_thaw($db_data, %opt);
 
     for (grep {defined} $db_thawed->{type}) {
 	#
@@ -261,11 +252,10 @@ The update method is not available for preloads.
 
 =cut
 
-sub update {shift->_not_available}
+sub update {return shift->_not_available}
 
 sub _guess_mimetype {
-    my $class = shift;
-    my $filename = shift;
+    my ($class, $filename) = @_;
 
     our $mime_types ||= MIME::Types->new;
     my $mime_type;

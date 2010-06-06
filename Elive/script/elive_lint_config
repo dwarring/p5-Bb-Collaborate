@@ -44,12 +44,12 @@ sub main {
 
     print "Elive ${Elive::VERSION} - Server Configuration Linter\n";
 
-    GetOptions(
-	'help|?' => \$help,
+    (GetOptions(
+	 'help|?' => \$help,
 	)
 	&& (($help && pod2usage(1)) || (my $config_file = shift @ARGV))
-	&& (!@ARGV)
-	or die pod2usage(1);
+	&& (!@ARGV))
+	|| die pod2usage(1);
 
     print "Checking: $config_file\n";
 
@@ -63,11 +63,10 @@ sub main {
 
     my @errors;
 
-    select STDERR; $| = 1;
-
-#
-# check and report on ldap status
-#
+    *STDERR->autoflush();
+    #
+    # check and report on ldap status
+    #
     if (my @daos = _get_elems($config, qw/elm daofactory dao/)) {
 
 	my ($ldap_dao) = grep {
@@ -176,18 +175,18 @@ sub main {
 	if @errors;
 
     print "\nNo errors found\n";
+    return 0;
 }
 
 sub _get_elems {
-    my $struct = shift;
-    my $tag = shift;
+    my ($struct,$tag,@elems) = @_;
 
     my $elem = $struct->{$tag};
 
     my @got = ref($elem) eq 'ARRAY' ? @$elem
 	: defined $elem? ($elem) : ();
 
-    return @_
-	? map {_get_elems($_, @_)} @got
+    return @elems
+	? map {_get_elems($_, @elems)} @got
 	: @got;
 }

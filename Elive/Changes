@@ -1,5 +1,28 @@
 Revision history for Elive
 
+0.69    10th June 2010
+        - Introduced t/00c-critic.t Test::Perl::Critic. A swag of minor
+          refactorings to Elive codebase in order to pass severity level
+          4 tests. Most commonly:
+
+          Atomic parsing of subroutine arguments. What was:
+
+	      sub disconnect {
+                  my $class = shift;
+                  my %opt = @_;
+                  # ...
+              }
+
+          After refactoring becomes:
+
+              sub disconnect {
+                  my ($class,%opt) = @_;
+                  # ....
+              }
+
+	Second most common refactoring was adding explicit final returns
+        to subroutines. For gory details, see svn commit of rev 377.
+
 0.68    2nd June 2010
         - Added new entity class: Elive::Entity::Report.
         - Bug fix: Entity data was being returned with encoded

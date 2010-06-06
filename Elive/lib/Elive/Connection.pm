@@ -127,6 +127,8 @@ sub disconnect {
 
     $self->_server_details(undef);
     $self->_login(undef);
+
+    return;
 }
 
 =head2 call
@@ -139,13 +141,7 @@ SOAP::SOM object.
 =cut
 
 sub call {
-    my $self = shift;
-    my $cmd = shift;
-
-    die "usage: \$obj->call($cmd , %params])"
-	unless $cmd && !(@_ % 2);
-
-    my %params = @_;
+    my ($self, $cmd, %params) = @_;
 
     $params{adapter} ||= 'default';
 
@@ -183,7 +179,7 @@ Returns the login user as an object of type L<Elive::Entity::User>.
 =cut
 
 sub login {
-    my $self = shift;
+    my ($self) = @_;
 
     my $login_entity = $self->_login;
 
@@ -274,6 +270,7 @@ EOD
 
 sub DESTROY {
     shift->disconnect;
+    return;
 }
 
 =head1 SEE ALSO

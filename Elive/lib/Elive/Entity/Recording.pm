@@ -95,8 +95,7 @@ Download data for a recording.
 =cut
 
 sub download {
-    my $self = shift;
-    my %opt = @_;
+    my ($self, %opt) = @_;
 
     my $recording_id = $opt{recording_id} ||= $self->recordingId;
 
@@ -158,9 +157,7 @@ Upload data from a client and create a recording.
 =cut
 
 sub upload {
-    my $class = shift;
-    my $insert_data = shift;
-    my %opt = @_;
+    my ($class, $insert_data, %opt) = @_;
 
     my $binary_data = delete $insert_data->{data};
 
@@ -212,8 +209,7 @@ available as both class level and object level methods.
 =cut
 
 sub web_url {
-    my $self = shift;
-    my %opt = @_;
+    my ($self, %opt) = @_;
 
     my $recording_id = $opt{recording_id} || $self->recordingId;
     $recording_id = Elive::Util::_freeze($recording_id, 'Int');
@@ -262,8 +258,7 @@ See also L<http://en.wikipedia.org/wiki/JNLP>.
 =cut
 
 sub buildJNLP {
-    my $self = shift;
-    my %opt = @_;
+    my ($self, %opt) = @_;
 
     my $connection = $self->connection
 	or die "not connected";
@@ -324,9 +319,7 @@ sub buildJNLP {
 #=cut
 
 sub _tba_import_from_server {
-    my $class = shift;
-    my $update_data = shift;
-    my %opt = @_;
+    my ($class, $update_data, %opt) = @_;
 
     my $filename = delete $update_data->{fileName};
 

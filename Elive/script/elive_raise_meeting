@@ -174,9 +174,9 @@ sub main {
 	$SIG{__DIE__} = \&Carp::confess;
     }
 
-    $url ||= Elive::Util::prompt('Elluminate Live! server: '),
-    $username ||= Elive::Util::prompt('Username: '),
-    $password ||= Elive::Util::prompt('Password: ', password => 1),
+    $url ||= Elive::Util::prompt('Elluminate Live! server: ');
+    $username ||= Elive::Util::prompt('Username: ');
+    $password ||= Elive::Util::prompt('Password: ', password => 1);
 
     our $connection = Elive->connect($url, $username, $password);
 
@@ -401,9 +401,7 @@ sub main {
 ########################################################################
 
 sub setup_participants {
-    my $meeting = shift;
-    my @participants = @_;
-
+    my ($meeting,@participants) = @_;
     #
     # Create participant list
     #
@@ -429,6 +427,7 @@ sub setup_participants {
     } @$participant_objs;
 
     print "participants: ".join(', ', @participants_display)."\n";
+    return;
 }
 
 ########################################################################

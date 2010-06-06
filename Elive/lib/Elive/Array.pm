@@ -59,7 +59,8 @@ sub stringify {
 =cut
 
 sub new {
-    return bless($_[1] || [], $_[0]);
+    my ($class,$ref) = @_;
+    return bless($ref || [], $class);
 }
 
 =head2 add 
@@ -71,9 +72,9 @@ Add elements to an array.
 =cut
 
 sub add {
-    my $self = shift;
+    my ($self, @elems) =  @_;
 
-    my @elems = grep {defined} @_;
+    @elems = grep {defined} @elems;
 
     if (my $element_class = $self->element_class) {
 	foreach (@elems) {
@@ -83,6 +84,8 @@ sub add {
     }
 
     push (@$self, @elems);
+
+    return $self;
 }
 
 1;

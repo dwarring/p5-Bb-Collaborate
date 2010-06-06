@@ -49,14 +49,12 @@ instance, or the default connection that will be used.
 =cut
 
 sub connection {
-    my $self = shift;
-
-    my $connection;
+    my ($self, $connection) = @_;
 
     if (ref($self)) {
-	$self->_connection(shift)
-	    if @_;
-	$connection = $self->_connection;
+	$self->_connection($connection)
+	    if $connection;
+	$connection ||= $self->_connection;
     }
 
     return $connection || $self->SUPER::connection;
@@ -107,9 +105,7 @@ Construct an entity from data.
 =cut
 
 sub construct {
-    my $class = shift;
-    my $data = shift;
-    my %opt = @_;
+    my ($class, $data, %opt) = @_;
 
     die "usage: ${class}->construct( \\%data )"
 	unless (Elive::Util::_reftype($data) eq 'HASH');
@@ -173,7 +169,7 @@ sub construct {
     $data_copy->_db_data(undef);
     $self->_db_data( $data_copy );
 
-    $self;
+    return $self;
 }
 
 sub _freeze {
@@ -489,10 +485,7 @@ sub _get_results {
 }
 
 sub _process_results {
-
-    my $class = shift;
-    my $soap_results = shift;
-    my %opt = @_;
+    my ($class, $soap_results, %opt) = @_;
 
     #
     # Thaw our returned SOAP responses to reconstruct the data
@@ -512,10 +505,7 @@ sub _process_results {
 }
 
 sub _readback_check {
-    my $class = shift;
-    my $updates = shift;
-    my $rows = shift;
-    my %opt = @_;
+    my ($class, $updates, $rows, %opt) = @_;
 
     #
     # Create and update responses generally return a copy of the
@@ -560,7 +550,7 @@ last retrieved or saved.
 
 sub is_changed {
 
-    my $self = shift;
+    my ($self) = @_;
 
     my @updated_properties;
     my $db_data = $self->_db_data;
@@ -597,19 +587,16 @@ Set entity properties.
 =cut
 
 sub set {
-    my $self = shift;
+    my ($self, @args) = @_;
 
     die "attempted to modify  data in a deleted record"
 	if ($self->_deleted);
 
-    return $self->SUPER::set(@_);
+    return $self->SUPER::set(@args);
 }
 
 sub _readback {
-    my $class = shift;
-    my $som = shift;
-    my $sent_data = shift;
-    my $_connection = shift;
+    my ($class, $som, $sent_data, $_connection) = @_;
     #
     # Inserts and updates normally return a copy of the entity
     # after an insert or update. Confirm that the output record contains
@@ -643,14 +630,10 @@ generated for you and returned with the newly created object.
 =cut
 
 sub insert {
-    my $class = shift;
-    my $insert_data = shift;
+    my ($class, $insert_data, %opt) = @_;
 
     die "usage: ${class}->insert( \\%data, %opts )"
-	unless (Elive::Util::_reftype($insert_data) eq 'HASH'
-		&& @_ % 2 == 0);
-
-    my %opt = @_;
+	unless (Elive::Util::_reftype($insert_data) eq 'HASH');
 
     my $connection = $opt{connection} || $class->connection
 	or die "not connected";
@@ -689,8 +672,7 @@ Returns a reference to an object in the Elive::Entity in-memory cache.
 =cut
 
 sub live_entity {
-    my $class = shift;
-    my $url = shift;
+    my ($class, $url) = @_;
 
     return $Stored_Objects{ $url };
 }
@@ -707,7 +689,7 @@ Returns the contents of Elive::Entity in-memory cache.
 =cut
 
 sub live_entities {
-    my $class = shift;
+    my ($class) = @_;
     return \%Stored_Objects;
 }
 
@@ -729,9 +711,7 @@ as parameters.
 =cut
 
 sub update {
-    my $self = shift;
-    my $update_data = shift;
-    my %opt = @_;
+    my ($self, $update_data, %opt) = @_;
 
     die "attempted to update deleted record"
 	if ($self->_deleted);
@@ -818,8 +798,7 @@ or Elive::Entity::ParticipantList.
 =cut
 
 sub list {
-    my $class = shift;
-    my %opt = @_;
+    my ($class, %opt) = @_;
 
     my @params;
 
@@ -853,9 +832,7 @@ sub list {
 }
 
 sub _fetch {
-    my $class = shift;
-    my $db_query = shift;
-    my %opt = @_;
+    my ($class, $db_query, %opt) = @_;
 
     die "usage: ${class}->_fetch( \\%query )"
 	unless (Elive::Util::_reftype($db_query) eq 'HASH');
@@ -903,9 +880,7 @@ Retrieve a single entity objects by primary key.
 =cut
 
 sub retrieve {
-    my $class = shift;
-    my $vals = shift;
-    my %opt = @_;
+    my ($class, $vals, %opt) = @_;
 
     die 'usage $class->retrieve([$val,..],%opt)'
 	unless Elive::Util::_reftype($vals) eq 'ARRAY';
@@ -956,9 +931,7 @@ sub retrieve {
 #
 
 sub _retrieve_all {
-    my $class = shift;
-    my $vals = shift;
-    my %opt = @_;
+    my ($class, $vals, %opt) = @_;
 
     die 'usage $class->_retrieve_all([$val,..],%opt)'
 	unless Elive::Util::_reftype($vals) eq 'ARRAY';
@@ -991,7 +964,7 @@ Delete an entity from the database.
 =cut
 
 sub delete {
-    my $self = shift;
+    my ($self) = @_;
 
     my @primary_key = $self->primary_key;
     my @id = $self->id;
@@ -1028,6 +1001,8 @@ sub delete {
 	if (@$rows > 1);
 
     $self->_deleted(1);
+
+    return;
 }
 
 =head2 revert
@@ -1040,8 +1015,7 @@ Revert an entity to its last constructed value.
 =cut
 
 sub revert {
-    my $self = shift;
-    my @props = @_;
+    my ($self, @props) = @_;
 
     my $db_data = $self->_db_data
 	|| die "object doesn't have db-data!? - can't cope";
@@ -1066,7 +1040,7 @@ sub revert {
 }
 
 sub _not_available {
-    my $self = shift;
+    my ($self) = @_;
 
     die "this operation is not available for ". $self->entity_name;
 }
@@ -1103,6 +1077,7 @@ sub DEMOLISH {
 	#
 	$self->_db_data(undef);
     }
+    return;
 }
 
 =head1 ADVANCED

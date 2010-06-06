@@ -68,9 +68,7 @@ sub _refaddr {
 }
 
 sub BUILDARGS {
-    my $class = shift;
-    my $raw = shift;
-    my @args = @_;
+    my ($class, $raw, @args) = @_;
 
     warn "$class - ignoring arguments to new: @args"
 	if @args;
@@ -180,16 +178,15 @@ sub entity_name {
 #
 
 sub _alias {
-    my $entity_class = shift;
-    my $from = lcfirst(shift);
-    my $to = lcfirst(shift);
+    my ($entity_class, $from, $to, %opt) = @_;
+
+    $from = lcfirst($from);
+    $to = lcfirst($to);
 
     die 'usage: $entity_class->_set_data_mapping(alias, prop, %opts)'
 	unless ($entity_class
 		&& $from && !ref($from)
 		&& $to && !ref($to));
-
-    my %opt = @_;
 
     my $aliases = $entity_class->_get_aliases;
 
@@ -247,11 +244,11 @@ sub id {
 =cut
 
 sub primary_key {
-    my $entity_class = shift;
+    my ($entity_class, @pkey) = @_;
 
-    if (@_) {
+    if (@pkey) {
 
-	$entity_class->_primary_key([@_]);
+	$entity_class->_primary_key(\@pkey);
 
     }
 
@@ -310,16 +307,11 @@ sub _ordered_attributes {
 }
 
 sub _cmp_col {
+    my ($class, $data_type, $_v1, $_v2, %opt) = @_;
 
     #
     # Compare two values for a property 
     #
-
-    my $class = shift;
-    my $data_type = shift;
-    my $_v1 = shift;
-    my $_v2 = shift;
-    my %opt = @_;
 
     return
 	unless (defined $_v1 && defined $_v2);
@@ -464,8 +456,7 @@ Assign values to entity properties.
 =cut
 
 sub set {
-    my $self = shift;
-    my %data = @_;
+    my ($self, %data) = @_;
 
     my %entity_column = map {$_ => 1} ($self->properties);
     my %primary_key = map {$_ => 1} ($self->primary_key);

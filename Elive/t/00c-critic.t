@@ -17,10 +17,12 @@ if ( $EVAL_ERROR ) {
    plan( skip_all => $msg );
 }
 
+my $SEVERITY = $ENV{ELIVE_TEST_CRITICAL_LEVEL} || 4;
+
 Test::Perl::Critic->import(
-    -severity => 5,
-    -verbose => 10,
-    -exclude => ['ProhibitNoStrict','ProhibitStringyEval']
+    -severity => $SEVERITY,
+    -verbose => 8,
+    -exclude => ['ProhibitNoStrict','ProhibitStringyEval','ProhibitBuiltinHomonyms','RequireLocalizedPunctuationVars','ProhibitMixedBooleanOperators']
     );
 
 all_critic_ok();

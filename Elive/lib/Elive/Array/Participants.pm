@@ -30,11 +30,11 @@ Add additional participants
 =cut
 
 sub add {
-    my $class = shift;
+    my ($class, @args) = @_;
 
-    my @participants = map {Elive::Entity::Participant->_parse($_)} @_;
+    my @participants = map {Elive::Entity::Participant->_parse($_)} @args;
 
-    $class->SUPER::add(@participants);
+    return $class->SUPER::add(@participants);
 }
 
 coerce 'Elive::Array::Participants' => from 'ArrayRef'
