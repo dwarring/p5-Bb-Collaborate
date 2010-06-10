@@ -21,13 +21,15 @@ BEGIN {
 our $t = Test::Builder->new;
 our $class = 'Elive::Entity::Meeting' ;
 
+our $connection;
+
 SKIP: {
 
     my %result = t::Elive->test_connection();
     my $auth = $result{auth};
 
     my $connection_class = $result{class};
-    my $connection = $connection_class->connect(@$auth);
+    $connection = $connection_class->connect(@$auth);
     Elive->connection($connection);
 
     my $server_version = $connection->server_details->version;
@@ -240,3 +242,4 @@ SKIP: {
 }
 
 Elive->disconnect;
+
