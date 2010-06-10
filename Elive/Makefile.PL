@@ -29,7 +29,7 @@ requires(
     'Pod::Usage'                   => 0,  # for elive_raise_meeting
     'Scalar::Util'                 => 0,
     'Storable'                     => 0,
-    'SOAP::Lite'                   => 0.69,
+    'SOAP::Lite'                   => 0.712,
     'Storable'                     => 0,
     'Term::ReadKey'                => 0,
     'Term::ReadLine'               => 0,
