@@ -9,7 +9,6 @@ use YAML;
 use Scalar::Util qw{weaken};
 require UNIVERSAL;
 use Storable qw{dclone};
-use HTML::Entities;
 
 use Elive::Util;
 use Elive::Array;
@@ -367,7 +366,7 @@ sub _unpack_results {
     my $results_type = Elive::Util::_reftype($results);
 
     if (!$results_type) {
-	return HTML::Entities::decode_entities($results);
+	return $results;
     }
     elsif ($results_type eq 'ARRAY') {
 	return [map {$class->_unpack_results($_)} @$results];

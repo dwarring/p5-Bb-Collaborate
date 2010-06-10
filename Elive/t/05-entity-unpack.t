@@ -44,7 +44,6 @@ my $canonical = {
 my $canonical_encoded = {
     'UserAdapter' => {
                    %user,
-                   'LoginPassword' => 'a&amp;b'
     },
 };
 
