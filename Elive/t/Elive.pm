@@ -62,7 +62,7 @@ sub test_connection {
     return %result;
 }
 
-sub generate_password {
+sub generate_id {
     my @chars = ('a' .. 'z', 'A' .. 'Z', '0' .. '9', '.', '_', '-');
     my @p = map {$chars[ sprintf("%d", rand(scalar @chars)) ]} (1.. 6);
 

@@ -37,7 +37,7 @@ foreach my $username (@usernames) {
     unless ($user) {
 	my %insert_data = (
 	    loginName => $username,
-	    loginPassword => t::Elive::generate_password(),
+	    loginPassword => t::Elive::generate_id(),
 	    email => $username.'@acme.org',
 	    role => 3,
 	    firstName => $username,

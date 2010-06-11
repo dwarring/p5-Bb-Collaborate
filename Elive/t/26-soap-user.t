@@ -19,6 +19,7 @@ $SIG{__DIE__} = \&Carp::confess;
 # live site is running LDAP, in which case user access becomes
 # read only.
 #
+
 my %result = t::Elive->test_connection(only => 'mock');
 my $auth = $result{auth};
 
@@ -28,7 +29,7 @@ Elive->connection($connection);
 
 my %insert_data = (
     loginName => 'some_test_user',
-    loginPassword => t::Elive::generate_password(),
+    loginPassword => t::Elive::generate_id(),
     email => 'test@acme.org',
     role => 3,
     firstName => 'test',
@@ -73,7 +74,7 @@ if (my $existing_user = $class->get_by_loginName('test_admin')) {
 
 my $admin_user = $class->insert({loginName => "test_admin",
 				 role => 0,
-				 loginPassword => t::Elive::generate_password(),
+				 loginPassword => t::Elive::generate_id(),
 				 email => 'test@acme.org'},);
 my $admin_id = $admin_user->userId;
 

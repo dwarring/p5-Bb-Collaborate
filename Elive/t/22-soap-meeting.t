@@ -1,6 +1,6 @@
 #!perl
 use warnings; use strict;
-use Test::More tests => 40;
+use Test::More tests => 42;
 use Test::Exception;
 use Test::Builder;
 use version;
@@ -108,7 +108,7 @@ SKIP: {
     ########################################################################
 
     skip ($result{reason} || 'skipping live tests',
-	22)
+	24)
 	unless $connection_class eq 'Elive::Connection';
 
     my %meeting_server_data = (
@@ -163,6 +163,12 @@ SKIP: {
 
     ok($participant_list->participants->stringify eq Elive->login->userId.'=2',
        'participant string list - set correctly');
+
+    ok($meeting->is_participant( Elive->login), 'is_participant($moderator)');
+
+    my $gate_crasher = 'gate_crasher_'.t::Elive::generate_id();
+
+    ok(!$meeting->is_participant( $gate_crasher ), '!is_participant($gate_crasher)');
 
     lives_ok(sub {$participant_list->update({participants => []})},
 	     'clearing participants - lives');
@@ -224,7 +230,7 @@ SKIP: {
     lives_ok(sub {$meeting->delete},'meeting deletion');
     #
     # This is an assertion of server behaviour. Just want to verify that
-    # meeting deletion cascades to meeting & server parameters are deleted
+    # meeting deletion cascades. I.e. meeting & server parameters are deleted
     # when the meeting is deleted.
     #
     $meeting_params = undef;
