@@ -100,8 +100,8 @@ sub upload {
 
 	$insert_data->{mimeType} ||= $class->_guess_mimetype($insert_data->{name});
 	$insert_data->{type}
-	||= ($insert_data->{name} =~ m{\.wbd}i     ? 'whiteboard'
-	     : $insert_data->{name} =~ m{\.elpx?}i ? 'plan'
+	||= ($insert_data->{name} =~ m{\.wbd$}i     ? 'whiteboard'
+	     : $insert_data->{name} =~ m{\.elpx?$}i ? 'plan'
 	     : 'media');
     }
 
@@ -199,8 +199,10 @@ sub import_from_server {
 
     $opt{param}{fileName} = $filename;
 
+    my $adapter = $class->check_adapter('importPreload');
+
     return $class->insert($insert_data,
-			  adapter => 'importPreload',
+			  adapter => $adapter,
 			  %opt);
 }
 
@@ -218,17 +220,17 @@ sub list_meeting_preloads {
     die 'usage: $preload_obj->list_meeting_preloads($meeting)'
 	unless $meeting_id;
 
+    my $adapter = $self->check_adapter('listMeetingPreloads');
+
     return $self->_fetch({meetingId => $meeting_id},
-			 adapter => 'listMeetingPreloads',
+			 adapter => $adapter,
 			 %opt
 	);
 }
 
 sub _thaw {
     my ($class, $db_data, %opt) = @_;
-    #
-    # Primary key returned in a field named 'Key'. We require PreloadId
-    #
+
     my $db_thawed = $class->SUPER::_thaw($db_data, %opt);
 
     for (grep {defined} $db_thawed->{type}) {
