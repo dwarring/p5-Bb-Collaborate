@@ -22,6 +22,7 @@ has 'loginPassword' => (is => 'rw', isa => 'Str');
 
 has 'loginName' => (is => 'rw', isa => 'Str',
 		    documentation => 'login name - must be unique');
+__PACKAGE__->_alias(userName => 'loginName');
 		    
 has 'email' => (is => 'rw', isa => 'Str',
 		documentation => 'users email address');
@@ -98,7 +99,6 @@ sub get_by_loginName {
     # The entity name is loginName, but the fetch key is userName.
     #
     my $results = $class->_fetch({userName => $loginName},
-				 readback => {loginName => $loginName},
 				 @args,
 	);
 

@@ -1,18 +1,17 @@
 #!perl
 use warnings; use strict;
-use Test::More tests => 12;
+use Test::More tests => 14;
 use Test::Exception;
 use version;
 
 use lib '.';
 use t::Elive;
 
-BEGIN {
-    use_ok( 'Elive' );
-    use_ok( 'Elive::Entity::Preload' );
-};
+use Elive;
+use Elive::Entity::User;
+use Elive::Entity::ServerDetails;
 
-my $class = 'Elive::Entity::Preload' ;
+our $t = Test::Builder->new;
 
 SKIP: {
 
@@ -20,7 +19,7 @@ SKIP: {
     my $auth = $result{auth};
 
     skip ($result{reason} || 'skipping live tests',
-	10)
+	12)
 	unless $auth && @$auth;
 
     my $connection_class = $result{class};
@@ -37,7 +36,23 @@ SKIP: {
     ok ($login = Elive->login, 'got login');
     isa_ok($login, 'Elive::Entity::User','login');
     # case insensitive comparision
-    ok(uc($login->loginName) eq uc($auth->[1]), 'username matches login');
+    my $login_name = $login->loginName;
+    ok(uc($login_name) eq uc($auth->[1]), 'username matches login');
+
+    my $login_refetch;
+
+    if ($connection_class eq 'Elive::Connection') {
+
+	lives_ok( sub {$login_refetch = Elive::Entity::User->get_by_loginName( uc($login_name))}, 'get_by_loginName (uc) - lives' );
+	ok(uc($login_refetch->loginName) eq uc($login_name), 'get_by_loginName result (uc)');
+
+	lives_ok( sub {$login_refetch = Elive::Entity::User->get_by_loginName( lc($login_name))}, 'get_by_loginName (lc) - lives' );
+	ok(uc($login_refetch->loginName) eq uc($login_name), 'get_by_loginName result (lc)');
+    }
+    else {
+	$t->skip('get_by_loginName - not implemented for mock connections')
+	    for (1 .. 4);
+    }
 
     my $server_details;
     my $server_version;
