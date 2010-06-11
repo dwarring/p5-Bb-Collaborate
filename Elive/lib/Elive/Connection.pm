@@ -3,6 +3,7 @@ use warnings; use strict;
 
 use Class::Accessor;
 use Class::Data::Inheritable;
+use HTML::Entities;
 
 use base qw{Class::Accessor};
 
@@ -71,7 +72,7 @@ connectivity and authentication details.
 =cut
 
 sub connect {
-    my ($class, $url,  $user, $pass, %opt) = @_;
+    my ($class, $url, $user, $pass, %opt) = @_;
 
     $url =~ s{/$}{};
 

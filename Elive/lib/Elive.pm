@@ -56,9 +56,9 @@ participants:
 Elive is a set of Perl bindings and entity definitions for the Elluminate
 I<Live!> SDK.
 
-The Elluminate SDK runs as a SOAP service and can be used to automate
-the raising meetings and launching of meetings; as well as managing meetings,
-users, groups, preloads, recordings and other related entities.
+The Elluminate SDK runs as a SOAP service and can be used to automate the
+raising, launching and management of meetings; and other related entities,
+including users, groups, preloads, recordings and others.
 
 =head1 BACKGROUND
 

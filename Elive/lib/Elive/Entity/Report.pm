@@ -59,16 +59,17 @@ For example, to export all reports on a connected server:
 	#
 	# listed objects don't have the report body, refetch them.
 	#
+
         my $rpt = Elive::Entity::Report->retrieve([$reportId]);
 
 	my $name = $rpt->name;
 	$name =~ s/[^\w]//g;
 	my $export_file = "/tmp/report_${reportId}_${name}.xml";
 
-	open (XML, '>', $export_file)
+	open (my $dump_fh, '>', $export_file)
 	    or die "unable to open $export_file: $!";
-	print XML $rpt->xml;
-	close (XML);
+	print $dump_fh $rpt->xml;
+	close ($dump_fh);
 
     }
 
@@ -87,14 +88,14 @@ Updates an existing report.
 sub update {
     my ($self, $update_data, @args) = @_;
 
-    my %changed;
     #
     # always need to supply these fields to the update adapter,
-    # wether or not they've changed.
+    # whether or not they've actually changed.
     #
+    my %changed;
     @changed{$self->is_changed, 'name','description','xml','ownerId'} = undef;
 
-    return $self->SUPER::update(undef, @args, changed => [sort keys %changed]);
+    return $self->SUPER::update(undef, @args, changed => [keys %changed]);
 }
 
 1;

@@ -166,9 +166,27 @@ sub update {
 
 Delete the meeting.
 
-Note: With Elluminate 9.5 onwards, deleting a meetings simply sets the
-I<deleted> property to true. Meetings, Meeting Parameters and Server
-Parameters remain accessable via the SOAP inteface.
+Note:
+
+=over 4
+
+=item Meeting recordings are not deleted.
+
+If you also want to remove the associated recordings, you'll need to delete
+them yourself, E.g.:
+
+    my $recordings = $meeting->list_recordings;
+
+    foreach my $recording (@$recordings) {
+        $recording->delete;
+    }
+
+    $meeting->delete;
+
+=item With Elluminate 9.5 onwards simply sets the I<deleted> property to true.
+
+Meetings, Meeting Parameters, Server Parameters and recordings remain
+accessable via the SOAP inteface.
 
 You'll need to remember to check for deleted meetings:
 
@@ -178,6 +196,8 @@ You'll need to remember to check for deleted meetings:
 or filter them out when listing meetings:
 
     my $live_meetings =  Elive::Entity::Meeting->list(filter => 'deleted = false');
+
+=back
 
 =cut
 
