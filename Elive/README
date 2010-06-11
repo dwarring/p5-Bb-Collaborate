@@ -123,7 +123,7 @@ TROUBLESHOOTING
     has been through several Elluminate upgrades.
 
     You can use the installed script elive_lint_config to check for
-    missing adapaters.
+    missing adapters.
 
 	% cd /opt/ElluminateLive/manager/tomcat/webapps
 	% elive_lint_config WEB-INF/resources/configuration.xml

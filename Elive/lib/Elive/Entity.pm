@@ -262,7 +262,7 @@ sub _thaw {
     # (inserts, updates, querys):
     # 1. Entity names returned capitalised: 'LoginName' => 'loginName
     # 2. Primary key returned as Id, rather than <entity_name>Id
-    # 3. Aliases. Usually a result of name name changes between versions
+    # 3. Aliases. Usually a result of name changes between versions
     #
     my %prop_key_map = map {ucfirst($_) => $_} @properties;
 

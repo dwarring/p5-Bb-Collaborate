@@ -485,7 +485,7 @@ elive_query is an example simple sql-like script. It is a basic program
 for listing and retrieving entities. It serves as a simple demonstration
 script, and can be used to confirm basic operation of Elive.
 
-It servers a secondary function of querying entity metadata. For example,
+It server a secondary function of querying entity metadata. For example,
 to show the user entity:
 
     $> elive_query
@@ -543,6 +543,8 @@ Perl Modules (included in the Elive distribution):
 =item Elive::Entity::Preload
 
 =item Elive::Entity::Recording
+
+=item Elive::Entity::Report
 
 =item Elive::Entity::ServerDetails
 

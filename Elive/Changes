@@ -1,26 +1,33 @@
 Revision history for Elive
 
-0.69    10th June 2010
+0.69    11th June 2010
+
+        - Raised SOAP::Lite dependency 0.69 => 0.712. This eliminates some
+          encoding failures under old perls (5.8.8-) and slightly older
+          versions of SOAP::Lite. Also allowed me to removed the decoding
+          of html entities from Elive::Entity. Thanks SOAP::Lite maintainers!
+
         - Introduced t/00c-critic.t Test::Perl::Critic. A swag of minor
           refactorings to Elive codebase in order to pass severity level
-          4 tests. Most commonly:
+          4 tests.
 
-          Atomic parsing of subroutine arguments. What was:
+          -- Most commonly, Atomic parsing of subroutine arguments. E.g.
+             what was:
 
-	      sub disconnect {
-                  my $class = shift;
-                  my %opt = @_;
-                  # ...
-              }
+	        sub disconnect {
+                    my $class = shift;
+                    my %opt = @_;
+                    # ...
+                }
 
-          After refactoring becomes:
+             After refactoring becomes:
 
-              sub disconnect {
-                  my ($class,%opt) = @_;
-                  # ....
-              }
+                sub disconnect {
+                    my ($class, %opt) = @_;
+                    # ....
+                }
 
-	Second most common refactoring was adding explicit final returns
+	Second most common refactoring was adding explicit final 'return'
         to subroutines. For gory details, see svn commit of rev 377.
 
 0.68    2nd June 2010
@@ -253,7 +260,7 @@ Revision history for Elive
           {moderator|participant|server}TelephonyPIN, redirectURL
         - new meetingParameterProperties: followModerator, videoWindow,
           recordingObfuscation, recordingResolution, profile
-        Note: elluminate release 9.5.0 is not yet supported by this module.
+        Note: elluminate release 9.5.0 is not yet supported in this version.
         If you want to try to run against it, set the environment variable
         $ELIVE_FORCE=9.5.0. Watch for upgrades, both for this module and
         for Elluminate.
