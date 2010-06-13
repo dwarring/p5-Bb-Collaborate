@@ -1,6 +1,6 @@
 #!perl
 use warnings; use strict;
-use Test::More tests => 42;
+use Test::More tests => 43;
 use Test::Exception;
 use Test::Builder;
 use version;
@@ -108,7 +108,7 @@ SKIP: {
     ########################################################################
 
     skip ($result{reason} || 'skipping live tests',
-	24)
+	25)
 	unless $connection_class eq 'Elive::Connection';
 
     my %meeting_server_data = (
@@ -223,6 +223,7 @@ SKIP: {
     ok ((grep {$_->meetingId == $meeting_id} @$user_meetings),
 	'meeting is in user_meetings_by_date');
 
+    ok(my $web_url = $meeting->web_url, 'got meeting web_url()');
     #
     # start to tidy up
     #

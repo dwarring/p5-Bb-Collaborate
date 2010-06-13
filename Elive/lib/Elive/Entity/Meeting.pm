@@ -539,7 +539,12 @@ available as both class level and object level methods.
 sub web_url {
     my ($self, %opt) = @_;
 
-    my $meeting_id = $opt{meeting_id};
+    my $meeting_id = $opt{meeting_id} || $self->meetingId;
+    $meeting_id = Elive::Util::_freeze($meeting_id, 'Str');
+
+   die "no meeting_id given"
+	unless $meeting_id;
+
     my $connection = $self->connection || $opt{connection}
 	or die "not connected";
 
