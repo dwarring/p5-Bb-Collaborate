@@ -144,8 +144,8 @@ sub download {
              {
                     meetingId => $recordingId.'_'.$meetingId,
                     recordingId => $meetingId,
-                    roomName => 'Meeting of the Smiths',
                     facilitator =>  Elive->login,
+                    roomName => 'Meeting of the Smiths',
                     version => Elive->server_details->version,
                     data => $binary_data,
                     size => length($binary_data),
@@ -153,6 +153,8 @@ sub download {
          );
 
 Upload data from a client and create a recording.
+
+Note: the C<facilitator>, when supplied must match the facilitator for the given C<meetingId>.
 
 =cut
 
@@ -212,7 +214,7 @@ sub web_url {
     my ($self, %opt) = @_;
 
     my $recording_id = $opt{recording_id} || $self->recordingId;
-    $recording_id = Elive::Util::_freeze($recording_id, 'Int');
+    $recording_id = Elive::Util::_freeze($recording_id, 'Str');
 
     die "no recording_id given"
 	unless $recording_id;
@@ -292,73 +294,6 @@ sub buildJNLP {
     my $results = $self->_unpack_as_list($som->result);
 
     return @$results && Elive::Util::_thaw($results->[0], 'Str');
-}
-
-#
-# Still working on import_from server and upload methods - dw
-# (see also same methods for preloads)
-#
-#=head2 import_from_server
-#
-#    my $recording1 = Elive::Entity::Recording->import_from_server(
-#             {
-#		    meetingId => '123456789123',
-#                   roomName => "Meeting of the Smiths',
-#		    facilitator => 'jbloggs',
-#		    creationDate => time().'000',
-#                   fileName => $path_on_server,
-#                   version => Elive->server_details->version,
-#                   open => 0,
-#	     },
-#         );
-#
-#Create a recording from a file that is already present on the server. If
-#a C<mimeType> is not supplied, it will be guessed from the C<fileName>
-#extension using MIME::Types.
-#
-#=cut
-
-sub _tba_import_from_server {
-    my ($class, $update_data, %opt) = @_;
-
-    my $filename = delete $update_data->{fileName};
-
-    die "missing fileName parameter"
-	unless $filename;
-
-    my $version = delete $update_data->{version};
-
-    die "missing version parameter"
-	unless $version;
-
-    my $connection = $opt{connection} || $class->connection
-	or die "not connected";
-
-    my $adapter = $class->check_adapter('importRecording');
-
-    my $som = $connection->call($adapter,
-		   fileName => $filename,
-                   version => $version,
-	       );
-
-    $class->_check_for_errors($som);
-
-    my $results = $class->_unpack_as_list($som->result);
-
-    my $recordingId =  @$results && Elive::Util::_thaw($results->[0], 'Int');
-
-    die "unable to determine recordingId for upload of $filename"
-       unless $recordingId;
-
-    my $self = $class->retrieve([$recordingId], %opt);
-
-    die "unable to fetch newly inserted recording: id=$recordingId"
-        unless $self;
-
-    $self->update( $update_data, %opt)
-        if keys %$update_data;
-
-    return $self;
 }
 
 1;
