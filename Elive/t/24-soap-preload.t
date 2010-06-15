@@ -1,7 +1,8 @@
 #!perl
 use warnings; use strict;
-use Test::More tests => 43;
+use Test::More tests => 49;
 use Test::Exception;
+use Test::Builder;
 
 use lib '.';
 use t::Elive;
@@ -13,6 +14,7 @@ BEGIN {
     use_ok ('Elive::Util');
 };
 
+our $t = Test::Builder->new;
 my $class = 'Elive::Entity::Preload' ;
 
 my @data;
@@ -31,7 +33,7 @@ SKIP: {
     my $auth = $result{auth};
 
     skip ($result{reason} || 'skipping live tests',
-	37)
+	43)
 	unless $auth;
 
     my $connection_class = $result{class};
@@ -111,6 +113,8 @@ SKIP: {
     ok($preloads[3]->type eq 'plan','expected type (plan)');
     ok($preloads[3]->mimeType eq 'application/octet-stream','expected mimeType for plan');
 
+    dies_ok(sub{$preloads[3]->update({name => 'test_plan.elpx updated'})}, 'preload update - not available');
+
     $data_download = $preloads[3]->download;
 
     ok($data_download eq $data[1], 'plan download matches upload');
@@ -171,8 +175,6 @@ SKIP: {
     isa_ok($preloads_list_2, 'ARRAY', 'preloads list');
 
     ok(@$preloads_list_2 == scalar(@preloads)-2, 'meeting has expected number of preloads');
-    
-       # start to tidy up
 
     $meeting->delete;
 
@@ -180,6 +182,37 @@ SKIP: {
 
     for my $i (1 .. $#preloads) {
 	$preloads[$i]->delete;
+    }
+
+    if (my $path_on_server = $ENV{ELIVE_TEST_PRELOAD_SERVER_PATH}) {
+	diag 'running preload import tests ($ELIVE_TEST_PRELOAD_SERVER_PATH set)';
+	diag "importing from server: $path_on_server";
+	my $basename = File::Basename::basename($path_on_server);
+	my $imported_preload;
+
+	lives_ok( sub {
+	    $imported_preload = Elive::Entity::Preload->import_from_server(
+		{
+		    name => $basename,
+		    ownerId => Elive->login,
+		    fileName => $path_on_server,
+		},
+		);
+		  },
+		  'import_from_server - lives',     
+         );
+
+	isa_ok($imported_preload, 'Elive::Entity::Preload', 'imported preload');
+
+	diag 'imported preload has size: '.$imported_preload->size.' and type '.$imported_preload->type.' ('.$imported_preload->mimeType.')';
+
+	ok($imported_preload->name eq $basename, 'imported preload name as expected');
+	ok($imported_preload->size > 0, 'imported preload has non-zero size');
+	lives_ok (sub {$imported_preload->delete}, 'imported preload delete - lives');
+    }
+    else {
+	$t->skip('skipping import_preload_test (set ELIVE_TEST_PRELOAD_SERVER_PATH to run)')
+	    for (1 .. 5);
     }
 }
 
