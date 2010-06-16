@@ -165,7 +165,7 @@ sub main {
     die pod2usage("recording mode must be on/auto, off/none/disabled or manual/remote\n")
 	unless $recording =~ m{^on|off|remote$}x;
 
-    my ($recurrence_count, $recurrence_days) = _get_occurences(\%occurs);
+    my ($recurrence_count, $recurrence_days) = _get_occurances(\%occurs);
 
     Elive->debug($debug);
 
@@ -494,7 +494,7 @@ sub _get_user {
 
 ########################################################################
 
-sub _get_occurences {
+sub _get_occurances {
     my $occurs = shift;
 
     my $recurrence_count = 1;
