@@ -97,42 +97,53 @@ sub main {
     local(@ARGV) = @_;
 
     our $elive_version = ${Elive::VERSION};
-    our $entities = Elive::Entity->entities;
+    our %entities = %{Elive::Entity->entities};
+    our %entity_collections;
     our $term = Term::ReadLine->new('elive shell');
     our $is_tty = IO::Interactive::is_interactive();
 
-    foreach (keys %$entities) {
+    foreach (keys %entities) {
 	#
 	# Just want database mapped entities. Omit nested structures
 	#
-	delete $entities->{$_}
-	unless ($entities->{$_}->isa('Elive::Entity')
-		&& $entities->{$_}->primary_key);
+	unless ($entities{$_}->isa('Elive::Entity')
+		&& $entities{$_}->primary_key) {
+	    delete $entities{$_};
+	    next;
+	}
+	#
+	# accept plurals, e.g. 'select * from user' vs 'select * from users'
+	#
+	if (my $collection_name = $entities{$_}->collection_name) {
+	    $entity_collections{lcfirst($collection_name)} = $entities{$_};
+	}
     }
 
     my $prompt = "elive> ";
-
-    my ($url, %options) = _getopt();
-
-    our $debug = $options{debug};
-    Elive->debug( $debug );
-
     our $connection;
+    my %options;
 
-    $connection = _connect($url, %options)
-        if $url;
+    do {
+	(my $url, %options) = _getopt();
 
-    my $server_version = '';
+	our $debug = $options{debug};
+	Elive->debug( $debug );
+
+	$connection = _connect($url, %options)
+	    if $url;
+    };
+
+    my $server_version_str = '';
 
     if ($connection) {
-	my $elive_version =  Elive->server_details->version
-	    or warn "unable to get elluminate version";
+	my $server_version =  Elive->server_details->version
+	    or warn "unable to get elluminate version\n";
 
-	$server_version  = "(Elluminate Live! $elive_version) "
-	    if $elive_version;
+	$server_version_str  = "(Elluminate Live! $server_version) "
+	    if $server_version;
     }
 
-    print "Elive query $elive_version (c) 2009 - 2010 $server_version. Type 'help' for help\n"
+    print "Elive query $elive_version (c) 2009 - 2010 ${server_version_str}. Type 'help' for help\n"
 	if $is_tty;
 
     my $cmd;
@@ -149,7 +160,7 @@ sub main {
 	#
 	$cmd =~ s{^ \s* (.*?) \s* ;? \s* $}{$1}x;
 
-	if ($cmd =~ m{\S}) {
+	if ($cmd =~ m{\S}x) {
 
 	    if (($keyw, $args) = ($cmd =~ m{^ (\w+) \s* (.*)? $}x)) {
 
@@ -184,7 +195,7 @@ sub main {
 		    my ($level) = ($args =~ m{^\s* = \s* ([0-9])}x);
 
 		    if (defined $level) {
-			print "Debugging level set to $level\n";
+			warn "Debugging level set to $level\n";
 			$level = $level + 0;
 
 			$SIG{__WARN__} = $level > 1
@@ -201,13 +212,13 @@ sub main {
 			print STDERR "usage: debug = 0..9";
 		    }
 		}
-		elsif ($keyw =~ m{^(show|describe)$}i) {
+		elsif ($keyw =~ m{^(show|describe)$}ix) {
 
 		    if (my ($entity_name) = ($args =~ m{^ \s* (\w+) \s* $}x)) {
-			_show($entities, $entity_name);
+			_show({%entities, %entity_collections}, $entity_name);
 		    }
 		    else {
-			print 'usage: describe '.join('|', sort keys %$entities)."\n";
+			print 'usage: describe '.join('|', sort keys %entities)."\n";
 		    }
 		}
 		elsif (lc($keyw) eq 'select') {
@@ -230,14 +241,15 @@ sub main {
 			my @props = split(m{\s* ,|\| \s*}x, $1);
 			my $hide_undef = 0;
 
-			my $entity_class = $entities->{$entity};
+			my $entity_class = ($entities{$entity}
+					    || $entity_collections{$entity});
 
 			if (!$entity_class) {
 			    print STDERR "Unknown entity: $entity\n";
 			    $valid = 0;
 			}
 			else {
-			    if (@props == 1 && $props[0] =~ m{^(\*)(\??)$}) {
+			    if (@props == 1 && $props[0] =~ m{^(\*)(\??)$}x) {
 				#
 				# '*'  select all
 				# '*?' select all defined
@@ -253,7 +265,7 @@ sub main {
 			}
 
 			if ($valid) {
-			    warn "entity: $entity, filter: $filter, props: @props"
+			    warn "entity: $entity, filter: $filter, props: @props\n"
 				if (Elive->debug);
 
 			    unless ($connection) {
@@ -270,10 +282,10 @@ sub main {
 		    }
 
 		    unless ($valid) {
-			print STDERR  "usage: select props|* from entity [where filter|id=val];\n";
+			print STDERR  "usage: select props|* from ".join('|', sort keys %entities)." [where filter|id=val];\n";
 		    }
 		}
-		elsif ($keyw !~ m{^(quit)$}) {
+		elsif ($keyw !~ m{^(quit)$}x) {
 		    print STDERR "unrecognised command: $keyw, type 'help' for help\n";
 		}
 	}
@@ -289,7 +301,7 @@ sub main {
 	my @living = grep {$Elive::Entity::Elive_Objects->{$_}}
 	(keys %Elive::Entity::Elive_Objects);
 
-	print STDERR "about to shutdown, live objects: @living\n";
+	warn "about to shutdown, live objects: @living\n";
     }
 
     return 0;
@@ -366,9 +378,9 @@ sub _select {
     warn "filter=$filter"
 	if (defined $filter && Elive->debug);
 
-    warn "entity: $entity_name, class: $entity_class"
+    warn "entity: $entity_name, class: $entity_class\n"
 	if (Elive->debug);
-    warn join(' ', 'properties:',  $entity_class->properties)
+    warn join(' ', 'properties:',  $entity_class->properties)."\n"
 	if (Elive->debug);
 
     #
