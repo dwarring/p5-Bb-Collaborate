@@ -53,7 +53,7 @@ For example:
     % elive_query -user admin http://myvclass.com/mysite
     Password: ********
     connecting to http://myvclass.com/mysite...ok
-    Elive query 0.WX (Elluminate Live! 9.Y.Z)  (c) ... - type 'help' for help
+    Elive query ... (Elluminate Live! ...)  (c) ... - type 'help' for help
 
     elive> select loginName,email,firstName,lastName,role from user where loginName like *m* 
     loginName   |email                 |firstName|lastName   |role
@@ -65,12 +65,12 @@ For example:
 
 =head2 Entity Metadata
 
-You can also use this script to dump the Elive entity structures:
+You can also use this script to describe Elive entity structures:
 
-    elive> show
-    usage: show group|meeting|meetingParameters|participantList|preload|recording|serverDetails|serverParameters|user
+    elive> describe
+    usage: describe group|meeting|meetingParameters|participantList|preload|recording|serverDetails|serverParameters|user
 
-    elive> show meeting
+    elive> describe meeting
     meeting: Elive::Entity::Meeting:
     meetingId         : pkey Int        
     deleted           : Bool

@@ -200,7 +200,7 @@ sub main {
 	open(my $upload_fh, '<', $upload)
 	    or die "unable to open $upload: $!\n";
 
-	$upload_data = join('', <$upload_fh>);
+	$upload_data = do { local $/ = undef;  <$upload_fh> };
 	close ($upload_fh);
     }
 
@@ -220,7 +220,7 @@ sub main {
 
 	if (($user_spec,$role) = ($spec =~ m{^([^=]+)=([^=]+)$}x)) {
 	    die "non-numeric role: $spec\n"
-		unless $role =~ m{^\d+$};
+		unless $role =~ m{^\d+$}x;
 	}
 	else {
 	    $user_spec = $spec;
@@ -264,7 +264,7 @@ sub main {
     if ($preload_opt) {
 
 	pod2usage("non numeric preload id")
-	    unless $preload_opt =~ m{^\d+$};
+	    unless $preload_opt =~ m{^\d+$}x;
 
 	$existing_preload = Elive::Entity::Preload->retrieve([$preload_opt]);
 	
@@ -313,8 +313,8 @@ sub main {
 	
 	    my $meeting_parameters
 		= $meeting->parameters
-		or die "Unable to retrieve meeting parameters for this meeting";
-	
+		or die "Unable to retrieve meeting parameters for this meeting\n";
+
 	    $meeting_parameters->maxTalkers($max_talkers)
 		if defined $max_talkers;
 
@@ -443,7 +443,7 @@ sub _get_participants {
 	my $role = $_->{role};
 	
 	die "bad username: $user\n"
-	    if $user =~ m{'};
+	    if $user =~ m{'}x;
 
 	$user_roles{$user} = $role || 3;
     }
@@ -508,7 +508,7 @@ sub _get_occurances {
 	    m{^.*day(s?).*$}i       ? 1
 	  : m{^.*week(s?).*$}i      ? 7
           : m{^.*fortnight(s?).*$}i ? 14
-          : die "occurs usage: --occurs days=n  or --occurs weeks=n";
+          : die "occurs usage: --occurs days=n  or --occurs weeks=n\n";
 
     }
 

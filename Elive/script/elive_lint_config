@@ -82,7 +82,7 @@ sub main {
 	    foreach my $argument (sort {$a->{name}[0] cmp $b->{name}[0]} @arguments) {
 		    my $name = $argument->{name}[0];
 		    my $value = $argument->{value}[0];
-		    $value =~ s{.}{*}g
+		    $value =~ s{.}{*}gx
 			if $name eq 'password';
 
 		    printf("  %-14.14s: %s\n", $name, $value)
@@ -108,17 +108,17 @@ sub main {
 		     $class =~ m{CommandAdapter}}
 	       @adapters);
 
-	die "assuming elm 9.5, but unable to find elements of class =~ /CommandAdapter/"
+	die "assuming elm 9.5, but unable to find elements of class =~ /CommandAdapter/\n"
 	    unless $command_adapter;
 
 	my @commands = _get_elems($command_adapter, 'commands');
 
-	die "assumming elm 9.5, but unable to find 'commands' elements"
+	die "assuming elm 9.5, but unable to find 'commands' elements\n"
 	    unless @commands;
 
 	my ($command, @_guff) = map {_get_elems($_, 'command')} @commands;
 
-	die "assumming elm 9.5, but unable to find 'command' element"
+	die "assuming elm 9.5, but unable to find 'command' element\n"
 	    unless $command;
 
 	my @command_keys = sort keys %$command;
@@ -135,7 +135,7 @@ sub main {
 		     $class =~ m{CommandAdapter}}
 	       @adapters);
 
-	die "Unable to locate adapter commands"
+	die "Unable to locate 'CommandAdapter' section in configuration\n"
 	    unless $command_adapter;
 
 	my @commands = _get_elems($command_adapter, 'argument');
