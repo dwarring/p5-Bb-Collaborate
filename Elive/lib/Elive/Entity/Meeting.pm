@@ -499,7 +499,7 @@ sub buildJNLP {
 
     for (delete $opt{user} || $connection->login->userId) {
 
-	$soap_params{m{^\d+$}? 'userId' : 'userName'} = Elive::Util::_freeze($_, 'Str');
+	$soap_params{m{^\d+$}x? 'userId' : 'userName'} = Elive::Util::_freeze($_, 'Str');
     }
 
     my $adapter = $self->check_adapter('buildMeetingJNLP');

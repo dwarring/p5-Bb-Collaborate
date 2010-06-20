@@ -108,8 +108,8 @@ sub _thaw {
 
 	$_ = lc($_);
 
-	unless (m{^(on|off|remote)$} || $_ eq '') {
-	    warn "ignoring unknown recording status: $_";
+	unless (m{^(on|off|remote)$}x || $_ eq '') {
+	    warn "ignoring unknown recording status: $_\n";
 	    delete  $data->{recordingStatus};
 	}
     }

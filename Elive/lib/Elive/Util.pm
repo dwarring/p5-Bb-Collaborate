@@ -40,7 +40,7 @@ sub parse_type {
     #
     ($type) = split(/[ \| \] ]/x, $type);
 
-    my $is_array = ($type =~ m{^Elive::Array});
+    my $is_array = ($type =~ m{^Elive::Array}x);
 
     if ($is_array) {
 
@@ -48,9 +48,9 @@ sub parse_type {
 
     }
 
-    my $is_struct = $type =~ m{^Elive::(Struct||Entity)(::|$)};
+    my $is_struct = $type =~ m{^Elive::(Struct||Entity)(::|$)}x;
 
-    my $is_ref = $is_array || $is_struct || $type =~ m{^Ref};
+    my $is_ref = $is_array || $is_struct || $type =~ m{^Ref}x;
 
     return ($type, $is_array, $is_struct, $is_ref);
 }
@@ -66,7 +66,7 @@ sub _freeze {
 
 	if (!defined) {
 
-	    warn "undefined value of type $type"
+	    warn "undefined value of type $type\n"
 	}
 	else {
 	    $_ = string($_, $type);
@@ -92,10 +92,10 @@ sub _freeze {
 		
 	    }
 	    elsif ($type =~ m{^Ref}i) {
-		die "freezing of datatype $type: not implemented";
+		die "freezing of datatype $type: not implemented\n";
 	    }
 
-	    die "unable to convert $raw_val to $type"
+	    die "unable to convert $raw_val to $type\n"
 		unless defined;
 	}
     }
@@ -247,7 +247,7 @@ sub _hex_decode {
     $data = '0'.$data
 	unless length($data) % 2 == 0;
 
-    my ($non_hex_char) = ($data =~ m{([^0-9a-f])}i);
+    my ($non_hex_char) = ($data =~ m{([^0-9a-f])}ix);
 
     die "non hex character in data: ".$non_hex_char
 	if (defined $non_hex_char);
@@ -299,11 +299,13 @@ sub string {
 
     for ($obj) {
 
-	return join(';', sort map {string($_, $data_type)} @$_)
-	    if UNIVERSAL::isa($_, 'ARRAY');
+	my $reftype =  _reftype($_);
 
 	return $_
-	    unless _reftype($_);
+	    unless $reftype;
+
+	return join(';', sort map {string($_, $data_type)} @$_)
+	    if $reftype eq 'ARRAY';
 
 	return $_->stringify
 	    if (Scalar::Util::blessed($_) && $_->can('stringify'));

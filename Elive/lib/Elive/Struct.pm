@@ -70,7 +70,7 @@ sub _refaddr {
 sub BUILDARGS {
     my ($class, $raw, @args) = @_;
 
-    warn "$class - ignoring arguments to new: @args"
+    warn "$class - ignoring arguments to new: @args\n"
 	if @args;
 
     if (Elive::Util::_reftype($raw) eq 'HASH') {
@@ -183,7 +183,7 @@ sub _alias {
     $from = lcfirst($from);
     $to = lcfirst($to);
 
-    die 'usage: $entity_class->_set_data_mapping(alias, prop, %opts)'
+    die 'usage: $entity_class->_alias(alias, prop, %opts)'
 	unless ($entity_class
 		&& $from && !ref($from)
 		&& $to && !ref($to));
@@ -364,7 +364,7 @@ sub _cmp_col {
 		my $v1 = $v1[$i];
 		my $v2 = $v2[$i];
 
-		if ($is_struct || $type =~ m{^(Str|Enum|HiResDate)}i) {
+		if ($is_struct || $type =~ m{^(Str|Enum|HiResDate)}ix) {
 		    #
 		    # string comparision. works on simple strings and
 		    # stringified entities. Also used for hires dates
@@ -374,19 +374,19 @@ sub _cmp_col {
 			      ? uc($v1) cmp uc($v2)
 			      : $v1 cmp $v2);
 		}
-		elsif ($type =~ m{^Bool}i) {
+		elsif ($type =~ m{^Bool}ix) {
 		    # boolean comparison
 		    $cmp ||= ($v1 eq 'true'? 1: 0) <=> ($v2 eq 'true'? 1: 0);
 		}
-		elsif ($type =~ m{^Int}i) {
+		elsif ($type =~ m{^Int}ix) {
 		    # int comparision
 		    $cmp ||= $v1 <=> $v2;
 		}
-		elsif ($type =~ m{^Ref}i) {
+		elsif ($type =~ m{^Ref}ix) {
 		    $cmp ||= YAML::Dump($v1) cmp YAML::Dump($v2);
 		}
 		else {
-		    die "class $class: unknown type: $type";
+		    die "class $class: unknown type: $type\n";
 		}
 	    }
 	}

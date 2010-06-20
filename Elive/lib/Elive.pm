@@ -329,11 +329,11 @@ sub check_adapter {
     if ($crud) {
 	$crud = lc(substr($crud,0,1));
 	die $usage
-	    unless $crud =~ m{^[c|r|u|d]$};
+	    unless $crud =~ m{^[c|r|u|d]$}x;
 
 	my $adapter_type = $known_adapters{$adapter};
 	die "misconfigured adapter: $adapter"
-	    unless $adapter_type &&  $adapter_type  =~ m{^[c|r|u|d]$};
+	    unless $adapter_type &&  $adapter_type  =~ m{^[c|r|u|d]$}x;
 
 	die "adapter $adapter. Type mismatch. Expected $crud, found $adapter_type"
 	    unless ($adapter_type eq $crud);

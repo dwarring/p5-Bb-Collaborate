@@ -100,8 +100,8 @@ sub upload {
 
 	$insert_data->{mimeType} ||= $class->_guess_mimetype($insert_data->{name});
 	$insert_data->{type}
-	||= ($insert_data->{name} =~ m{\.wbd$}i     ? 'whiteboard'
-	     : $insert_data->{name} =~ m{\.elpx?$}i ? 'plan'
+	||= ($insert_data->{name} =~ m{\.wbd$}ix     ? 'whiteboard'
+	     : $insert_data->{name} =~ m{\.elpx?$}ix ? 'plan'
 	     : 'media');
     }
 
@@ -191,8 +191,8 @@ sub import_from_server {
 
     $insert_data->{mimeType} ||= $class->_guess_mimetype($filename);
     $insert_data->{type} 
-	||= ($filename =~ m{\.wbd}i     ? 'whiteboard'
-	     : $filename =~ m{\.elpx?}i ? 'plan'
+	||= ($filename =~ m{\.wbd}ix     ? 'whiteboard'
+	     : $filename =~ m{\.elpx?}ix ? 'plan'
 	     : 'media');
 
     $insert_data->{name} ||= File::Basename::basename($filename);

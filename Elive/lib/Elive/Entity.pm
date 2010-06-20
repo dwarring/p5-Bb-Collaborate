@@ -131,12 +131,6 @@ sub construct {
     my $connection = delete $opt{connection} || $class->connection
 	or die "not connected";
 
-    #
-    # Retain one copy of the data for this connection
-    #
-    die "can't construct objects without a connection"
-	unless $connection;
-
     $self->connection($connection);
 
     my %primary_key_data = map {$_ => $data->{ $_ }} ($class->primary_key);
@@ -969,7 +963,7 @@ sub delete {
     my @id = $self->id;
 
     die "entity lacks a primary key - can't delete"
-	unless (@primary_key > 0);
+	unless @primary_key;
 
     my @params = map {
 	$_ => shift( @id );
@@ -1051,7 +1045,7 @@ BEGIN {
 
     subtype 'HiResDate'
 	=> as 'Int'
-	=> where {m{^\d+$}
+	=> where {m{^\d+$}x
 		    && 
 			(length($_) > 10
 			 or warn "doesn't look like a hi-res date: $_")}
