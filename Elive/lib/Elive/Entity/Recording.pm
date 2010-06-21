@@ -28,6 +28,9 @@ has 'meetingId' => (is => 'rw', isa => 'Int',
 		    documentation => 'id of the meeting that created this recording');
 __PACKAGE__->_alias(meetingRoomId => 'meetingId', freeze => 1);
 
+has 'sessionInstanceId' => (is => 'rw', isa => 'Int',
+		    documentation => 'id of the session instance that created this recording');
+
 has 'open' => (is => 'rw', isa => 'Bool',
 	       documentation => 'whether to display this recording on the public page');
 has 'roomName' => (is => 'rw', isa => 'Str',
@@ -38,6 +41,12 @@ has 'version' => (is => 'rw', isa => 'Str',
 		  documentation => 'version of Elluminate Live! that created this recording');
 
 has  'sasId' => (is => 'rw', isa => 'Int');
+
+has 'startDate' => (is => 'rw', isa => 'HiResDate',
+		    documentation => 'start date/time of the recording');
+
+has 'endDate' => (is => 'rw', isa => 'HiResDate',
+		  documentation => 'end date/time of the recording');
 
 =head1 NAME
 

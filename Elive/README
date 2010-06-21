@@ -4,7 +4,7 @@ of Elluminate Live! virtual classroom servers.
 You can, for example, use it to query or add users, create sessions, assign
 users as class participants and change server settings.
 
-This package has been tested against Elluminate Live! versions 9.0 - 9.7.
+This package has been tested against Elluminate Live! versions 9.0 - 10.0.
 
 You will need to be able to login in to your SOAP service using an
 Elluminate system administrator level account.
@@ -32,6 +32,13 @@ TESTING
         export ELIVE_TEST_USER=some_admin_user
         export ELIVE_TEST_PASS=some_password
         make test
+
+    In addition, the following envirnoment variable may be set to extend
+    the range of tests:
+
+    ELIVE_TEST_PRELOAD_SERVER_PATH - absolute path of an existing preload
+               file on the server. Set this to enable testing of the
+               Elive::Entity::Preload::import_from_server() method.
 
     WARNING: These tests will both create and delete various entities
     instances. For this reason you should by wary of running the live

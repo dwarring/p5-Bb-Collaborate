@@ -1,6 +1,6 @@
 #!perl
 use warnings; use strict;
-use Test::More tests => 14;
+use Test::More tests => 10;
 use Test::Exception;
 use version;
 
@@ -19,7 +19,7 @@ SKIP: {
     my $auth = $result{auth};
 
     skip ($result{reason} || 'skipping live tests',
-	12)
+	9)
 	unless $auth && @$auth;
 
     my $connection_class = $result{class};
@@ -40,20 +40,6 @@ SKIP: {
     ok(uc($login_name) eq uc($auth->[1]), 'username matches login');
 
     my $login_refetch;
-
-    if ($connection_class eq 'Elive::Connection') {
-
-	lives_ok( sub {$login_refetch = Elive::Entity::User->get_by_loginName( uc($login_name))}, 'get_by_loginName (uc) - lives' );
-	ok(uc($login_refetch->loginName) eq uc($login_name), 'get_by_loginName result (uc)');
-
-	lives_ok( sub {$login_refetch = Elive::Entity::User->get_by_loginName( lc($login_name))}, 'get_by_loginName (lc) - lives' );
-	ok(uc($login_refetch->loginName) eq uc($login_name), 'get_by_loginName result (lc)');
-    }
-    else {
-	$t->skip('get_by_loginName - not implemented for mock connections')
-	    for (1 .. 4);
-    }
-
     my $server_details;
     my $server_version;
 
@@ -65,7 +51,7 @@ SKIP: {
     my $server_version_num = version->new($server_version)->numify;
     ok($server_version_num >= 9, "Elluminate Live! server is 9.0.0 or higher");
 
-    my $tested_version = '9.7.0';
+    my $tested_version = '10.0.0';
     my $tested_version_num = version->new($tested_version)->numify;
 
     if ($server_version_num > $tested_version_num) {

@@ -55,7 +55,7 @@ SKIP: {
 
     ok($preloads[0]->type eq 'whiteboard', "preload type is 'whiteboard'");
     ok($preloads[0]->mimeType eq 'application/octet-stream','expected value for mimeType (guessed)');
-    ok($preloads[0]->name eq 'test.wbd','preload name, as expected');
+    ok($preloads[0]->name =~ m{test(\.wbd)?$}, 'preload name, as expected');
     ok($preloads[0]->ownerId eq Elive->login->userId, 'preload ownerId, as expected');
 
     my $data_download = $preloads[0]->download;
@@ -80,7 +80,7 @@ SKIP: {
 
     $preloads[1] = Elive::Entity::Preload->upload(
     {
-	type => 'whiteboard',
+	type => 'media',
 	name => 'test.wav',
 	ownerId => Elive->login,
 	data => $data[1],
@@ -92,7 +92,7 @@ SKIP: {
     $preloads[2] = Elive::Entity::Preload->upload(
     {
 	type => 'whiteboard',
-	name => 'test_no_ext',
+	name => 'test_unknown_ext.xyz',
 	ownerId => Elive->login,
 	mimeType => 'video/mpeg',
 	data => $data[1],

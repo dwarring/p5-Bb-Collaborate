@@ -62,6 +62,10 @@ has 'size' => (is => 'rw', isa => 'Int', required => 1,
 has 'data' => (is => 'rw', isa => 'Str',
 	       documentation => 'The contents of the preload.');
 
+has 'isProtected' => (is => 'rw', isa => 'Int');
+has 'isDataAvailable' => (is => 'rw', isa => 'Int');
+
+
 =head1 METHODS
 
 =cut
@@ -84,28 +88,30 @@ MIME::Types.
 =cut
 
 sub upload {
-    my ($class, $insert_data, %opt) = @_;
+    my ($class, $insert_data_ref, %opt) = @_;
 
-    my $binary_data = delete $insert_data->{data};
+    my %insert_data = %{ $insert_data_ref };
 
-    my $length = length($binary_data) ||0;
+    my $binary_data = delete $insert_data{data};
+
+    my $length = delete $insert_data{length} || length($binary_data) ||0;
 
     $opt{param}{length} = $length
         if $length;
 
-    if ($insert_data->{name}) {
+    if ($insert_data{name}) {
 
 	$_ = File::Basename::basename($_)
-	    for $insert_data->{name};
+	    for $insert_data{name};
 
-	$insert_data->{mimeType} ||= $class->_guess_mimetype($insert_data->{name});
-	$insert_data->{type}
-	||= ($insert_data->{name} =~ m{\.wbd$}ix     ? 'whiteboard'
-	     : $insert_data->{name} =~ m{\.elpx?$}ix ? 'plan'
+	$insert_data{mimeType} ||= $class->_guess_mimetype($insert_data{name});
+	$insert_data{type}
+	||= ($insert_data{name} =~ m{\.wbd$}ix     ? 'whiteboard'
+	     : $insert_data{name} =~ m{\.elpx?$}ix ? 'plan'
 	     : 'media');
     }
 
-    my $self = $class->insert($insert_data, %opt);
+    my $self = $class->insert(\%insert_data, %opt);
 
     if ($length && $binary_data) {
 
@@ -273,6 +279,19 @@ sub _guess_mimetype {
     $guess ||= 'application/octet-stream';
 
     return $guess;
+}
+
+sub _readback_check {
+    my ($class, $update_ref, $rows, @args) = @_;
+
+    #
+    # we sometimes lose the file-extension tolorate this
+    #
+
+    my %updates = %{ $update_ref };
+    delete $updates{name};
+
+    return $class->SUPER::_readback_check(\%updates, $rows, @args, case_insensitive => 1);
 }
 
 =head1 BUGS AND LIMITATIONS

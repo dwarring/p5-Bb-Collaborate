@@ -7,11 +7,11 @@ Elive - Elluminate Live! (c) SDK bindings
 
 =head1 VERSION
 
-Version 0.69
+Version 0.70
 
 =cut
 
-our $VERSION = '0.69';
+our $VERSION = '0.70';
 
 use Class::Data::Inheritable;
 use base qw{Class::Data::Inheritable};
@@ -623,7 +623,7 @@ David Warring, C<< <david.warring at gmail.com> >>
 =item Elive is a newish module
 
 It has been used and tested against a number of sites running Elluminate 9.0
-to 9.7.
+to 10.0.
 
 So far it does not implement all SOAP calls, but concentrates on entities
 such as users, meetings, preloads and meeting participants.

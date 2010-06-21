@@ -1047,8 +1047,8 @@ BEGIN {
 	=> as 'Int'
 	=> where {m{^\d+$}x
 		    && 
-			(length($_) > 10
-			 or warn "doesn't look like a hi-res date: $_")}
+		      (!$_ || length($_) > 10
+		       or warn "doesn't look like a hi-res date: $_")}
         => message {"invalid date: $_"};
 }
 

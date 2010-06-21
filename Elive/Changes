@@ -1,5 +1,16 @@
 Revision history for Elive
 
+0.70    21st June 2010
+        Support for Elluminate 10.0
+        - New Preload properties: isProtected and isDataAvaliable.
+        - New Recording properties: sessionInstanceId, startDate and endDate
+        - Adjusted test suite for a couple of newly introduced bugs/changes:
+          -- User get_by_loginName() is no longer case insensitive
+          -- Preload sometimes loses file extension during insert/update.
+          -- Preload update/fetch - behaves peculairly when the file
+             extension is not supplied. Gives error: 'String index out of
+             range: -1'.
+
 0.69    11th June 2010
 
         - Raised SOAP::Lite dependency 0.69 => 0.712. This eliminates some
@@ -7,9 +18,8 @@ Revision history for Elive
           versions of SOAP::Lite. Also allowed me to removed the decoding
           of html entities from Elive::Entity. Thanks SOAP::Lite maintainers!
 
-        - Introduced t/00c-critic.t Test::Perl::Critic. A swag of minor
-          refactorings to Elive codebase in order to pass severity level
-          4 tests.
+        - Minor refactorings refactorings to Elive codebase in order to pass
+          Test::Perl::Critic severity level 4 tests (00c-critic.t).
 
           -- Most commonly, Atomic parsing of subroutine arguments. E.g.
              what was:

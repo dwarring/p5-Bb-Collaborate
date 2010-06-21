@@ -67,9 +67,9 @@ coerce 'Elive::Entity::User' => from 'Str'
 =cut
 
 sub _readback_check {
-    my ($class, $update_href, @args) = @_;
+    my ($class, $update_ref, $rows, @args) = @_;
 
-    my %updates = %$update_href;
+    my %updates = %$update_ref;
 
     #
     # password not included in readback record - skip it
@@ -77,7 +77,7 @@ sub _readback_check {
 
     delete $updates{loginPassword};
 
-    return $class->SUPER::_readback_check(\%updates, @args, case_insensitive => 1);
+    return $class->SUPER::_readback_check(\%updates, $rows, @args, case_insensitive => 1);
 }
 
 =head2 get_by_loginName
