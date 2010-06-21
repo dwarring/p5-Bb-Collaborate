@@ -62,8 +62,8 @@ has 'size' => (is => 'rw', isa => 'Int', required => 1,
 has 'data' => (is => 'rw', isa => 'Str',
 	       documentation => 'The contents of the preload.');
 
-has 'isProtected' => (is => 'rw', isa => 'Int');
-has 'isDataAvailable' => (is => 'rw', isa => 'Int');
+has 'isProtected' => (is => 'rw', isa => 'Bool');
+has 'isDataAvailable' => (is => 'rw', isa => 'Bool');
 
 
 =head1 METHODS
