@@ -388,16 +388,10 @@ sub has_metadata {
     return $Meta_Data_Accessor{ $accessor };
 }
 
-sub DESTROY {
+sub DEMOLISH {
     my $self = shift;
     delete  $Meta_Data{Scalar::Util::refaddr($self)};
     return;
-}
-
-{
-    no strict 'refs';
-
-    *{__PACKAGE__.'::DEMOLISH'} = \&DESTROY;
 }
 
 =head1 ERROR MESSAGES
