@@ -24,6 +24,7 @@ The following (somewhat contrived) example sets up a meeting of selected
 participants:
 
     use Elive;
+    use Elive::Connection;
     use Elive::Entity::User;
     use Elive::Entity::Meeting;
 
@@ -112,9 +113,6 @@ sub connect {
     die "usage: ${class}->new(url, login_name[, pass])"
 	unless ($class && $url && $login_name);
 
-    eval "use Elive::Connection";
-    die $@ if $@;
-
     my $connection = Elive::Connection->connect(
 	$url,
 	$login_name,
@@ -189,7 +187,7 @@ do this prior to exiting your program.
 sub disconnect {
     my ($class, %opt) = @_;
 
-    if (my $connection = $opt{connection} || $class->connection) {
+    if (my $connection = $class->connection) {
 	$connection->disconnect;
 	$class->connection(undef);
     }

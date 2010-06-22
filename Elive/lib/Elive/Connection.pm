@@ -11,6 +11,8 @@ use base qw{Class::Accessor};
 use Elive;
 use Elive::Entity;
 use Elive::Util;
+use Elive::Entity::User;
+use Elive::Entity::ServerDetails;
 
 =head1 NAME
 
@@ -191,9 +193,6 @@ sub login {
 	my $username = $self->user
 	    or return;
 
-	eval "use  Elive::Entity::User";
-	die $@ if $@;
-
 	$login_entity = Elive::Entity::User->get_by_loginName($username,
 	    connection => $self)
 	    or die "unable to get login user: $username\n";
@@ -216,9 +215,6 @@ sub server_details {
     my $server_details = $self->_server_details;
 
     unless ($server_details) {
-
-	eval "use  Elive::Entity::ServerDetails";
-	die $@ if $@;
 
 	my $server_details_list = Elive::Entity::ServerDetails->list(connection => $self);
 
