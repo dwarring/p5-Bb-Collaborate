@@ -245,7 +245,7 @@ sub _thaw {
 	#
 	$_ = lc($_);
 
-	unless (m{^media|whiteboard|plan$}) {
+	unless (m{^media|whiteboard|plan$}x) {
 	    warn "ignoring unknown media type: $_";
 	    delete $db_thawed->{type};
 	}
@@ -269,7 +269,7 @@ sub _guess_mimetype {
     my $mime_type;
     my $guess;
 
-    unless ($filename =~ m{\.elpx?}) { # plan
+    unless ($filename =~ m{\.elpx?}x) { # plan
 	$mime_type = $mime_types->mimeTypeOf($filename);
 
 	$guess = $mime_type->type
@@ -285,7 +285,8 @@ sub _readback_check {
     my ($class, $update_ref, $rows, @args) = @_;
 
     #
-    # we sometimes lose the file-extension tolorate this
+    # Elluminate 10.0 discards the file extension for whiteboard preloads;
+    # bypass check on 'name'.
     #
 
     my %updates = %{ $update_ref };
@@ -296,10 +297,19 @@ sub _readback_check {
 
 =head1 BUGS AND LIMITATIONS
 
-Under Elluminate 9.6.0 and LDAP, you may need to abritrarily add a 'DomN:'
+=over 4
+
+=item -- Under Elluminate 9.6.0 and LDAP, you may need to abritrarily add a 'DomN:'
 prefix to the owner ID, when creating or updating a meeting.
 
     $preload->ownerId('Dom1:freddy');
+
+=item -- Elluminate 10.0 strips the file extension from the filename when
+whiteboard files are saved or uploaded (C<introduction.wbd> => C<introduction>).
+However, if the file lacks an extension to begin with, the request crashes with
+the confusing error message: C<"string index out of range: -1">.
+
+=back
 
 =cut
 

@@ -678,10 +678,8 @@ sub list_recordings {
     
 =head1 BUGS AND LIMITATIONS
 
-Be aware that it does not seem to be possible to individually set meetings
-to be restricted or unrestricted (as of Elluminate 9.7). You may however
-configure your Elluminate instance to make all meetings restricted or
-unrestricted. 
+Meetings can not be set to restricted (as of Elluminate 9.7 - 10.0). As a
+safeguard you should configure Elluminate to restrict meetings by default.
 
 =head1 SEE ALSO
 

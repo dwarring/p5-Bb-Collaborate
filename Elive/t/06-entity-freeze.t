@@ -1,6 +1,6 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 32;
+use Test::More tests => 34;
 use Test::Warn;
 
 BEGIN {
@@ -14,6 +14,7 @@ BEGIN {
 ok(Elive::Util::_freeze('123456', 'Int') eq '123456', 'simple Int');
 ok(Elive::Util::_freeze('+123456', 'Int') eq '123456', 'Int with plus sign');
 ok(Elive::Util::_freeze('00123456', 'Int') eq '123456', 'Int with leading zeros');
+
 ok(Elive::Util::_freeze('-123456', 'Int') eq '-123456', 'Int negative');
 ok(Elive::Util::_freeze('-00123456', 'Int') eq '-123456', 'Int negative, leading zeros');
 ok(Elive::Util::_freeze('+00123456', 'Int') eq '123456', 'Int plus sign leading zeros');
@@ -29,6 +30,8 @@ ok(Elive::Util::_freeze(0, 'Bool') eq 'false', 'Bool 0 => false');
 ok(Elive::Util::_freeze(1, 'Bool') eq 'true', 'Bool 1 => true');
 
 ok(Elive::Util::_freeze('abc', 'Str') eq 'abc', 'String echoed');
+ok(Elive::Util::_freeze(' abc ', 'Str') eq 'abc', 'String - L/R Trim');
+ok(Elive::Util::_freeze('  ', 'Str') eq '', 'String - Empty');
 
 ok(Elive::Util::_freeze('on', 'enumRecordingStates') eq 'on', 'recording status - on (lc)');
 ok(Elive::Util::_freeze('OFF', 'enumRecordingStates') eq 'off', 'recording status - off (uc)');
@@ -41,7 +44,7 @@ my $user_data =  {
 	loginName => 'tester',
 	email => 'test@test.org',
 	role => {roleId => '002'},
-	firstName => 'Timmee',
+	firstName => ' Timmee, the ',
 	lastName => 'Tester',
     };
 
@@ -57,7 +60,7 @@ my $user_frozen = Elive::Entity::User->_freeze($user_data);
 is_deeply($user_frozen,
 	  {                                     
 	      email => 'test@test.org',
-	      firstName => 'Timmee',
+	      firstName => 'Timmee, the',
 	      loginPassword => 'test',
 	      loginName => 'tester',
 	      userId => 12345678,
