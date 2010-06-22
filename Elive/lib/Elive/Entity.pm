@@ -129,14 +129,11 @@ sub construct {
 
     return $self if ($opt{copy});
 
-    #
-    # Retain one copy of the data for this connection
-    #
-    die "can't construct objects without a connection"
-	unless $connection;
-
     my $connection = delete $opt{connection} || $class->connection
 	or die "not connected";
+
+    die "can't construct objects without a connection"
+	unless $connection;
 
     $self->connection($connection);
 
