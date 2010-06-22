@@ -58,42 +58,6 @@ Elive::Entity::Recording - Elluminate Recording Entity class
 
 =cut
 
-=head2 insert
-
-    my $recordingId = "${meetingId}_import";
-    my $import_filename = sprintf("%s_recordingData.bin", $recording->recordingId);
-
-    #
-    # Somehow import the file to the server. This needs to be uploaded
-    # to ${instancesRoot}/${instanceName}/WEB-INF/resources/recordings
-    # where $instanceRoot is typically /opt/ElluminateLive/manager/tomcat
-    #
-    import_recording($import_filename);
-
-    my $recording = Elive::Entity::Recording->insert({
-        recordingId => $recordingId,
-        roomName => "test recording import",
-        creationDate => time().'000',
-        meetingId => $meetingId,
-        facilitator => $meeting->faciliator,
-        version => Elive->server_details->version,
-        size => length($number_of_bytes),
-   });
-
-
-You'll typically only need to insert recordings yourself if you are importing
-or recovering recordings.
-
-The Recording C<insert>, unlike other entities, method requires that you supply
-a primary key. This is then used to determine the name of the file to look for
-in the recording directory, as in the above example.
-
-The meetingId is optional. Recordings do not have to be associated with a
-particular meetings. They will still be searchable and are available for
-playback.
-
-=cut
-
 =head2 download
 
     my $recording = Elive::Entity::Recording->retrieve([$recording_id]);
@@ -136,7 +100,7 @@ sub download {
     open (my $rec_fh, '<', $recording_file)
         or die "unable to open $recording_file: $!";
 
-    my $data = join($rec_fh, <REC>);
+    my $data = do {local $/ = undef; <$rec_fh>};
     die "no recording data: $recording_file"
         unless ($data && length($data));
 
@@ -196,6 +160,42 @@ sub upload {
 
     return $self;
 }
+
+=head2 insert
+
+You'll typically only need to insert recordings yourself if you are importing
+or recovering recordings that have not been closed cleanly.
+
+    my $recordingId = "${meetingId}_import";
+    my $import_filename = sprintf("%s_recordingData.bin", $recording->recordingId);
+
+    #
+    # Somehow import the file to the server. This needs to be uploaded
+    # to ${instancesRoot}/${instanceName}/WEB-INF/resources/recordings
+    # where $instanceRoot is typically /opt/ElluminateLive/manager/tomcat
+    #
+    import_recording($import_filename);
+
+    my $recording = Elive::Entity::Recording->insert({
+        recordingId => $recordingId,
+        roomName => "test recording import",
+        creationDate => time().'000',
+        meetingId => $meetingId,
+        facilitator => $meeting->faciliator,
+        version => Elive->server_details->version,
+        size => length($number_of_bytes),
+   });
+
+
+The Recording C<insert>, unlike other entities, method requires that you supply
+a primary key. This is then used to determine the name of the file to look for
+in the recording directory, as in the above example.
+
+The meetingId is optional. Recordings do not have to be associated with a
+particular meetings. They will still be searchable and are available for
+playback.
+
+=cut
 
 =head2 web_url
 
