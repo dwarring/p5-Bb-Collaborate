@@ -7,11 +7,11 @@ Elive - Elluminate Live! (c) SDK bindings
 
 =head1 VERSION
 
-Version 0.70
+Version 0.71
 
 =cut
 
-our $VERSION = '0.70';
+our $VERSION = '0.71';
 
 use Class::Data::Inheritable;
 use base qw{Class::Data::Inheritable};
@@ -112,6 +112,9 @@ sub connect {
 
     die "usage: ${class}->new(url, login_name[, pass])"
 	unless ($class && $url && $login_name);
+
+    eval {require Elive::Connection};
+    die $@ if $@;
 
     my $connection = Elive::Connection->connect(
 	$url,

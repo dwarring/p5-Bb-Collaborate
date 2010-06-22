@@ -54,7 +54,7 @@ SKIP: {
     );
 
     if (1) {
-	$t->skip('restrictedMeeting property seems to be unsettable');
+	$t->skip("can't modify restrictedMeeting property (known problem)");
     }
     else {
 	$meeting_int_data{restrictedMeeting} = 1;

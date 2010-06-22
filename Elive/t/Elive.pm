@@ -1,9 +1,6 @@
 package t::Elive;
 use warnings; use strict;
 
-use Elive;
-use t::Elive::MockConnection;
-
 =head1 NAME
 
 t::Elive
@@ -34,6 +31,13 @@ sub test_connection {
 
 	if ($user && $pass && $url && $url !~ m{^mock:}i) {
 	    $result{auth} = [$url, $user, $pass];
+	    unless ($opt{noload}) {
+		#
+		# don't give our test a helping hand, We're
+		# testing self load of this module by Elive
+		#
+		eval {require Elive::Connection}; die $@ if $@;
+	    }
 	    $result{class} = 'Elive::Connection';
 	}
 	else {
@@ -52,6 +56,7 @@ sub test_connection {
 	}
 
 	$result{auth} = [$url, $user, $pass];
+	eval {require t::Elive::MockConnection}; die $@ if $@;
 	$result{class} = 't::Elive::MockConnection';
     }
 

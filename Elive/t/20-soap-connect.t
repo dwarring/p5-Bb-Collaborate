@@ -8,14 +8,14 @@ use lib '.';
 use t::Elive;
 
 use Elive;
-use Elive::Entity::User;
-use Elive::Entity::ServerDetails;
+# don't 'use' anything here! We're testing Elive's ability to load the
+# other required classes (Elive::Connection, Elive::Entity::User etc)
 
 our $t = Test::Builder->new;
 
 SKIP: {
 
-    my %result = t::Elive->test_connection();
+    my %result = t::Elive->test_connection(noload => 1);
     my $auth = $result{auth};
 
     skip ($result{reason} || 'skipping live tests',
@@ -25,12 +25,23 @@ SKIP: {
     my $connection_class = $result{class};
     diag ("connecting: user=$auth->[1], url=$auth->[0]");
 
-    my $connection = $connection_class->connect(@$auth);
+    my $connection;
+
+    if ($connection_class eq 'Elive::Connection') {
+	#
+	# exercise a direct connection from Elive main. No preload
+	# of connection or entity classes.
+	#
+	$connection = Elive->connect(@$auth);
+    }
+    else {
+	$connection = $connection_class->connect(@$auth);
+	Elive->connection($connection);
+    }
+
     ok($connection, 'got connection');
     isa_ok($connection, 'Elive::Connection','connection')
 	or exit(1);
-
-    Elive->connection($connection);
 
     my $login;
     ok ($login = Elive->login, 'got login');

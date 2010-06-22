@@ -1,5 +1,9 @@
 Revision history for Elive
 
+0.71    21st June 2010
+        - Fixed elive_query (loading of Elive::Connection) from last
+          change. Added a test for this.
+
 0.70    21st June 2010
         Support for Elluminate 9.7 => 10.0
         - New Preload properties: isProtected and isDataAvailable.

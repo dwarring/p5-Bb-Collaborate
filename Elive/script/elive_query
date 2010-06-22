@@ -561,7 +561,7 @@ sub _connect {
 
     print STDERR "connecting to $url...";
     my $connection = eval {
-	Elive->connect($url,$username, $password);
+	Elive->connect($url, $username, $password);
     };
 
     if ($@) {
