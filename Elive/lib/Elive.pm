@@ -357,7 +357,6 @@ sub known_adapters {
 }
 
 our %Meta_Data;
-our %Meta_Data_Accessor;
 
 =head2 has_metadata
 
@@ -370,9 +369,13 @@ sub has_metadata {
     my $class = shift;
     my $accessor = shift;
 
-    unless (exists $Meta_Data_Accessor{ $accessor }) {
+    my $accessor_fun = $class->can($accessor);
 
-	$Meta_Data_Accessor{ $accessor } ||= sub {
+    unless ($accessor_fun) {
+
+	no strict 'refs';
+
+	$accessor_fun = sub {
 	    my $self = shift;
 	    my $ref = $self->_refaddr
 		or return;
@@ -384,14 +387,10 @@ sub has_metadata {
 	    return $Meta_Data{ $ref }{ $accessor };
 	};
 
-	unless ($class->can($accessor)) {
-	    no strict 'refs';
-
-	    *{$class.'::'.$accessor} = $Meta_Data_Accessor{ $accessor }
-	}
+	*{$class.'::'.$accessor} = $accessor_fun;
     }
 
-    return $Meta_Data_Accessor{ $accessor };
+    return $accessor_fun;
 }
 
 sub DEMOLISH {
