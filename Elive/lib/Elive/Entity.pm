@@ -634,8 +634,6 @@ sub insert {
 
     my $db_data = $class->_freeze($insert_data, mode => 'insert');
 
-    my $login_password = $connection->pass;
-
     my $adapter = $opt{adapter} || 'create'.$class->entity_name;
 
     $class->check_adapter($adapter, 'c');
@@ -643,7 +641,6 @@ sub insert {
     my $som = $connection->call($adapter,
 				%$db_data,
 				%{$opt{param} || {}},
-##				loginPassword => $login_password,
 	);
 
     my @rows = $class->_readback($som, $insert_data, $connection);
