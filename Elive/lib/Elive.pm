@@ -15,6 +15,7 @@ our $VERSION = '0.71';
 
 use Class::Data::Inheritable;
 use base qw{Class::Data::Inheritable};
+use Scalar::Util;
 
 use YAML;
 
@@ -371,8 +372,6 @@ sub has_metadata {
 
     unless (exists $Meta_Data_Accessor{ $accessor }) {
 
-	no strict 'refs';
-
 	$Meta_Data_Accessor{ $accessor } ||= sub {
 	    my $self = shift;
 	    my $ref = $self->_refaddr
@@ -385,7 +384,11 @@ sub has_metadata {
 	    return $Meta_Data{ $ref }{ $accessor };
 	};
 
-	*{$class.'::'.$accessor} = $Meta_Data_Accessor{ $accessor }
+	unless ($class->can($accessor)) {
+	    no strict 'refs';
+
+	    *{$class.'::'.$accessor} = $Meta_Data_Accessor{ $accessor }
+	}
     }
 
     return $Meta_Data_Accessor{ $accessor };
@@ -393,7 +396,7 @@ sub has_metadata {
 
 sub DEMOLISH {
     my $self = shift;
-    delete  $Meta_Data{Scalar::Util::refaddr($self)};
+    delete $Meta_Data{Scalar::Util::refaddr($self)};
     return;
 }
 
