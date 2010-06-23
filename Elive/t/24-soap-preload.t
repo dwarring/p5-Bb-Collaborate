@@ -186,7 +186,7 @@ SKIP: {
 
     if (my $path_on_server = $ENV{ELIVE_TEST_PRELOAD_SERVER_PATH}) {
 	diag 'running preload import tests ($ELIVE_TEST_PRELOAD_SERVER_PATH set)';
-	diag "importing from server: $path_on_server";
+	diag "importing server-side file: $path_on_server";
 	my $basename = File::Basename::basename($path_on_server);
 	my $imported_preload;
 
