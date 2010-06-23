@@ -1,7 +1,7 @@
 #!perl
 use warnings; use strict;
 use Test::Builder;
-use Test::More tests => 20;
+use Test::More tests => 21;
 use Test::Exception;
 
 use lib '.';
@@ -57,12 +57,6 @@ do {
     );
     isa_ok($recording, 'Elive::Entity::Recording');
 
-##    my $recording =  Elive::Entity::Recording->import_from_server
-##	({fileName => '/dev/null',
-##	  version => Elive->server_details->version,
-##	  meetingId => $meeting->meetingId,
-##	 });
-
     Elive->disconnect;
 };
 
@@ -75,8 +69,8 @@ SKIP: {
     my %result = t::Elive->test_connection(only => 'real');
     my $auth = $result{auth};
 
-    skip ($result{reason} || 'skiiping live tests',
-	14)
+    skip ($result{reason} || 'skipping live tests',
+	15)
 	unless $auth;
 
     my $connection_class = $result{class};
@@ -114,14 +108,14 @@ SKIP: {
     ok(do{grep {$_->recordingId eq $recording_id} @$recordings},
        'uploaded recording found in recordings');
 
-##    ok($recording->facilitator == Elive->login->userId, 'expected user id');
-
     my $data_download = $recording->download;
 
     ok($data_download, 'got recording download');
     ok(length($data_download) == length($data[0]),
        sprintf('download has expected size %d bytes', length($data[0])),
 	);
+
+    ok($data_download eq $data[0], 'downloaded data matches upload');
 
     my $recordingJNLP;
 
