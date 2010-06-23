@@ -94,7 +94,9 @@ sub upload {
 
     my $binary_data = delete $insert_data{data};
 
-    my $length = delete $insert_data{length} || length($binary_data) ||0;
+    my $length = delete $insert_data{length} || 0;
+    $length ||= length($binary_data)
+	if $binary_data;
 
     $opt{param}{length} = $length
         if $length;
