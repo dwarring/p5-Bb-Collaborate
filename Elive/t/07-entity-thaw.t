@@ -122,8 +122,8 @@ is_deeply(\%user_contents,
 #
 
 my $aliases = Elive::Entity::ServerParameters->_get_aliases;
-ok($aliases->{requiredSeats}{to} eq 'seats', 'alias: requiredSeats => seats');
-ok($aliases->{permissionsOn}{to} eq 'fullPermissions', 'alias: permissionsOn => fullPermissions');
+ok($aliases->{requiredSeats} && $aliases->{requiredSeats}{to} eq 'seats', 'alias: requiredSeats => seats');
+ok($aliases->{permissionsOn} && $aliases->{permissionsOn}{to} eq 'fullPermissions', 'alias: permissionsOn => fullPermissions');
 
 my $server_parameters_data = {
     ServerParametersAdapter
