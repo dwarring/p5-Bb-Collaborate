@@ -1,7 +1,8 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 34;
+use Test::More tests => 38;
 use Test::Warn;
+use Scalar::Util;
 
 BEGIN {
     use_ok( 'Elive::Connection' );
@@ -145,8 +146,23 @@ my $server_parameter_data = {
 
 my $aliases = Elive::Entity::ServerParameters->_get_aliases;
 
-ok($aliases, 'got server_parameter aliases');
-ok($aliases->{boundary}, 'got server_parameter alias for boundary');
+do {
+    ################################################################
+    # ++ some slightly off-topic tests
+    #
+    ok($aliases, 'got server_parameter aliases');
+    ok($aliases->{boundary}, 'got server_parameter alias for boundary');
+    ok($aliases->{boundary}{to} eq 'boundaryMinutes', 'alias boundary => boundaryMinutes');
+    my $boundary_method_ref;
+    my $boundary_mins_method_ref;
+    ok($boundary_method_ref =  Elive::Entity::ServerParameters->can('boundary'), 'got boundary method ref');
+    ok($boundary_mins_method_ref =  Elive::Entity::ServerParameters->can('boundaryMinutes'), 'got boundaryMinutes method ref');
+    ok(Scalar::Util::refaddr($boundary_method_ref) eq Scalar::Util::refaddr($boundary_mins_method_ref), "'boundaryMinutes' method alias for 'boundary'");
+    #
+    # -- some slightly off-topic tests
+    ################################################################
+};
+
 is_deeply($aliases->{boundary}, {
     to => 'boundaryMinutes',
     freeze => 1},

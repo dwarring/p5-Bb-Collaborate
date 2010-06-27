@@ -76,10 +76,22 @@ sub BUILDARGS {
     if (Elive::Util::_reftype($raw) eq 'HASH') {
 
 	my $types = $class->property_types;
+
 	my %cooked;
 
-	foreach my $prop (keys %$raw) {
-	    my $value = $raw->{$prop};
+	my $aliases = $class->_get_aliases;
+
+	foreach (keys %$raw) {
+
+	    #
+	    # apply any aliases
+	    #
+
+	    my $prop = (exists $aliases->{$_}
+			? ($aliases->{$_}{to} or die "$class has malformed alias: $_")
+			: $_);
+
+	    my $value = $raw->{$_};
 	    if (my $type = $types->{$prop}) {
 		if (ref($value)) {
 		    #
@@ -515,6 +527,50 @@ sub set {
     }
 
     return $self;
+}
+
+sub can {
+    my ($self, $method) = @_;
+
+    my $subref;
+
+    unless ($subref = $self->SUPER::can($method)) {
+
+	my $aliases = $self->_aliases;
+
+	if ($aliases && $aliases->{$method}
+	    && (my $alias_to = $aliases->{$method}{to})) {
+	    $subref =  $self->SUPER::can($alias_to);
+	}
+    }
+
+    $subref;
+}
+
+sub AUTOLOAD {
+    my $self = $_[0];
+
+    my @class_path = split('::', ${Elive::Struct::AUTOLOAD});
+
+    my $class = join('::', @class_path);
+    my $method = pop(@class_path);
+    die "Autoload Dispatch Error: ".${Elive::Struct::AUTOLOAD}
+        unless $class && $method;
+
+    my $subref;
+
+    if ($subref = $self->can($method)) {
+
+	{
+	    no strict 'refs';
+	    *{$class.'::'.$method} = $subref;
+	}
+
+	goto $subref;
+    }
+    else {
+	die ref($self).": unknown method $method";
+    }
 }
 
 1;
