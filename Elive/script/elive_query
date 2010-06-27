@@ -533,7 +533,7 @@ sub _getopt {
 			     'help|?'
 	) or die pod2usage(1);
 
-    pod2usage(2) if ($options{help});
+    pod2usage(0) if ($options{help});
 
     if ($options{version}) {
 	print "Elive v${Elive::VERSION} (c) 2009-2010\n";

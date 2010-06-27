@@ -140,13 +140,17 @@ sub main {
         'occurs=i%' => \%occurs,
 	'v|version' => \$version,
     )
-	&& (($help && pod2usage(2))
-	    || ($version and do {
-		print "Elive v${Elive::VERSION} (c) 2009-2010\n";
-		exit(0);
-		})
-	    || ($url = shift @ARGV))
 	or die pod2usage(1);
+
+    pod2usage(0) if $help;
+
+    do {
+	print "Elive v${Elive::VERSION} (c) 2009-2010\n";
+	exit(0);
+    } if $version;
+
+    (my $url = shift @ARGV)
+	or pod2usage("missing url argument");
 
     unless (defined $username && $username ne '') {
 	$username = 'serversupport';
