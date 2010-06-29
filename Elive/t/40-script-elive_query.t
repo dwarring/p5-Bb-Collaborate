@@ -1,9 +1,7 @@
 #!perl
-use strict;
 use warnings;
 use File::Spec;
 use Test::More;
-use Test::Cmd;
 use English qw(-no_match_vars);
 
 use lib '.';
