@@ -22,12 +22,12 @@ if ( $EVAL_ERROR ) {
 
 unless (${Test::Script::Run::VERSION} >= '0.04') {
     my $msg = "Test::Script::Run version (${Test::Script::Run::VERSION} < 0.04)";
-   plan( skip_all => $msg );
-} 
+    plan( skip_all => $msg );
+}
 
 local ($ENV{TERM}) = 'dumb';
 
-plan(tests => 5);
+plan(tests => 4);
 
 my $script_name = 'elive_lint_config';
 
@@ -55,15 +55,3 @@ do {
 
 };
 
-SKIP: {
-
-    my %result = t::Elive->test_connection(only => 'real');
-    my $auth = $result{auth};
-
-    skip ($result{reason} || 'skipping live tests',
-	1)
-	unless $auth && @$auth;
-
-    ok(1, 'dummy test');
-
-}
