@@ -13,29 +13,29 @@ if ( not $ENV{TEST_AUTHOR} ) {
     plan( skip_all => $msg );
 }
 
-eval "use Test::Cmd";
+eval "use Test::Script::Run";
 
 if ( $EVAL_ERROR ) {
-   my $msg = 'Test::Cmd required to run scripts';
-   plan( skip_all => $msg );
+    my $msg = 'Test::Script::Run required to run scripts';
+    plan( skip_all => $msg );
 }
+
+unless (${Test::Script::Run::VERSION} >= '0.04') {
+    my $msg = "Test::Script::Run version (${Test::Script::Run::VERSION} < 0.04)";
+   plan( skip_all => $msg );
+} 
 
 plan(tests => 5);
 
 my $script_name = 'elive_lint_config';
 
-my $cmd = Test::Cmd->new(prog => File::Spec->catfile(script => $script_name),
-			 dir  => 'script',
-			 fail => '$? != 0',
-			 workdir => '',
-    );
 #
 #
 # try running script with --help
 #
 
 do {
-    my ( $stdout, $stderr ) = t::Elive->run_script($cmd, '--help' );
+    my ( $result, $stdout, $stderr ) = run_script($script_name, ['--help'] );
 	diag("stderr:$stderr");
 	diag("stdout:$stdout");
     ok($stderr eq '', "$script_name --help: stderr empty");
@@ -46,7 +46,7 @@ do {
 #
 
 do {
-    my ( $stdout, $stderr ) = t::Elive->run_script($cmd, '--invalid-opt' );
+    my ( $result, $stdout, $stderr ) = run_script($script_name, ['--invalid-opt'] );
 
     ok($stderr =~ m{unknown \s+ option}ix, "$script_name invalid option message");
     ok($stdout =~ m{usage:}ix, "$script_name invalid option usage");
