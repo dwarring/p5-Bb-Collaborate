@@ -26,6 +26,8 @@ unless (${Test::Script::Run::VERSION} >= '0.04') {
     plan( skip_all => $msg );
 } 
 
+local ($ENV{TERM}) = 'dumb';
+
 plan(tests => 5);
 
 my $script_name = 'elive_raise_meeting';

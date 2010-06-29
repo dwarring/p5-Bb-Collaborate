@@ -26,6 +26,8 @@ unless (${Test::Script::Run::VERSION} >= '0.04') {
     plan( skip_all => $msg );
 } 
 
+local ($ENV{TERM}) = 'dumb';
+
 plan(tests => 12);
 
 my $script_name = 'elive_query';
@@ -68,7 +70,6 @@ do {
 #
 
 do {
-    use Test::Script::Run;
     my ($result, $stdout, $stderr) = run_script ($script_name, [-c => 'describe user']);
 ##    my ( $stdout, $stderr ) = t::Elive->run_script($cmd, -c => 'describe user' );
     diag("result:$result");
