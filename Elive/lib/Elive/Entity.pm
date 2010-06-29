@@ -888,7 +888,7 @@ sub retrieve {
     }
 
     my $connection = $opt{connection} || $class->connection
-	or die "no connected";
+	or die "not connected";
 
     if ($opt{reuse}) {
 	#
