@@ -74,4 +74,19 @@ sub generate_id {
     return join('', @p);
 }
 
+sub run_script {
+    my $class = shift;
+    my $cmd_obj = shift;
+    my $args = $class->_script_args(@_);
+
+    $cmd_obj->run(args => $args);
+
+    return (scalar $cmd_obj->stdout, scalar $cmd_obj->stderr);
+}
+
+sub _script_args {
+    my $class = shift;
+    return join(' ', map {quotemeta($_)} @_);
+}
+
 1;

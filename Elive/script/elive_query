@@ -144,15 +144,22 @@ sub main {
     }
 
     print "Elive query $elive_version (c) 2009 - 2010 ${server_version_str}. Type 'help' for help\n"
-	if $is_tty;
+	if $is_tty && !defined $options{command};
 
     my $cmd;
     my $keyw;
     my $args;
 
-    while (($keyw||'') ne 'quit'
-	   && defined ($cmd = $is_tty? $term->readline($prompt): <STDIN>)
-	) {
+    while (($keyw||'') ne 'quit') {
+
+	if (defined $options{command}) {
+	    $cmd = $options{command};
+	}
+	else {
+	    $cmd = $is_tty? $term->readline($prompt): <STDIN>;
+	}
+
+	last unless $cmd;
 
 	$term->addhistory($cmd);
 	#
@@ -293,6 +300,8 @@ sub main {
 		print STDERR "unrecognised command  - type 'help' for help\n";
 	    }
 	}
+
+	last if defined $options{command};
     }
 
     Elive->disconnect;
@@ -526,6 +535,7 @@ sub _getopt {
     Getopt::Long::GetOptions(\%options,
 			     'username|user=s',
 			     'password|pass=s',
+			     'command|c=s',
                              'dump=s',
 			     'debug=i',
 			     'help|?',
