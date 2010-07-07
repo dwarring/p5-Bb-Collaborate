@@ -203,32 +203,17 @@ or filter them out when listing meetings:
 
 =head2 list_user_meetings_by_date
 
-List all meetings over a given date range.
+Lists all meetings for which this user is a participant, over a given
+date range.
 
-=head3 synopsis
-
-   $meetings_array_ref
-           =  Elive::Entity::Meeting->list_user_meetings_by_date(
-                         [$user_obj_or_id,
-                          $hires_start_date,
-                          $hires_end_date]
-                      );
-
-=head3 example
+For example, to list all meetings for a particular user over the next week:
 
    my $now = DateTime->now;
    my $next_week = $now->clone->add(days => 7);
 
    my $meetings = Elive::Entity::Meeting->list_user_meetings_by_date(
-    [$user_id, $now->epoch.'000', $next_week->epoch.'000']
-  )
-
-=head3 description
-
-Lists all meetings for which this user is a participant.
-
-Implements the ListUserMeetingsByDateCommand SDK method.
-
+        [$user_id, $now->epoch.'000', $next_week->epoch.'000']
+       );
 =cut
 
 sub list_user_meetings_by_date {
@@ -675,11 +660,12 @@ sub list_recordings {
 	       connection => $self->connection,
 	       @args);
 }
-    
+
 =head1 BUGS AND LIMITATIONS
 
-Meetings can not be set to restricted (as of Elluminate 9.7 - 10.0). As a
-safeguard you should configure Elluminate to restrict meetings by default.
+Meetings can not be set to restricted (as of Elluminate 9.7 - 10.0), nor
+does the SDK respect the sefver default settings for restricted meetings;
+Ouch!
 
 =head1 SEE ALSO
 
