@@ -56,35 +56,15 @@ SKIP: {
     # very approximate test on the dates being about a week apart. Allow
     # times could be out by over 1.5 hours due to daylight savings etc. 
 
-    ok(a_week_between($start_times[0], $start_times[1]),
+    ok(t::Elive::a_week_between($start_times[0], $start_times[1]),
 		       "meetings 1 & 2 separated by one week (approx)");
 
-    ok(a_week_between($start_times[1], $start_times[2]),
+    ok(t::Elive::a_week_between($start_times[1], $start_times[2]),
        "meetings 2 & 3 separated by one week (approx)");
 
     foreach (@meetings) {
 	$_->delete;
     }
-}
-
-sub a_week_between {
-    my $start = shift;
-    my $end = shift;
-    #
-    # A very rough test of times being about a week apart. Anything more
-    # precise is going to require time-zone aware date/time calculations
-    # and will introduce some pretty fat build dependencies.
-    #
-    my $seconds_in_a_week = 7 * 24 * 60 * 60;
-    #
-    # just test that the dates are a week apart to within an hour and a
-    # half, or so. This should accomodate daylight savings and other
-    # adjustments of up to 1.5 hours.
-    #
-    my $drift = 1.6 * 60 * 60; # a little over 1.5 hours
-    my $ok = abs ($end - $start - $seconds_in_a_week) < $drift;
-
-    return $ok;
 }
 
 Elive->disconnect;
