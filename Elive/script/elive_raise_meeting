@@ -4,7 +4,7 @@ use warnings; use strict;
 use version;
 
 use Getopt::Long;
-use Date::Parse;
+use Date::Parse qw{};
 use Pod::Usage;
 use File::Basename qw{};
 
@@ -188,11 +188,11 @@ sub main {
     my $server_version_num = version->new($server_version)->numify;
 
     my $start = $start_str
-	? str2time($start_str)
+	? Date::Parse::str2time($start_str)
 	: time() + 15 * 60;
 
     my $end = $end_str
-	? str2time($end_str)
+	? Date::Parse::str2time($end_str)
 	: $start + 30 * 60;
 
     die "end time must be later than start time\n"
