@@ -148,12 +148,12 @@ SKIP: {
        
 	ok($stderr =~ m{^connecting}i, "$script_name -c 'connecting...' message");
 
-	my $result;
+	my $data;
 	my @guff;
 
-	lives_ok(sub {($result,@guff) = YAML::Load($stdout)}, 'output is parsable YAML');
-	isa_ok($result, 'HASH', 'result');
-	ok($result->{ServerDetails}[0]{serverDetailsId}, 'hash structure contains ServerDetails[0].serverDetailsId');
+	lives_ok(sub {($data, @guff) = YAML::Load($stdout)}, 'output is parsable YAML');
+	isa_ok($data, 'HASH', 'result');
+	ok($data->{ServerDetails}[0]{serverDetailsId}, 'hash structure contains ServerDetails[0].serverDetailsId');
 
 	ok(!@guff, 'single result returned');
 
