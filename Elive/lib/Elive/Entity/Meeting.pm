@@ -129,8 +129,8 @@ sub insert {
 =head2 update
 
     my $meeting = Elive::Entity::Meeting->update({
-        start             => time,
-        end               => time,
+        start             => hires-date,
+        end               => hires-date,
         name              => string,
         password          => string,
         seats             => int,

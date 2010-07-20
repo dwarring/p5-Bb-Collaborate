@@ -627,9 +627,9 @@ such as users, meetings, preloads and meeting participants.
 
 =item Elive does not support hosted (SAS) systems
 
-The package currently supports only the installed server version of Elluminate
-Live which uses the ELM management layer. The current release does not support
-the hosted servers deployed with SAS (Session Administration System).
+The elive distribution currently supports only the installed server version of
+Elluminate Live which uses the ELM management layer. The current release does
+not support hosted servers deployed with SAS (Session Administration System).
 
 =back
 

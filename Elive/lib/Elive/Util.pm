@@ -272,7 +272,8 @@ sub _hex_encode {
     print Elive::Util::string($myobj);
     print Elive::Util::string($myref, $datatype);
 
-Return a string for an object.
+Return a string for an object. This method is widely used for casting
+objects to ids.
 
 =over 4
 
