@@ -149,7 +149,7 @@ sub main {
 	exit(0);
     } if $version;
 
-    (my $url = shift @ARGV)
+    ($url = shift @ARGV)
 	or pod2usage("missing url argument");
 
     unless (defined $username && $username ne '') {
