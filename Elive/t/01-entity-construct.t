@@ -1,16 +1,15 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 43;
+use Test::More tests => 40;
 use Test::Warn;
 
 use Carp; $SIG{__DIE__} = \&Carp::confess;
 
-BEGIN {
-    use_ok( 'Elive::Connection' );
-    use_ok( 'Elive::Entity::ParticipantList' );
-    use_ok( 'Elive::Entity::Group' );
-    use_ok( 'Elive::Entity::Meeting' );
-};
+use Elive::Connection;
+use Elive::Entity::ParticipantList;
+use Elive::Entity::Group;
+use Elive::Entity::Meeting;
+use Elive::Entity::User;
 
 Elive->connection(Elive::Connection->connect('http://test.org'));
 
@@ -95,7 +94,7 @@ ok($participants_2->[0]->user->userId eq 1111, 'participant list user[0]');
 ok($participants_2->[0]->role->roleId == 3, 'participant list role[0] (defaulted)');
 ok($participants_2->[1]->user->userId eq 2222, 'participant list user[1]');
 ok($participants_2->[1]->role->roleId == 2, 'participant list role[1] (explicit)');
-ok($participants_2->[2]->user->userId eq 'alice', 'participant list user[2]');
+ok($participants_2->[2]->user->userId eq 'alice', 'participant list user[2] (alphanumeric - ldap compat)');
 
 my $participant_list_3 = Elive::Entity::ParticipantList->construct(
     {
@@ -117,9 +116,9 @@ my $member_list_1 = Elive::Entity::Group->construct(
 	});
 
 my $members_1 = $member_list_1->members;
-ok($members_1->[0] eq 212121, 'member list user');
-ok($members_1->[1] eq 222222, 'member list user');
-ok($members_1->[2] eq 'fred', 'member list user');
+ok($members_1->[0] eq 212121, 'member list user[0]');
+ok($members_1->[1] eq 222222, 'member list user[1]');
+ok($members_1->[2] eq 'fred', 'member list user[2] (alphanumeric - ldap compat)');
     ;
 
 $members_1->add('late_comer');
@@ -132,13 +131,14 @@ my $member_list_2 = Elive::Entity::Group->construct(
 								   {
         groupId => 65432,
 	name => 'group_2',
-        members => [112233,'223344','trev']
+        members => [112233,'223344','alice', Elive::Entity::User->construct({userId => 'bob', loginName => 'bob'})]
 	});
 
 my $members_2 = $member_list_2->members;
-ok($members_2->[0] eq 112233, 'member list user[0]');
-ok($members_2->[1] eq 223344, 'member list user[1]');
-ok($members_2->[2] eq 'trev', 'member list user[2]');
+ok($members_2->[0] eq 112233,  'member list user[0] (integer)');
+ok($members_2->[1] eq 223344,  'member list user[1] (string)');
+ok($members_2->[2] eq 'alice', 'member list user[2] (alphanumeric - ldap compat)');
+ok($members_2->[3] eq 'bob',   'member list user[3] (object cast)');
 
 my $meeting =  Elive::Entity::Meeting->construct({
     meetingId => '112233445566',
@@ -162,5 +162,5 @@ my $participant_list_4 = Elive::Entity::ParticipantList->construct(
         participants => [1122,'2233=2']
 	});
 
-ok($participant_list_4->meetingId == $meeting->meetingId, "uncoercian on construct (primary key)");
+ok($participant_list_4->meetingId == $meeting->meetingId, "object => id cast on construct (primary key)");
 ok($participant_list_4->participants->stringify eq '1122=3;2233=2', "participants stringification");
