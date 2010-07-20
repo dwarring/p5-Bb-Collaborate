@@ -16,9 +16,10 @@ coerce 'Elive::Array' => from 'Str'
 	      $a;
           };
 
-coerce 'Elive::Array' => from 'ArrayRef[Str]'
+coerce 'Elive::Array' => from 'ArrayRef'
           => via {
-	      bless ($_,'Elive::Array');
+	      my @a = map {Elive::Util::string($_)} @$_;
+	      bless (\@a,'Elive::Array');
           };
 
 require UNIVERSAL;
