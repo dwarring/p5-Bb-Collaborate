@@ -72,26 +72,26 @@ sub _freeze {
 	    $_ = string($_, $type);
 	    my $raw_val = $_;
 
-	    if ($type =~ m{^Bool}i) {
+	    if ($type =~ m{^Bool}ix) {
 
 		#
 		# DBize boolean flags..
 		#
 		$_ =  $_ ? 'true' : 'false';
 	    }
-	    elsif ($type =~ m{^(Str|enum)}i) {
+	    elsif ($type =~ m{^(Str|enum)}ix) {
 		#
 		# l-r trim
 		#
 		s{^ \s* (.*?) \s* $}{$1}x;
 		$_ = lc if $type =~ m{^enum};
 	    }
-	    elsif ($type =~ m{^(Int|HiResDate)}i) {
+	    elsif ($type =~ m{^(Int|HiResDate)}ix) {
 		
 		$_ = _tidy_decimal($_);
 		
 	    }
-	    elsif ($type =~ m{^Ref}i) {
+	    elsif ($type =~ m{^Ref}ix) {
 		die "freezing of datatype $type: not implemented\n";
 	    }
 
@@ -253,7 +253,7 @@ sub _hex_decode {
 	if (defined $non_hex_char);
     #
     # Works for simple ascii
-    $data =~ s{(..)}{chr(hex($1))}ge;
+    $data =~ s{(..)}{chr(hex($1))}gex;
 
     return $data;
 }
@@ -261,7 +261,7 @@ sub _hex_decode {
 sub _hex_encode {
     my $data = shift;
 
-    $data =~ s{(.)}{sprintf("%02x", ord($1))}ges;
+    $data =~ s{(.)}{sprintf("%02x", ord($1))}gesx;
 
     return $data;
 }

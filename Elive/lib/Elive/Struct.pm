@@ -544,11 +544,11 @@ sub can {
 	}
     }
 
-    $subref;
+    return $subref;
 }
 
 sub AUTOLOAD {
-    my $self = $_[0];
+    my ($self) = @_;
 
     my @class_path = split('::', ${Elive::Struct::AUTOLOAD});
 
