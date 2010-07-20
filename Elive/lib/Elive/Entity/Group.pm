@@ -35,6 +35,8 @@ Elive::Entity::Group - Elluminate Group entity instance class
 These are used to maintain user groups for general use. In particular,
 for group selection of meeting participants.
 
+The C<members> property contains an array of user IDs.
+
 =cut
 
 =head1 METHODS
@@ -44,16 +46,21 @@ for group selection of meeting participants.
 =head2 insert
 
     #
-    # insert from an array of integers or strings
+    # insert from an array of User Ids. Elements may be integers, strings
+    # and/or user objects.
     #
+    my $alice = Elive::Entity::User->get_by_loginName('alice');
+    my $bob = Elive::Entity::User->get_by_loginName('bob');
+
     my $group = Elive::Entity::Group->insert({
 	name => 'Elluminati',
-	members => [111111, 222222, 333333 ],
+        # following are all ok
+	members => [111111, '222222', $alice->userId, $bob ],
      },
     );
 
     #
-    # insert from a ';' separated string of users
+    # insert from a ';' separated string of user IDs
     #
     my $group = Elive::Entity::Group->insert({
 	name => 'Elluminati',
@@ -67,7 +74,8 @@ Inserts a new group from data.
 
 =head2 update 
 
-    $group->update({members => '222222;333333;44444'});
+    $group->update({members => [111111,'222222', $alice->userId, $bob]});
+    $group->update({members => '111111;222222;333333'});
 
 =cut
 
