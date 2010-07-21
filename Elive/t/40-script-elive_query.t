@@ -73,10 +73,6 @@ do {
     #
 
     my ($result, $stdout, $stderr) = run_script ($script_name, [-c => 'describe user']);
-##    my ( $stdout, $stderr ) = t::Elive->run_script($cmd, -c => 'describe user' );
-    diag("result:$result");
-	diag("stderr:$stderr");
-	diag("stdout:$stdout");
 
     ok($stderr eq '', "$script_name -c 'describe user': no errors");
     ok($stdout =~ m{user: \s+ Elive::Entity::User .* userId \s+ : \s+ pkey \s+ Str}ixs, "$script_name -c 'describe user': looks like dump of users entity");
@@ -116,9 +112,6 @@ SKIP: {
 	     -user => $user,
 	     -pass => $pass,
 	     -c => 'select serverDetailsId from serverDetails']);
-	diag("...run");
-	diag("stderr:$stderr");
-	diag("stdout:$stdout");
        
 	ok($stderr =~ m{^connecting}i, "$script_name -c 'connecting...' message");
 	ok($stdout =~ m{serverDetailsId .* \w+ }ixs, "$script_name -c expected select output");
@@ -142,9 +135,6 @@ SKIP: {
 	     -dump => 'yaml',
 	     -c => 'select serverDetailsId from serverDetails']);
 
-	diag("...run");
-	diag("stderr:$stderr");
-	diag("stdout:$stdout");
        
 	ok($stderr =~ m{^connecting}i, "$script_name -c 'connecting...' message");
 

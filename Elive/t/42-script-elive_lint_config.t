@@ -38,8 +38,6 @@ my $script_name = 'elive_lint_config';
 
 do {
     my ( $result, $stdout, $stderr ) = run_script($script_name, ['--help'] );
-	diag("stderr:$stderr");
-	diag("stdout:$stdout");
     ok($stderr eq '', "$script_name --help: stderr empty");
     ok($stdout =~ m{usage:}ix, "$script_name --help: stdout =~ 'usage:...''");
 };

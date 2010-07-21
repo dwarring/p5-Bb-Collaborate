@@ -84,8 +84,6 @@ SKIP: {
 	diag("*** TESTING MEETING DEFAULTS ****");
 	my $time = time();
 	my ( $result, $stdout, $stderr ) = run_script($script_name, \@meeting_args );
-	diag("stderr:$stderr");
-	diag("stdout:$stdout");
 
 	ok($stderr eq '', "stderr empty");
 
@@ -95,8 +93,7 @@ SKIP: {
 	ok($ret_meeting_id, "meeting id returned");
 
 	unless ($ret_meeting_name && $ret_meeting_id) {
-		diag "unable to raise simple meeting - aborting";
-		exit (1);
+		die "unable to raise simple meeting - aborting";
 	}
 
 	ok($ret_meeting_name eq $meeting_name, 'echoed meeting name as expected');
@@ -105,8 +102,7 @@ SKIP: {
 	ok($meeting = Elive::Entity::Meeting->retrieve([$ret_meeting_id], connection => $connection), 'retrieve');
 
 	unless ($meeting) {
-	    diag "unable to retrieve meeting: $ret_meeting_id - aborting";
-	    exit (1);
+	    die "unable to retrieve meeting: $ret_meeting_id - aborting";
 	}
 
 	ok($meeting->name eq $meeting_name, 'retrieved meeting name as expected');
@@ -147,14 +143,10 @@ SKIP: {
 	    -meeting_pass => $meeting_pass,
 	    );
 
-	diag("@basic_meeting_args");
-
 	my ( $result, $stdout, $stderr ) = run_script($script_name,
 						      [@meeting_args,
 						       @basic_meeting_args,
 						      ] );
-	diag("stderr:$stderr");
-	diag("stdout:$stdout");
 
 	ok($stderr eq '', "stderr empty");
 
@@ -183,16 +175,13 @@ SKIP: {
 	    ok($meeting = Elive::Entity::Meeting->retrieve([$ret_meeting_id], connection => $connection), "week $week: retrieve");
 
 	    unless ($meeting) {
-		diag "unable to retrieve meeting: $ret_meeting_id - aborting";
-		exit (1);
+		die "unable to retrieve meeting: $ret_meeting_id - aborting";
 	    }
 
 	    if ($week == 1) {
 		my $actual_start_time = substr($meeting->start, 0, -3);
 		my $actual_end_time = substr($meeting->end, 0, -3);
 
-		diag "requested start: $start_time => actual_start: $actual_start_time";
-	
 		ok(abs($actual_start_time - $start_time) <= 120, "week $week: actual start time as expected");	
 		ok(abs($actual_end_time - $end_time) <= 120, "week $week: actual end time as expected");	
 	    }
@@ -231,8 +220,6 @@ SKIP: {
 						      [@meeting_args,
 						       @flags_on_args
 						      ] );
-	diag("stderr:$stderr");
-	diag("stdout:$stdout");
 
 	ok($stderr eq '', "stderr empty");
 
@@ -241,8 +228,7 @@ SKIP: {
 	ok($meeting = Elive::Entity::Meeting->retrieve([$ret_meeting_id], connection => $connection), "meeting retrieve");
 
 	unless ($meeting) {
-	    diag "unable to retrieve meeting: $ret_meeting_id - aborting";
-	    exit (1);
+	    die "unable to retrieve meeting: $ret_meeting_id - aborting";
 	}
 
 	foreach my $flag (@flags) {
@@ -267,8 +253,6 @@ SKIP: {
 						      [@meeting_args,
 						       @flags_off_args
 						      ] );
-	diag("stderr:$stderr");
-	diag("stdout:$stdout");
 
 	ok($stderr eq '', "stderr empty");
 
@@ -277,8 +261,7 @@ SKIP: {
 	ok($meeting = Elive::Entity::Meeting->retrieve([$ret_meeting_id], connection => $connection), "meeting retrieve");
 
 	unless ($meeting) {
-	    diag "unable to retrieve meeting: $ret_meeting_id - aborting";
-	    exit (1);
+	    die "unable to retrieve meeting: $ret_meeting_id - aborting";
 	}
 
 	foreach my $flag (@flags) {
@@ -313,8 +296,6 @@ SKIP: {
 						      [@meeting_args,
 						       @options,
 						      ] );
-	    diag("stderr:$stderr");
-	    diag("stdout:$stdout");
 
 	    ok($stderr eq '', "stderr empty");
 
@@ -323,8 +304,7 @@ SKIP: {
 	    ok($meeting = Elive::Entity::Meeting->retrieve([$ret_meeting_id], connection => $connection), "meeting retrieve");
 
 	    unless ($meeting) {
-		diag "unable to retrieve meeting: $ret_meeting_id - aborting";
-		exit (1);
+		die "unable to retrieve meeting: $ret_meeting_id - aborting";
 	    }
 
 	    foreach my $option (sort keys %option_values) {
