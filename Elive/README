@@ -1,13 +1,18 @@
-Elive is a set of Perl modules for scripting management and integration
+Elive is a Perl distribution for scripting management and integration
 of Elluminate Live! virtual classroom servers.
 
 You can, for example, use it to query or add users, create sessions, assign
 users as class participants and change server settings.
 
-This package has been tested against Elluminate Live! versions 9.0 - 10.0.
-
 You will need to be able to login in to your SOAP service using an
 Elluminate system administrator level account.
+
+IMPORTANT NOTE
+
+    The Elive distribution currently supports only the installed server
+    version of Elluminate Live which uses the ELM (Elluminate Live Manager)
+    versions 2.7 - 3.1. This release does not support access to hosted servers
+    deployed with SAS (Session Administration System).
 
 INSTALLATION
 

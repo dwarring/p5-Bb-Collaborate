@@ -1,5 +1,24 @@
 Revision history for Elive
 
+0.72    13th August 2010
+
+        - Elive::Entity::Group: added implicit casting of user objects in
+          member lists. The follow now works as you would expect:
+
+  	      my $bob = Elive::Entity::User->get_by_loginName('bob');
+
+	      my $group = Elive::Entity::Group->insert({
+		    name => 'Elluminati',
+		    members => [111111, 222222, 'alice', $bob ],
+	      });
+
+        - Added script tests (elive_query, elive_raise_meeting,
+          elive_lint_config).
+
+        - Elive::Struct Provided method aliases for existing entity
+          level aliases. For example $meeting->private is now equivalent
+          to $meeting->privateMeeting.
+
 0.71    21st June 2010
         - Fixed elive_query (loading of Elive::Connection) from last
           change. Added a test for this.
@@ -19,6 +38,8 @@ Revision history for Elive
              crash the SOAP request with the error message:
 
                   'String index out of range: -1'
+
+              (have put in a ticket to Elluminate help desk).
 
 0.69    11th June 2010
 
@@ -58,13 +79,18 @@ Revision history for Elive
         - Added Elive::Entity::Recording::upload() method.
 
 0.66    22nd May 2010
+
         - Moved check of property checks from Elive::Entity to
           Elive::Struct. Made it a moose /mouse BUILDARGS method.
+
         - Added 'type' field to participants method. Newly discovered
           due to above BUILDARGS check.
+
         - Recordings do not have to be associated with a Meeting. Made
           RecordingId optional.
-        - Allow objects where ids are expected. For example:
+
+        - Implicit casting of objects to ids. For example, you can now
+          write:
 
              Elive::Entity::Meeting->new({facilitatorId => $user,
                 # ...
@@ -310,7 +336,7 @@ Revision history for Elive
         - Increased tolerance with dealing with out of bounds data on
           SOAP retrieval. In particular made 'recordingStatus' and media
           'type' properties case insensitive. These now produce warnings
-          rather than carping on retrieval of out-of-bounds data.
+          rather than carping.
         - Added 'parameters' and 'server_parameters' utility methods
           to Elive::Entity::Meeting.
 
