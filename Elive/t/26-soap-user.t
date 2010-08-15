@@ -1,6 +1,6 @@
 #!perl
 use warnings; use strict;
-use Test::More tests => 15;
+use Test::More tests => 17;
 use Test::Exception;
 
 use Elive;
@@ -11,7 +11,6 @@ use t::Elive;
 my $class = 'Elive::Entity::User' ;
 
 use Carp;
-$SIG{__DIE__} = \&Carp::confess;
 
 #
 # restrict our user tests to the mock connections. Live updates
@@ -82,8 +81,20 @@ $admin_user = undef;
 $admin_user = $class->retrieve([$admin_id]);
 isa_ok($admin_user, $class, 'admin user before delete');
 
+lives_ok(
+    sub {$admin_user->set('email' => 'bbill@test.org')},
+    "setter on live entity - lives"
+    );
+
 dies_ok(sub {$admin_user->delete},"delete admin user without -force - dies");
 lives_ok(sub {$admin_user->delete(force => 1)},"delete admin user with -force - lives");
+
+dies_ok(
+    sub {$admin_user->set('email' => 'blinky@test.org')},
+    "setter on deleted entity - dies"
+    );
+
+$admin_user->revert;
 
 $admin_user = undef;
 $admin_user = $class->retrieve([$admin_id]);
