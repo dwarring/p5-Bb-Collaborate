@@ -205,11 +205,6 @@ sub change_password {
 			 %opt,
 	)
 	if (defined $new_password && $new_password ne '');
-    #
-    # Revert to the readback copy. This does not contain a copy of
-    # the password. 
-    #
-    $self->revert;
 
     return $self;
 }
