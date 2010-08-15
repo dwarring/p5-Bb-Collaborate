@@ -12,6 +12,8 @@ use SOAP::Lite;  # contains SOAP::Data package
 use MIME::Types;
 use File::Basename qw{};
 
+use Carp;
+
 =head1 NAME
 
 Elive::Entity::Preload - Elluminate Preload instance class
@@ -248,7 +250,7 @@ sub _thaw {
 	$_ = lc($_);
 
 	unless (m{^media|whiteboard|plan$}x) {
-	    warn "ignoring unknown media type: $_";
+	    Carp::carp "ignoring unknown media type: $_";
 	    delete $db_thawed->{type};
 	}
     }

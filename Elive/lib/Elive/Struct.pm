@@ -8,6 +8,8 @@ use base qw{Elive};
 use Elive::Array;
 use Elive::Util;
 
+use Carp;
+
 use YAML;
 
 =head1 NAME
@@ -107,7 +109,7 @@ sub BUILDARGS {
 		}		    
 	    }
 	    else {
-		warn "$class: unknown property: $prop";
+		Carp::carp "$class: unknown property: $prop";
 	    }
 
 	    $cooked{$prop} = $value;
@@ -398,7 +400,7 @@ sub _cmp_col {
 		    $cmp ||= YAML::Dump($v1) cmp YAML::Dump($v2);
 		}
 		else {
-		    die "class $class: unknown type: $type\n";
+		    Carp::croak "class $class: unknown type: $type\n";
 		}
 	    }
 	}
@@ -476,7 +478,7 @@ sub set {
     foreach (keys %data) {
 
 	unless ($entity_column{$_}) {
-	    warn ((ref($self)||$self).": unknown property: $_");
+	    Carp::carp ((ref($self)||$self).": unknown property: $_");
 	    next;
 	}
 

@@ -9,6 +9,7 @@ use YAML;
 use Scalar::Util qw{weaken};
 require UNIVERSAL;
 use Storable qw{dclone};
+use Carp;
 
 use Elive::Util;
 use Elive::Array;
@@ -183,7 +184,7 @@ sub _freeze {
 
 	my $property = $property_types->{$_};
 
-	die "$class: unknown property: $_: expected: @properties"
+	Carp::croak "$class: unknown property: $_: expected: @properties"
 	    unless $property;
 
 	my ($type, $is_array, $_is_struct) = Elive::Util::parse_type($property);
@@ -454,7 +455,7 @@ sub _unpack_as_list {
 
     }
     elsif ($reftype) {
-	die "unknown type in result set: $reftype";
+	Carp::croak "unknown type in result set: $reftype";
     }
     else {
 
@@ -1047,7 +1048,7 @@ BEGIN {
 	=> where {m{^\d+$}
 		    && 
 			(!$_ || length($_) > 10
-			 or warn "doesn't look like a hi-res date: $_")}
+			 or Carp::carp "doesn't look like a hi-res date: $_")}
         => message {"invalid date: $_"};
 }
 
@@ -1061,7 +1062,7 @@ sub DEMOLISH {
     if (my $db_data = $self->_db_data) {
 	if (my @changed = $self->is_changed) {
 	    my $self_string = Elive::Util::string($self);
-	    warn("$class $self_string destroyed without saving or reverting changes to: "
+	    Carp::carp("$class $self_string destroyed without saving or reverting changes to: "
 		 . join(', ', @changed));
 	}
 	#
