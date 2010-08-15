@@ -31,28 +31,28 @@ my %user_data =  (
     loginPassword => 'pass'
     );
 
-my $user_data;
+my $user_obj;
 
 lives_ok(
     sub {
-	$user_data = Elive::Entity::User->construct(\%user_data)
+	$user_obj = Elive::Entity::User->construct(\%user_data)
     },
     "initial construction - lives"
     );
 
-unless ($user_data) {
+unless ($user_obj) {
     diag "dont' have user object - unable to continue testing";
     exit(1);
 }
 
-$user_data->loginName( $user_data->loginName .'x' );
+$user_obj->loginName( $user_obj->loginName .'x' );
 
 dies_ok(
     sub {Elive::Entity::User->construct(\%user_data)},
     "reconstructing unsaved object - dies"
     );
 
-$user_data->revert;
+$user_obj->revert;
 
 lives_ok(
     sub {Elive::Entity::User->construct(\%user_data)},
@@ -60,22 +60,22 @@ lives_ok(
     );
 
 lives_ok(
-    sub {$user_data->set('email', 'bbill@test.org')},
+    sub {$user_obj->set('email', 'bbill@test.org')},
     "setter on non-key value - lives"
     );
 
 dies_ok(
-    sub {$user_data->set(userId => undef)},
+    sub {$user_obj->set(userId => undef)},
     "clearing primary key field - dies"
     );
 
 dies_ok(
-    sub {$user_data->set('userId', $user_data->userId.'9')},
+    sub {$user_obj->set('userId', $user_obj->userId.'9')},
     "updating primary key field - dies"
     );
 
 lives_ok(
-    sub {$user_data->set('userId', $user_data->userId)},
+    sub {$user_obj->set('userId', $user_obj->userId)},
     "ineffective primary key update - lives"
     );
 
@@ -193,6 +193,5 @@ dies_ok(
     'thawing invalid meeting struct parameters - dies',
     );
 
-
-$user_data->revert;
+$user_obj->revert;
 Elive->disconnect;
