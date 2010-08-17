@@ -19,6 +19,8 @@ use Scalar::Util;
 
 use YAML;
 
+use Carp;
+
 =head1 EXAMPLE
 
 The following (somewhat contrived) example sets up a meeting of selected
@@ -470,7 +472,7 @@ sub _check_for_errors {
 	my %seen;
 
 	my @error = grep {defined($_) && !$seen{$_}++} ($code, $reason, @stacktrace);
-	die join(' ', @error) || YAML::Dump($result);
+	Carp::croak join(' ', @error) || YAML::Dump($result);
     }
 }
 
