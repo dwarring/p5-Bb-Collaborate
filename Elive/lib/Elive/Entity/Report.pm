@@ -4,8 +4,6 @@ use warnings; use strict;
 use Mouse;
 use Mouse::Util::TypeConstraints;
 
-use HTML::Entities;
-
 extends 'Elive::Entity';
 
 use Elive::Entity::Role;
