@@ -64,6 +64,10 @@ t/27-soap-group.t
 t/28-soap-report.t
 t/29-soap-multi-connect.t
 t/30-soap-exception.t
+t/40-script-elive_query.t
+t/40-script-elive_query.t.edited
+t/41-script-elive_raise_meeting.t
+t/42-script-elive_lint_config.t
 t/90-pod.t
 t/91-pod-coverage.t
 t/99-kwalitee.t
