@@ -4,6 +4,7 @@ lib/Elive/Command.pm
 \B\.svn\b
 \.mine$
 \.r[0-9]+$
+\.edited$
 # Makemaker generated files and dirs.
 ^MANIFEST\.
 ^Makefile$
