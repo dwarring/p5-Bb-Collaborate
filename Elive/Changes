@@ -1,5 +1,11 @@
 Revision history for Elive
 
+0.73    03rd September
+        - Added script tests to manifest
+        - Checked against Elluminate 10.0.1 - passed!
+        - Starting investigation into extending this module to also support the 
+          Elluminate V2 API, via the SOAP endpoint: http://site-name.com/instance/v2/webservice.event.
+
 0.72    13th August 2010
 
         - Elive::Entity::Group: added implicit casting of user objects in
