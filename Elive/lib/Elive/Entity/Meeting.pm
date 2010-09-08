@@ -663,9 +663,15 @@ sub list_recordings {
 
 =head1 BUGS AND LIMITATIONS
 
+=over 4
+
+=item
+
 Meetings can not be set to restricted (as of Elluminate 9.7 - 10.0), nor
-does the SDK respect the sefver default settings for restricted meetings;
+does the SDK respect the server default settings for restricted meetings;
 Ouch!
+
+=back
 
 =head1 SEE ALSO
 
