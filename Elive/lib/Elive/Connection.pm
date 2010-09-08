@@ -6,11 +6,13 @@ use Class::Data::Inheritable;
 use HTML::Entities;
 use Scalar::Util;
 
+use Carp;
+
 use base qw{Class::Accessor};
 
 use Elive;
-use Elive::Entity;
 use Elive::Util;
+use Elive::Entity;
 use Elive::Entity::User;
 use Elive::Entity::ServerDetails;
 
@@ -56,7 +58,7 @@ use URI;
 use File::Spec::Unix;
 use HTML::Entities;
 
-__PACKAGE__->mk_accessors( qw{url user pass soap _login _server_details} );
+__PACKAGE__->mk_accessors( qw{url user pass soap adapter _login _server_details} );
 
 =head1 METHODS
 
@@ -85,29 +87,51 @@ sub connect {
 
     my @path = File::Spec::Unix->splitdir($uri_path);
 
+    my $adapter = 'default';
+
     shift (@path)
 	if (@path && !$path[0]);
 
     pop (@path)
 	if (@path && $path[-1] eq 'webservice.event');
 
+    if (@path && $path[-1] =~ m{^(v\d+|default)$}) {
+	$adapter = pop(@path);
+	croak "unsupported standard bridge adapter $adapter, endpoint path: ". File::Spec::Unix->catdir(@path, 'webservice.event')
+	    unless $adapter =~ m{^(v2|default)$};
+    }
+
     $uri_obj->path(File::Spec::Unix->catdir(@path));
     my $restful_url = $uri_obj->as_string;
 
-    $uri_obj->path(File::Spec::Unix->catdir(@path, 'webservice.event'));
-    my $soap_url = $uri_obj->as_string;
-
     my $debug = $opt{debug}||0;
-
-    warn "connecting to ".$soap_url
-	if ($debug);
 
     SOAP::Lite::import($debug >= 3
 		       ? (+trace => 'debug')
 		       : ()
 	);
 
-    my $soap = SOAP::Lite->new(proxy => $soap_url );
+    my $soap = SOAP::Lite->new();
+
+    if ($adapter eq 'default') {
+	$uri_obj->path(File::Spec::Unix->catdir(@path, 'webservice.event'));
+    }
+    elsif ($adapter eq 'v2') {
+	$uri_obj->path(File::Spec::Unix->catdir(@path, $adapter, 'webservice.event'));
+	warn "yup that's v2" if $debug;
+	$soap->ns( "http://schemas.xmlsoap.org/soap/envelope" => "soapenv");
+	$soap->ns( "http://sas.elluminate.com/" => "sas");
+    }
+    else {
+	die "unsupported adapter: $adapter";
+    }
+
+    my $soap_url = $uri_obj->as_string;
+
+    warn "connecting to ".$soap_url
+	if ($debug);
+
+    $soap->proxy($soap_url);
 
     my $self = {};
     bless $self, $class;
@@ -116,6 +140,15 @@ sub connect {
     $self->user($user);
     $self->pass($pass);
     $self->soap($soap);
+    $self->adapter($adapter);
+
+    #
+    # horrible hacky interim code
+    #
+    if ($self->adapter eq 'v2') {
+	$self->call('getSchedulingManager');
+	die "can't run v2 yet!!";
+    }
 
     return $self
 }
@@ -147,17 +180,9 @@ SOAP::SOM object.
 sub call {
     my ($self, $cmd, %params) = @_;
 
-    $params{adapter} ||= 'default';
+    my @soap_params = $self->_preamble($cmd);
 
-    my @soap_params = (
-	(SOAP::Data
-	 ->name('request')
-	 ->uri('http://www.soapware.org')
-	 ->prefix('m')
-	 ->value('')),
-	 SOAP::Header->type(xml => $self->_soap_header_xml()),
-	 SOAP::Data->name('command')->value($cmd),
-	);
+    $params{adapter} ||= $self->adapter;
 
     foreach my $name (keys %params) {
 
@@ -176,6 +201,22 @@ sub call {
 
     return $som;
 }
+
+sub _preamble {
+    my ($self, $cmd) = @_;
+
+    my $adapter = $self->adapter;
+
+    if ($adapter eq 'default') {
+	return $self->_preamble_v1($cmd);
+    }
+    elsif ($adapter eq 'v2') {
+	return $self->_preamble_v2($cmd);
+    }
+
+    die "unknown adapter: $adapter";
+}
+
 
 =head2 login
 
@@ -247,9 +288,9 @@ Returns the underlying L<SOAP::Lite> object for the connection.
 
 =cut
 
-sub _soap_header_xml {
+sub _preamble_v1 {
 
-    my $self = shift;
+    my ($self,$cmd) = @_;
 
     die "Not logged in"
 	unless ($self->user);
@@ -257,7 +298,18 @@ sub _soap_header_xml {
     my @user_auth =  (map {HTML::Entities::encode_entities( $_ )}
 		      ($self->user, $self->pass));
 
-    return sprintf (<<'EOD', @user_auth);
+    my @preamble = (
+	(SOAP::Data
+	 ->name('request')
+	 ->uri('http://www.soapware.org')
+	 ->prefix('m')
+	 ->value('')),
+	);
+
+    push (@preamble, SOAP::Data->name('command')->value($cmd))
+	if $cmd;
+
+    my $auth = sprintf (<<'EOD', @user_auth);
     <h:BasicAuth
       xmlns:h="http://soap-authentication.org/basic/2001/10/"
     soap:mustUnderstand="1">
@@ -265,6 +317,32 @@ sub _soap_header_xml {
     <Password>%s</Password>
     </h:BasicAuth>
 EOD
+
+return (@preamble, SOAP::Header->type(xml => $auth));
+};
+
+sub _preamble_v2 {
+    my ($self, $cmd) = @_;
+
+    die "Not logged in"
+	unless ($self->user);
+
+    my @user_auth =  (map {HTML::Entities::encode_entities( $_ )} ($self->user, $self->pass));
+
+    my @preamble = (
+    );
+
+    push (@preamble, SOAP::Data->prefix('sas')->name($cmd))
+	if $cmd;
+
+    my $auth = sprintf(<<'EOD', @user_auth);
+<sas:BasicAuth>
+<sas:Name>%s</sas:Name>
+<sas:Password>%s</sas:Password>
+</sas:BasicAuth>
+EOD
+
+return (@preamble, SOAP::Header->type(xml => $auth));
 };
 
 sub DESTROY {
