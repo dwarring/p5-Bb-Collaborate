@@ -1,5 +1,6 @@
 package Elive::DAO;
 use warnings; use strict;
+
 use Mouse;
 use Mouse::Util::TypeConstraints;
 

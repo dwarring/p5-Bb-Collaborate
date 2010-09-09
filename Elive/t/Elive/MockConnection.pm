@@ -53,7 +53,7 @@ sub connect {
     # Pretend that we can insert a server details record. Just for the
     # purposes of our mockup
     #
-    local($Elive::KnownAdapters{createServerDetails}) = 'c';
+    local($Elive::Entity::KnownAdapters{createServerDetails}) = 'c';
 
     my $server_details = Elive::Entity::ServerDetails->insert(
 	{
@@ -74,7 +74,7 @@ sub call {
 
     my %params = @_;
 
-    my %known_adapters = Elive->known_adapters;
+    my $known_adapters = Elive::Entity->known_adapters;
     my $entities = Elive::Entity->entities;
     my %collections =
 	(map {@$_}
@@ -85,7 +85,7 @@ sub call {
     #
     # Determine an operation for the command
     #
-    my $crud = $known_adapters{$cmd};
+    my $crud = $known_adapters->{$cmd};
     die "Uknown command $cmd in mock connection"
 	unless $crud;
 
@@ -142,8 +142,8 @@ sub call {
 		$self->mockdb->{$entity_name}{ $pkey } = \%params;
 
 		if ($entity_name eq 'meeting') {
-		    local ($Elive::KnownAdapters{createServerParameters}) = 'c';
-		    local ($Elive::KnownAdapters{createMeetingParameters}) = 'c';
+		    local ($Elive::Entity::KnownAdapters{createServerParameters}) = 'c';
+		    local ($Elive::Entity::KnownAdapters{createMeetingParameters}) = 'c';
 		    $self->call('createServerParameters',
 				meetingId => $pkey,
 				seats => $params{seats}||0);

@@ -35,7 +35,6 @@ SKIP: {
 
    my $bad_som;
     {
-	local ($Elive::KnownAdapters{unknownCommandXXX}) = 'c';
 	lives_ok( sub{$bad_som = $connection->call('unknownCommandXXX')}, 'call to unknown adapter - intially lives...');
     }
 

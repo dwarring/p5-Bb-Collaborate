@@ -58,7 +58,7 @@ use URI;
 use File::Spec::Unix;
 use HTML::Entities;
 
-__PACKAGE__->mk_accessors( qw{url user pass soap adapter _login _server_details} );
+__PACKAGE__->mk_accessors( qw{url user pass soap adapter _login _server_details dao_class} );
 
 =head1 METHODS
 
@@ -113,10 +113,14 @@ sub connect {
 
     my $soap = SOAP::Lite->new();
 
+    my $dao_class;
+
     if ($adapter eq 'default') {
+	$dao_class = 'Elive::Entity';
 	$uri_obj->path(File::Spec::Unix->catdir(@path, 'webservice.event'));
     }
     elsif ($adapter eq 'v2') {
+	$dao_class = 'Elive::V2';
 	$uri_obj->path(File::Spec::Unix->catdir(@path, $adapter, 'webservice.event'));
 	warn "yup that's v2" if $debug;
 	$soap->ns( "http://schemas.xmlsoap.org/soap/envelope" => "soapenv");
@@ -141,6 +145,7 @@ sub connect {
     $self->pass($pass);
     $self->soap($soap);
     $self->adapter($adapter);
+    $self->dao_class($dao_class);
 
     #
     # horrible hacky interim code

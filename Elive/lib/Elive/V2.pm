@@ -16,4 +16,12 @@ version 2.
 
 =cut
 
+our %KnownAdapters = (
+
+        getSchedulingManager => 'r',
+
+    );
+
+__PACKAGE__->mk_classdata(known_adapters => \%KnownAdapters);
+
 1;

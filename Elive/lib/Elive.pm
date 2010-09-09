@@ -84,8 +84,6 @@ the Command Toolkit (SDK).
 
 =cut
 
-__PACKAGE__->mk_classdata('adapter' => 'default');
-
 our $DEBUG;
 BEGIN {
     $DEBUG = $ENV{ELIVE_DEBUG};
@@ -224,90 +222,6 @@ sub debug {
     return $DEBUG || 0;
 }
 
-our %KnownAdapters;
-
-BEGIN {
-    #
-    # classify adaptors as create, read, update or delete
-    #
-    %KnownAdapters = (
-
-	addGroupMember => 'c',
-	addMeetingPreload => 'c',
-	addReport => 'c',
-
-	attendanceNotification => 'r',
-
-	changePassword => 'u',
-
-	buildMeetingJNLP => 'r',
-	buildRecordingJNLP => 'r',
-        buildReport => 'r',
-
-	checkMeetingPreload => 'r',
-
-	createGroup => 'c',
-	createMeeting => 'c',
-	createPreload => 'c',
-	createRecording => 'c',
-	createUser => 'c',
-
-	deleteGroup => 'd',
-	deleteMeeting => 'd',
-	deleteMeetingPreload => 'd',
-	deleteParticipant => 'd',
-	deleteRecording => 'd',
-	deleteReport => 'd',
-	deletePreload => 'd',
-	deleteUser => 'd',
-
-	getGroup => 'r',
-	getMeeting => 'r',
-	getMeetingParameters => 'r',
-	getPreload => 'r',
-	getPreloadStream => 'r',
-	getRecording => 'r',
-	getReport => 'r',
-	getRecordingStream => 'r',
-        getReport          => 'r',
-	getServerDetails => 'r',
-	getServerParameters => 'r',
-	getUser => 'r',
-
-	importPreload => 'c',
-	importRecording => 'c',
-
-	isModerator => 'r',
-	isParticipant => 'r',
-
-	listGroups => 'r',
-	listMeetingPreloads => 'r',
-	listMeetings => 'r',
-	listParticipants => 'r',
-	listPreloads => 'r',
-	listRecordings => 'r',
-        listReports => 'r',
-	listUserMeetingsByDate => 'r',
-	listUsers => 'r',
-
-	resetGroup => 'u',
-	resetParticipantList => 'u',
-
-	setParticipantList => 'u',
-
-	streamPreload => 'u',
-	streamRecording => 'u',
-
-	updateMeeting => 'u',
-	updateMeetingParameters => 'u',
-	updateRecording => 'u',
-	updateReport => 'u',
-	updateServerParameters => 'u',
-	updateUser => 'u',
-
-	);
-}
-
 =head2 check_adapter
 
     Elive->check_adapter('getUser')
@@ -326,17 +240,20 @@ sub check_adapter {
     my $usage = "usage: \$class->check_adapter(\$name[,'c'|'r'|'u'|'d'])";
     die $usage unless $adapter;
 
-    my %known_adapters = $class->known_adapters;
+    my $known_adapters = $class->known_adapters;
+
+    die "no know adapters for class: $class"
+	unless $known_adapters && (keys %{$known_adapters});
 
     die "Unknown adapter: $adapter"
-	unless exists $known_adapters{$adapter};
+	unless exists $known_adapters->{$adapter};
 
     if ($crud) {
 	$crud = lc(substr($crud,0,1));
 	die $usage
 	    unless $crud =~ m{^[c|r|u|d]$}x;
 
-	my $adapter_type = $known_adapters{$adapter};
+	my $adapter_type = $known_adapters->{$adapter};
 	die "misconfigured adapter: $adapter"
 	    unless $adapter_type &&  $adapter_type  =~ m{^[c|r|u|d]$}x;
 
@@ -353,11 +270,6 @@ Returns an array of hash-value pairs for all Elluminate I<Live!> adapters
 required by Elive. This list is cross-checked by the script elive_lint_config. 
 
 =cut
-
-sub known_adapters {
-    my $class = shift;
-    return %KnownAdapters;
-}
 
 our %Meta_Data;
 
