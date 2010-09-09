@@ -33,7 +33,7 @@ SKIP: {
     my $auth = $result{auth};
 
     skip ($result{reason} || 'skipping live tests',
-	43)
+	45)
 	unless $auth;
 
     my $connection_class = $result{class};
