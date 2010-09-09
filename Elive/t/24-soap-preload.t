@@ -1,6 +1,6 @@
 #!perl
 use warnings; use strict;
-use Test::More tests => 49;
+use Test::More tests => 51;
 use Test::Exception;
 use Test::Builder;
 
@@ -179,6 +179,29 @@ SKIP: {
     $meeting->delete;
 
     dies_ok(sub {$preloads[0]->retrieve([$preload_id])}, 'attempted retrieval of deleted preload - dies');
+
+    my $server_details = Elive->server_details;
+    if ($server_details->version eq '10.0.0') {
+	$t->skip('skipping known Elluminate v10.0.0 bugs')
+	    for (1..2);
+    }
+    else {
+
+	lives_ok( sub {
+	    push (@preloads, Elive::Entity::Preload->upload(
+		      {
+			  type => 'whiteboard',
+			  name => 'test_no_extension',
+			  ownerId => Elive->login,
+			  mimeType => 'video/mpeg',
+			  data => $data[1],
+		  },
+		  ))},
+		  'upload of preload with no extension - lives'
+	    );
+
+	ok($preloads[-1]->mimeType eq 'video/mpeg','expected value for mimeType (set, no-extension)');
+    }
 
     for my $i (1 .. $#preloads) {
 	$preloads[$i]->delete;
