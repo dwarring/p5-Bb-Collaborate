@@ -1,6 +1,6 @@
 #!perl
 use warnings; use strict;
-use Test::More tests => 43;
+use Test::More tests => 45;
 use Test::Exception;
 use Test::Builder;
 use version;
@@ -107,7 +107,7 @@ SKIP: {
     ########################################################################
 
     skip ($result{reason} || 'skipping live tests',
-	25)
+	27)
 	unless $connection_class eq 'Elive::Connection';
 
     my %meeting_server_data = (
@@ -164,10 +164,12 @@ SKIP: {
        'participant string list - set correctly');
 
     ok($meeting->is_participant( Elive->login), 'is_participant($moderator)');
+    ok($meeting->is_moderator( Elive->login), 'is_moderator($moderator)');
 
     my $gate_crasher = 'gate_crasher_'.t::Elive::generate_id();
 
     ok(!$meeting->is_participant( $gate_crasher ), '!is_participant($gate_crasher)');
+    ok(!$meeting->is_moderator( $gate_crasher ), '!is_moderator($gate_crasher)');
 
     lives_ok(sub {$participant_list->update({participants => []})},
 	     'clearing participants - lives');

@@ -331,7 +331,9 @@ sub is_participant {
     die "unable to determine meeting_id"
 	unless $meeting_id;
 
-    my $adapter = $self->check_adapter('isParticipant');
+    my $adapter = $opt{adapter} || 'isParticipant';
+
+    $self->check_adapter($adapter);
 
     my $connection = $self->connection
         or die "not connected";
@@ -347,6 +349,20 @@ sub is_participant {
     my $results = $self->_unpack_as_list($som->result);
 
     return @$results && Elive::Util::_thaw($results->[0], 'Bool');
+}
+
+=head2 is_moderator
+
+    my $ok = $meeting_obj->is_moderator($user);
+
+Checks that the user is a meeting moderator.
+
+=cut
+
+sub is_moderator {
+    my ($self, $user, %opt) = @_;
+
+    return $self->is_participant($user, %opt, adapter => 'isModerator');
 }
 
 sub _readback_check {

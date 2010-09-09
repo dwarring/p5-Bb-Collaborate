@@ -277,6 +277,7 @@ BEGIN {
 	importPreload => 'c',
 	importRecording => 'c',
 
+	isModerator => 'r',
 	isParticipant => 'r',
 
 	listGroups => 'r',
