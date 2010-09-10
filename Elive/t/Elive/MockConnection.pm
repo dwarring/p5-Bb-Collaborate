@@ -31,6 +31,8 @@ sub connect {
 
     $url ||= 'http://elive_mock_connection';
     $url =~ s{/$}{};
+    $url =~ s{/webservice\.event$}{};
+    $url =~ s{/v2$}{};
     $self->url($url);
 
     $self->user($user);

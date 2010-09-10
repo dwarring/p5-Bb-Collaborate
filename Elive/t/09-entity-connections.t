@@ -16,7 +16,7 @@ use lib '.';
 use t::Elive::MockConnection;
 
 my $URL1 = 'http://test1.org';
-my $URL2 = 'http://test2.org/test_site';
+my $URL2 = 'http://test2.org/test_instance';
 
 my $K1 = '123456123456';
 my $K2 = '112233445566';
@@ -24,13 +24,16 @@ my $K3 = '111222333444';
 
 for my $class(qw{Elive::Connection t::Elive::MockConnection}) {
 
+    # Check our normalizations. These paths should be equivalent
+    # /test_instance, /test_instance/webservice.event, /test_instance/v2/webservice.event
+
     my $C1 = $class->connect($URL1.'/');
     ok($C1->url eq $URL1, 'connection 1 - has expected url');
     
-    my $C2 = $class->connect($URL2);
+    my $C2 = $class->connect($URL2.'/webservice.event');
     ok($C2->url eq $URL2, 'connection 2 - has expected url');
 
-    my $C2_dup = $class->connect($URL2);
+    my $C2_dup = $class->connect($URL2.'/v2/webservice.event');
     ok($C2_dup->url eq $URL2, 'connection 2 dup - has expected url');
 
     ok(Scalar::Util::refaddr($C2) ne Scalar::Util::refaddr($C2_dup),

@@ -1,4 +1,4 @@
-package Elive::V2;
+package Elive::SAS;
 use warnings; use strict;
 use Mouse;
 use Mouse::Util::TypeConstraints;
@@ -7,12 +7,11 @@ extends 'Elive::DAO';
 
 =head1 NAME
 
-    Elive::V2 - Base class for Elive Standard Bridge (V2) Entities
+    Elive::SAS - Base class for Elive Standard Bridge V2 (SAS) Entities
 
 =head1 DESCRIPTION
 
-The Elluminate::V2 classes implement the Elluminate Live Standard bridge
-version 2.
+Implements Elive Standard Bridge V2 (SAS) calls and entities.
 
 =cut
 

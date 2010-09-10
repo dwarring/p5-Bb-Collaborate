@@ -58,7 +58,7 @@ use URI;
 use File::Spec::Unix;
 use HTML::Entities;
 
-__PACKAGE__->mk_accessors( qw{url user pass soap adapter _login _server_details dao_class} );
+__PACKAGE__->mk_accessors( qw{url user pass _soap _soap_v2 _login _server_details dao_class} );
 
 =head1 METHODS
 
@@ -87,22 +87,31 @@ sub connect {
 
     my @path = File::Spec::Unix->splitdir($uri_path);
 
-    my $adapter = 'default';
-
     shift (@path)
 	if (@path && !$path[0]);
 
     pop (@path)
 	if (@path && $path[-1] eq 'webservice.event');
 
-    if (@path && $path[-1] =~ m{^(v\d+|default)$}) {
-	$adapter = pop(@path);
-	croak "unsupported standard bridge adapter $adapter, endpoint path: ". File::Spec::Unix->catdir(@path, 'webservice.event')
-	    unless $adapter =~ m{^(v2|default)$};
+    #
+    # normalise the connection url by removing suffixes. The following
+    # all reduce to http://mysite/myinst:
+    # -- http://mysite/myinst/webservice.event
+    # -- http://mysite/myinst/v2
+    # -- http://mysite/myinst/v2/webservice.event
+    # -- http://mysite/myinst/default
+    # -- http://mysite/myinst/default/webservice.event
+    #
+    # there's some ambiguity, they've named an instance v1 ... v9 - yikes!
+    #
+
+    if (@path && $path[-1] =~ m{^v(\d+)$}) {
+	croak "unsupported standard bridge version v${1}, endpoint path: ". File::Spec::Unix->catdir(@path, 'webservice.event')
+	    unless $1 == 2;
+	pop(@path);
     }
 
     $uri_obj->path(File::Spec::Unix->catdir(@path));
-    my $restful_url = $uri_obj->as_string;
 
     my $debug = $opt{debug}||0;
 
@@ -111,31 +120,10 @@ sub connect {
 		       : ()
 	);
 
-    my $soap = SOAP::Lite->new();
+    my $restful_url = $uri_obj->as_string;
 
-    my $dao_class;
-
-    if ($adapter eq 'default') {
-	$dao_class = 'Elive::Entity';
-	$uri_obj->path(File::Spec::Unix->catdir(@path, 'webservice.event'));
-    }
-    elsif ($adapter eq 'v2') {
-	$dao_class = 'Elive::V2';
-	$uri_obj->path(File::Spec::Unix->catdir(@path, $adapter, 'webservice.event'));
-	warn "yup that's v2" if $debug;
-	$soap->ns( "http://schemas.xmlsoap.org/soap/envelope" => "soapenv");
-	$soap->ns( "http://sas.elluminate.com/" => "sas");
-    }
-    else {
-	die "unsupported adapter: $adapter";
-    }
-
-    my $soap_url = $uri_obj->as_string;
-
-    warn "connecting to ".$soap_url
+    warn "connecting to ".$restful_url
 	if ($debug);
-
-    $soap->proxy($soap_url);
 
     my $self = {};
     bless $self, $class;
@@ -143,17 +131,6 @@ sub connect {
     $self->url($restful_url);
     $self->user($user);
     $self->pass($pass);
-    $self->soap($soap);
-    $self->adapter($adapter);
-    $self->dao_class($dao_class);
-
-    #
-    # horrible hacky interim code
-    #
-    if ($self->adapter eq 'v2') {
-	$self->call('getSchedulingManager');
-	die "can't run v2 yet!!";
-    }
 
     return $self
 }
@@ -187,7 +164,7 @@ sub call {
 
     my @soap_params = $self->_preamble($cmd);
 
-    $params{adapter} ||= $self->adapter;
+    $params{adapter} ||= 'default';
 
     foreach my $name (keys %params) {
 
@@ -207,21 +184,42 @@ sub call {
     return $som;
 }
 
-sub _preamble {
-    my ($self, $cmd) = @_;
+sub soap {
+    my ($self) = shift;
 
-    my $adapter = $self->adapter;
+    my $soap = $self->_soap;
 
-    if ($adapter eq 'default') {
-	return $self->_preamble_v1($cmd);
+    unless ($soap) {
+	$soap = SOAP::Lite->new();
+
+	my $proxy = join('/', $self->url, 'webservice.event');
+	$soap->proxy($proxy);
+
+	$self->_soap($soap);
     }
-    elsif ($adapter eq 'v2') {
-	return $self->_preamble_v2($cmd);
-    }
 
-    die "unknown adapter: $adapter";
+    return $soap;
 }
 
+sub soap_v2 {
+    my ($self) = shift;
+
+    my $soap_v2 = $self->_soap_v2;
+
+    unless ($soap_v2) {
+	$soap_v2 = SOAP::Lite->new();
+	$soap_v2->ns( "http://schemas.xmlsoap.org/soap/envelope" => "soapenv");
+	$soap_v2->ns( "http://sas.elluminate.com/" => "sas");
+
+	my $proxy_v2 = join('/', $self->url, 'v2', 'webservice.event');
+
+	$soap_v2->proxy($proxy_v2);
+
+	$self->_soap_v2($soap_v2);
+    }
+
+    return $soap_v2;
+}
 
 =head2 login
 
@@ -293,7 +291,7 @@ Returns the underlying L<SOAP::Lite> object for the connection.
 
 =cut
 
-sub _preamble_v1 {
+sub _preamble {
 
     my ($self,$cmd) = @_;
 
