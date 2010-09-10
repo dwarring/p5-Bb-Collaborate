@@ -35,6 +35,9 @@ SKIP: {
 	$connection = Elive->connect(@$auth);
     }
     else {
+	eval "require $connection_class";
+	die $@ if $@;
+
 	$connection = $connection_class->connect(@$auth);
 	Elive->connection($connection);
     }

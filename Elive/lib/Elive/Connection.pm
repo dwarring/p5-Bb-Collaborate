@@ -143,45 +143,7 @@ Closes a connection.
 
 sub disconnect {
     my $self = shift;
-
-    $self->_server_details(undef);
-    $self->_login(undef);
-
     return;
-}
-
-=head2 call
-
-    my $som = $ec->call('listUsers', filter => '(givenName like "john*")')
-
-Performs an Elluminate SOAP method call. Returns the response as a
-SOAP::SOM object.
-
-=cut
-
-sub call {
-    my ($self, $cmd, %params) = @_;
-
-    my @soap_params = $self->_preamble($cmd);
-
-    $params{adapter} ||= 'default';
-
-    foreach my $name (keys %params) {
-
-	my $value = $params{$name};
-
-	$value = SOAP::Data->type(string => Elive::Util::string($value))
-	    unless (Scalar::Util::blessed($value)
-		    && eval {$value->isa('SOAP::Data')});
-
-	my $soap_param = $value->name($name);
-
-	push (@soap_params, $soap_param);
-    }
-
-    my $som = $self->soap->call( @soap_params );
-
-    return $som;
 }
 
 sub soap {
@@ -219,59 +181,6 @@ sub soap_v2 {
     }
 
     return $soap_v2;
-}
-
-=head2 login
-
-Returns the login user as an object of type L<Elive::Entity::User>.
-
-=cut
-
-sub login {
-    my ($self) = @_;
-
-    my $login_entity = $self->_login;
-
-    unless ($login_entity) {
-
-	my $username = $self->user
-	    or return;
-
-	$login_entity = Elive::Entity::User->get_by_loginName($username,
-	    connection => $self)
-	    or die "unable to get login user: $username\n";
-
-	$self->_login($login_entity);
-    }
-
-    return $login_entity;
-}
-
-=head2 server_details
-
-Returns the server details as an object of type L<Elive::Entity::ServerDetails>.
-
-=cut
-
-sub server_details {
-    my $self = shift;
-
-    my $server_details = $self->_server_details;
-
-    unless ($server_details) {
-
-	my $server_details_list = Elive::Entity::ServerDetails->list(connection => $self);
-
-	die "unable to get server details\n"
-	    unless (Elive::Util::_reftype($server_details_list) eq 'ARRAY'
-		    && $server_details_list->[0]);
-
-	$server_details = ($server_details_list->[0]);
-
-	$self->_server_details($server_details);
-    }
-
-    return $server_details;
 }
 
 =head2 url

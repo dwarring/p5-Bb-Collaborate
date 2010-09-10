@@ -11,8 +11,8 @@ A partial emulation of the SOAP connection and database backend.
 
 =cut
 
-use Elive::Connection;
-use base 'Elive::Connection';
+use Elive::Connection::SDK;
+use base 'Elive::Connection::SDK';
 
 use Elive;
 use Elive::Entity;

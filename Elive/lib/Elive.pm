@@ -114,10 +114,10 @@ sub connect {
     die "usage: ${class}->new(url, login_name[, pass])"
 	unless ($class && $url && $login_name);
 
-    eval {require Elive::Connection};
+    eval {require Elive::Connection::SDK};
     die $@ if $@;
 
-    my $connection = Elive::Connection->connect(
+    my $connection = Elive::Connection::SDK->connect(
 	$url,
 	$login_name,
 	$pass,
@@ -125,13 +125,6 @@ sub connect {
 	);
 
     $class->connection($connection);
-
-    #
-    # The login name should be a valid user in the database.
-    # retrieve it as a way of authenticating the user and
-    # checking basic connectivity.
-    #
-    $connection->login;
 
     return $connection;
 }

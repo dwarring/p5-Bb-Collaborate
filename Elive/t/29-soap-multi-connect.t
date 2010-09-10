@@ -13,7 +13,6 @@ use t::Elive;
 # 
 
 use Elive;
-use Elive::Connection;
 use Elive::Entity::Preload;
 
 my $class = 'Elive::Entity::Preload' ;

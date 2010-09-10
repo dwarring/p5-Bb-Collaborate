@@ -36,9 +36,9 @@ sub test_connection {
 		# don't give our test a helping hand, We're
 		# testing self load of this module by Elive
 		#
-		eval {require Elive::Connection}; die $@ if $@;
+		eval {require Elive::Connection::SDK}; die $@ if $@;
 	    }
-	    $result{class} = 'Elive::Connection';
+	    $result{class} = 'Elive::Connection::SDK';
 	}
 	else {
 	    $result{reason} = 'skipping live tests (set $ELIVE_TEST_{USER|PASS|URL}'.$suffix.' to enable)';
