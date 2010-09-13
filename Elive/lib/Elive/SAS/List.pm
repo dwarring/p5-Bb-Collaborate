@@ -1,0 +1,41 @@
+package Elive::SAS::List;
+use warnings; use strict;
+
+use Mouse;
+use Mouse::Util::TypeConstraints;
+
+use Elive::Array;
+extends 'Elive::Array';
+
+=head1 NAME
+
+Elive::SAS::List - Base class for an array. Typically chair-persons, participants, courses
+
+=cut
+
+=head1 METHODS
+
+=cut
+
+=head2 add 
+
+    $list->add('111111', '222222');
+
+Add additional elements
+
+=cut
+
+coerce 'Elive::SAS::List' => from 'ArrayRef'
+          => via {
+	      my @participants = map {split(',')} @$_;
+	      Elive::SAS::List->new(\@participants);
+};
+
+coerce 'Elive::SAS::List' => from 'Str'
+          => via {
+	      my @participants = split(';');
+
+	      Elive::SAS::List->new(\@participants);
+          };
+
+1;

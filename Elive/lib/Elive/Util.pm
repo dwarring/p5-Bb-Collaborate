@@ -40,15 +40,22 @@ sub parse_type {
     #
     ($type) = split(/[ \| \] ]/x, $type);
 
-    my $is_array = ($type =~ m{^Elive::Array}x);
+    my $is_array;
+    my $is_struct;
 
-    if ($is_array) {
+    if ($type =~ m{^Elive::}) {
 
-	$type = $type->element_class || 'Str';
+	if ($type->isa('Elive::Struct')) {
+	    $is_struct = 1;
+	}
+	else {
+	    $is_array = $type->isa('Elive::Array');
 
+	    if ($is_array) {
+		$type = $type->element_class || 'Str';
+	    }
+	}
     }
-
-    my $is_struct = $type =~ m{^Elive::(Struct||Entity)(::|$)}x;
 
     my $is_ref = $is_array || $is_struct || $type =~ m{^Ref}x;
 

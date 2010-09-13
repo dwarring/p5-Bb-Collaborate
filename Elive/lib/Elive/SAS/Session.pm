@@ -7,6 +7,8 @@ extends 'Elive::SAS';
 
 use Elive::Util;
 
+use Elive::SAS::List;
+
 =head1 NAME
 
 Elive::SAS::Session - Elluminate Session instance class
@@ -34,7 +36,9 @@ has 'boundaryTime' => (is => 'rw', isa => 'Int',
 	       documentation => 'boundary time minutes: 0, 15, 30...',
     );
 
-# tba chairList
+has 'chairList' => (is => 'rw', isa => 'Elive::SAS::List', coerce => 1,
+	       documentation => 'list of chair-persons (comma separated)',
+    );
 
 has 'chairNotes' => (is => 'rw', isa => 'Str',
 	       documentation => 'chair notes',
@@ -47,7 +51,9 @@ has 'creatorId' => (is => 'rw', isa => 'Str', required => 1,
 has 'endTime' => (is => 'rw', isa => 'HiResDate', required => 1,
 	      documentation => 'session end time');
 
-# tba groupingList
+has 'groupingList' => (is => 'rw', isa => 'Elive::SAS::List', coerce => 1,
+	       documentation => 'list of courses etc (user defined)',
+    );
 
 has 'sessionName' => (is => 'rw', isa => 'Str', required => 1,
 	       documentation => 'session name',
@@ -69,7 +75,9 @@ has 'mustBeSupervised' => (is => 'rw', isa => 'Bool',
 			   documentation => 'Session number be supervised',
     );
 
-# tba nonChairList
+has 'nonChairList' => (is => 'rw', isa => 'Elive::SAS::List', coerce => 1,
+	       documentation => 'list of participants (comma separated)',
+    );
 
 has 'nonChairNotes' => (is => 'rw', isa => 'Str',
 	       documentation => 'non chair notes',
@@ -105,7 +113,7 @@ has 'secureSignOn' => (is => 'rw', isa => 'Bool',
 # tba recordings
 
 has 'versionId' => (is => 'rw', isa => 'Int',
-		    documentation => 'ELM version Id (1001 == 10.0.1)',
+		    documentation => 'ELM version Id (E.g. 1001 == 10.0.1)',
     );
 
 
