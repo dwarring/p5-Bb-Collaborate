@@ -42,24 +42,21 @@ sub parse_type {
 
     my $is_array;
     my $is_struct;
+    my $elemental_type = $type;
 
     if ($type =~ m{^Elive::}) {
 
-	if ($type->isa('Elive::Struct')) {
-	    $is_struct = 1;
+	if ($is_array = $type->can('element_class')) {
+	    $elemental_type = $type->element_class || 'Str';
 	}
-	else {
-	    $is_array = $type->isa('Elive::Array');
 
-	    if ($is_array) {
-		$type = $type->element_class || 'Str';
-	    }
-	}
+	$is_struct = ($elemental_type  =~ m{^Elive::})
+	    && $elemental_type->isa('Elive::Struct');
     }
 
-    my $is_ref = $is_array || $is_struct || $type =~ m{^Ref}x;
+    my $is_ref = $is_array || $is_struct || $elemental_type =~ m{^Ref}x;
 
-    return ($type, $is_array, $is_struct, $is_ref);
+    return ($elemental_type, $is_array, $is_struct, $is_ref);
 }
 
 #

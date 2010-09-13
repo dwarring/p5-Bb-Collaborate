@@ -14,8 +14,6 @@ use base qw{Elive::Connection};
 use Elive;
 use Elive::Util;
 
-use Elive::SAS::SchedulingManager;
-
 __PACKAGE__->mk_accessors( qw{_scheduling_manager} );
 
 sub connect {
@@ -89,6 +87,9 @@ sub scheduling_manager {
     my $scheduling_manager = $self->_scheduling_manager;
 
     unless ($scheduling_manager) {
+
+	eval {require Elive::SAS::SchedulingManager};
+	die $@ if $@;
 
 	my $scheduling_manager_list = Elive::SAS::SchedulingManager->list(connection => $self);
 

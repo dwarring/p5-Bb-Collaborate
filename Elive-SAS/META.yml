@@ -1,5 +1,5 @@
 ---
-abstract: 'Elluminate Live (c) SAS (v2) SDK bindings'
+abstract: 'Elluminate Live (c) SAS (v2) bindings'
 author:
   - 'David Warring <david.warring@gmail.com>'
 build_requires:
@@ -17,8 +17,8 @@ license: perl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
   version: 1.4
-module_name: Elive::Sas
-name: Elive-Sas
+module_name: Elive::SAS
+name: Elive-SAS
 no_index:
   directory:
     - inc
@@ -28,7 +28,7 @@ requires:
   Class::Accessor: 0
   Class::Data::Inheritable: 0
   Date::Parse: 0
-  Elive: 0.73
+  Elive: 0.74_1
   File::Basename: 0
   File::Spec: 0
   Getopt::Long: 2.35
@@ -40,4 +40,5 @@ requires:
   perl: 5.005
 resources:
   license: http://dev.perl.org/licenses/
-version: 0.01
+  repository: https://elive.svn.sourceforge.net/svnroot/elive/trunk/Elive-SAS
+version: 0.00_1

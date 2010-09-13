@@ -293,8 +293,8 @@ sub main {
 	if defined $private;
 
     if (defined $restricted) {
-	if ($server_version_num < '9.007001') {
-	    warn "[-restricted option igonored:. Elluminate Live! 9.8+ required; this is ${server_version}. ]\n";
+	if ($server_version_num < '9999.007001') {
+	    warn "[-restricted option ignored: Not supported by Elluminate Live!]\n";
 	}
 	else {
 	    $meeting_data{restrictedMeeting} = $restricted;

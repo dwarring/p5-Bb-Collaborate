@@ -5,12 +5,12 @@ use warnings;
 use inc::Module::Install;
 perl_version    5.005;
 
-name           ('Elive-Sas');
-module_name    ('Elive::Sas');
+name           ('Elive-SAS');
+module_name    ('Elive::SAS');
 author         ('David Warring <david.warring@gmail.com>');
-version_from   ('lib/Elive/Sas.pm');
+version_from   ('lib/Elive/SAS.pm');
 license	       ('perl');
-abstract       ('Elluminate Live (c) SAS (v2) SDK bindings');
+abstract       ('Elluminate Live (c) SAS (v2) bindings');
 install_script ();
 
 requires(
@@ -20,7 +20,7 @@ requires(
     'Carp'                         => 0,  # for scripts
     'File::Spec'                   => 0,
     'File::Basename'               => 0,
-    'Elive'                        => 0.73,
+    'Elive'                        => '0.74_1',
     'Getopt::Long'                 => 2.35,  # for scripts
     'Mouse'                        => 0.56,
     'Pod::Usage'                   => 0,  # for elive_raise_meeting

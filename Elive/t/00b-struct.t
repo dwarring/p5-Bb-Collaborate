@@ -9,6 +9,8 @@ BEGIN {
     use_ok( 'Elive::Array::Participants' );
 }
 
+use Carp; $SIG{__DIE__} = \&Carp::confess;
+
 my $class = 'Elive::Struct';
 
 ok($class->_cmp_col('Int', 10, 20) < 0, '_cmp Int <');

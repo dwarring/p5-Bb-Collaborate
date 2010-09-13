@@ -1,4 +1,4 @@
-# This Makefile is for the Elive::Sas extension to perl.
+# This Makefile is for the Elive::SAS extension to perl.
 #
 # It was generated automatically by MakeMaker version
 # 6.56 (Revision: 65600) from the contents of
@@ -11,18 +11,18 @@
 
 #   MakeMaker Parameters:
 
-#     ABSTRACT => q[Elluminate Live (c) SAS (v2) SDK bindings]
+#     ABSTRACT => q[Elluminate Live (c) SAS (v2) bindings]
 #     AUTHOR => q[David Warring <david.warring@gmail.com>]
 #     BUILD_REQUIRES => { Test::More=>q[0], Test::Exception=>q[0], Test::Warn=>q[0], Test::Builder=>q[0], version=>q[0], ExtUtils::MakeMaker=>q[6.42] }
-#     DISTNAME => q[Elive-Sas]
+#     DISTNAME => q[Elive-SAS]
 #     EXE_FILES => []
 #     LICENSE => q[perl]
 #     MIN_PERL_VERSION => q[5.005]
-#     NAME => q[Elive::Sas]
+#     NAME => q[Elive::SAS]
 #     NO_META => q[1]
-#     PREREQ_PM => { YAML=>q[0], Pod::Usage=>q[0], File::Spec=>q[0], XML::Simple=>q[0], Elive=>q[0.73], Test::Builder=>q[0], Mouse=>q[0.56], Class::Data::Inheritable=>q[0], Getopt::Long=>q[2.35], URI=>q[0], Test::Exception=>q[0], ExtUtils::MakeMaker=>q[6.42], version=>q[0], Class::Accessor=>q[0], Carp=>q[0], Date::Parse=>q[0], Test::More=>q[0], Test::Warn=>q[0], File::Basename=>q[0] }
-#     VERSION => q[0.01]
-#     VERSION_FROM => q[lib/Elive/Sas.pm]
+#     PREREQ_PM => { YAML=>q[0], Pod::Usage=>q[0], File::Spec=>q[0], XML::Simple=>q[0], Elive=>q[0.74_1], Test::Builder=>q[0], Mouse=>q[0.56], Class::Data::Inheritable=>q[0], Getopt::Long=>q[2.35], URI=>q[0], Test::Exception=>q[0], ExtUtils::MakeMaker=>q[6.42], version=>q[0], Class::Accessor=>q[0], Carp=>q[0], Date::Parse=>q[0], Test::More=>q[0], Test::Warn=>q[0], File::Basename=>q[0] }
+#     VERSION => q[0.00_1]
+#     VERSION_FROM => q[lib/Elive/SAS.pm]
 #     dist => { PREOP=>q[$(PERL) -I. "-MModule::Install::Admin" -e "dist_preop(q($(DISTVNAME)))"] }
 #     realclean => { FILES=>q[MYMETA.yml] }
 
@@ -61,13 +61,13 @@ VENDORLIBEXP = /usr/share/perl5
 AR_STATIC_ARGS = cr
 DIRFILESEP = /
 DFSEP = $(DIRFILESEP)
-NAME = Elive::Sas
-NAME_SYM = Elive_Sas
-VERSION = 0.01
+NAME = Elive::SAS
+NAME_SYM = Elive_SAS
+VERSION = 0.00_1
 VERSION_MACRO = VERSION
-VERSION_SYM = 0_01
+VERSION_SYM = 0_00_1
 DEFINE_VERSION = -D$(VERSION_MACRO)=\"$(VERSION)\"
-XS_VERSION = 0.01
+XS_VERSION = 0.00_1
 XS_VERSION_MACRO = XS_VERSION
 XS_DEFINE_VERSION = -D$(XS_VERSION_MACRO)=\"$(XS_VERSION)\"
 INST_ARCHLIB = blib/arch
@@ -151,11 +151,11 @@ MM_REVISION = 65600
 # PARENT_NAME = NAME without BASEEXT and no trailing :: (eg Foo::Bar)
 # DLBASE  = Basename part of dynamic library. May be just equal BASEEXT.
 MAKE = make
-FULLEXT = Elive/Sas
-BASEEXT = Sas
+FULLEXT = Elive/SAS
+BASEEXT = SAS
 PARENT_NAME = Elive
 DLBASE = $(BASEEXT)
-VERSION_FROM = lib/Elive/Sas.pm
+VERSION_FROM = lib/Elive/SAS.pm
 OBJECT = 
 LDFROM = $(OBJECT)
 LINKTYPE = dynamic
@@ -167,7 +167,10 @@ C_FILES  =
 O_FILES  = 
 H_FILES  = 
 MAN1PODS = 
-MAN3PODS = lib/Elive/Sas.pm
+MAN3PODS = lib/Elive/SAS.pm \
+	lib/Elive/SAS/List.pm \
+	lib/Elive/SAS/SchedulingManager.pm \
+	lib/Elive/SAS/Session.pm
 
 # Where is the Config information that we are using/depend on
 CONFIGDEP = $(PERL_ARCHLIB)$(DFSEP)Config.pm $(PERL_INC)$(DFSEP)config.h
@@ -189,10 +192,19 @@ PERL_ARCHIVE       =
 PERL_ARCHIVE_AFTER = 
 
 
-TO_INST_PM = lib/Elive/Sas.pm
+TO_INST_PM = lib/Elive/SAS.pm \
+	lib/Elive/SAS/List.pm \
+	lib/Elive/SAS/SchedulingManager.pm \
+	lib/Elive/SAS/Session.pm
 
-PM_TO_BLIB = lib/Elive/Sas.pm \
-	blib/lib/Elive/Sas.pm
+PM_TO_BLIB = lib/Elive/SAS/SchedulingManager.pm \
+	blib/lib/Elive/SAS/SchedulingManager.pm \
+	lib/Elive/SAS/List.pm \
+	blib/lib/Elive/SAS/List.pm \
+	lib/Elive/SAS/Session.pm \
+	blib/lib/Elive/SAS/Session.pm \
+	lib/Elive/SAS.pm \
+	blib/lib/Elive/SAS.pm
 
 
 # --- MakeMaker platform_constants section:
@@ -260,8 +272,8 @@ CI = ci -u
 RCS_LABEL = rcs -Nv$(VERSION_SYM): -q
 DIST_CP = best
 DIST_DEFAULT = tardist
-DISTNAME = Elive-Sas
-DISTVNAME = Elive-Sas-0.01
+DISTNAME = Elive-SAS
+DISTVNAME = Elive-SAS-0.00_1
 
 
 # --- MakeMaker macro section:
@@ -414,9 +426,15 @@ POD2MAN = $(POD2MAN_EXE)
 
 
 manifypods : pure_all  \
-	lib/Elive/Sas.pm
+	lib/Elive/SAS/SchedulingManager.pm \
+	lib/Elive/SAS/List.pm \
+	lib/Elive/SAS/Session.pm \
+	lib/Elive/SAS.pm
 	$(NOECHO) $(POD2MAN) --section=3 --perm_rw=$(PERM_RW) \
-	  lib/Elive/Sas.pm $(INST_MAN3DIR)/Elive::Sas.$(MAN3EXT) 
+	  lib/Elive/SAS/SchedulingManager.pm $(INST_MAN3DIR)/Elive::SAS::SchedulingManager.$(MAN3EXT) \
+	  lib/Elive/SAS/List.pm $(INST_MAN3DIR)/Elive::SAS::List.$(MAN3EXT) \
+	  lib/Elive/SAS/Session.pm $(INST_MAN3DIR)/Elive::SAS::Session.$(MAN3EXT) \
+	  lib/Elive/SAS.pm $(INST_MAN3DIR)/Elive::SAS.$(MAN3EXT) 
 
 
 
@@ -769,8 +787,8 @@ testdb_static :: testdb_dynamic
 # --- MakeMaker ppd section:
 # Creates a PPD (Perl Package Description) for a binary distribution.
 ppd :
-	$(NOECHO) $(ECHO) '<SOFTPKG NAME="$(DISTNAME)" VERSION="0.01">' > $(DISTNAME).ppd
-	$(NOECHO) $(ECHO) '    <ABSTRACT>Elluminate Live (c) SAS (v2) SDK bindings</ABSTRACT>' >> $(DISTNAME).ppd
+	$(NOECHO) $(ECHO) '<SOFTPKG NAME="$(DISTNAME)" VERSION="0.00_1">' > $(DISTNAME).ppd
+	$(NOECHO) $(ECHO) '    <ABSTRACT>Elluminate Live (c) SAS (v2) bindings</ABSTRACT>' >> $(DISTNAME).ppd
 	$(NOECHO) $(ECHO) '    <AUTHOR>David Warring &lt;david.warring@gmail.com&gt;</AUTHOR>' >> $(DISTNAME).ppd
 	$(NOECHO) $(ECHO) '    <IMPLEMENTATION>' >> $(DISTNAME).ppd
 	$(NOECHO) $(ECHO) '        <PERLCORE VERSION="5,005,0,0" />' >> $(DISTNAME).ppd
@@ -778,7 +796,7 @@ ppd :
 	$(NOECHO) $(ECHO) '        <REQUIRE NAME="Class::Accessor" />' >> $(DISTNAME).ppd
 	$(NOECHO) $(ECHO) '        <REQUIRE NAME="Class::Data::Inheritable" />' >> $(DISTNAME).ppd
 	$(NOECHO) $(ECHO) '        <REQUIRE NAME="Date::Parse" />' >> $(DISTNAME).ppd
-	$(NOECHO) $(ECHO) '        <REQUIRE NAME="Elive::" VERSION="0.73" />' >> $(DISTNAME).ppd
+	$(NOECHO) $(ECHO) '        <REQUIRE NAME="Elive::" VERSION="0.74" />' >> $(DISTNAME).ppd
 	$(NOECHO) $(ECHO) '        <REQUIRE NAME="File::Basename" />' >> $(DISTNAME).ppd
 	$(NOECHO) $(ECHO) '        <REQUIRE NAME="File::Spec" />' >> $(DISTNAME).ppd
 	$(NOECHO) $(ECHO) '        <REQUIRE NAME="Getopt::Long" VERSION="2.35" />' >> $(DISTNAME).ppd
@@ -797,7 +815,10 @@ ppd :
 
 pm_to_blib : $(FIRST_MAKEFILE) $(TO_INST_PM)
 	$(NOECHO) $(ABSPERLRUN) -MExtUtils::Install -e 'pm_to_blib({@ARGV}, '\''$(INST_LIB)/auto'\'', q[$(PM_FILTER)], '\''$(PERM_DIR)'\'')' -- \
-	  lib/Elive/Sas.pm blib/lib/Elive/Sas.pm 
+	  lib/Elive/SAS/SchedulingManager.pm blib/lib/Elive/SAS/SchedulingManager.pm \
+	  lib/Elive/SAS/List.pm blib/lib/Elive/SAS/List.pm \
+	  lib/Elive/SAS/Session.pm blib/lib/Elive/SAS/Session.pm \
+	  lib/Elive/SAS.pm blib/lib/Elive/SAS.pm 
 	$(NOECHO) $(TOUCH) pm_to_blib
 
 
