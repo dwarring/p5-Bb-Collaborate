@@ -22,7 +22,8 @@ __PACKAGE__->mk_accessors( qw{_login _server_details} );
 sub connect {
     my ($class, $url, $user, $pass, %opt) = @_;
 
-    my $self = $class->SUPER::connect($url, $user, $pass, %opt);
+    my $self = $class->SUPER::_connect($url, $user, $pass, %opt);
+    $self->type('SDK');
 
     bless $self, $class;
 
@@ -87,6 +88,9 @@ sub soap {
 sub call {
     my ($self, $cmd, %params) = @_;
     $params{adapter} ||= 'default';
+
+    die "bad connection type. expected 'SDK', found: ".$self->type
+	unless $self->type eq 'SDK';
     return $self->SUPER::call( $cmd, %params );
 }
 

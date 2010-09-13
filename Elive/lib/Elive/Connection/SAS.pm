@@ -21,7 +21,8 @@ __PACKAGE__->mk_accessors( qw{_scheduling_manager} );
 sub connect {
     my ($class, $url, $user, $pass, %opt) = @_;
 
-    my $self = $class->SUPER::connect($url, $user, $pass, %opt);
+    my $self = $class->SUPER::_connect($url, $user, $pass, %opt);
+    $self->type('SAS');
 
     bless $self, $class;
 
@@ -34,6 +35,15 @@ sub disconnect {
     $self->SUPER::disconnect;
 
     return;
+}
+
+sub call {
+    my ($self, $cmd, %params) = @_;
+
+    die "bad connection type. expected 'SDK', found: ".$self->type
+	unless $self->type eq 'SAS';
+
+    return $self->SUPER::call( $cmd, %params );
 }
 
 sub soap {

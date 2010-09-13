@@ -19,6 +19,10 @@ our %KnownAdapters = (
 
         getSchedulingManager => 'r',
 
+        listSession => 'r',
+
+        setSession => 'cu',
+
     );
 
 __PACKAGE__->mk_classdata(known_adapters => \%KnownAdapters);
@@ -39,6 +43,14 @@ sub _get_results {
 	? Elive::Util::_reftype($result) eq 'ARRAY'
 	? $result : [$result]
 	: [];
+}
+
+sub insert {
+    my ($class, $data, %opt) = @_;
+
+    $opt{adapter} ||= 'set'.$class->entity_name;
+
+    return $class->SUPER::insert($data, %opt);
 }
 
 1;

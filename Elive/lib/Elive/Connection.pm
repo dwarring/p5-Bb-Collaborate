@@ -58,7 +58,7 @@ use URI;
 use File::Spec::Unix;
 use HTML::Entities;
 
-__PACKAGE__->mk_accessors( qw{url user pass _soap debug} );
+__PACKAGE__->mk_accessors( qw{url user pass _soap debug type} );
 
 =head1 METHODS
 
@@ -67,7 +67,9 @@ __PACKAGE__->mk_accessors( qw{url user pass _soap debug} );
 =head2 connect
 
     my $ec = Elive::Connection->connect('http://someserver.com/test',
-                                        'user1', 'pass1', debug => 1);
+                                        'user1', 'pass1', debug => 1,
+                                        type => 'SDK',
+    );
 
     my $url = $ec->url;   # should be 'http://someserver.com/test'
 
@@ -77,6 +79,22 @@ connectivity and authentication details.
 =cut
 
 sub connect {
+    my ($class, $url, $user, $pass, %opt) = @_;
+
+    my $type = $opt{type} || 'SDK';
+
+    my $connection_class = "Elive::Connection::${type}";
+
+    eval "require ${connection_class}";
+    die "unable to require ${connection_class}: $@"
+	if $@;
+
+    my $connection = $connection_class->connect($url, $user, $pass, %opt);
+
+    return $connection;
+}
+
+sub _connect {
     my ($class, $url, $user, $pass, %opt) = @_;
 
     $url =~ s{/$}{}x;
