@@ -58,7 +58,7 @@ use URI;
 use File::Spec::Unix;
 use HTML::Entities;
 
-__PACKAGE__->mk_accessors( qw{url user pass _soap _soap_v2 _login _server_details dao_class} );
+__PACKAGE__->mk_accessors( qw{url user pass _soap debug} );
 
 =head1 METHODS
 
@@ -115,15 +115,7 @@ sub connect {
 
     my $debug = $opt{debug}||0;
 
-    SOAP::Lite::import($debug >= 3
-		       ? (+trace => 'debug')
-		       : ()
-	);
-
     my $restful_url = $uri_obj->as_string;
-
-    warn "connecting to ".$restful_url
-	if ($debug);
 
     my $self = {};
     bless $self, $class;
@@ -131,8 +123,41 @@ sub connect {
     $self->url($restful_url);
     $self->user($user);
     $self->pass($pass);
+    $self->debug($debug);
 
     return $self
+}
+
+=head2 call
+
+    my $som = ....
+
+Performs an Elluminate SOAP method call. Returns the response as a
+SOAP::SOM object.
+
+=cut
+
+sub call {
+    my ($self, $cmd, %params) = @_;
+
+    my @soap_params = $self->_preamble($cmd);
+
+    foreach my $name (keys %params) {
+
+	my $value = $params{$name};
+
+	$value = SOAP::Data->type(string => Elive::Util::string($value))
+	    unless (Scalar::Util::blessed($value)
+		    && eval {$value->isa('SOAP::Data')});
+
+	my $soap_param = $value->name($name);
+
+	push (@soap_params, $soap_param);
+    }
+
+    my $som = $self->soap->call( @soap_params );
+
+    return $som;
 }
 
 =head2 disconnect
@@ -146,43 +171,6 @@ sub disconnect {
     return;
 }
 
-sub soap {
-    my ($self) = shift;
-
-    my $soap = $self->_soap;
-
-    unless ($soap) {
-	$soap = SOAP::Lite->new();
-
-	my $proxy = join('/', $self->url, 'webservice.event');
-	$soap->proxy($proxy);
-
-	$self->_soap($soap);
-    }
-
-    return $soap;
-}
-
-sub soap_v2 {
-    my ($self) = shift;
-
-    my $soap_v2 = $self->_soap_v2;
-
-    unless ($soap_v2) {
-	$soap_v2 = SOAP::Lite->new();
-	$soap_v2->ns( "http://schemas.xmlsoap.org/soap/envelope" => "soapenv");
-	$soap_v2->ns( "http://sas.elluminate.com/" => "sas");
-
-	my $proxy_v2 = join('/', $self->url, 'v2', 'webservice.event');
-
-	$soap_v2->proxy($proxy_v2);
-
-	$self->_soap_v2($soap_v2);
-    }
-
-    return $soap_v2;
-}
-
 =head2 url
 
     my $url1 = $connection1->url;
@@ -191,71 +179,6 @@ sub soap_v2 {
 Returns a restful url for the connection.
 
 =cut
-
-=head2 soap
-
-    my $soap_lite_obj = $connection->soap;
-
-Returns the underlying L<SOAP::Lite> object for the connection.
-
-=cut
-
-sub _preamble {
-
-    my ($self,$cmd) = @_;
-
-    die "Not logged in"
-	unless ($self->user);
-
-    my @user_auth =  (map {HTML::Entities::encode_entities( $_ )}
-		      ($self->user, $self->pass));
-
-    my @preamble = (
-	(SOAP::Data
-	 ->name('request')
-	 ->uri('http://www.soapware.org')
-	 ->prefix('m')
-	 ->value('')),
-	);
-
-    push (@preamble, SOAP::Data->name('command')->value($cmd))
-	if $cmd;
-
-    my $auth = sprintf (<<'EOD', @user_auth);
-    <h:BasicAuth
-      xmlns:h="http://soap-authentication.org/basic/2001/10/"
-    soap:mustUnderstand="1">
-    <Name>%s</Name>
-    <Password>%s</Password>
-    </h:BasicAuth>
-EOD
-
-return (@preamble, SOAP::Header->type(xml => $auth));
-};
-
-sub _preamble_v2 {
-    my ($self, $cmd) = @_;
-
-    die "Not logged in"
-	unless ($self->user);
-
-    my @user_auth =  (map {HTML::Entities::encode_entities( $_ )} ($self->user, $self->pass));
-
-    my @preamble = (
-    );
-
-    push (@preamble, SOAP::Data->prefix('sas')->name($cmd))
-	if $cmd;
-
-    my $auth = sprintf(<<'EOD', @user_auth);
-<sas:BasicAuth>
-<sas:Name>%s</sas:Name>
-<sas:Password>%s</sas:Password>
-</sas:BasicAuth>
-EOD
-
-return (@preamble, SOAP::Header->type(xml => $auth));
-};
 
 sub DESTROY {
     shift->disconnect;

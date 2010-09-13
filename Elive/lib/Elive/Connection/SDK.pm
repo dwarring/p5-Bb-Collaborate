@@ -17,6 +17,8 @@ use Elive::Entity;
 use Elive::Entity::User;
 use Elive::Entity::ServerDetails;
 
+__PACKAGE__->mk_accessors( qw{_login _server_details} );
+
 sub connect {
     my ($class, $url, $user, $pass, %opt) = @_;
 
@@ -45,39 +47,81 @@ sub disconnect {
     return;
 }
 
-=head2 call
+=head2 soap
 
-    my $som = $ec->call('listUsers', filter => '(givenName like "john*")')
+    my $soap_lite_obj = $connection->soap;
 
-Performs an Elluminate SOAP method call. Returns the response as a
-SOAP::SOM object.
+Returns the underlying L<SOAP::Lite> object for the connection.
 
 =cut
 
-sub call {
-    my ($self, $cmd, %params) = @_;
+sub soap {
+    my ($self) = shift;
 
-    my @soap_params = $self->_preamble($cmd);
+    my $soap = $self->_soap;
 
-    $params{adapter} ||= 'default';
+    unless ($soap) {
 
-    foreach my $name (keys %params) {
+	my $proxy = join('/', $self->url, 'webservice.event');
 
-	my $value = $params{$name};
+	my $debug = $self->debug;
 
-	$value = SOAP::Data->type(string => Elive::Util::string($value))
-	    unless (Scalar::Util::blessed($value)
-		    && eval {$value->isa('SOAP::Data')});
+	SOAP::Lite::import($debug >= 3
+			   ? (+trace => 'debug')
+			   : ()
+	    );
 
-	my $soap_param = $value->name($name);
+	warn "connecting to ".$proxy
+	    if ($debug);
 
-	push (@soap_params, $soap_param);
+	$soap = SOAP::Lite->new();
+
+	$soap->proxy($proxy);
+
+	$self->_soap($soap);
     }
 
-    my $som = $self->soap->call( @soap_params );
-
-    return $som;
+    return $soap;
 }
+
+sub call {
+    my ($self, $cmd, %params) = @_;
+    $params{adapter} ||= 'default';
+    return $self->SUPER::call( $cmd, %params );
+}
+
+sub _preamble {
+
+    my ($self,$cmd) = @_;
+
+    die "Not logged in"
+	unless ($self->user);
+
+    my @user_auth =  (map {HTML::Entities::encode_entities( $_ )}
+		      ($self->user, $self->pass));
+
+    my @preamble = (
+	(SOAP::Data
+	 ->name('request')
+	 ->uri('http://www.soapware.org')
+	 ->prefix('m')
+	 ->value('')),
+	);
+
+    push (@preamble, SOAP::Data->name('command')->value($cmd))
+	if $cmd;
+
+    my $auth = sprintf (<<'EOD', @user_auth);
+    <h:BasicAuth
+      xmlns:h="http://soap-authentication.org/basic/2001/10/"
+    soap:mustUnderstand="1">
+    <Name>%s</Name>
+    <Password>%s</Password>
+    </h:BasicAuth>
+EOD
+
+return (@preamble, SOAP::Header->type(xml => $auth));
+};
 
 =head2 login
 

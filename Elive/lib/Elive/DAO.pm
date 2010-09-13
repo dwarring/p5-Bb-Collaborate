@@ -233,23 +233,22 @@ sub _thaw {
 
     my $responseTag = $class->entity_name.'Adapter';
 
-    warn "path $path: response tag for $class: $responseTag"
-	if $class->debug;
+    my $entity_data;
 
-    my $reftype = Elive::Util::_reftype($db_data) || 'Scalar';
+    if (exists $db_data->{$responseTag}) {
 
-    die "parsing $class: expected HASH, found $reftype ($db_data), path: $path"
-	unless ($reftype eq 'HASH');
+	warn "path $path: response tag for $class: $responseTag"
+	    if $class->debug;
 
-    my $entity_data = $db_data->{$responseTag};
-
-    die "path $path: struct did not contain: $responseTag (keys: ".join(',', keys %$db_data).')'
-	unless $entity_data;
-
-    $path .= $responseTag;
+	$entity_data = $db_data->{$responseTag};
+	$path .= $responseTag;
+    }
+    else {
+	$entity_data = $db_data;
+    }
 
     my $data_type = Elive::Util::_reftype($entity_data) || 'Scalar';
-    die "thawing $class. expected $responseTag to contain HASH data. found: $data_type"
+    die "thawing $class. expected $path to contain HASH data. found: $data_type"
 	unless ($data_type eq 'HASH');
 
     my %data;
@@ -345,94 +344,12 @@ sub _thaw {
 
     if ($class->debug) {
 	warn "thawed: $class: ".YAML::Dump(
-	    {db => $db_data,
+	    {db => $entity_data,
 	     data => \%data}
 	    );
     }
     
     return \%data;
-}
-
-#
-# Normalise our data and reconstruct arrays.
-#
-# See t/05-entity-unpack.t for examples and further explanation.
-#
-
-sub _unpack_results {
-    my $class = shift;
-    my $results = shift;
-
-    my $results_type = Elive::Util::_reftype($results);
-
-    if (!$results_type) {
-	return $results;
-    }
-    elsif ($results_type eq 'ARRAY') {
-	return [map {$class->_unpack_results($_)} @$results];
-    }
-    elsif ($results_type eq 'HASH') {
-	#
-	# Convert some SOAP/XML constructs to their perl equivalents
-	#
-	foreach my $key (keys %$results) {
-	    my $value = $results->{$key};
-
-	    if ($key eq 'Collection') {
-
-		if (Elive::Util::_reftype($value) eq 'HASH'
-		    && exists ($value->{Entry})) {
-		    $value = $value->{Entry};
-		}
-		else {
-		    $value = [];
-		}
-		#
-		# Throw away our parse of this struct. It only exists to
-		# house this collection
-		#
-		return $class->_unpack_results($value);
-	    }
-	    elsif ($key eq 'Map') {
-
-		if (Elive::Util::_reftype($value) eq 'HASH') {
-
-		    if (exists ($value->{Entry})) {
-
-			$value = $value->{Entry};
-			#
-			# Looks like we've got Key, Value pairs.
-			# Throw array the key and reference the value,
-			# that's all we're interested in.
-			#
-			if (Elive::Util::_reftype ($value) eq 'ARRAY') {
-		    
-			    $value = [map {$_->{Value}} @$value];
-			}
-			else {
-			    $value = $value->{Value};
-			}
-		    }
-		}
-		else {
-		    $value = [];
-		}
-		#
-		# Throw away our parse of this struct it only exists to
-		# house this collection
-		#
-		return $class->_unpack_results($value);
-	    }
-
-	    $results->{$key} = $class->_unpack_results($value);
-	}
-	    
-    }
-    else {
-	die "Unhandled type in response body: $results_type";
-    }
-
-    return $results;
 }
 
 sub _unpack_as_list {
@@ -976,7 +893,7 @@ sub delete {
     $self->check_adapter($adapter);
 
     my $som = $self->connection->call($adapter,
-				       @params);
+				      @params);
 
     my $results = $self->_get_results(
 	$som,
