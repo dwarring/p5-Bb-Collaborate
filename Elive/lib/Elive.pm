@@ -358,7 +358,8 @@ sub _check_for_errors {
     #
     # Look for Elluminate-specific errors
     #
-    if (my $code = $result->{Code}{Value}) {
+    if ($result->{Code}
+	&& (my $code = $result->{Code}{Value})) {
 
 	#
 	# Elluminate error!
