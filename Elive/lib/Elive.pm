@@ -109,19 +109,20 @@ See also Elive::Connection.
 =cut
 
 sub connect {
-    my ($class, $url, $login_name, $pass) = @_;
+    my ($class, $url, $login_name, $pass, %opts) = @_;
 
     die "usage: ${class}->new(url, login_name[, pass])"
 	unless ($class && $url && $login_name);
 
-    eval {require Elive::Connection::SDK};
+    eval {require Elive::Connection};
     die $@ if $@;
 
-    my $connection = Elive::Connection::SDK->connect(
+    my $connection = Elive::Connection->connect(
 	$url,
 	$login_name,
 	$pass,
 	debug => $class->debug,
+	%opts,
 	);
 
     $class->connection($connection);
