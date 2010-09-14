@@ -252,7 +252,7 @@ sub check_adapter {
 	    unless $adapter_type &&  $adapter_type  =~ m{^[c|r|u|d]+$}xi;
 
 	die "adapter $adapter. Type mismatch. Expected $crud, found $adapter_type"
-	    unless ($crud =~ m{\Q${adapter_type}\E}i);
+	    unless ($crud =~ m{[$adapter_type]}i);
     }
 
     return $adapter;

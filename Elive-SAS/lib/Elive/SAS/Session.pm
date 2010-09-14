@@ -44,6 +44,10 @@ has 'chairNotes' => (is => 'rw', isa => 'Str',
 	       documentation => 'chair notes',
     );
 
+##has 'costCenter' => (is => 'rw', isa => 'Str',
+##	       documentation => 'cost center',
+##    );
+
 has 'creatorId' => (is => 'rw', isa => 'Str', required => 1,
 	       documentation => 'creator user id',
     );
@@ -87,15 +91,15 @@ has 'startTime' => (is => 'rw', isa => 'HiResDate', required => 1,
 		documentation => 'session start time');
 
 has 'openChair' => (is => 'rw', isa => 'Bool',
-		    documentation => '?',
+		    documentation => 'Let all users act as chairpersons',
     );
 
 has 'permissionsOn' => (is => 'rw', isa => 'Bool',
-		    documentation => '?',
+		    documentation => 'Whether all non chair participcants are granted all permissions',
     );
 
 has 'raiseHandOnEnter' => (is => 'rw', isa => 'Bool',
-			   documentation => '?',
+			   documentation => 'Whether users automaticially raise their hands as they join.',
     );
 
 has 'recordingModeType' => (is => 'rw', isa => 'Int',
@@ -107,10 +111,12 @@ has 'reserveSeats' => (is => 'rw', isa => 'Int',
     );
 
 has 'secureSignOn' => (is => 'rw', isa => 'Bool',
-		       documentation => '?',
+		       documentation => 'N/A to ELM',
     );
 
-# tba recordings
+has 'recordings' => (is => 'rw', isa => 'Bool',
+		       documentation => 'Whether session has any recordings',
+    );
 
 has 'versionId' => (is => 'rw', isa => 'Int',
 		    documentation => 'ELM version Id (E.g. 1001 == 10.0.1)',

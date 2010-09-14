@@ -8,6 +8,8 @@ use Elive '0.74_1';
 
 extends 'Elive::DAO';
 
+use Carp;
+
 =head1 NAME
 
     Elive::SAS - Base class for Elive Standard Bridge V2 (SAS) Entities
@@ -40,8 +42,10 @@ Implements Elive Standard Bridge V2 (SAS) API bindings
 our %KnownAdapters = (
 
         getSchedulingManager => 'r',
-
+ 
         listSession => 'r',
+
+        removeSession => 'r',
 
         setSession => 'cu',
 
@@ -69,6 +73,30 @@ sub _get_results {
 
 =head1 SUBROUTINES/METHODS
 
+=head2 update
+
+=cut
+
+sub update {
+    my ($class, $data, %opt) = @_;
+
+    $opt{adapter} ||= 'set'.$class->entity_name;
+
+    return $class->SUPER::update($data, %opt);
+}
+
+=head2 fetch
+
+=cut
+
+sub _fetch {
+    my ($class, $key, %opt) = @_;
+
+    $opt{adapter} ||= 'list'.$class->entity_name;
+
+    return $class->SUPER::_fetch($key, %opt);
+}
+
 =head2 insert
 
 =cut
@@ -79,6 +107,40 @@ sub insert {
     $opt{adapter} ||= 'set'.$class->entity_name;
 
     return $class->SUPER::insert($data, %opt);
+}
+
+=head2 delete
+
+=cut
+
+sub delete {
+    my ($self, %opt) = @_;
+
+    my @primary_key = $self->primary_key;
+    my @id = $self->id;
+
+    die "entity lacks a primary key - can't delete"
+	unless (@primary_key > 0);
+
+    my @params = map {
+	$_ => shift( @id );
+    } @primary_key;
+
+    my $adapter = $opt{adapter} || 'remove'.$self->entity_name;
+    $self->check_adapter($adapter);
+
+    my $som = $self->connection->call($adapter,
+				      @params);
+
+    my $results = $self->_get_results(
+	$som,
+	);
+
+    my $success = @$results && $results->[0];
+    return $self->_deleted(1)
+	if $success;
+
+    carp "deletion failed(?) with 'false' status";
 }
 
 =head1 AUTHOR

@@ -27,19 +27,17 @@ sub test_connection {
     my $pass = $ENV{'ELIVE_TEST_PASS'.$suffix};
     my $url  = $ENV{'ELIVE_TEST_URL'.$suffix};
 
-    $result{auth} = [$url, $user, $pass, type => 'SAS'];
-
-    unless ($opt{noload}) {
-	#
-	# don't give our test a helping hand, We're
-	# testing self load of this module by Elive
-	#
-	eval {require Elive::Connection::SAS}; die $@ if $@;
+    if ($user && $pass && $url && $url !~ m{^mock:}i) {
+	$result{auth} = [$url, $user, $pass, type => 'SAS'];
+	if (my $debug = Elive->debug) {
+	    push (@{$result{auth}}, debug => $debug);
+	}
+	eval {require Elive::Connection::SAS};
+	die $@ if $@;
+	$result{class} = 'Elive::Connection::SAS';
     }
-    $result{class} = 'Elive::Connection::SAS';
-
-    if ($result{auth} && (my $debug = Elive->debug)) {
-	push (@{$result{auth}}, debug => $debug);
+    else {
+	$result{reason} = 'skipping live tests (set $ELIVE_TEST_{USER|PASS|URL}'.$suffix.' to enable)';
     }
 
     return %result;

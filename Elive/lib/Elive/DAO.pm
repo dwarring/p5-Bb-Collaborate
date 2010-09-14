@@ -235,7 +235,8 @@ sub _thaw {
 
     my $entity_data;
 
-    if (exists $db_data->{$responseTag}) {
+    if (Elive::Util::_reftype($db_data) eq 'HASH'
+	&& exists $db_data->{$responseTag}) {
 
 	warn "path $path: response tag for $class: $responseTag"
 	    if $class->debug;
@@ -877,7 +878,7 @@ Delete an entity from the database.
 =cut
 
 sub delete {
-    my $self = shift;
+    my ($self, %opt) = @_;
 
     my @primary_key = $self->primary_key;
     my @id = $self->id;
@@ -889,7 +890,7 @@ sub delete {
 	$_ => shift( @id );
     } @primary_key;
 
-    my $adapter = 'delete'.$self->entity_name;
+    my $adapter = $opt{adapter} || 'delete'.$self->entity_name;
     $self->check_adapter($adapter);
 
     my $som = $self->connection->call($adapter,
