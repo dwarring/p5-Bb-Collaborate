@@ -18,7 +18,7 @@ SKIP: {
     my $auth = $result{auth};
 
     skip ($result{reason} || 'skipping live tests',
-	9)
+	6)
 	unless $auth && @$auth;
 
     my $connection_class = $result{class};

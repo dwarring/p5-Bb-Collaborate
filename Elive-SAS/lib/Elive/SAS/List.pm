@@ -38,6 +38,13 @@ coerce 'Elive::SAS::List' => from 'Str'
 	      Elive::SAS::List->new(\@participants);
           };
 
+=head2 stringify
+
+Serialises array members by joining their string values with ','. Typically
+used to pack SOAP data, E.G. Session chair persons.
+
+=cut
+
 sub stringify {
     my $self = shift;
     my $arr  = shift || $self;
