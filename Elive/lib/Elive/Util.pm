@@ -122,7 +122,7 @@ sub _thaw {
 	    #
 	    # Perlise boolean flags..
 	    #
-	    $_ = m{true}i ? 1 : 0;
+	    $_ = m{^(true|1)$}i ? 1 : 0;
 	}
 	elsif ($type =~ m{^(Str|enum)}i) {
 	    #
@@ -309,16 +309,14 @@ sub string {
 	return $_
 	    unless $reftype;
 
-	return join(';', sort map {string($_, $data_type)} @$_)
-	    if $reftype eq 'ARRAY';
-
 	return $_->stringify
 	    if (Scalar::Util::blessed($_) && $_->can('stringify'));
 
 	if ($data_type) {
-	    my ($type, $is_array, $is_struct) = parse_type($data_type);
-	    return $type->stringify($_)
-		if ($is_struct && $type->can('stringify'));
+	    my ($dt) = ($data_type =~ m{(.*)});
+
+	    return $dt->stringify($_)
+		if eval{$dt->can('stringify')};
 	}
     }
 

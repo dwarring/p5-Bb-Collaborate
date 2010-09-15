@@ -53,12 +53,6 @@ our %KnownAdapters = (
 
 __PACKAGE__->mk_classdata(known_adapters => \%KnownAdapters);
 
-#
-# Normalise our data and reconstruct arrays.
-#
-# See t/05-entity-unpack.t for examples and further explanation.
-#
-
 sub _get_results {
     my $class = shift;
     my $som = shift;

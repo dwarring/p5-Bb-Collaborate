@@ -18,7 +18,7 @@ __PACKAGE__->has_metadata('_deleted');
 
 =head1 NAME
 
-    Elive::Entity - Base class for Elive Data Access Objects
+    Elive::DAO - Base class for Elive Data Access Objects
 
 =head1 DESCRIPTION
 
@@ -192,11 +192,8 @@ sub _freeze {
 
 	for ($db_data->{$_}) {
 
-	    for ($is_array? @$_: $_) {
+	    $_ = Elive::Util::_freeze($_, $is_array? $property: $type);
 
-		$_ = Elive::Util::_freeze($_, $type);
-
-	    }
 	}
     } 
 
@@ -312,11 +309,11 @@ sub _thaw {
 
 	    foreach ($expect_array? @$val: $val) {
 
+		next unless defined;
+
 		my $idx = $expect_array? '['.$i.']': '';
 
-		if (!defined) {
-		}
-		elsif ($is_struct) {
+		if ($is_struct) {
 
 		    $_ = _thaw("$type", $_, $path . $idx);
 
@@ -346,7 +343,7 @@ sub _thaw {
     if ($class->debug) {
 	warn "thawed: $class: ".YAML::Dump(
 	    {db => $entity_data,
-	     data => \%data}
+	     thawed => \%data}
 	    );
     }
     
@@ -434,6 +431,9 @@ sub _readback_check {
 
     foreach my $row (@$rows) {
 
+	$row = $class->new($row)
+	    unless Scalar::Util::blessed($row);
+
 	my $property_types = $class->property_types;
 
 	foreach ($class->properties) {
@@ -447,7 +447,7 @@ sub _readback_check {
 				     $write_val,  $read_val, %opt)) {
 
 		    warn YAML::Dump({read => $read_val, write => $write_val})
-			if ($class->debug);
+			if ($class->debug >= 2);
 
 		    die "${class}: Update consistancy check failed on $_ (${property_type}), wrote:".Elive::Util::string($write_val, $property_type).", read-back:".Elive::Util::string($read_val, $property_type);
 		}
@@ -475,7 +475,7 @@ sub is_changed {
 	#
 	# not mapped to a stored data value. scratch object?, sub entity?
 	#
-	warn ref($self)."->is_changed called on non-database object (".$self->stringify.")";
+	warn ref($self)."->is_changed called on non-database object (".$self->stringify.")\n";
 	return;
     }
 
@@ -705,9 +705,6 @@ sub update {
 
 Retrieve a list of objects from a table.
 
-Note: this method is not applicable to Elive::Entity::MeetingParameters
-or Elive::Entity::ParticipantList.
-
 =cut
 
 sub list {
@@ -835,6 +832,9 @@ sub retrieve {
     # We've supplied a full primary key, so can expect 0 or 1 values
     # to be returned.
     #
+    warn "${class}->retrieve([@$vals]) returned extraneous data - discarding\n"
+	if (scalar @$all > 1);
+
     return $all->[0];
 }
 
@@ -904,7 +904,7 @@ sub delete {
 
     #
     # Umm, we did get a read-back of the record, but the contents
-    # seem to be dubious. Perform candinality checks, but don't do
+    # seem to be dubious. Perform cardinality checks, but don't do
     # write-back checks.
     #
 

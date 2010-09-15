@@ -50,7 +50,7 @@ sub stringify {
     my $arr  = shift || $self;
     my $type = shift || $self->element_class;
 
-    return Elive::Util::string($arr, $type);
+    return join(';', sort map {Elive::Util::string($_, $type)} @$arr)
 }
 
 =head2 new

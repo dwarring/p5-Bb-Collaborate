@@ -44,10 +44,6 @@ has 'chairNotes' => (is => 'rw', isa => 'Str',
 	       documentation => 'chair notes',
     );
 
-##has 'costCenter' => (is => 'rw', isa => 'Str',
-##	       documentation => 'cost center',
-##    );
-
 has 'creatorId' => (is => 'rw', isa => 'Str', required => 1,
 	       documentation => 'creator user id',
     );

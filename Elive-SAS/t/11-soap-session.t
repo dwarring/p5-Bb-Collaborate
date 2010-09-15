@@ -1,6 +1,6 @@
 #!perl
 use warnings; use strict;
-use Test::More tests => 13;
+use Test::More tests => 17;
 use Test::Exception;
 use Test::Builder;
 use version;
@@ -20,16 +20,16 @@ $SIG{__DIE__} = \&Carp::confess;
 
 SKIP: {
 
-    my $to_skip = 13;
+    my $skippable = 17;
 
     eval 'require DateTime';
-    skip('DateTime is required to run this test', $to_skip)
+    skip('DateTime is required to run this test', $skippable)
 	if $@;
 
     my %result = t::Elive::SAS->test_connection();
     my $auth = $result{auth};
 
-   skip ($result{reason} || 'skipping live tests', $to_skip)
+   skip ($result{reason} || 'skipping live tests', $skippable)
 	unless $auth && @$auth;
 
     use Elive::Connection::SAS;
@@ -61,11 +61,16 @@ SKIP: {
     my %insert_int_data = (
 	startTime =>  $session_start,
 	endTime => $session_end,
-##	mustBeSupervised => 1,
-##	permissionsOn => 1,
+	openChair => 1,
+	mustBeSupervised => 0,
+	permissionsOn => 1,
     );
 
-    my ($session) = $class->insert({%insert_int_data, %insert_str_data});
+    my %insert_array_data = (
+	groupingList => [qw(sewing mechanics)],
+	);
+
+    my ($session) = $class->insert({%insert_int_data, %insert_str_data, %insert_array_data});
 
     isa_ok($session, $class, 'session');
     ok(my $session_id = $session->sessionId, 'Insert returned session id');
@@ -80,6 +85,10 @@ SKIP: {
 
     foreach (keys %insert_int_data) {
 	ok($session->$_ == $insert_int_data{$_}, "session $_ as expected");
+    }
+
+    foreach (keys %insert_array_data) {
+	is_deeply([sort @{ $session->$_ }], [sort @{ $insert_array_data{$_} }], "session $_ as expected");
     }
 
     my %update_str_data = (

@@ -27,15 +27,24 @@ Add additional elements
 
 coerce 'Elive::SAS::List' => from 'ArrayRef'
           => via {
-	      my @participants = map {split(',')} @$_;
+	      my @participants = grep {$_ ne ''} map {split(',')} @$_;
 	      Elive::SAS::List->new(\@participants);
 };
 
 coerce 'Elive::SAS::List' => from 'Str'
           => via {
-	      my @participants = split(';');
+	      my @participants = grep {$_ ne ''} split(',');
 
 	      Elive::SAS::List->new(\@participants);
           };
+
+sub stringify {
+    my $self = shift;
+    my $arr  = shift || $self;
+    my $type = shift || $self->element_class;
+
+    return join(',', sort map {Elive::Util::string($_, $type)} @$_)
+}
+
 
 1;
