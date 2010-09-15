@@ -18,32 +18,34 @@ SKIP: {
     my %result = t::Elive->test_connection(noload => 1);
     my $auth = $result{auth};
 
-    skip ($result{reason} || 'skipping live tests',
-	9)
+    skip ($result{reason} || 'skipping live tests', 9)
 	unless $auth && @$auth;
 
     my $connection_class = $result{class};
-    diag ("connecting: user=$auth->[1], url=$auth->[0]");
 
     my $connection;
 
-    if ($connection_class eq 'Elive::Connection') {
+    if ($connection_class eq 'Elive::Connection::SDK') {
 	#
 	# exercise a direct connection from Elive main. No preload
 	# of connection or entity classes.
 	#
+	diag ("connecting: user=$auth->[1], url=$auth->[0] (bare bones)");
+	
 	$connection = Elive->connect(@$auth);
     }
     else {
 	eval "require $connection_class";
 	die $@ if $@;
 
+	diag ("connecting: user=$auth->[1], url=$auth->[0]");
+
 	$connection = $connection_class->connect(@$auth);
 	Elive->connection($connection);
     }
 
     ok($connection, 'got connection');
-    isa_ok($connection, 'Elive::Connection','connection')
+    isa_ok($connection, $connection_class,'connection')
 	or exit(1);
 
     my $login;
@@ -57,21 +59,24 @@ SKIP: {
     my $server_details;
     my $server_version;
 
+    my $min_version =  '9.0.0';
+    my $min_version_num = version->new($min_version)->numify;
+
+    my $max_version =  '10.0.1';
+    my $max_version_num = version->new($max_version)->numify;
+
     ok ($server_details = Elive->server_details, 'got server details');
     isa_ok($server_details, 'Elive::Entity::ServerDetails','server_details');
     ok($server_version = $server_details->version, 'got server version');
     diag ('Elluminate Live! version: '.qv($server_version));
 
     my $server_version_num = version->new($server_version)->numify;
-    ok($server_version_num >= 9, "Elluminate Live! server is 9.0.0 or higher");
+    ok($server_version_num >= $min_version_num, "Elluminate Live! server is $min_version or higher");
 
-    my $tested_version = '10.0.1';
-    my $tested_version_num = version->new($tested_version)->numify;
-
-    if ($server_version_num > $tested_version_num) {
+    if ($server_version_num > $max_version_num) {
 	diag "************************";
 	diag "Note: Elluminate Live! server version is ".qv($server_version);
-	diag "      This Elive release ($Elive::VERSION) has been tested against v9.0.0 - ".qv($tested_version);
+	diag "      This Elive release ($Elive::VERSION) has been tested against ".qv($min_version)." - ".qv($max_version);
 	diag "      You might want to check CPAN for a more recent version of Elive.";
 	diag "************************";
     }

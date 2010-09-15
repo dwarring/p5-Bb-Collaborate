@@ -15,17 +15,12 @@ if ( not $ENV{TEST_AUTHOR} ) {
     plan( skip_all => $msg );
 }
 
-eval "use Test::Script::Run";
+eval "use Test::Script::Run 0.04";
 
 if ( $EVAL_ERROR ) {
-    my $msg = 'Test::Script::Run required to run scripts';
+    my $msg = 'Test::Script::Run 0.40 required to run scripts';
     plan( skip_all => $msg );
 }
-
-unless (${Test::Script::Run::VERSION} >= '0.04') {
-    my $msg = "Test::Script::Run version (${Test::Script::Run::VERSION} < 0.04)";
-    plan( skip_all => $msg );
-} 
 
 local ($ENV{TERM}) = 'dumb';
 
@@ -127,6 +122,7 @@ SKIP: {
 	#
 	# simple query on server details - yaml dump of output
 	#
+
 	my ( $result, $stdout, $stderr ) = run_script(
 	    $script_name,
 	    [$url,

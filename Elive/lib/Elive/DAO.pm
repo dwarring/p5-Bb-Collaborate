@@ -231,17 +231,27 @@ sub _thaw {
     my $responseTag = $class->entity_name.'Adapter';
 
     my $entity_data;
+    my $adapter_found;
 
-    if (Elive::Util::_reftype($db_data) eq 'HASH'
-	&& exists $db_data->{$responseTag}) {
+    if (Elive::Util::_reftype($db_data) eq 'HASH') {
 
-	warn "path $path: response tag for $class: $responseTag"
-	    if $class->debug;
+	my @unknown_adapters = grep {m{Adapter$} && $_ ne $responseTag} (keys %$db_data);
 
-	$entity_data = $db_data->{$responseTag};
-	$path .= $responseTag;
+	die "unknown adapters in response: @unknown_adapters"
+	    if @unknown_adapters;
+
+	if (exists $db_data->{$responseTag}) {
+
+	    warn "path $path: response tag for $class: $responseTag"
+		if $class->debug;
+
+	    $entity_data = $db_data->{$responseTag};
+	    $path .= $responseTag;
+	    $adapter_found = 1;
+	}
     }
-    else {
+
+    unless ($adapter_found) {
 	$entity_data = $db_data;
     }
 

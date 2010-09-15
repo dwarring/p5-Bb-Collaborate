@@ -49,7 +49,9 @@ sub _pack_data {
 	die "$class: unknown property $prop: expected: @properties"
 	    unless exists $property_types->{$prop};
 
-	my ($type, $is_array, $is_struct) = Elive::Util::parse_type($property_types->{$prop});
+	my $property = $property_types->{$prop};
+
+	my ($type, $is_array, $is_struct) = Elive::Util::parse_type( $property );
 
 	for ($db_data{$prop}) {
 	    die "$class undefined property $prop"
@@ -60,11 +62,7 @@ sub _pack_data {
 		$_ = {$adapter => $packed_data};
 	    }
 	    else {
-		for ($is_array? @$_: $_) {
-		    
-		    $_ = Elive::Util::_freeze($_, $type);
-
-		}
+		$_ = Elive::Util::_freeze($_, $is_array? $property: $type);
 	    }
 	}
     }
