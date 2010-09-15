@@ -41,7 +41,7 @@ Elive::Entity::participantList.
 
 =head2 stringify
 
-Stringifies arrays members by joining their string values with ';'.
+Serialises array members by joining their string values with ';'.
 
 =cut
 
