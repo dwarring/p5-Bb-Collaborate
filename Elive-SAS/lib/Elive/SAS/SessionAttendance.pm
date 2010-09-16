@@ -2,6 +2,7 @@ package Elive::SAS::SessionAttendance;
 use warnings; use strict;
 
 use Mouse;
+use Carp;
 
 extends 'Elive::SAS';
 
@@ -18,9 +19,6 @@ This is the main entity class for attendees.
 =cut
 
 __PACKAGE__->entity_name('SessionAttendance');
-
-##has 'sessionId' => (is => 'rw', isa => 'Int', required => 1);
-##__PACKAGE__->primary_key('sessionId');
 
 has 'roomName' => (is => 'rw', isa => 'Str', required => 1,
 		   documentation => 'Name of the room'
@@ -41,5 +39,35 @@ __PACKAGE__->_alias(attendeeResponseCollection => 'attendees');
 =head1 METHODS
 
 =cut
+
+=head2 list
+
+    my $session_id = '123456789012';
+    my $yesterday = DateTime->today->subtract(days => 1);
+
+    my $attendance = Elive::SAS::SessionAttendance->list([$session, $yesterday->epoch.'000']);
+
+Gets a session attendance report. It returns a reference to an array of Elive::SAS::SessionAttendance objects.
+
+=cut
+
+sub list {
+    my ($class, $vals, %opt) = @_;
+
+   croak "usage: ${class}->list( [\$session, \$start_of_day] )"
+       unless Elive::Util::_reftype($vals) eq 'ARRAY';
+
+    my %fetch_params;
+
+    $fetch_params{sessionId}  = Elive::Util::_freeze(shift @$vals, 'Int')
+	if @$vals;
+
+    $fetch_params{startTime}  = Elive::Util::_freeze(shift @$vals, 'HiResDate')
+	if @$vals;
+
+    $class->_fetch(\%fetch_params,
+		   %opt,
+	);
+}
 
 1;

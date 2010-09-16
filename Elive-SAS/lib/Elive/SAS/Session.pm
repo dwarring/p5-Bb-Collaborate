@@ -126,9 +126,9 @@ has 'versionId' => (is => 'rw', isa => 'Int',
 
 =head2 attendance
 
-    my $today = DateTime->now->truncate(to => 'day');
+    my $today = DateTime->yesterday->subtract(days => 1);
 
-    my $attendance = $session->attendance( $today->epoch.'000' );
+    my $attendance = $session->attendance( $yesterday->epoch.'000' );
 
 Reports on session attendance for a given day. It returns a reference to an array of Elive::SAS::SessionAttendance objects.
 
@@ -137,14 +137,7 @@ Reports on session attendance for a given day. It returns a reference to an arra
 sub attendance {
     my ($self, $start_time, %opt) = @_;
 
-    my %fetch_params;
-    $fetch_params{startTime}  = Elive::Util::_freeze($start_time, 'HiResDate')
-	if $start_time;
-    $fetch_params{sessionId}  = Elive::Util::_freeze($self->sessionId, 'Int');
-
-    return Elive::SAS::SessionAttendance->_fetch(\%fetch_params,
-						 %opt,
-	);
+    return Elive::SAS::SessionAttendance->list([$self, $start_time]);
 }
 
 1;
