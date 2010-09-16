@@ -8,6 +8,7 @@ extends 'Elive::SAS';
 use Elive::Util;
 
 use Elive::SAS::List;
+use Elive::SAS::SessionAttendance;
 
 =head1 NAME
 
@@ -122,5 +123,28 @@ has 'versionId' => (is => 'rw', isa => 'Int',
 =head1 METHODS
 
 =cut
+
+=head2 attendance
+
+    my $today = DateTime->now->truncate(to => 'day');
+
+    my $attendance = $session->attendance( $today->epoch.'000' );
+
+Reports on session attendance for a given day. It returns a reference to an array of Elive::SAS::SessionAttendance objects.
+
+=cut
+
+sub attendance {
+    my ($self, $start_time, %opt) = @_;
+
+    my %fetch_params;
+    $fetch_params{startTime}  = Elive::Util::_freeze($start_time, 'HiResDate')
+	if $start_time;
+    $fetch_params{sessionId}  = Elive::Util::_freeze($self->sessionId, 'Int');
+
+    return Elive::SAS::SessionAttendance->_fetch(\%fetch_params,
+						 %opt,
+	);
+}
 
 1;

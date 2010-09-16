@@ -568,7 +568,7 @@ sub AUTOLOAD {
 	goto $subref;
     }
     else {
-	die $class.": unknown method $method";
+	Carp::croak $class.": unknown method $method";
     }
 }
 

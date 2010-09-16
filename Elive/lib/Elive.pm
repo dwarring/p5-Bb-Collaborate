@@ -218,9 +218,10 @@ sub debug {
 
 =head2 check_adapter
 
-    Elive->check_adapter('getUser')
+    my $adapter1 = Elive->check_adapter([qw{getUser listUser}])
+    my $adapter2 = Elive->check_adapter(deleteUser => 'd')
 
-Asserts that the adapter is valid, i.e. it's in the list of known adapters.
+Find the first known adapter in the list. Raise an error if it's unknown;
 
 See also: elive_lint_config.
 
@@ -228,19 +229,24 @@ See also: elive_lint_config.
 
 sub check_adapter {
     my $class = shift;
-    my $adapter = shift;
+    my $adapters = shift;
     my $crud = shift; #create, read, update or delete
 
+    $adapters = [$adapters]
+	unless Elive::Util::_reftype($adapters) eq 'ARRAY';
+
     my $usage = "usage: \$class->check_adapter(\$name[,'c'|'r'|'u'|'d'])";
-    die $usage unless $adapter;
+    die $usage unless @$adapters && $adapters->[0];
 
     my $known_adapters = $class->known_adapters;
 
-    die "no know adapters for class: $class"
+    die "no known adapters for class: $class"
 	unless $known_adapters && (keys %{$known_adapters});
 
-    die "Unknown adapter: $adapter"
-	unless exists $known_adapters->{$adapter};
+    my ($adapter) = grep {exists $known_adapters->{$_}} @$adapters;
+
+    die "Unknown adapters: @{$adapters}"
+	unless $adapter;
 
     if ($crud) {
 	$crud = lc(substr($crud,0,1));

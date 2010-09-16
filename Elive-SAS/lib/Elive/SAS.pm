@@ -12,7 +12,7 @@ use Carp;
 
 =head1 NAME
 
-    Elive::SAS - Base class for Elive Standard Bridge V2 (SAS) Entities
+    Elive::SAS - Base class for the Elive Standard Bridge V2 (SAS)
 
 =head1 VERSION
 
@@ -44,6 +44,7 @@ our %KnownAdapters = (
         getSchedulingManager => 'r',
  
         listSession => 'r',
+        listSessionAttendance => 'r',
 
         removeSession => 'r',
 
@@ -67,6 +68,55 @@ sub _get_results {
 
 =head1 SUBROUTINES/METHODS
 
+=head1 METHODS
+
+=head2 connect
+
+     my $e1 = Elive::SAS->connect('http://myServer.com/test1', 'user1', 'pass1');
+
+     Elive::SAS->connect('http://myServer.com/test2', 'user2', 'pass2');
+     my $e2 = Elive->connection;
+
+Connects to an Elluminate server instance. Dies if the connection could not
+be established. If, for example, the SOAP connection or authentication failed.
+
+See also Elive::Connection.
+
+=cut
+
+sub connect {
+    my ($class, $url, $login_name, $pass, %opts) = @_;
+
+    die "usage: ${class}->new(url, login_name[, pass])"
+	unless ($class && $url && $login_name);
+
+    eval {require Elive::Connection::SAS};
+    die $@ if $@;
+
+    my $connection = Elive::Connection::SAS->connect(
+	$url,
+	$login_name,
+	$pass,
+	debug => $class->debug,
+	%opts,
+	);
+
+    $class->connection($connection);
+
+    return $connection;
+}
+
+=head2 connection
+
+     $e1 = Elive::SAS->connection
+         or warn 'no elive connection active';
+
+Returns the default Elive connection handle.
+
+=cut
+
+__PACKAGE__->mk_classdata('connection');
+
 =head2 update
 
 =cut
@@ -86,7 +136,10 @@ sub update {
 sub _fetch {
     my ($class, $key, %opt) = @_;
 
-    $opt{adapter} ||= 'list'.$class->entity_name;
+    $opt{adapter} ||= $class->check_adapter(
+	['get'.$class->entity_name,
+	 'list'.$class->entity_name],
+	'r');				    
 
     return $class->SUPER::_fetch($key, %opt);
 }

@@ -218,35 +218,39 @@ sub _freeze {
     return $db_data;
 }
 
+#
+# _thaw - perform database to perl type conversions
+#
+
 sub _thaw {
-    #
-    # _thaw - perform database to perl type conversions
-    #
     my $class = shift;
     my $db_data = shift;
     my $path = shift || '';
 
     $path .= '/';
 
-    my $responseTag = $class->entity_name.'Adapter';
-
     my $entity_data;
     my $adapter_found;
 
     if (Elive::Util::_reftype($db_data) eq 'HASH') {
 
-	my @unknown_adapters = grep {m{Adapter$} && $_ ne $responseTag} (keys %$db_data);
+	my ($response_tag) =  grep {exists $db_data->{$_}} ($class->entity_name.'Adapter',
+	$class->entity_name.'Response');					
 
-	die "unknown adapters in response: @unknown_adapters"
+	my @unknown_adapters
+	    = grep {m{(Adapter|Response)$}
+		    && (!$response_tag || $_ ne $response_tag)} (keys %$db_data);
+
+	die "unknown adapters in response:: @unknown_adapters"
 	    if @unknown_adapters;
 
-	if (exists $db_data->{$responseTag}) {
+	if ($response_tag) {
 
-	    warn "path $path: response tag for $class: $responseTag"
+	    warn "path $path: response tag for $class: $response_tag"
 		if $class->debug;
 
-	    $entity_data = $db_data->{$responseTag};
-	    $path .= $responseTag;
+	    $entity_data = $db_data->{$response_tag};
+	    $path .= $response_tag;
 	    $adapter_found = 1;
 	}
     }
@@ -325,7 +329,7 @@ sub _thaw {
 
 		if ($is_struct) {
 
-		    $_ = _thaw("$type", $_, $path . $idx);
+		    $_ = _thaw($type, $_, $path . $idx);
 
 		}
 		else {

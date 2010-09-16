@@ -6,7 +6,7 @@ use Test::Exception;
 use lib '.';
 use t::Elive::SAS;
 
-use Elive;
+use Elive::SAS;
 # don't 'use' anything here! We're testing Elive's ability to load the
 # other required classes (Elive::Connection, Elive::Entity::User etc)
 
@@ -32,7 +32,7 @@ SKIP: {
 	#
 	diag ("connecting: user=$auth->[1], url=$auth->[0] (bare bones)");
 	
-	$connection = Elive->connect(@$auth);
+	$connection = Elive::SAS->connect(@$auth);
     }
     else {
 	eval "require $connection_class";
@@ -41,7 +41,7 @@ SKIP: {
 	diag ("connecting: user=$auth->[1], url=$auth->[0]");
 
 	$connection = $connection_class->connect(@$auth);
-	Elive->connection($connection);
+	Elive::SAS->connection($connection);
     }
 
     ok($connection, 'got connection');
