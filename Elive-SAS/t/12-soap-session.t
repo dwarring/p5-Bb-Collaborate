@@ -122,13 +122,10 @@ SKIP: {
 
     my $attendances;
 
-    TODO : {
-	local $TODO = 'Soap error handling';
-	dies_ok(sub {$attendances = $session->attendance()}, 'session attendance sans date - dies');
-    };
+    dies_ok(sub {$attendances = $session->attendance('')}, 'session attendance sans date - dies');
 
-    my $today = DateTime->now->truncate(to => 'day');
-    lives_ok(sub {$attendances = $session->attendance($today->epoch.'000')}, 'session attendance with date- lives');
+    my $today_hires = DateTime->today->epoch.'000';
+    lives_ok(sub {$attendances = $session->attendance($today_hires)}, 'session attendance with date - lives');
 
     lives_ok(sub {$session->delete},'session deletion - lives');
 

@@ -58,6 +58,8 @@ sub _get_results {
     my $class = shift;
     my $som = shift;
 
+    $class->_check_for_errors($som);
+
     my $result = $som->result;
 
     return $result
