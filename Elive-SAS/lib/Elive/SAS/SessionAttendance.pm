@@ -6,7 +6,7 @@ use Carp;
 
 extends 'Elive::SAS';
 
-use Elive::SAS::List::Attendees;
+use Elive::SAS::SessionAttendance::Attendees;
 
 =head1 NAME
 
@@ -30,7 +30,7 @@ has 'roomOpened' => (is => 'rw', isa => 'HiResDate', required => 1,
 has 'roomClosed' => (is => 'rw', isa => 'HiResDate', required => 1,
 		       documentation => 'date and time that room shut down');
 
-has 'attendees' => (is => 'rw', isa => 'Elive::SAS::List::Attendees',
+has 'attendees' => (is => 'rw', isa => 'Elive::SAS::SessionAttendance::Attendees',
 		    coerce => 1, documentation => 'Session attendees',);
 
 # give soap a helping hand

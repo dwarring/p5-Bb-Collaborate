@@ -1,4 +1,4 @@
-package Elive::SAS::Attendee;
+package Elive::SAS::SessionAttendance::Attendee;
 use warnings; use strict;
 
 use Mouse;
@@ -7,11 +7,11 @@ extends 'Elive::SAS';
 
 =head1 NAME
 
-Elive::SAS::Attendee - Elluminate Attendee instance class
+Elive::SAS::SessionAttendance::Attendee - Elluminate Attendee instance class
 
 =head1 DESCRIPTION
 
-This is the main entity class for attendees.
+This is the element class of Elive::SAS::SessionAttendance::Attendees
 
 =cut
 
