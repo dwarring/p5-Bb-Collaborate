@@ -41,18 +41,19 @@ Implements Elive Standard Bridge V2 (SAS) API bindings
 
 our %KnownAdapters = (
 
-        getSchedulingManager => 'r',
+    getSchedulingManager => 'r',
  
-        listSession => 'r',
-        listSessionAttendance => 'r',
+    listPresentationContent => 'r',
+    listSession => 'r',
+    listSessionAttendance => 'r',
 
-        removeSession => 'r',
+    removeSession => 'r',
 
-        setSession => 'cu',
-        setSessionMultimedia => 'u',
+    setSession => 'cu',
+    setSessionMultimedia => 'u',
 
-        uploadMultimediaContent => 'c',
-        uploadPresentationContent => 'c',
+    uploadMultimediaContent => 'c',
+    uploadPresentationContent => 'c',
 
     );
 
@@ -64,12 +65,10 @@ sub _get_results {
 
     $class->_check_for_errors($som);
 
-    my $result = $som->result;
+    my @result = ($som->result, $som->paramsout);
 
-    return $result
-	? Elive::Util::_reftype($result) eq 'ARRAY'
-	? $result : [$result]
-	: [];
+    return \@result;
+
 }
 
 =head1 SUBROUTINES/METHODS
