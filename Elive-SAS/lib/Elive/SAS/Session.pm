@@ -5,10 +5,14 @@ use Mouse;
 
 extends 'Elive::SAS';
 
+use Scalar::Util;
+use Carp;
+
 use Elive::Util;
 
 use Elive::SAS::List;
 use Elive::SAS::SessionAttendance;
+use Elive::SAS::Presentation;
 
 =head1 NAME
 
@@ -140,4 +144,38 @@ sub attendance {
     return Elive::SAS::SessionAttendance->list([$self, $start_time]);
 }
 
+=head2 set_presentation
+
+Sets the list of presentation ids for a given session
+
+=cut
+
+sub set_presentation {
+    my ($class, $presentation_ids, %opt) = @_;
+
+    my $session_id = delete $opt{sessionId};
+    $session_id ||= $class->sessionId
+	if Scalar::Util::blessed($class);
+
+    croak 'usage: $'.(ref($class)||$class).'->set_presentation(\@presentation_ids)'
+	unless Scalar::Util::reftype( $presentation_ids ) eq 'ARRAY';
+
+    my $connection = $opt{connection} || $class->connection
+	or croak "Not connected";
+
+    my $som = $connection->call(
+	$class->check_adapter( 'setSessionPresentation'),
+	sessionId => Elive::Util::_freeze($session_id, 'Int'),
+	presentationIds => Elive::Util::_freeze($presentation_ids, 'Elive::SAS::List'),
+	);
+
+    my $results = $class->_get_results(
+	$som,
+	);
+
+    my $success = @$results && $results->[0];
+
+    return $success;
+}
+			      
 1;

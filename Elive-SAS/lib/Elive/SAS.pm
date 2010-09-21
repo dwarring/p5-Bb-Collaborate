@@ -49,6 +49,10 @@ our %KnownAdapters = (
         removeSession => 'r',
 
         setSession => 'cu',
+        setSessionMultimedia => 'u',
+
+        uploadMultimediaContent => 'c',
+        uploadPresentationContent => 'c',
 
     );
 

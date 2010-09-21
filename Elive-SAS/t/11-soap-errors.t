@@ -22,17 +22,12 @@ SKIP: {
 
     my $skippable = 4;
 
-    eval 'require DateTime';
-    skip('DateTime is required to run this test', $skippable)
-	if $@;
-
     my %result = t::Elive::SAS->test_connection();
     my $auth = $result{auth};
 
    skip ($result{reason} || 'skipping live tests', $skippable)
 	unless $auth && @$auth;
 
-    use Elive::Connection::SAS;
     my $connection_class = $result{class};
     $connection = $connection_class->connect(@$auth);
     Elive::SAS->connection($connection);
