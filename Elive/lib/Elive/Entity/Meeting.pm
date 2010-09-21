@@ -62,6 +62,8 @@ has  'allModerators' => (is => 'rw', isa => 'Bool',
 has  'restrictedMeeting' => (is => 'rw', isa => 'Bool',
 			     documentation => "Restricted meeting");
 
+has 'adapter' => (is => 'rw', isa => 'Str',
+		  documentation => 'adapter used to create the meeting/session');
 
 =head1 METHODS
 
@@ -382,28 +384,6 @@ sub _readback_check {
     $rows = [$rows->[0]] if @$rows > 1;
 
     return $class->SUPER::_readback_check(\%updates, $rows, @args);
-}
-
-sub _thaw {
-    my ($class, $db_data, @args) = @_;
-
-    my $data = $class->SUPER::_thaw($db_data, @args);
-
-    if ($data->{Adapter}) {
-	#
-	# meeting result can include a spurious Adapter property. Ignore it
-	#
-
-	if ($class->debug) {
-	    print STDERR "Stray meeting adaptor found:\n";
-	    print STDERR YAML::Dump($data->{Adapter});
-	    print STDERR "\n";
-	}
-	
-	delete $data->{Adapter};
-    }
-
-    return $data;
 }
 
 =head2 remove_preload
