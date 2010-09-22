@@ -48,7 +48,9 @@ SKIP: {
     isa_ok($connection, $connection_class,'connection')
 	or exit(1);
 
-    ok (my $scheduling_manager = $connection->scheduling_manager, 'got server details');
+    my $scheduling_manager;
+    lives_ok (sub {$scheduling_manager = $connection->scheduling_manager},
+	      '$connection->scheduling_manager - lives');
     isa_ok($scheduling_manager, 'Elive::SAS::SchedulingManager','scheduling_manager');
     my $min_version_num = '3.3.2';
     my $max_version_num = '3.3.2';

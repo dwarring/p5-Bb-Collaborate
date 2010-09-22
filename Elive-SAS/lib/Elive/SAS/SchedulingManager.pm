@@ -3,7 +3,7 @@ use warnings; use strict;
 
 use Mouse;
 
-extends 'Elive::SAS';
+extends 'Elive::DAO::Singleton','Elive::SAS';
 
 use Scalar::Util;
 

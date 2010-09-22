@@ -49,8 +49,6 @@ Uploads content and creates a new presentation resource.
 	     },
          );
 
-Note: the C<facilitator>, when supplied must match the facilitator for the given C<meetingId>.
-
 =cut
 
 sub insert {
@@ -74,7 +72,6 @@ sub insert {
     # normal thawing
     #
     eval {require SOAP::Lite}; die $@ if $@;
-
     $content = SOAP::Data->type(base64 => $content)
 	unless (Scalar::Util::blessed($content)
 		&& eval {$content->isa('SOAP::Data')});

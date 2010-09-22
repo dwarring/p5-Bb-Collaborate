@@ -42,6 +42,7 @@ Implements Elive Standard Bridge V2 (SAS) API bindings
 our %KnownAdapters = (
 
     getSchedulingManager => 'r',
+    getServerConfiguration => 'r',
  
     listPresentationContent => 'r',
     listSession => 'r',
