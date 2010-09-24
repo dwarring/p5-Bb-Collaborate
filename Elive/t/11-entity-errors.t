@@ -1,18 +1,16 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 29;
+use Test::More tests => 30;
 use Test::Exception;
 
 package main;
 
-BEGIN {
-	use_ok( 'Elive' );
-	use_ok( 'Elive::Connection' );
-	use_ok( 'Elive::Entity::User' );
-	use_ok( 'Elive::Entity::Preload' );
-	use_ok( 'Elive::Entity::Meeting' );
-	use_ok( 'Elive::Entity::MeetingParameters' );
-}
+use Elive;
+use Elive::Connection;
+use Elive::Entity::User;
+use Elive::Entity::Preload;
+use Elive::Entity::Meeting;
+use Elive::Entity::MeetingParameters;
 
 Elive->connection(Elive::Connection->connect('http://test.org'));
 
@@ -28,7 +26,8 @@ dies_ok(
 my %user_data =  (
     userId => 1234,
     loginName => 'bbill',
-    loginPassword => 'pass'
+    loginPassword => 'pass',
+    deleted => 0,
     );
 
 my $user_obj;
@@ -84,6 +83,7 @@ my %meeting_data = (meetingId => 1111111,
 		    start => '1234567890123',
 		    end => '1234567890123',
 		    password => 'work!',
+		    restrictedMeeting => 1,
 	);
 
 my $meeting;
@@ -92,6 +92,57 @@ lives_ok(
     sub {$meeting = Elive::Entity::Meeting->construct(\%meeting_data)},
 	 'construct meeting with valid data - lives'
     );
+
+lives_ok(sub {$meeting->_readback_check( \%meeting_data, [\%meeting_data] )},
+	 'readback on unchanged data - lives');
+
+dies_ok(
+    sub {
+	my %changed = %meeting_data;
+	$changed{meetingId}++;
+	$meeting->_readback_check( \%meeting_data, [\%changed] )
+    },
+    'readback with changed Int property - dies');
+
+dies_ok(
+    sub {
+	my %changed = %meeting_data;
+	$changed{restrictedMeeting} = !$changed{restrictedMeeting};
+	$meeting->_readback_check( \%meeting_data, [\%changed] )
+    },
+    'readback with changed Bool property - dies');
+
+dies_ok(
+    sub {
+	my %changed = %meeting_data;
+	$changed{name} .= 'x';
+	$meeting->_readback_check( \%meeting_data, [\%changed] )
+    },
+    'readback with changed Str property - dies');
+
+dies_ok(
+    sub {
+	my %changed = %meeting_data;
+	$changed{start} .= '9';
+	$meeting->_readback_check( \%meeting_data, [\%changed] )
+    },
+    'readback with changed hiResDate property - dies');
+
+lives_ok(
+    sub {
+	my %extra = %meeting_data;
+	$extra{adapter} = 'test';
+	$meeting->_readback_check( \%meeting_data, [\%extra] )
+    },
+    'extra readback property - lives');
+
+lives_ok(
+    sub {
+	my %extra = %meeting_data;
+	$extra{adapter} = 'test';
+	$meeting->_readback_check( \%extra, [\%meeting_data] )
+    },
+    'property missing from readback - lives');
 
 lives_ok(
     sub {$meeting->set(password => undef)},
@@ -112,7 +163,7 @@ foreach (qw(meetingId name start end)) {
 
     dies_ok(
 	sub {Elive::Entity::Meeting->construct(\%bad_meeting_data)},
-	"meeting with missing $_ - dies"
+	"meeting without required $_ - dies"
 	);
 }
 
