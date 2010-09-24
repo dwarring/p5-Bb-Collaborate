@@ -27,7 +27,6 @@ plan(tests => 4);
 my $script_name = 'elive_lint_config';
 
 #
-#
 # try running script with --help
 #
 
@@ -36,6 +35,7 @@ do {
     ok($stderr eq '', "$script_name --help: stderr empty");
     ok($stdout =~ m{usage:}ix, "$script_name --help: stdout =~ 'usage:...''");
 };
+
 #
 # try with invalid option
 #

@@ -110,7 +110,7 @@ Construct an entity from data.
 sub construct {
     my ($class, $data, %opt) = @_;
 
-    die "usage: ${class}->construct( \\%data )"
+    croak "usage: ${class}->construct( \\%data )"
 	unless (Elive::Util::_reftype($data) eq 'HASH');
 
     #
@@ -316,7 +316,7 @@ sub _thaw {
 		    # struct. Coerce it to a one element array
 		    #
 		    $val = [$val];
-		    warn "thawing $class coerced element into array for $col"
+		    warn "thawing $val_type coerced element into array for $col"
 			if ($class->debug);
 		}
 	    }
@@ -440,7 +440,7 @@ sub _readback_check {
     # record, after performing the update. This routine may be
     # run to check that the expected updates have been applied
     #
-    die "Didn't receive a response for ".$class->entity_name
+    croak "Didn't receive a response for ".$class->entity_name
 	unless @$rows;
 
     foreach my $row (@$rows) {
@@ -463,7 +463,7 @@ sub _readback_check {
 		    warn YAML::Dump({read => $read_val, write => $write_val})
 			if ($class->debug >= 2);
 
-		    die "${class}: Update consistancy check failed on $_ (${property_type}), wrote:".Elive::Util::string($write_val, $property_type).", read-back:".Elive::Util::string($read_val, $property_type);
+		    croak "${class}: Update consistancy check failed on $_ (${property_type}), wrote:".Elive::Util::string($write_val, $property_type).", read-back:".Elive::Util::string($read_val, $property_type);
 		}
 	    }
 	}
@@ -519,7 +519,7 @@ Set entity properties.
 sub set {
     my $self = shift;
 
-    die "attempted to modify  data in a deleted record"
+    croak "attempt to modify data in a deleted record"
 	if ($self->_deleted);
 
     return $self->SUPER::set(@_);
@@ -645,7 +645,7 @@ sub update {
 
     if ($update_data) {
 
-	die 'usage: $obj->update( \%data )'
+	croak 'usage: $obj->update( \%data )'
 	    unless (Elive::Util::_reftype($update_data) eq 'HASH');
 
 	$self->set( %$update_data)
@@ -672,7 +672,7 @@ sub update {
 
 	$updates{$_} = $self->{$_};
 
-	die 'primary key field $_ updated - refusing to save'
+	croak 'primary key field $_ updated - refusing to save'
 	    if (exists $primary_key{ $_ }
 		&& $self->_cmp_col($self->property_types->{$_},
 				   $self->_db_data->{ $_ },
@@ -759,7 +759,7 @@ sub list {
 sub _fetch {
     my ($class, $db_query, %opt) = @_;
 
-    die "usage: ${class}->_fetch( \\%query )"
+    croak "usage: ${class}->_fetch( \\%query )"
 	unless (Elive::Util::_reftype($db_query) eq 'HASH');
 
     my $connection = $opt{connection} || $class->connection
@@ -807,9 +807,9 @@ Retrieve a single entity objects by primary key.
 sub retrieve {
     my ($class, $vals, %opt) = @_;
 
-    die 'usage $class->retrieve([$val,..],%opt)'
-	unless Elive::Util::_reftype($vals) eq 'ARRAY';
-    
+    $vals = [$vals]
+	if $vals && ! Elive::Util::_reftype($vals);
+
     my @key_cols = $class->primary_key;
 
     for (my $n = 0; $n < @key_cols; $n++) {
@@ -861,7 +861,7 @@ sub retrieve {
 sub _retrieve_all {
     my ($class, $vals, %opt) = @_;
 
-    die 'usage $class->_retrieve_all([$val,..],%opt)'
+    croak 'usage $class->_retrieve_all([$val,..],%opt)'
 	unless Elive::Util::_reftype($vals) eq 'ARRAY';
 
     my @key_cols = $class->primary_key;
@@ -922,10 +922,10 @@ sub delete {
     # write-back checks.
     #
 
-    die "Didn't receive a response for ".$self->entity_name
+    croak "Didn't receive a response for deletion: ".$self->entity_name
 	unless @$rows;
 
-    die "Received multiple responses for ".$self->entity_name
+    croak "Received multiple responses for deletion: ".$self->entity_name
 	if (@$rows > 1);
 
     return $self->_deleted(1);

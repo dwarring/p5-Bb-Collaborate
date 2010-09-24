@@ -3,7 +3,7 @@ use warnings; use strict;
 
 use Mouse;
 
-extends 'Elive::Entity';
+extends 'Elive::DAO::Singleton','Elive::Entity';
 
 use Scalar::Util;
 
@@ -42,23 +42,5 @@ has 'iNetAddress' => (is => 'rw', isa => 'Ref');
 =head1 METHODS
 
 =cut
-
-=head2 list
-
-    my ($server) = Elive::Entity::ServerDetails->list();
-
-Return the server details. Note that their is a single record. You should
-always expect to retrieve one record from each connection.
-
-=cut
-
-sub list {
-    my ($class, %opt) = @_;
-
-    die "filter not applicable to class $class"
-	if ($opt{filter});
-
-    return $class->_fetch({}, %opt);
-}
 
 1;

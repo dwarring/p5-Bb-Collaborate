@@ -245,7 +245,7 @@ sub check_adapter {
 
     my ($adapter) = grep {exists $known_adapters->{$_}} @$adapters;
 
-    die "Unknown adapters: @{$adapters}"
+    croak "Unknown adapter(s): @{$adapters}"
 	unless $adapter;
 
     if ($crud) {
@@ -340,53 +340,48 @@ sub _check_for_errors {
     my $class = shift;
     my $som = shift;
 
-    die $som->fault->{ faultstring } if ($som->fault);
+    croak "No response from server"
+	unless $som;
+
+    croak $som->fault->{ faultstring } if ($som->fault);
 
     my $result = $som->result;
     my @paramsout = $som->paramsout;
 
-    warn "result: ".YAML::Dump($result, @paramsout)
+    warn YAML::Dump({result => $result, paramsout => \@paramsout})
 	if ($class->debug);
 
-    if (@paramsout >= 2 && !$paramsout[1]) {
-	#
-	# error format sometimes seen with elluminate 9.6+. Can occur
-	# when request is malformed
-	#
-	die join(' ', $paramsout[0]);
-    }
-    elsif(!Elive::Util::_reftype($result)) {
-	#
-	# Simple scalar - we're done
-	#
-	return;
-    }
+    my @results = ($result, @paramsout);
+
+    foreach my $result (@results) {
+	next unless Scalar::Util::reftype($result);
     
-    #
-    # Look for Elluminate-specific errors
-    #
-    if ($result->{Code}
-	&& (my $code = $result->{Code}{Value})) {
+	#
+	# Look for Elluminate-specific errors
+	#
+	if ($result->{Code}
+	    && (my $code = $result->{Code}{Value})) {
 
-	#
-	# Elluminate error!
-	#
+	    #
+	    # Elluminate error!
+	    #
 	
-	my $reason = $result->{Reason}{Text};
+	    my $reason = $result->{Reason}{Text};
 
-	my $trace = $result->{Detail}{Stack}{Trace};
-	my @stacktrace;
-	if ($trace) {
-	    @stacktrace = (Elive::Util::_reftype($trace) eq 'ARRAY'
-			   ? @$trace
-			   : $trace);
+	    my $trace = $result->{Detail}{Stack}{Trace};
+	    my @stacktrace;
+	    if ($trace) {
+		@stacktrace = (Elive::Util::_reftype($trace) eq 'ARRAY'
+			       ? @$trace
+			       : $trace);
 
+	    }
+
+	    my %seen;
+
+	    my @error = grep {defined($_) && !$seen{$_}++} ($code, $reason, @stacktrace);
+	    Carp::croak join(' ', @error) || YAML::Dump($result);
 	}
-
-	my %seen;
-
-	my @error = grep {defined($_) && !$seen{$_}++} ($code, $reason, @stacktrace);
-	Carp::croak join(' ', @error) || YAML::Dump($result);
     }
 }
 

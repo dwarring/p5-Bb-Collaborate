@@ -39,6 +39,7 @@ do {
     ok($stderr eq '', "$script_name --help: stderr empty");
     ok($stdout =~ m{usage:}ix, "$script_name --help: stdout =~ 'usage:...''");
 };
+
 #
 # try with invalid option
 #

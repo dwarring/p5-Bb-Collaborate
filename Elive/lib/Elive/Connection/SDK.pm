@@ -166,13 +166,7 @@ sub server_details {
 
     unless ($server_details) {
 
-	my $server_details_list = Elive::Entity::ServerDetails->list(connection => $self);
-
-	die "unable to get server details\n"
-	    unless (Elive::Util::_reftype($server_details_list) eq 'ARRAY'
-		    && $server_details_list->[0]);
-
-	$server_details = ($server_details_list->[0]);
+	$server_details = Elive::Entity::ServerDetails->get(connection => $self);
 
 	$self->_server_details($server_details);
     }

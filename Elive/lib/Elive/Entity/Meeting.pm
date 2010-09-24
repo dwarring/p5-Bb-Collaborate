@@ -664,8 +664,10 @@ sub list_recordings {
 =item
 
 Meetings can not be set to restricted (as of Elluminate 9.7 - 10.0), nor
-does the SDK respect the server default settings for restricted meetings;
-Ouch!
+does the SDK respect the server default settings for restricted meetings.
+
+Update: As of Elluminate 10.0.1, the restrictedMeeting property is inherited
+from Preferences E<gt>E<gt> Session Defaults E<gt>E<gt> Restrict Meetings.
 
 =back
 

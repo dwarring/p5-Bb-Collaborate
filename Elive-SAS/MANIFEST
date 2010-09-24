@@ -15,6 +15,8 @@ lib/Elive/SAS.pm
 lib/Elive/SAS/List.pm
 lib/Elive/SAS/Presentation.pm
 lib/Elive/SAS/SchedulingManager.pm
+lib/Elive/SAS/ServerConfiguration.pm
+lib/Elive/SAS/ServerVersions.pm
 lib/Elive/SAS/Session.pm
 lib/Elive/SAS/SessionAttendance.pm
 lib/Elive/SAS/SessionAttendance/Attendee.pm
@@ -27,7 +29,7 @@ README
 t/00-load.t
 t/10-soap-connect.t
 t/11-soap-errors.t
-t/12-soap-session.t
+t/13-soap-session.t
 t/critic.t
 t/Elive/SAS.pm
 t/pod-coverage.t

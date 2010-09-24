@@ -1,6 +1,6 @@
 #!perl
 use warnings; use strict;
-use Test::More tests => 6;
+use Test::More tests => 11;
 use Test::Exception;
 
 use lib '.';
@@ -18,7 +18,7 @@ SKIP: {
     my $auth = $result{auth};
 
     skip ($result{reason} || 'skipping live tests',
-	6)
+	11)
 	unless $auth && @$auth;
 
     my $connection_class = $result{class};
@@ -56,9 +56,10 @@ SKIP: {
     my $max_version_num = '3.3.2';
 
     ok(my $server_version = $scheduling_manager->version, 'got server version');
+    ok(my $server_manager = $scheduling_manager->manager, 'got server manager');
 
     my ($server_version_num) = ($server_version =~ m{^([\d\.]+)});
-    diag ('Elluminate Live! version: '.$server_version_num);
+    diag ("Elluminate Live! manager: $server_version_num version: $server_version_num");
     ok($server_version_num ge $min_version_num, "Elluminate Live! server is $min_version_num or higher");
 
     my $tested_managers = 'ELM';
@@ -72,6 +73,18 @@ SKIP: {
 	diag "      You might want to check CPAN for a more recent version of Elive::SAS.";
 	diag "************************";
     }
+
+    my $server_configuration;
+    lives_ok (sub{$server_configuration = $connection->server_configuration}, 'get server_configuration - lives');
+    isa_ok($server_configuration, 'Elive::SAS::ServerConfiguration','server_configuration');
+
+
+    my $server_versions;
+    lives_ok (sub{$server_versions = $connection->server_versions}, 'get server_versions - lives');
+    isa_ok($server_versions, 'Elive::SAS::ServerVersions','server_versions');
+
+    diag 'server version '.$server_versions->versionName.' ('.$server_versions->versionId.')';
+
 
 }
 

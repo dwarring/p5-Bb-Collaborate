@@ -43,6 +43,7 @@ our %KnownAdapters = (
 
     getSchedulingManager => 'r',
     getServerConfiguration => 'r',
+    getServerVersions => 'r',
  
     listPresentationContent => 'r',
     listSession => 'r',

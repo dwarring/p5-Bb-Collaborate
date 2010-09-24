@@ -1,6 +1,19 @@
 Revision history for Elive
 
-0.73    03rd September
+0.74_1  tba
+        Essential changes to implement Elive::SAS - A new companion CPAN
+        module that implements the ELM Standard V2 Bridge. Note dependencies
+        on Elive, Elive::Connection::SAS, Elive::Array & Elive::DAO.
+
+	Elive::SAS Support:
+        - Factored out Elive::DAO (Data Access Object) from Elive::Entity
+	- New mixin class Elive::DAO::Singleton
+        - New classes Elive::Connection::SDK & Elive::Connection::SAS
+
+        Bug fixes:
+        - added 'adapter' property to Elive::Entity::Meeting
+
+0.73    3rd September 2010
         - Added script tests to manifest
         - Checked against Elluminate 10.0.1 - passed!
         - Starting investigation into extending this module to also support the 

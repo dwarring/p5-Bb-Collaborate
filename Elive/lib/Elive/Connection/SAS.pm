@@ -14,7 +14,10 @@ use base qw{Elive::Connection};
 use Elive;
 use Elive::Util;
 
-__PACKAGE__->mk_accessors( qw{_scheduling_manager} );
+#
+# cache singleton records
+#
+__PACKAGE__->mk_accessors( qw{_scheduling_manager _server_configuration _server_versions} );
 
 sub connect {
     my ($class, $url, $user, $pass, %opt) = @_;
@@ -38,7 +41,7 @@ sub disconnect {
 sub call {
     my ($self, $cmd, %params) = @_;
 
-    die "bad connection type. expected 'SDK', found: ".$self->type
+    die "bad connection type. expected 'SAS', found: ".$self->type
 	unless $self->type eq 'SAS';
 
     return $self->SUPER::call( $cmd, %params );
@@ -77,7 +80,7 @@ sub soap {
 
 =head2 scheduling_manager
 
-Returns the server details as an object of type L<Elive::Entity::SchedulingManager>.
+Returns the scheduling manager for this connection (see L<Elive::Entity::SchedulingManager>).
 
 =cut
 
@@ -91,18 +94,57 @@ sub scheduling_manager {
 	eval {require Elive::SAS::SchedulingManager};
 	die $@ if $@;
 
-	my $scheduling_manager_list = Elive::SAS::SchedulingManager->list(connection => $self);
-
-	die "unable to get server details\n"
-	    unless (Elive::Util::_reftype($scheduling_manager_list) eq 'ARRAY'
-		    && $scheduling_manager_list->[0]);
-
-	$scheduling_manager = ($scheduling_manager_list->[0]);
-
+	$scheduling_manager = Elive::SAS::SchedulingManager->get(connection => $self);
 	$self->_scheduling_manager($scheduling_manager);
     }
 
     return $scheduling_manager;
+}
+
+=head2 server_configuration
+
+Returns the server configuration for this connection (see L<Elive::Entity::ServerConfiguration>).
+
+=cut
+
+sub server_configuration {
+    my $self = shift;
+
+    my $server_configuration = $self->_server_configuration;
+
+    unless ($server_configuration) {
+
+	eval {require Elive::SAS::ServerConfiguration};
+	die $@ if $@;
+
+	$server_configuration = Elive::SAS::ServerConfiguration->get(connection => $self);
+	$self->_server_configuration($server_configuration);
+    }
+
+    return $server_configuration;
+}
+
+=head2 server_versions
+
+Returns the server versions for this connection (see L<Elive::Entity::ServerVersions>).
+
+=cut
+
+sub server_versions {
+    my $self = shift;
+
+    my $server_versions = $self->_server_versions;
+
+    unless ($server_versions) {
+
+	eval {require Elive::SAS::ServerVersions};
+	die $@ if $@;
+
+	$server_versions = Elive::SAS::ServerVersions->get(connection => $self);
+	$self->_server_versions($server_versions);
+    }
+
+    return $server_versions;
 }
 
 sub _preamble {
