@@ -178,4 +178,55 @@ sub set_presentation {
     return $success;
 }
 			      
+=head2 web_url
+
+    my $session_url = $session->web_url(user_id => 'bob');
+
+Returns a URL for the session. This provides authenthicated access for
+the given user.
+
+=cut
+
+sub web_url {
+    my ($class, %opt) = @_;
+
+    my $connection = $opt{connection} || $class->connection
+	or croak "Not connected";
+
+    my %params;
+
+    my $session_id = $opt{session_id} || $opt{sessionId};
+
+    $session_id ||= $class->sessionId
+	if ref($class);
+
+    croak "unable to determine session_id"
+	unless $session_id;
+
+    $params{sessionId} = Elive::Util::_freeze($session_id, 'Int');
+
+    my $user_id = $opt{user_id} || $opt{userId}
+	or croak "missing required field: user_id";
+
+    $params{userId} = Elive::Util::_freeze($user_id, 'Str');
+
+    my $display_name = $opt{display_name} || $opt{displayName}
+	or croak "missing required field: display_name";
+
+    $params{displayName} = Elive::Util::_freeze($display_name, 'Str');
+
+    my $som = $connection->call(
+	$class->check_adapter('buildSessionUrl'),
+	%params,
+	);
+
+    my $results = $class->_get_results(
+	$som,
+	);
+
+    my $url = @$results && $results->[0];
+
+    return $url;
+}
+
 1;
