@@ -42,12 +42,15 @@ Implements Elive Standard Bridge V2 (SAS) API bindings
 our %KnownAdapters = (
 
     buildSessionUrl => 'r',
+    buildRecordingUrl => 'r',
 
     getSchedulingManager => 'r',
     getServerConfiguration => 'r',
     getServerVersions => 'r',
  
     listPresentationContent => 'r',
+    listRecordingLong => 'r',
+    listRecordingShort => 'r',
     listSession => 'r',
     listSessionAttendance => 'r',
 
@@ -163,6 +166,25 @@ sub insert {
     $opt{adapter} ||= 'set'.$class->entity_name;
 
     return $class->SUPER::insert($data, %opt);
+}
+
+=head2 list
+
+Generic list method. Most adapters allow a ranging expression to narrow the
+selection. This is passed in using the C<filter> option. For example:
+
+    my $bobs_sessions = Elive::SAS::Session->list(filter => {userId => 'bob'});
+
+=cut
+
+sub list {
+    my ($self, %opt) = @_;
+
+    my $filter = delete $opt{filter};
+
+    $opt{adapter} ||= $self->check_adapter('list'.$self->entity_name);
+
+    return $self->_fetch( $self->_freeze($filter), %opt );
 }
 
 =head2 delete

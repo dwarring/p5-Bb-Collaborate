@@ -121,7 +121,7 @@ SKIP: {
     }
 
     my $session_url;
-    lives_ok(sub {$session_url = $session->web_url(user_id => 'bob', display_name => 'Robert')}, 'Can generate session Url for some user');
+    lives_ok(sub {$session_url = $session->session_url(user_id => 'bob', display_name => 'Robert')}, 'Can generate session Url for some user');
     diag "session url: $session_url";
 
     my $attendances;
@@ -130,6 +130,7 @@ SKIP: {
 
     my $today_hires = DateTime->today->epoch.'000';
     lives_ok(sub {$attendances = $session->attendance($today_hires)}, 'session attendance with date - lives');
+
     lives_ok(sub {$session->delete},'session deletion - lives');
 
     my $deleted_session;

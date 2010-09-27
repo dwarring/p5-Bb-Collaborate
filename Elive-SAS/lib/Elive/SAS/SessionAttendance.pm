@@ -19,6 +19,10 @@ This is the main entity class for attendees.
 =cut
 
 __PACKAGE__->entity_name('SessionAttendance');
+__PACKAGE__->params(sessionId => 'Int',
+		    startTime => 'HiResDate',
+		    endTime => 'HiResDate',
+    );
 
 has 'roomName' => (is => 'rw', isa => 'Str', required => 1,
 		   documentation => 'Name of the room'

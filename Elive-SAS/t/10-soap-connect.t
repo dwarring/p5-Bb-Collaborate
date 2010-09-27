@@ -30,7 +30,7 @@ SKIP: {
 	# exercise a direct connection from Elive main. No preload
 	# of connection or entity classes.
 	#
-	diag ("connecting: user=$auth->[1], url=$auth->[0] (bare bones)");
+	diag ("connecting: user=$auth->[1], url=$auth->[0]");
 	
 	$connection = Elive::SAS->connect(@$auth);
     }

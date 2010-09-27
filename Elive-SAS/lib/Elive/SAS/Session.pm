@@ -178,16 +178,16 @@ sub set_presentation {
     return $success;
 }
 			      
-=head2 web_url
+=head2 session_url
 
-    my $session_url = $session->web_url(user_id => 'bob');
+    my $session_url = $session->session_url(user_id => 'bob');
 
 Returns a URL for the session. This provides authenthicated access for
 the given user.
 
 =cut
 
-sub web_url {
+sub session_url {
     my ($class, %opt) = @_;
 
     my $connection = $opt{connection} || $class->connection
