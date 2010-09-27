@@ -112,13 +112,13 @@ sub call {
 		foreach my $fld (@primary_key) {
 
 		    if (defined $params{$fld}) {
-			if (my $isa = $entity_class->isa) {
-			    #
-			    # check on existance of primary entity to go here
-			    #
-			    next;
-			}
-			die "not allowing insert with preallocated key $fld for $entity_name";
+##			if (my $isa = $entity_class->_isa) {
+##			    #
+##			    # check on existance of primary entity to go here
+##			    #
+##			    next;
+##			}
+##			die "not allowing insert with preallocated key $fld for $entity_name";
 		    }
 
 		    $params{$fld} = do {

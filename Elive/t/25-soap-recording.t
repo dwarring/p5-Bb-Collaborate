@@ -1,18 +1,16 @@
 #!perl
 use warnings; use strict;
 use Test::Builder;
-use Test::More tests => 21;
+use Test::More tests => 17;
 use Test::Exception;
 
 use lib '.';
 use t::Elive;
 
-BEGIN {
-    use_ok('Elive');
-    use_ok( 'Elive::Connection' );
-    use_ok( 'Elive::Entity::Recording' );
-    use_ok( 'Elive::Entity::Meeting' );
-};
+use Elive;
+use Elive::Connection;
+use Elive::Entity::Recording;
+use Elive::Entity::Meeting;
 
 my $class = 'Elive::Entity::Recording';
 

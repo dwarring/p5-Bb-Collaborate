@@ -58,8 +58,9 @@ BEGIN {
     __PACKAGE__->mk_classdata('_aliases');
     __PACKAGE__->mk_classdata('_entity_name');
     __PACKAGE__->mk_classdata('_primary_key', []);
+    __PACKAGE__->mk_classdata('_params', {});
     __PACKAGE__->mk_classdata('collection_name');
-    __PACKAGE__->mk_classdata('isa');
+##    __PACKAGE__->mk_classdata('isa');
 };
 
 use Scalar::Util;
@@ -260,13 +261,28 @@ sub id {
 sub primary_key {
     my ($entity_class, @pkey) = @_;
 
-    if (@pkey) {
-
-	$entity_class->_primary_key(\@pkey);
-
-    }
+    $entity_class->_primary_key(\@pkey)
+	if (@pkey);
 
     return @{$entity_class->_primary_key};
+}
+
+=head2 params
+
+    Setter/getter for parameter field(s) for this entity class
+
+    Elive::Entity::User->params(loginName => 'Str');
+    my %params = MyApp::Entity::User->params;
+
+=cut
+
+sub params {
+    my ($entity_class, %params) = @_;
+
+    $entity_class->_params(\%params)
+	if (keys %params);
+
+    return %{$entity_class->_params};
 }
 
 =head2 entities

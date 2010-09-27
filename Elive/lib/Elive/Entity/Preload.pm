@@ -39,6 +39,7 @@ __PACKAGE__->collection_name('Preloads');
 
 has 'preloadId' => (is => 'rw', isa => 'Int', required => 1);
 __PACKAGE__->primary_key('preloadId');
+__PACKAGE__->params(meetingId => 'Str');
 __PACKAGE__->_alias(key => 'preloadId');
 
 enum enumPreloadTypes => qw(media whiteboard plan);

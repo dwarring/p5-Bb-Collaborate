@@ -462,7 +462,7 @@ See also L<http://en.wikipedia.org/wiki/JNLP>.
 sub buildJNLP {
     my ($self, %opt) = @_;
 
-    my $connection = $self->connection
+    my $connection = $self->connection || $opt{connection}
 	or die "not connected";
 
     my $meeting_id = $opt{meeting_id} ||= $self->meetingId;

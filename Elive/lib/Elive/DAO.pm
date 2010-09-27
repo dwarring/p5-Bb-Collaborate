@@ -176,14 +176,15 @@ sub _freeze {
     # _freeze - construct name/value pairs for database inserts or updates
     #
     my $class = shift;
-    my $db_data = Storable::dclone(shift);
+    my $db_data = Storable::dclone(shift || {});
 
     my @properties = $class->properties;
-    my $property_types =  $class->property_types || {};
+    my $property_types = $class->property_types || {};
+    my %params = $class->params;
 
     foreach (keys %$db_data) {
 
-	my $property = $property_types->{$_};
+	my $property = $property_types->{$_} || $params{$_};
 
 	Carp::croak "$class: unknown property: $_: expected: @properties"
 	    unless $property;
@@ -759,6 +760,8 @@ sub list {
 sub _fetch {
     my ($class, $db_query, %opt) = @_;
 
+    $db_query ||= {};
+
     croak "usage: ${class}->_fetch( \\%query )"
 	unless (Elive::Util::_reftype($db_query) eq 'HASH');
 
@@ -772,8 +775,10 @@ sub _fetch {
 
     $class->check_adapter($adapter);
 
+    my $db_query_frozen = $class->_freeze( $db_query );
+
     my $som = $connection->call($adapter,
-				 %$db_query);
+				%{ $db_query });
 
     my $results = $class->_get_results(
 	$som,
@@ -880,7 +885,7 @@ sub _retrieve_all {
     die "nothing to retrieve"
 	unless (keys %fetch);
 
-    return $class->_fetch($class->_freeze(\%fetch), %opt, mode => 'fetch');
+    return $class->_fetch(\%fetch, %opt, mode => 'fetch');
 }
 
 =head2 delete
