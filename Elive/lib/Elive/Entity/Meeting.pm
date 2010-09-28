@@ -29,6 +29,12 @@ Elive::Entity::MeetingParameters and Elive::Entity::ServerParameters.
 
 __PACKAGE__->entity_name('Meeting');
 __PACKAGE__->collection_name('Meetings');
+__PACKAGE__->params(
+    seats => 'Int',
+    recurrenceCount => 'Int',
+    recurrenceDays => 'Int',
+    timeZone => 'Str'
+    );
 
 has 'meetingId' => (is => 'rw', isa => 'Int', required => 1);
 __PACKAGE__->primary_key('meetingId');
@@ -105,29 +111,6 @@ C<recurrenceDays> parameters.
                         });
 =cut
 
-sub insert {
-    my ($class, $data, %opt) = @_;
-
-    die "usage: $class->insert(\\%data, %opts)"
-	unless (Elive::Util::_reftype($data) eq 'HASH');
- 
-    my %params = (seats => 'Int',
-		  recurrenceCount => 'Int',
-		  recurrenceDays => 'Int',
-		  timeZone => 'Str');
-
-    foreach (keys %params) {
-	my $type = $params{$_};
-	#
-	# these are parameters, not properties
-	#
-	$opt{param}{$_} = Elive::Util::_freeze(delete $data->{$_}, $type)
-	    if exists $data->{$_}
-    }
-
-    return $class->SUPER::insert($data, %opt);
-}
-
 =head2 update
 
     my $meeting = Elive::Entity::Meeting->update({
@@ -142,24 +125,6 @@ sub insert {
        });
 
 =cut
-
-sub update {
-    my ($self, $update_data, %opt) = @_;
-
-    my %params = (seats => 'Int',
-		  timeZone => 'Str');
-
-    foreach (keys %params) {
-	my $type = $params{$_};
-	#
-	# these are parameters, not properties
-	#
-	$opt{param}{$_} = Elive::Util::_freeze(delete $update_data->{$_}, $type)
-	    if exists $update_data->{$_}
-    }
-
-    return $self->SUPER::update($update_data, %opt);
-}
 
 =head2 delete
 

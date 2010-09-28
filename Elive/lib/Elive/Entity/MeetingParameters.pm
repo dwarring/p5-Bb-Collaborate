@@ -7,7 +7,7 @@ use Mouse::Util::TypeConstraints;
 extends 'Elive::Entity';
 
 __PACKAGE__->entity_name('MeetingParameters');
-__PACKAGE__->isa('Meeting');
+__PACKAGE__->_isa('Meeting');
 
 has 'meetingId' => (is => 'rw', isa => 'Int', required => 1,
     documentation => 'associated meeting');

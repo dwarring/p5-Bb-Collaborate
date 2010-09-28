@@ -60,7 +60,7 @@ BEGIN {
     __PACKAGE__->mk_classdata('_primary_key', []);
     __PACKAGE__->mk_classdata('_params', {});
     __PACKAGE__->mk_classdata('collection_name');
-##    __PACKAGE__->mk_classdata('isa');
+    __PACKAGE__->mk_classdata('_isa');
 };
 
 use Scalar::Util;

@@ -96,12 +96,12 @@ sub url {
 
 =head2 construct
 
-    my $user = Entity::User->construct(
-            {userId = 123456,
-             loginName => 'demo_user',
-             role => {
-                roleId => 1
-             });
+    my $user = Entity::User->construct({userId = 123456,
+                                        loginName => 'demo_user',
+                                        role => {
+                                            roleId => 1
+                                        },
+                                       });
 
 Construct an entity from data.
 
@@ -124,7 +124,7 @@ sub construct {
 
     warn YAML::Dump({construct => $data})
 	if (Elive->debug > 1);
-    
+
     my $self = Scalar::Util::blessed($data)
 	? $data
 	: $class->new($data);
@@ -150,7 +150,6 @@ sub construct {
     my $obj_url = $self->url;
 
     if (my $cached = $Stored_Objects{ $obj_url }) {
-
 	#
 	# Overwrite the cached object, then reuse it.
 	#
@@ -196,7 +195,7 @@ sub _freeze {
 	    $_ = Elive::Util::_freeze($_, $is_array? $property: $type);
 
 	}
-    } 
+    }
 
     #
     # apply any freeze alias mappings
@@ -236,7 +235,7 @@ sub _thaw {
     if (Elive::Util::_reftype($db_data) eq 'HASH') {
 
 	my ($response_tag) =  grep {exists $db_data->{$_}} ($class->entity_name.'Adapter',
-	$class->entity_name.'Response');					
+							    $class->entity_name.'Response');					
 
 	my @unknown_adapters
 	    = grep {m{(Adapter|Response)$}
@@ -475,8 +474,8 @@ sub _readback_check {
 
 =head2 is_changed
 
-Returns a list of properties that have been changed since the entity was
-last retrieved or saved.
+Returns a list of properties that have been changed since the entity was last retrieved
+or saved.
 
 =cut
 
@@ -547,13 +546,12 @@ sub _readback {
 
 =head2 insert
 
-   my $new_user = Elive::Entity::User->insert( 
-                                 loginName => 'demo_user',
-                                 email => 'demo.user@test.org',
-                                 role => 1,
-                               });
+    my $new_user = Elive::Entity::User->insert({loginName => 'demo_user',
+                                                email => 'demo.user@test.org',
+                                                role => 1,
+                                               });
 
-   print "inserted user with id: ".$new_user->userId."\n";
+print "inserted user with id: ".$new_user->userId."\n";
 
 Inserts a new entity. The primary key should not be specified. It is
 generated for you and returned with the newly created object.
@@ -563,19 +561,34 @@ generated for you and returned with the newly created object.
 sub insert {
     my ($class, $insert_data, %opt) = @_;
 
-    my $connection = $opt{connection}
-		      || $class->connection
-			  or die "not connected";
+    my $connection = $opt{connection} || $class->connection
+	or die "not connected";
 
     my $db_data = $class->_freeze($insert_data, mode => 'insert');
 
-    my $adapter = $opt{adapter} || 'create'.$class->entity_name;
+    my %params = %{delete $opt{param} || {}};
+
+    my %param_types = $class->params;
+
+    foreach (keys %param_types) {
+	next unless exists $db_data->{$_};
+	#
+	# sift parameters from properties
+	#
+	if (exists  $db_data->{$_}) {
+	    $params{$_} ||= delete $db_data->{$_};
+	} elsif (exists $params{$_}) {
+	    $params{$_} = Elive::Util::_freeze($params{$_}, $param_types{$_});
+	}
+    }
+
+    my $adapter = delete $opt{adapter} || 'create'.$class->entity_name;
 
     $class->check_adapter($adapter, 'c');
 
     my $som = $connection->call($adapter,
 				%$db_data,
-				%{$opt{param} || {}},
+				%params,
 	);
 
     my @rows = $class->_readback($som, $insert_data, $connection);
@@ -609,8 +622,7 @@ sub live_entity {
 
     my $live_entities = Elive::Entity->live_entities;
 
-    my $user_ref
-      = $live_entities->{'http://test.org/User/1234567890'};
+    my $user_ref = $live_entities->{'http://test.org/User/1234567890'};
 
 Returns the contents of Elive::Entity in-memory cache. 
 
@@ -644,10 +656,32 @@ sub update {
     die "attempted to update deleted record"
 	if ($self->_deleted);
 
+    my %params = %{ $opt{param} || {} };
+    my %param_types = $self->params;
+
     if ($update_data) {
 
 	croak 'usage: $obj->update( \%data )'
 	    unless (Elive::Util::_reftype($update_data) eq 'HASH');
+
+	foreach (keys %param_types) {
+
+	    my $type = $param_types{$_};
+	    #
+	    # sift parameters from properties
+	    #
+	    if (exists $update_data->{$_}) {
+		$params{$_} = delete $update_data->{$_}
+	    }
+
+	    if (exists $params{$_}) {
+		#
+		# freeze non-db parameters
+		#
+		$params{$_} = Elive::Util::_freeze($params{$_}, $type)
+	    
+	    }
+	}
 
 	$self->set( %$update_data)
 	    if (keys %$update_data);
@@ -671,24 +705,27 @@ sub update {
 
     foreach (@updated_properties, keys %primary_key) {
 
-	$updates{$_} = $self->{$_};
+	my $type = $self->property_types->{$_};
 
 	croak 'primary key field $_ updated - refusing to save'
 	    if (exists $primary_key{ $_ }
-		&& $self->_cmp_col($self->property_types->{$_},
-				   $self->_db_data->{ $_ },
-				   $updates{ $_ }));
-    }
+		&& $self->_cmp_col($type,
+				   $self->_db_data->{$_},
+				   $self->$_));
 
-    my $db_updates = $self->_freeze(\%updates, mode => 'update');
+	$updates{$_} = $self->$_;
+
+    }
 
     my $adapter = $opt{adapter} || 'update'.$self->entity_name;
 
     $self->check_adapter($adapter);
 
+    my $db_updates = $self->_freeze(\%updates, mode => 'update');
+
     my $som = $self->connection->call($adapter,
-				       %$db_updates,
-				       %{$opt{param} || {}},
+				      %$db_updates,
+				      %params,
 	);
 
     my $class = ref($self);
@@ -778,7 +815,7 @@ sub _fetch {
     my $db_query_frozen = $class->_freeze( $db_query );
 
     my $som = $connection->call($adapter,
-				%{ $db_query });
+				%{ $db_query_frozen });
 
     my $results = $class->_get_results(
 	$som,

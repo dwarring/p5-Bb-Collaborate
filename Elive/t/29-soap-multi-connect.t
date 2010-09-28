@@ -6,6 +6,9 @@ use Test::Exception;
 use lib '.';
 use t::Elive;
 
+use Carp;
+$SIG{__DIE__} = \&Carp::confess;
+
 #
 # Some rough tests that we can handle multiple connections.
 # Look for evidence of 'crossed wires'. e.g. in the cache, entity

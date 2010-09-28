@@ -112,13 +112,14 @@ sub call {
 		foreach my $fld (@primary_key) {
 
 		    if (defined $params{$fld}) {
-##			if (my $isa = $entity_class->_isa) {
-##			    #
-##			    # check on existance of primary entity to go here
-##			    #
-##			    next;
-##			}
-##			die "not allowing insert with preallocated key $fld for $entity_name";
+			if (my $isa = $entity_class->_isa) {
+			    #
+			    # Isa relation. E.g. MeetingParameters isa Meeting
+			    # (check on existance of primary entity to go here)
+			    #
+			    next;
+			}
+			die "not allowing insert with preallocated key $fld for $entity_name";
 		    }
 
 		    $params{$fld} = do {
@@ -154,6 +155,7 @@ sub call {
 				recordingStatus => 'remote',
 			);
 		}
+
 		return $som;
 	    }
 	    elsif ($crud eq 'u') {
