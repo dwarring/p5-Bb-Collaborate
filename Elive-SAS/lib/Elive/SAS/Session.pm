@@ -12,6 +12,7 @@ use Elive::Util;
 
 use Elive::SAS::List;
 use Elive::SAS::SessionAttendance;
+use Elive::SAS::SessionTelephony;
 use Elive::SAS::Presentation;
 
 =head1 NAME
@@ -142,6 +143,25 @@ sub attendance {
     my ($self, $start_time, %opt) = @_;
 
     return Elive::SAS::SessionAttendance->list([$self, $start_time]);
+}
+
+=head2 telephony
+
+    my $session_telephony = $session->telephony;
+    $session_telephony->update({
+        chairPhone => '(03) 5999 1234',
+        chairPIN   => '6342',
+     });
+
+Returns an Elive::SAS::Telephony object for the given session. This can then
+be used to get or set the sessions's telephony characterisitics.
+
+=cut
+
+sub telephony {
+    my ($self, %opt) = @_;
+
+    return Elive::SAS::SessionTelephony->retrieve([$self], %opt, reuse => 1);
 }
 
 =head2 set_presentation

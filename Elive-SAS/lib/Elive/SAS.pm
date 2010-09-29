@@ -53,11 +53,13 @@ our %KnownAdapters = (
     listRecordingShort => 'r',
     listSession => 'r',
     listSessionAttendance => 'r',
+    listSessionTelephony => 'r',
 
     removeSession => 'r',
 
     setSession => 'cu',
     setSessionMultimedia => 'u',
+    setSessionTelephony => 'u',
 
     uploadMultimediaContent => 'c',
     uploadPresentationContent => 'c',
