@@ -1,4 +1,4 @@
-package Elive::Entity::Participant;
+package Elive::Entity::ParticipantList::Participant;
 use warnings; use strict;
 
 use Mouse;
@@ -50,21 +50,21 @@ sub _parse {
 	    role => {roleId => $roleId}};
 }
 
-coerce 'Elive::Entity::Participant' => from 'Str'
-    => via { Elive::Entity::Participant->new(Elive::Entity::Participant->_parse_participant($_)) };
+coerce 'Elive::Entity::ParticipantList::Participant' => from 'Str'
+    => via { Elive::Entity::ParticipantList::Participant->new(Elive::Entity::ParticipantList::Participant->_parse_participant($_)) };
 
 =head1 NAME
 
-Elive::Entity::Participant - A Single Meeting Participant
+Elive::Entity::ParticipantList::Participant - A Single Meeting Participant
 
 =head1 DESCRIPTION
 
 This class cannot be retrieved directly. Rather it is a container
-class for participants in an L<Elive::Entity::ParticipantList>.
+class for participants in an L<Elive::Entity::ParticipantList::ParticipantList>.
 
 =head1 SEE ALSO
 
-L<Elive::Entity::ParticipantList>
+L<Elive::Entity::ParticipantList::ParticipantList>
 
 =cut
 
@@ -93,7 +93,7 @@ sub stringify {
 
 =head1 SEE ALSO
 
-Elive::Entity::ParticipantList
+Elive::Entity::ParticipantList::ParticipantList
 
 =cut
 

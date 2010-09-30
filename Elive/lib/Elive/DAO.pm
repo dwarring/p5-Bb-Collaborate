@@ -1010,7 +1010,7 @@ sub revert {
 sub _not_available {
     my $self = shift;
 
-    die "this operation is not available for ". $self->entity_name;
+    croak "this operation is not available for ". $self->entity_name;
 }
 
 #

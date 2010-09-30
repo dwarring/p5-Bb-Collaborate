@@ -7,9 +7,9 @@ use Mouse::Util::TypeConstraints;
 extends 'Elive::Entity';
 
 use Elive::Entity::Meeting;
-use Elive::Entity::Participant;
+use Elive::Entity::ParticipantList::Participant;
+use Elive::Entity::ParticipantList::Participants;
 use Elive::Util;
-use Elive::Array::Participants;
 
 use Scalar::Util;
 
@@ -18,7 +18,7 @@ __PACKAGE__->entity_name('ParticipantList');
 has 'meetingId' => (is => 'rw', isa => 'Int', required => 1);
 __PACKAGE__->primary_key('meetingId');
 
-has 'participants' => (is => 'rw', isa => 'Elive::Array::Participants',
+has 'participants' => (is => 'rw', isa => 'Elive::ParticipantList::Participants',
     coerce => 1);
 #
 # NOTE: thawed data may be returned as the 'participants' property.
@@ -104,9 +104,9 @@ sub _freeze {
 	my @users_stringified = map {
 	    my $p = ref $_
 		? $_
-		: Elive::Entity::Participant->_parse($_);
+		: Elive::Entity::ParticipantList::Participant->_parse($_);
 
-	    Elive::Entity::Participant->stringify($p);
+	    Elive::Entity::ParticipantList::Participant->stringify($p);
 	} @$users;
 	
 	$frozen->{users} = join(';', @users_stringified);
@@ -207,7 +207,7 @@ sub reset {
 	= (participants => [{user => $facilitator_id, role => 2}]);
 
     return $self->update(\%updates,
-		  adapter => 'resetParticipantList',
+		  adapter => $self->check_adapter('resetParticipantList'),
 		  %opt,
 	);
 }

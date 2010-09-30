@@ -33,7 +33,10 @@ __PACKAGE__->params(
     seats => 'Int',
     recurrenceCount => 'Int',
     recurrenceDays => 'Int',
-    timeZone => 'Str'
+    timeZone => 'Str',
+    userId => 'Str',
+    startDate => 'HiResDate',
+    endDate => 'HiResDate',
     );
 
 has 'meetingId' => (is => 'rw', isa => 'Int', required => 1);
@@ -181,23 +184,37 @@ For example, to list all meetings for a particular user over the next week:
    my $meetings = Elive::Entity::Meeting->list_user_meetings_by_date(
         [$user_id, $now->epoch.'000', $next_week->epoch.'000']
        );
+
+   # equivalently:
+
+   my $meetings = Elive::Entity::Meeting->list_user_meetings_by_date(
+        {userId => $user_id,
+         startDate => $now->epoch.'000',
+         endDate => $next_week->epoch.'000'}
+       );
+
 =cut
 
 sub list_user_meetings_by_date {
     my ($class, $params, %opt) = @_;
 
-    die 'usage: $class->user_meetings_by_date([$user, $start_date, $end_date])'
-	unless (Elive::Util::_reftype($params) eq 'ARRAY'
-		&& $params->[0] && @$params <= 3);
-
     my %fetch_params;
-    $fetch_params{userId}    = Elive::Util::_freeze(shift @$params,'Str');
-    $fetch_params{startDate} = Elive::Util::_freeze(shift @$params,'HiResDate');
-    $fetch_params{endDate} = Elive::Util::_freeze(shift @$params,'HiResDate');
+    my $reftype = Elive::Util::_reftype($params);
+
+    if ($reftype eq 'HASH') {
+	%fetch_params = %$params;
+    }
+    elsif ($reftype eq 'ARRAY'
+	   && $params->[0] && @$params <= 3) {
+	@fetch_params{qw{userId startDate endDate}} = @$params;
+    }
+    else {
+	die 'usage: $class->user_meetings_by_date([$user, $start_date, $end_date])'
+    }
 
     my $adapter = $class->check_adapter('listUserMeetingsByDate');
 
-    return $class->_fetch(\%fetch_params,
+    return $class->_fetch($class->_freeze(\%fetch_params),
 			  adapter => $adapter,
 			  %opt,
 	);

@@ -48,10 +48,10 @@ can_ok($participant_list, 'meetingId');
 can_ok($participant_list, 'participants');
 
 my $participants = $participant_list->participants;
-isa_ok($participants, 'Elive::Array::Participants');
+isa_ok($participants, 'Elive::ParticipantList::Participants');
 
 ok(@$participants == 3, 'all participants constructed');
-isa_ok($participants->[0], 'Elive::Entity::Participant');
+isa_ok($participants->[0], 'Elive::Entity::ParticipantList::Participant');
 
 $participants->add({
     user => {userId => 'late_comer',
@@ -61,7 +61,7 @@ $participants->add({
 });
 
 ok(@$participants == 4, 'participants added');
-isa_ok($participants->[-1], 'Elive::Entity::Participant');
+isa_ok($participants->[-1], 'Elive::Entity::ParticipantList::Participant');
 is($participants->[-1]->user->userId, 'late_comer', 'added participant value');
 
 $participant_list->revert;

@@ -16,7 +16,6 @@ inc/Module/Install/Win32.pm
 inc/Module/Install/WriteAll.pm
 lib/Elive.pm
 lib/Elive/Array.pm
-lib/Elive/Array/Participants.pm
 lib/Elive/Connection.pm
 lib/Elive/Connection/SAS.pm
 lib/Elive/Connection/SDK.pm
@@ -26,8 +25,9 @@ lib/Elive/Entity.pm
 lib/Elive/Entity/Group.pm
 lib/Elive/Entity/Meeting.pm
 lib/Elive/Entity/MeetingParameters.pm
-lib/Elive/Entity/Participant.pm
 lib/Elive/Entity/ParticipantList.pm
+lib/Elive/Entity/ParticipantList/Participant.pm
+lib/Elive/Entity/ParticipantList/Participants.pm
 lib/Elive/Entity/Preload.pm
 lib/Elive/Entity/Recording.pm
 lib/Elive/Entity/Report.pm
@@ -46,7 +46,6 @@ script/elive_query
 script/elive_raise_meeting
 t/00a-compile.t
 t/00b-struct.t
-t/00c-critic.t
 t/01-entity-construct.t
 t/02-entity-update.t
 t/03-entity-update-group.t
@@ -71,13 +70,9 @@ t/27-soap-group.t
 t/28-soap-report.t
 t/29-soap-multi-connect.t
 t/30-soap-errors.t
-t/30-soap-exception.t
 t/40-script-elive_query.t
 t/41-script-elive_raise_meeting.t
 t/42-script-elive_lint_config.t
-t/90-pod.t
-t/91-pod-coverage.t
-t/99-kwalitee.t
 t/critic.t
 t/Elive.pm
 t/Elive/MockConnection.pm
@@ -85,6 +80,5 @@ t/Elive/MockSOM.pm
 t/kwalitee.t
 t/pod-coverage.t
 t/pod.t
-v2-connect.t
 webservice.event
 webservice.wsdl

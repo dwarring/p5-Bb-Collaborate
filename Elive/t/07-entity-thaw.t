@@ -159,7 +159,7 @@ my @user_role = (2,3);
 # unless the Participant -> User alias is defined
 #
 
-$aliases = Elive::Entity::Participant->_get_aliases;
+$aliases = Elive::Entity::ParticipantList::Participant->_get_aliases;
 ok($aliases, 'got participant list aliases');
 ok(my $alias = $aliases->{lcfirst($user_alias[0])}, 'got participant alias');
 is($alias->{to}, lcfirst($user_alias[1]), 'Participant aliased to user');
@@ -293,7 +293,7 @@ my $participant_list_obj =  Elive::Entity::ParticipantList->construct($participa
     my $p = $participant_list_obj;
     ok($p = $p->$_, "found $_ in data") for('participants');
 
-    isa_ok($p, 'Elive::Array::Participants', 'participants');
+    isa_ok($p, 'Elive::ParticipantList::Participants', 'participants');
 
     foreach my $n (0..1) {
 	ok(my $pn = $p->[$n], "found participants->[$n]");
