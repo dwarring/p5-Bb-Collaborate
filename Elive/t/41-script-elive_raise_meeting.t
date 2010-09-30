@@ -308,7 +308,7 @@ SKIP: {
 		my $expected_value =  $option_values{$option}[$run];
 		my $result = _lookup_opt($meeting, $option);
 		
-		is($result eq $expected_value, "meeting run $run: -${option}, $expected_value");
+		is($result, $expected_value, "meeting run $run: -${option}, $expected_value");
 	    }
 
 	    lives_ok(sub {$meeting->delete}, "deletion - lives");
