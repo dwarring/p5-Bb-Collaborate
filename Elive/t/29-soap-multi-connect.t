@@ -52,15 +52,14 @@ SKIP: {
     isa_ok($connection_2, 'Elive::Connection','connection')
 	or exit(1);
 
-    ok($connection->url ne $connection_2->url, 'connections have distinct urls');
+    isnt($connection->url, $connection_2->url, 'connections have distinct urls');
     ok(my $user = $connection->login, 'connection login');
     isa_ok($user, 'Elive::Entity::User','login');
 
     ok(my $user_2 = $connection_2->login, 'connection_2 login');
     isa_ok($user_2, 'Elive::Entity::User','login_2');
 
-    ok(Scalar::Util::refaddr($user) != Scalar::Util::refaddr($user_2),
-	'users are distinct objects');
+    isnt(Scalar::Util::refaddr($user), Scalar::Util::refaddr($user_2), 'users are distinct objects');
 
     is_deeply($user->connection, $connection, 'first entity/connection association');
     is_deeply($user_2->connection, $connection_2, 'second entity/connection association');
@@ -68,8 +67,8 @@ SKIP: {
     #
     # LDAP login names may be case insensitive
     #
-    ok(uc($user->loginName) eq uc($auth->[1]), 'login name for first connection as expected');
-    ok(uc($user_2->loginName) eq uc($auth_2->[1]), 'login name for second connection as expected');
+    is(uc($user->loginName), uc($auth->[1]), 'login name for first connection as expected');
+    is(uc($user_2->loginName), uc($auth_2->[1]), 'login name for second connection as expected');
 
     ok(my $server_details = $connection->server_details, 'can get connection login');
     isa_ok($server_details, 'Elive::Entity::ServerDetails','server_details');
@@ -81,7 +80,7 @@ SKIP: {
     my $userName_new = $userName_old.'x';
     $user->loginName($userName_new);
 
-    ok($user->loginName eq $userName_new, 'login name changed enacted');
+    is($user->loginName, $userName_new, 'login name changed enacted');
     ok($user->is_changed, 'user object showing as changed');
 
     ok(!$user_2->is_changed, 'user on second connection - not affected');

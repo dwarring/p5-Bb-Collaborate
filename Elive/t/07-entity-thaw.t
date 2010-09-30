@@ -10,26 +10,26 @@ BEGIN {
     use_ok( 'Elive::Util');
 };
 
-ok(Elive::Util::_thaw('123456', 'Int') == 123456, 'simple Int');
-ok(Elive::Util::_thaw('+123456', 'Int') == 123456, 'Int with plus sign');
-ok(Elive::Util::_thaw('00123456', 'Int') == 123456, 'Int with leading zeros');
-ok(Elive::Util::_thaw('-123456', 'Int') == -123456, 'Int negative');
-ok(Elive::Util::_thaw('-00123456', 'Int') == -123456, 'Int negative, leading zeros');
-ok(Elive::Util::_thaw('+00123456', 'Int') == 123456, 'Int plus sign leading zeros');
-ok(Elive::Util::_thaw('01234567890000', 'HiResDate') eq '1234567890000', 'date, leading zero');
-ok(Elive::Util::_thaw(0, 'Int') == 0, 'Int zero');
-ok(Elive::Util::_thaw('-0', 'Int') == 0, 'Int minus zero');
-ok(Elive::Util::_thaw('+0', 'Int') == 0, 'Int plus zero');
-ok(Elive::Util::_thaw('0000', 'Int') == 0, 'Int multiple zeros');
+is(Elive::Util::_thaw('123456', 'Int'), 123456, 'simple Int');
+is(Elive::Util::_thaw('+123456', 'Int'), 123456, 'Int with plus sign');
+is(Elive::Util::_thaw('00123456', 'Int'), 123456, 'Int with leading zeros');
+is(Elive::Util::_thaw('-123456', 'Int'), -123456, 'Int negative');
+is(Elive::Util::_thaw('-00123456', 'Int'), -123456, 'Int negative, leading zeros');
+is(Elive::Util::_thaw('+00123456', 'Int'), 123456, 'Int plus sign leading zeros');
+is(Elive::Util::_thaw('01234567890000', 'HiResDate'), '1234567890000', 'date, leading zero');
+is(Elive::Util::_thaw(0, 'Int'), 0, 'Int zero');
+is(Elive::Util::_thaw('-0', 'Int'), 0, 'Int minus zero');
+is(Elive::Util::_thaw('+0', 'Int'), 0, 'Int plus zero');
+is(Elive::Util::_thaw('0000', 'Int'), 0, 'Int multiple zeros');
 
 ok(!Elive::Util::_thaw('false', 'Bool'), 'Bool false => 0');
-ok(Elive::Util::_thaw('true', 'Bool'), 'Bool true => 1');
+ok( Elive::Util::_thaw('true', 'Bool'), 'Bool true => 1');
 
-ok(Elive::Util::_thaw('  abc efg ', 'Str') eq 'abc efg', 'String l-r trimmed');
+is(Elive::Util::_thaw('  abc efg ', 'Str'), 'abc efg', 'String l-r trimmed');
 
-ok(Elive::Util::_thaw('on', 'enumRecordingStates') eq 'on', 'recording status - on (lc)');
-ok(Elive::Util::_thaw('OFF', 'enumRecordingStates') eq 'off', 'recording status - off (uc)');
-ok(Elive::Util::_thaw('rEMotE', 'enumRecordingStates') eq 'remote', 'recording status - remote (mixed case)');
+is(Elive::Util::_thaw('on', 'enumRecordingStates'), 'on', 'recording status - on (lc)');
+is(Elive::Util::_thaw('OFF', 'enumRecordingStates'), 'off', 'recording status - off (uc)');
+is(Elive::Util::_thaw('rEMotE', 'enumRecordingStates'), 'remote', 'recording status - remote (mixed case)');
 
 my $some_href = {a=> 1111, b=> [1,2,3], c => 'abc'};
 is_deeply(Elive::Util::_thaw($some_href, 'Ref'), $some_href,
@@ -122,8 +122,8 @@ is_deeply(\%user_contents,
 #
 
 my $aliases = Elive::Entity::ServerParameters->_get_aliases;
-ok($aliases->{requiredSeats} && $aliases->{requiredSeats}{to} eq 'seats', 'alias: requiredSeats => seats');
-ok($aliases->{permissionsOn} && $aliases->{permissionsOn}{to} eq 'fullPermissions', 'alias: permissionsOn => fullPermissions');
+is($aliases->{requiredSeats} && $aliases->{requiredSeats}{to}, 'seats', 'alias: requiredSeats => seats');
+is($aliases->{permissionsOn} && $aliases->{permissionsOn}{to}, 'fullPermissions', 'alias: permissionsOn => fullPermissions');
 
 my $server_parameters_data = {
     ServerParametersAdapter
@@ -162,7 +162,7 @@ my @user_role = (2,3);
 $aliases = Elive::Entity::Participant->_get_aliases;
 ok($aliases, 'got participant list aliases');
 ok(my $alias = $aliases->{lcfirst($user_alias[0])}, 'got participant alias');
-ok($alias->{to} eq lcfirst($user_alias[1]), 'Participant aliased to user');
+is($alias->{to}, lcfirst($user_alias[1]), 'Participant aliased to user');
 #
 # Do entire process: unpacking, thawing, constructing
 #
@@ -255,7 +255,7 @@ my $participant_list_sorbet  = Elive::Entity::ParticipantList->_unpack_results($
 	    ok($pn = $pn->{$_}, "hash deref $_");
 	}
 
-	ok($pn == $_, "sorbet participant ${n}'s role is $_")
+	is($pn, $_, "sorbet participant ${n}'s role")
 	    for $user_role[$n];
     }
 }

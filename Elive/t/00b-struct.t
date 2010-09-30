@@ -28,16 +28,16 @@ ok($class->_cmp_col('HiResDate', '1251063623414', '1251063623413') > 0, '_cmp Hi
 
 ok($class->_cmp_col('Str', 'aaa', 'bbb') < 0, '_cmp Str <');
 ok($class->_cmp_col('Str', 'aaa', 'aaa') == 0, '_cmp Str ==');
-ok($class->_cmp_col('Str', 'aaa', 'AAA') != 0, '_cmp Str <>');
-ok($class->_cmp_col('Str', '    aaa bbb    ', ' AAA BBB ') != 0, '_cmp Str white space');
-ok($class->_cmp_col('Str', ' aaa bbb ', 'AAA BBB') != 0, '_cmp Str white space lhs');
-ok($class->_cmp_col('Str', 'aaa bbb', ' AAA BBB ') != 0, '_cmp Str white space rhs');
+isnt($class->_cmp_col('Str', 'aaa', 'AAA'), 0, '_cmp Str <>');
+isnt($class->_cmp_col('Str', '    aaa bbb    ', ' AAA BBB '), 0, '_cmp Str white space');
+isnt($class->_cmp_col('Str', ' aaa bbb ', 'AAA BBB'), 0, '_cmp Str white space lhs');
+isnt($class->_cmp_col('Str', 'aaa bbb', ' AAA BBB '), 0, '_cmp Str white space rhs');
 ok($class->_cmp_col('Str', 'aaa', 'AAA', case_insensitive => 1) == 0, '_cmp Str == -i');
 
 
 ok($class->_cmp_col('enumRecordingStates', 'off', 'off') == 0, '_cmp enum ==');
 ok($class->_cmp_col('enumRecordingStates', 'Off', 'off') == 0, '_cmp enum == (case insensitve)');
-ok($class->_cmp_col('enumRecordingStates', 'off', 'on') != 0, '_cmp enum !=');
+isnt($class->_cmp_col('enumRecordingStates', 'off', 'on'), 0, '_cmp enum !=');
 
 ok($class->_cmp_col('Elive::Array', [1,2,3],[1,2,3]) == 0, '_cmp array ==');
 ok($class->_cmp_col('Elive::Array', [1,2,3],[3,2,1]) == 0, '_cmp array == (unordered)');

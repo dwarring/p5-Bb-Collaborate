@@ -26,7 +26,7 @@ my $group = Elive::Entity::Group->construct(
     );
 
 isa_ok($group, 'Elive::Entity::Group', 'group');
-ok($group->members->[1] == 112233, 'can access group members');
+is($group->members->[1], 112233, 'can access group members');
 
 my $user1 =  Elive::Entity::User->construct(
     {userId => 11111,

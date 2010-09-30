@@ -42,7 +42,7 @@ my $participant_list = Elive::Entity::ParticipantList->construct(
     );
 
 isa_ok($participant_list, 'Elive::Entity::ParticipantList', 'participant');
-ok($participant_list->stringify eq "123456", 'participant list stringified');
+is($participant_list->stringify, "123456", 'participant list stringified');
 
 can_ok($participant_list, 'meetingId');
 can_ok($participant_list, 'participants');
@@ -62,22 +62,22 @@ $participants->add({
 
 ok(@$participants == 4, 'participants added');
 isa_ok($participants->[-1], 'Elive::Entity::Participant');
-ok($participants->[-1]->user->userId eq 'late_comer', 'added participant value');
+is($participants->[-1]->user->userId, 'late_comer', 'added participant value');
 
 $participant_list->revert;
 
-ok($participants->[0]->user->stringify eq '112233', 'user stringified');
+is($participants->[0]->user->stringify, '112233', 'user stringified');
 
-ok($participants->[0]->role->stringify eq '2', 'role stringified');
+is($participants->[0]->role->stringify, '2', 'role stringified');
 
-ok($participants->[0]->stringify eq '112233=2', 'participant stringified');
+is($participants->[0]->stringify, '112233=2', 'participant stringified');
 
-ok($participants->[2]->stringify eq 'dave=3', 'participant stringified');
+is($participants->[2]->stringify, 'dave=3', 'participant stringified');
 
-ok($participants->stringify eq '112233=2;223344=3;dave=3;late_comer=3',
+is($participants->stringify, '112233=2;223344=3;dave=3;late_comer=3',
    'participants stringification');
 
-ok($participant_list->participants->[0]->user->loginName eq 'test_user',
+is($participant_list->participants->[0]->user->loginName, 'test_user',
    'participant dereference');
 
 #
@@ -90,11 +90,11 @@ my $participant_list_2 = Elive::Entity::ParticipantList->construct(
     });
 
 my $participants_2 = $participant_list_2->participants;
-ok($participants_2->[0]->user->userId eq 1111, 'participant list user[0]');
-ok($participants_2->[0]->role->roleId == 3, 'participant list role[0] (defaulted)');
-ok($participants_2->[1]->user->userId eq 2222, 'participant list user[1]');
-ok($participants_2->[1]->role->roleId == 2, 'participant list role[1] (explicit)');
-ok($participants_2->[2]->user->userId eq 'alice', 'participant list user[2] (alphanumeric - ldap compat)');
+is($participants_2->[0]->user->userId, 1111, 'participant list user[0]');
+is($participants_2->[0]->role->roleId, 3, 'participant list role[0] (defaulted)');
+is($participants_2->[1]->user->userId, 2222, 'participant list user[1]');
+is($participants_2->[1]->role->roleId, 2, 'participant list role[1] (explicit)');
+is($participants_2->[2]->user->userId,'alice', 'participant list user[2] (alphanumeric - ldap compat)');
 
 my $participant_list_3 = Elive::Entity::ParticipantList->construct(
     {
@@ -103,10 +103,10 @@ my $participant_list_3 = Elive::Entity::ParticipantList->construct(
     });
 
 my $participants_3 = $participant_list_3->participants;
-ok($participants_3->[0]->user->userId == 1122, 'participant list user');
-ok($participants_3->[0]->role->roleId == 3, 'participant list role (defaulted)');
-ok($participants_3->[1]->user->userId == 2233, 'participant list user');
-ok($participants_3->[1]->role->roleId == 2, 'participant list role (explicit)');
+is($participants_3->[0]->user->userId , 1122, 'participant list user');
+is($participants_3->[0]->role->roleId , 3, 'participant list role (defaulted)');
+is($participants_3->[1]->user->userId , 2233, 'participant list user');
+is($participants_3->[1]->role->roleId , 2, 'participant list role (explicit)');
 
 my $member_list_1 = Elive::Entity::Group->construct(
 								   {
@@ -116,14 +116,14 @@ my $member_list_1 = Elive::Entity::Group->construct(
 	});
 
 my $members_1 = $member_list_1->members;
-ok($members_1->[0] eq 212121, 'member list user[0]');
-ok($members_1->[1] eq 222222, 'member list user[1]');
-ok($members_1->[2] eq 'fred', 'member list user[2] (alphanumeric - ldap compat)');
+is($members_1->[0], 212121, 'member list user[0]');
+is($members_1->[1], 222222, 'member list user[1]');
+is($members_1->[2], 'fred', 'member list user[2] (alphanumeric - ldap compat)');
     ;
 
 $members_1->add('late_comer');
-ok($members_1->[-1] eq 'late_comer', 'member add');
-ok($members_1->stringify eq '212121;222222;fred;late_comer', 'member list stringification');
+is($members_1->[-1], 'late_comer', 'member add');
+is($members_1->stringify, '212121;222222;fred;late_comer', 'member list stringification');
 
 $member_list_1->revert;
 
@@ -135,10 +135,10 @@ my $member_list_2 = Elive::Entity::Group->construct(
 	});
 
 my $members_2 = $member_list_2->members;
-ok($members_2->[0] eq 112233,  'member list user[0] (integer)');
-ok($members_2->[1] eq 223344,  'member list user[1] (string)');
-ok($members_2->[2] eq 'alice', 'member list user[2] (alphanumeric - ldap compat)');
-ok($members_2->[3] eq 'bob',   'member list user[3] (object cast)');
+is($members_2->[0], 112233,  'member list user[0] (integer)');
+is($members_2->[1], 223344,  'member list user[1] (string)');
+is($members_2->[2], 'alice', 'member list user[2] (alphanumeric - ldap compat)');
+is($members_2->[3], 'bob',   'member list user[3] (object cast)');
 
 my $meeting =  Elive::Entity::Meeting->construct({
     meetingId => '112233445566',
@@ -148,9 +148,9 @@ my $meeting =  Elive::Entity::Meeting->construct({
 						 });
 
 isa_ok($meeting, 'Elive::Entity::Meeting');
-ok($meeting->name eq 'test meeting', 'meeting name');
-ok($meeting->start eq '1234567890123', 'meeting start (hires coercian)');
-ok($meeting->end eq '1231231230123', 'meeting end (hires explicit)');
+is($meeting->name, 'test meeting', 'meeting name');
+is($meeting->start, '1234567890123', 'meeting start (hires coercian)');
+is($meeting->end, '1231231230123', 'meeting end (hires explicit)');
 
 #
 # test uncoercian of objects to simple values (e.g. primary key).
@@ -162,5 +162,5 @@ my $participant_list_4 = Elive::Entity::ParticipantList->construct(
         participants => [1122,'2233=2']
 	});
 
-ok($participant_list_4->meetingId == $meeting->meetingId, "object => id cast on construct (primary key)");
-ok($participant_list_4->participants->stringify eq '1122=3;2233=2', "participants stringification");
+is($participant_list_4->meetingId , $meeting->meetingId, "object => id cast on construct (primary key)");
+is($participant_list_4->participants->stringify, '1122=3;2233=2', "participants stringification");

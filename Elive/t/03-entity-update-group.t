@@ -21,16 +21,15 @@ ok(exists $group_props{groupId}
    'group entity class sane');
 
 my $group1 = Elive::Entity::Group->construct({
-	groupId => 1,
+	groupId => 111,
 	name => 'group_with_several_members',
 	members => [ @base_members ],
      },
     );
 
 isa_ok($group1, 'Elive::Entity::Group');
-
-ok($group1->id ==  1, 'constructed group - id accessor');
-ok($group1->name eq 'group_with_several_members', 'constructed group - name accessor');
+is($group1->groupId, 111, 'constructed group - id accessor');
+is($group1->name, 'group_with_several_members', 'constructed group - name accessor');
 isa_ok($group1->members, 'Elive::Array', 'group->members');
 is_deeply([ @{$group1->members}], \@base_members, 'group members preserved');
 

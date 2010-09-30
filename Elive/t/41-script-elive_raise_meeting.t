@@ -36,7 +36,7 @@ my $script_name = 'elive_raise_meeting';
 
 do {
     my ( $result, $stdout, $stderr ) = run_script($script_name, ['--help'] );
-    ok($stderr eq '', "$script_name --help: stderr empty");
+    is($stderr, '', "$script_name --help: stderr empty");
     ok($stdout =~ m{usage:}ix, "$script_name --help: stdout =~ 'usage:...''");
 };
 
@@ -81,7 +81,7 @@ SKIP: {
 	my $time = time();
 	my ( $result, $stdout, $stderr ) = run_script($script_name, \@meeting_args );
 
-	ok($stderr eq '', "stderr empty");
+	is($stderr, '', "stderr empty");
 
 	my ($ret_meeting_name, $ret_meeting_id) = ($stdout =~ $meeting_response_re);
 
@@ -92,7 +92,7 @@ SKIP: {
 		die "unable to raise simple meeting - aborting";
 	}
 
-	ok($ret_meeting_name eq $meeting_name, 'echoed meeting name as expected');
+	is($ret_meeting_name, $meeting_name, 'echoed meeting name as expected');
 
 	my $meeting;
 	ok($meeting = Elive::Entity::Meeting->retrieve([$ret_meeting_id], connection => $connection), 'retrieve');
@@ -101,7 +101,7 @@ SKIP: {
 	    die "unable to retrieve meeting: $ret_meeting_id - aborting";
 	}
 
-	ok($meeting->name eq $meeting_name, 'retrieved meeting name as expected');
+	is($meeting->name, $meeting_name, 'retrieved meeting name as expected');
 
 	my $start = substr($meeting->start, 0, -3) + 0;
 	my $end = substr($meeting->end, 0, -3) + 0;
@@ -144,7 +144,7 @@ SKIP: {
 						       @basic_meeting_args,
 						      ] );
 
-	ok($stderr eq '', "stderr empty");
+	is($stderr, '', "stderr empty");
 
 	my $last_meeting_start;
 	my $week;
@@ -165,7 +165,7 @@ SKIP: {
 	    ok($ret_meeting_name, "week $week: meeting name returned");
 	    ok($ret_meeting_id, "week $week: meeting id returned");
 
-	    ok($ret_meeting_name eq $meeting_name, "week $week: echoed meeting name as expected");
+	    is($ret_meeting_name, $meeting_name, "week $week: echoed meeting name as expected");
 
 	    my $meeting;
 	    ok($meeting = Elive::Entity::Meeting->retrieve([$ret_meeting_id], connection => $connection), "week $week: retrieve");
@@ -182,7 +182,7 @@ SKIP: {
 		ok(abs($actual_end_time - $end_time) <= 120, "week $week: actual end time as expected");	
 	    }
 
-	    ok($meeting->name eq $meeting_name, "week $week: retrieved meeting name as expected");
+	    is($meeting->name, $meeting_name, "week $week: retrieved meeting name as expected");
 	    ok(do {grep {$_->meetingId eq $ret_meeting_id} @$meetings_with_this_password}, "week $week: meeting password as expected");
 
 	    my $start = substr($meeting->start, 0 , -3);
@@ -217,7 +217,7 @@ SKIP: {
 						       @flags_on_args
 						      ] );
 
-	ok($stderr eq '', "stderr empty");
+	is($stderr, '', "stderr empty");
 
 	my ($ret_meeting_name, $ret_meeting_id) = ($stdout =~ $meeting_response_re);
 	my $meeting;
@@ -250,7 +250,7 @@ SKIP: {
 						       @flags_off_args
 						      ] );
 
-	ok($stderr eq '', "stderr empty");
+	is($stderr, '', "stderr empty");
 
 	my ($ret_meeting_name, $ret_meeting_id) = ($stdout =~ $meeting_response_re);
 	my $meeting;
@@ -293,7 +293,7 @@ SKIP: {
 						       @options,
 						      ] );
 
-	    ok($stderr eq '', "stderr empty");
+	    is($stderr, '', "stderr empty");
 
 	    my ($ret_meeting_name, $ret_meeting_id) = ($stdout =~ $meeting_response_re);
 	    my $meeting;
@@ -308,7 +308,7 @@ SKIP: {
 		my $expected_value =  $option_values{$option}[$run];
 		my $result = _lookup_opt($meeting, $option);
 		
-		ok($result eq $expected_value, "meeting run $run: -${option} eq $expected_value");
+		is($result eq $expected_value, "meeting run $run: -${option}, $expected_value");
 	    }
 
 	    lives_ok(sub {$meeting->delete}, "deletion - lives");

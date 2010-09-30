@@ -48,7 +48,7 @@ foreach (keys %insert_data) {
 	? ''	# passwords are not echoed
 	: $insert_data{$_};
 
-    ok(Elive::Util::string($pleb_user->$_) eq $expected_value, "$_ property as expected");
+    is(Elive::Util::string($pleb_user->$_), $expected_value, "$_ property as expected");
 }
 
 my %update_data = (
@@ -63,7 +63,7 @@ foreach (keys %update_data) {
 	? ''	# passwords are not echoed
 	: $update_data{$_};
 
-    ok(Elive::Util::string($pleb_user->$_) eq $expected_value, "$_ property as expected");
+    is(Elive::Util::string($pleb_user->$_), $expected_value, "$_ property as expected");
 }
 
 if (my $existing_user = $class->get_by_loginName('test_admin')) {

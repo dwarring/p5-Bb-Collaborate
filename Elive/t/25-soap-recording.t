@@ -96,8 +96,8 @@ SKIP: {
 	);
 
     isa_ok($recording, $class, 'uploaded recording');
-    ok ($recording->recordingId eq $recording_id, 'uploaded recording id as expected');
-    ok($recording->roomName eq $room_name,'uploaded recording name as expected');
+    is($recording->recordingId, $recording_id, 'uploaded recording id as expected');
+    is($recording->roomName, $room_name,'uploaded recording name as expected');
 
     my $recordings = Elive::Entity::Recording->list;
 
@@ -113,7 +113,7 @@ SKIP: {
        sprintf('download has expected size %d bytes', length($data[0])),
 	);
 
-    ok($data_download eq $data[0], 'downloaded data matches upload');
+    is($data_download, $data[0], 'downloaded data matches upload');
 
     my $recordingJNLP;
 

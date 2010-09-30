@@ -32,7 +32,7 @@ my $user_k2 =  Elive::Entity::User->construct(
      loginName => 'repeat'},
     );
 
-ok(substr($user_k1->url, 0, length($URL1)) eq $URL1, 'object url is based on connection url');
+is(substr($user_k1->url, 0, length($URL1)), $URL1, 'object url is based on connection url');
 
 my $group_k1 = Elive::Entity::Group->construct(
     {
@@ -42,5 +42,5 @@ my $group_k1 = Elive::Entity::Group->construct(
     },
     );
 
-ok($user_k1->url ne $user_k2->url, 'distinct entities have distinct urls');
-ok($user_k1->url ne $group_k1->url, 'urls distinct between entity classes');
+isnt($user_k1->url, $user_k2->url, 'distinct entities have distinct urls');
+isnt($user_k1->url, $group_k1->url, 'urls distinct between entity classes');

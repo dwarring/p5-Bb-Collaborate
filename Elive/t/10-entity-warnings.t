@@ -65,7 +65,7 @@ my $preload_data = {
 };
 
 $thawed_data = Elive::Entity::Preload->_thaw($preload_data);
-ok($thawed_data->{type} eq 'media', "type (media) as expected");
+is($thawed_data->{type}, 'media', "type (media) as expected");
 
 warnings_like(
     sub {$thawed_data = thaw_with_bad_preload_type($preload_data)},
@@ -83,7 +83,7 @@ my $meeting_parameter_data = {
 };
 
 $thawed_data = Elive::Entity::MeetingParameters->_thaw($meeting_parameter_data);
-ok($thawed_data->{recordingStatus} eq 'remote', "valid recording status conversion");
+is($thawed_data->{recordingStatus}, 'remote', "valid recording status conversion");
 
 warnings_like(
     sub {$thawed_data = thaw_with_bad_recording_status($meeting_parameter_data)},

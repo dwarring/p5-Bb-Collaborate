@@ -67,11 +67,11 @@ SKIP: {
     foreach ('name') {
 	#
 	# returned record doesn't contain password
-	ok($meeting->$_ eq $meeting_str_data{$_}, "meeting $_ as expected");
+	is($meeting->$_, $meeting_str_data{$_}, "meeting $_ as expected");
     }
 
     foreach (keys %meeting_int_data) {
-	ok($meeting->$_ == $meeting_int_data{$_}, "meeting $_ as expected");
+	is($meeting->$_, $meeting_int_data{$_}, "meeting $_ as expected");
     }
 
     my %parameter_str_data = (
@@ -95,11 +95,11 @@ SKIP: {
     foreach (keys %parameter_str_data) {
 	#
 	# returned record doesn't contain password
-	ok($meeting_params->$_ eq $parameter_str_data{$_}, "meeting parameter $_ as expected");
+	is($meeting_params->$_, $parameter_str_data{$_}, "meeting parameter $_ as expected");
     }
 
     foreach (keys %parameter_int_data) {
-	ok($meeting_params->$_ == $parameter_int_data{$_}, "meeting parameter $_ as expected");
+	is($meeting_params->$_, $parameter_int_data{$_}, "meeting parameter $_ as expected");
     }
 
     ########################################################################
@@ -128,10 +128,10 @@ SKIP: {
     $server_params->update(\%meeting_server_data);
 
     foreach (keys %meeting_server_data) {
-	ok($server_params->$_ == $meeting_server_data{$_}, "server parameter $_ == $meeting_server_data{$_}");
+	is($server_params->$_, $meeting_server_data{$_}, "server parameter $_ as expected");
     }
 
-    ok($server_params->seats == 2, 'server_param - expected number of seats');
+    is($server_params->seats, 2, 'server_param - expected number of seats');
 
     my $participants_deep_ref = [{user => Elive->login->userId,
 				  role => 0}];
@@ -148,19 +148,19 @@ SKIP: {
     my $participant_list = Elive::Entity::ParticipantList->retrieve([$meeting->meetingId]);
 
     isa_ok($participant_list, 'Elive::Entity::ParticipantList', 'server_params');
-    ok($participant_list->participants->stringify eq Elive->login->userId.'=0',
+    is($participant_list->participants->stringify, Elive->login->userId.'=0',
        'participant deep list - set correctly');
 
     $participant_list->update({participants => [Elive->login->userId.'=1']});
 
-    ok($participant_list->participants->stringify eq Elive->login->userId.'=1',
+    is($participant_list->participants->stringify, Elive->login->userId.'=1',
        'participant shallow list - set correctly');
 
     $participant_list->update({participants => Elive->login->userId.'=2'});
 
     diag ("participants=".$participant_list->participants->stringify);
 
-    ok($participant_list->participants->stringify eq Elive->login->userId.'=2',
+    is($participant_list->participants->stringify, Elive->login->userId.'=2',
        'participant string list - set correctly');
 
     ok($meeting->is_participant( Elive->login), 'is_participant($moderator)');
@@ -182,12 +182,12 @@ SKIP: {
     # the facilitator as the sole participant, with a role of moderator (2).
     #
 
-    ok(@$p == 1, 'participant_list reset - single participant');
+    is(@$p, 1, 'participant_list reset - single participant');
 
-    ok($p->[0]->user && $p->[0]->user->userId eq $meeting->facilitatorId,
+    is($p->[0]->user && $p->[0]->user->userId, $meeting->facilitatorId,
        'participant_list reset - single participant is the facilitator');
 
-    ok($p->[0]->role && $p->[0]->role->roleId == 2,
+    is($p->[0]->role && $p->[0]->role->roleId, 2,
        'participant_list reset - single participant has moderator role');
 
     do {

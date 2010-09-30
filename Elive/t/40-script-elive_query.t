@@ -35,7 +35,7 @@ do {
 
     my ( $result, $stdout, $stderr ) = run_script ($script_name, ['--help'] );
 
-    ok($stderr eq '', "$script_name --help: no errors");
+    is($stderr, '', "$script_name --help: no errors");
     ok($stdout =~ m{usage:}ix, "$script_name --help: stdout =~ 'usage:...''");
 };
 
@@ -59,7 +59,7 @@ do {
     my ( $result, $stdout, $stderr ) = run_script($script_name, [-c => 'blah blah'] );
 
     ok($stderr =~ m{unrecognised \s command: \s blah}ixs, "$script_name -c '<invalid command>': error as expected");
-    ok($stdout eq '', "$script_name -c '<invalid command>': no output");
+    is($stdout, '', "$script_name -c '<invalid command>': no output");
 };
 
 do {
@@ -69,7 +69,7 @@ do {
 
     my ($result, $stdout, $stderr) = run_script ($script_name, [-c => 'describe user']);
 
-    ok($stderr eq '', "$script_name -c 'describe user': no errors");
+    is($stderr, '', "$script_name -c 'describe user': no errors");
     ok($stdout =~ m{user: \s+ Elive::Entity::User .* userId \s+ : \s+ pkey \s+ Str}ixs, "$script_name -c 'describe user': looks like dump of users entity");
 
 };
@@ -82,7 +82,7 @@ do {
     my ( $result, $stdout, $stderr ) = run_script($script_name, [-c => 'describe crud'] );
 
     ok($stderr =~ m{unknown \s+ entity: \s+ crud}ix, "$script_name: describe <unknown> error");
-    ok($stdout eq '', "$script_name: describe <unknown> error - no output");
+    is($stdout, '', "$script_name: describe <unknown> error - no output");
 };
 
 SKIP: {

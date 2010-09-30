@@ -1,18 +1,16 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 9;
+use Test::More tests => 5;
 use Test::Warn;
 
 package main;
 
 my $meta_data_tab = \%Elive::Meta_Data;
 
-BEGIN {
-    use_ok( 'Elive' );
-    use_ok( 'Elive::Connection' );
-    use_ok( 'Elive::Entity' );
-    use_ok( 'Elive::Entity::User' );
-};
+use Elive;
+use Elive::Connection;
+use Elive::Entity;
+use Elive::Entity::User;
 
 use Scalar::Util;
 

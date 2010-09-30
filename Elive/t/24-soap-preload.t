@@ -24,7 +24,7 @@ $data[1] = join('',map {pack('C', $_)} (0..255));
 for (0..1) {
     #
     # belongs in util tests
-    ok(Elive::Util::_hex_decode(Elive::Util::_hex_encode($data[$_])) eq $data[$_], "hex encode/decode round-trip [$_]");   
+    is(Elive::Util::_hex_decode(Elive::Util::_hex_encode($data[$_])), $data[$_], "hex encode/decode round-trip [$_]");   
 }
 
 SKIP: {
@@ -53,15 +53,15 @@ SKIP: {
 
     isa_ok($preloads[0], $class, 'preload object');
 
-    ok($preloads[0]->type eq 'whiteboard', "preload type is 'whiteboard'");
-    ok($preloads[0]->mimeType eq 'application/octet-stream','expected value for mimeType (guessed)');
+    is($preloads[0]->type, 'whiteboard', "preload type is 'whiteboard'");
+    is($preloads[0]->mimeType, 'application/octet-stream','expected value for mimeType (guessed)');
     ok($preloads[0]->name =~ m{test(\.wbd)?$}, 'preload name, as expected');
-    ok($preloads[0]->ownerId eq Elive->login->userId, 'preload ownerId, as expected');
+    is($preloads[0]->ownerId, Elive->login->userId, 'preload ownerId, as expected');
 
     my $data_download = $preloads[0]->download;
 
     ok($data_download, 'got data download');
-    ok($data_download eq $data[0], 'download data matches upload');
+    is($data_download, $data[0], 'download data matches upload');
 
     ok (my $preload_id = $preloads[0]->preloadId, 'got preload id');
 
@@ -87,7 +87,7 @@ SKIP: {
     },
     );
 
-    ok($preloads[1]->mimeType eq 'audio/x-wav','expected value for mimeType (guessed)');
+    is($preloads[1]->mimeType, 'audio/x-wav','expected value for mimeType (guessed)');
 
     $preloads[2] = Elive::Entity::Preload->upload(
     {
@@ -99,7 +99,7 @@ SKIP: {
     },
     );
 
-    ok($preloads[2]->mimeType eq 'video/mpeg','expected value for mimeType (set)');
+    is($preloads[2]->mimeType, 'video/mpeg','expected value for mimeType (set)');
 
     $preloads[3] = Elive::Entity::Preload->upload(
     {
@@ -110,14 +110,14 @@ SKIP: {
     },
     );
 
-    ok($preloads[3]->type eq 'plan','expected type (plan)');
-    ok($preloads[3]->mimeType eq 'application/octet-stream','expected mimeType for plan');
+    is($preloads[3]->type, 'plan','expected type (plan)');
+    is($preloads[3]->mimeType, 'application/octet-stream','expected mimeType for plan');
 
     dies_ok(sub{$preloads[3]->update({name => 'test_plan.elpx updated'})}, 'preload update - not available');
 
     $data_download = $preloads[3]->download;
 
-    ok($data_download eq $data[1], 'plan download matches upload');
+    is($data_download, $data[1], 'plan download matches upload');
 
     my $check;
 
@@ -140,7 +140,7 @@ SKIP: {
 
     isa_ok($preloads_list, 'ARRAY', 'preloads list');
 
-    ok(@$preloads_list == scalar @preloads, 'meeting has expected number of preloads');
+    is(@$preloads_list, scalar @preloads, 'meeting has expected number of preloads');
 
     do {
 	my @preload_ids = map {$_->preloadId} @preloads;
@@ -200,7 +200,7 @@ SKIP: {
 		  'upload of preload with no extension - lives'
 	    );
 
-	ok($preloads[-1]->mimeType eq 'video/mpeg','expected value for mimeType (set, no-extension)');
+	is($preloads[-1]->mimeType, 'video/mpeg','expected value for mimeType (set, no-extension)');
     }
 
     for my $i (1 .. $#preloads) {
@@ -229,7 +229,7 @@ SKIP: {
 
 	diag 'imported preload has size: '.$imported_preload->size.' and type '.$imported_preload->type.' ('.$imported_preload->mimeType.')';
 
-	ok($imported_preload->name eq $basename, 'imported preload name as expected');
+	is($imported_preload->name, $basename, 'imported preload name as expected');
 	ok($imported_preload->size > 0, 'imported preload has non-zero size');
 	lives_ok (sub {$imported_preload->delete}, 'imported preload delete - lives');
     }

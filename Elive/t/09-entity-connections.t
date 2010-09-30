@@ -28,18 +28,18 @@ for my $class(qw{Elive::Connection t::Elive::MockConnection}) {
     # /test_instance, /test_instance/webservice.event, /test_instance/v2/webservice.event
 
     my $C1 = $class->connect($URL1.'/');
-    ok($C1->url eq $URL1, 'connection 1 - has expected url');
+    is($C1->url, $URL1, 'connection 1 - has expected url');
     
     my $C2 = $class->connect($URL2.'/webservice.event');
-    ok($C2->url eq $URL2, 'connection 2 - has expected url');
+    is($C2->url, $URL2, 'connection 2 - has expected url');
 
     my $C2_dup = $class->connect($URL2.'/v2/webservice.event');
-    ok($C2_dup->url eq $URL2, 'connection 2 dup - has expected url');
+    is($C2_dup->url, $URL2, 'connection 2 dup - has expected url');
 
-    ok(Scalar::Util::refaddr($C2) ne Scalar::Util::refaddr($C2_dup),
+    isnt(Scalar::Util::refaddr($C2), Scalar::Util::refaddr($C2_dup),
        'distinct connections on common url => distinct objects');
 
-    ok($C2->url eq $C2_dup->url,
+    is($C2->url, $C2_dup->url,
        'distinct connections on common url => common url');
 
     my $group_c1 = Elive::Entity::Group->construct(
@@ -60,7 +60,7 @@ for my $class(qw{Elive::Connection t::Elive::MockConnection}) {
     my $group_c1_from_cache
 	= Elive::Entity::Group->retrieve([$K1],connection => $C1, reuse => 1);
     
-    ok(Scalar::Util::refaddr($group_c1) eq Scalar::Util::refaddr($group_c1_from_cache),
+    is(Scalar::Util::refaddr($group_c1), Scalar::Util::refaddr($group_c1_from_cache),
        'basic cacheing on connection 1');
     
 #
@@ -81,27 +81,27 @@ for my $class(qw{Elive::Connection t::Elive::MockConnection}) {
     my $group_c2_from_cache
 	= Elive::Entity::Group->retrieve([$K1], connection => $C2, reuse => 1);
     
-    ok(Scalar::Util::refaddr($group_c2) eq Scalar::Util::refaddr($group_c2_from_cache),
+    is(Scalar::Util::refaddr($group_c2), Scalar::Util::refaddr($group_c2_from_cache),
     'basic cacheing on connection 1');
 
-    ok(Scalar::Util::refaddr($group_c1) ne Scalar::Util::refaddr($group_c2),
+    isnt(Scalar::Util::refaddr($group_c1), Scalar::Util::refaddr($group_c2),
     'distinct caches maintained on connections with distinct urls');
 
     my $group_c2_dup_from_cache = Elive::Entity::Group->retrieve([$K1], connection => $C2_dup, reuse => 1);
 
-    ok(Scalar::Util::refaddr($group_c2_dup_from_cache) eq Scalar::Util::refaddr($group_c2_from_cache),
+    is(Scalar::Util::refaddr($group_c2_dup_from_cache), Scalar::Util::refaddr($group_c2_from_cache),
     'connections with common urls share a common cache');
 
-    ok($group_c1->name eq 'c1 group', 'connection 1 object - name as expected');
-    ok($group_c1->members->[1] == $K3, 'connection 1 object - first member as expected');
+    is($group_c1->name, 'c1 group', 'connection 1 object - name as expected');
+    is($group_c1->members->[1], $K3, 'connection 1 object - first member as expected');
 
-    ok($group_c2->name eq 'c2 group', 'connection 2 object - name as expected');
-    ok($group_c2->members->[1] == $K2, 'connection 2 object - first member as expected');
+    is($group_c2->name, 'c2 group', 'connection 2 object - name as expected');
+    is($group_c2->members->[1], $K2, 'connection 2 object - first member as expected');
     
-    ok(substr($group_c1->url, 0, length($URL1)) eq $URL1, '1st connection: object url is based on connection url');
-    ok(substr($group_c2->url, 0, length($URL2)) eq $URL2, '2nd connection: object url is based on connection url');
+    is(substr($group_c1->url, 0, length($URL1)), $URL1, '1st connection: object url is based on connection url');
+    is(substr($group_c2->url, 0, length($URL2)), $URL2, '2nd connection: object url is based on connection url');
 
-    ok(substr($group_c1->url, length($URL1)) eq substr($group_c2->url, length($URL2)), 'common path between connections');
+    is(substr($group_c1->url, length($URL1)), substr($group_c2->url, length($URL2)), 'common path between connections');
     
     $C1->disconnect;
     $C2->disconnect;

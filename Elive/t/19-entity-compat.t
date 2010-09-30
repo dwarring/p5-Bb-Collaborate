@@ -22,20 +22,20 @@ use Elive::Entity::MeetingParameters;
 # group management
 #
 my $group_types = Elive::Entity::Group->property_types;
-ok($group_types->{groupId} eq 'Str', 'non-numeric groupIds permitted (LDAP compat)');
+is($group_types->{groupId}, 'Str', 'non-numeric groupIds permitted (LDAP compat)');
 
 #
 # User Ids can be non-numeric when configured to use LDAP for 
 # user management
 #
 my $user_types = Elive::Entity::User->property_types;
-ok($user_types->{userId} eq 'Str', 'non-numeric userIds permitted (LDAP compat)');
+is($user_types->{userId}, 'Str', 'non-numeric userIds permitted (LDAP compat)');
 
 #
 # recording IDs can be user supplied and non-numeric
 #
 my $recording_types = Elive::Entity::Recording->property_types;
-ok($recording_types->{recordingId} eq 'Str', "non-numeric recordingId's permitted");
+is($recording_types->{recordingId}, 'Str', "non-numeric recordingId's permitted");
 
 #
 # inSessionInvitation present in elm 9.0, but not 9.1?
