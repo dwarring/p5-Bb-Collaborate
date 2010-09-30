@@ -106,9 +106,8 @@ SKIP: {
     # This is a far as we can currently go with a mock connection
     ########################################################################
 
-    skip ($result{reason} || 'skipping live tests',
-	27)
-	unless $connection_class eq 'Elive::Connection';
+    skip ($result{reason} || 'skipping live tests', 27)
+	if $connection_class->isa('t::Elive::MockConnection');
 
     my %meeting_server_data = (
 	boundaryMinutes => 15,
@@ -131,7 +130,7 @@ SKIP: {
 	is($server_params->$_, $meeting_server_data{$_}, "server parameter $_ as expected");
     }
 
-    is($server_params->seats, 2, 'server_param - expected number of seats');
+    ok($server_params->seats == 2, 'server_param - expected number of seats');
 
     my $participants_deep_ref = [{user => Elive->login->userId,
 				  role => 0}];

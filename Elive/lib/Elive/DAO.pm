@@ -697,7 +697,7 @@ sub update {
     # Nothing to update
     #
     return $self unless @updated_properties 
-	|| $opt{param};
+	|| keys %params;
 
     my %primary_key = map {$_ => 1} ($self->primary_key);
 
