@@ -1,4 +1,4 @@
-package Elive::ParticipantList::Participants;
+package Elive::Entity::ParticipantList::Participants;
 use warnings; use strict;
 
 use Mouse;
@@ -37,20 +37,20 @@ sub add {
     return $class->SUPER::add(@participants);
 }
 
-coerce 'Elive::ParticipantList::Participants' => from 'ArrayRef'
+coerce 'Elive::Entity::ParticipantList::Participants' => from 'ArrayRef'
           => via {
 	      my @participants = map {Elive::Entity::ParticipantList::Participant->_parse($_)} @$_;
 	      my $a = [ map {Scalar::Util::blessed($_)? $_ : Elive::Entity::ParticipantList::Participant->new($_)
 			} @participants];
-	      Elive::ParticipantList::Participants->new($a);
+	      Elive::Entity::ParticipantList::Participants->new($a);
 };
 
-coerce 'Elive::ParticipantList::Participants' => from 'Str'
+coerce 'Elive::Entity::ParticipantList::Participants' => from 'Str'
           => via {
 	      my @participants = map {Elive::Entity::ParticipantList::Participant->_parse($_)} split(';');
 
 	      my $a = [ map {Elive::Entity::ParticipantList::Participant->new($_)} @participants ];
-	      Elive::ParticipantList::Participants->new($a);
+	      Elive::Entity::ParticipantList::Participants->new($a);
           };
 
 1;

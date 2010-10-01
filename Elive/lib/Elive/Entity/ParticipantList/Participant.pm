@@ -59,14 +59,9 @@ Elive::Entity::ParticipantList::Participant - A Single Meeting Participant
 
 =head1 DESCRIPTION
 
-This class cannot be retrieved directly. Rather it is a container
-class for participants in an L<Elive::Entity::ParticipantList::ParticipantList>.
-
-=head1 SEE ALSO
-
-L<Elive::Entity::ParticipantList::ParticipantList>
-
-=cut
+This is a component of L<Elive::Entity::ParticipantList::Participants>. It contains details on a
+participating user, including their details and participation role (normally 2 for a moderator or 3
+for a regular participant).
 
 =head1 METHODS
 
@@ -93,7 +88,7 @@ sub stringify {
 
 =head1 SEE ALSO
 
-Elive::Entity::ParticipantList::ParticipantList
+L<Elive::Entity::ParticipantList> L<Elive::Entity::ParticipantList::Participants>
 
 =cut
 

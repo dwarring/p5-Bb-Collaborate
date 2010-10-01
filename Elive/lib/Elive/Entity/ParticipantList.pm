@@ -18,7 +18,7 @@ __PACKAGE__->entity_name('ParticipantList');
 has 'meetingId' => (is => 'rw', isa => 'Int', required => 1);
 __PACKAGE__->primary_key('meetingId');
 
-has 'participants' => (is => 'rw', isa => 'Elive::ParticipantList::Participants',
+has 'participants' => (is => 'rw', isa => 'Elive::Entity::ParticipantList::Participants',
     coerce => 1);
 #
 # NOTE: thawed data may be returned as the 'participants' property.

@@ -14,10 +14,6 @@ use Elive;
 use Elive::Util;
 use Elive::Entity;
 use Elive::Entity::Meeting;
-use Elive::Entity::MeetingParameters;
-use Elive::Entity::ServerParameters;
-use Elive::Entity::Participant;
-use Elive::Entity::ParticipantList;
 use Elive::Entity::Preload;
 use Elive::Entity::User;
 
