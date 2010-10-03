@@ -186,7 +186,6 @@ extension using MIME::Types.
 sub import_from_server {
     my ($class, $insert_data, %opt) = @_;
 
-    my $filename = delete $insert_data->{fileName};
     my $params = $opt{param} || {};
 
     die "missing fileName parameter"
