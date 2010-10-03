@@ -179,13 +179,14 @@ sub _freeze {
 
     my @properties = $class->properties;
     my $property_types = $class->property_types || {};
-    my %params = $class->params;
+    my %param_types = $class->params;
+    my @param_names = sort keys %param_types;
 
     foreach (keys %$db_data) {
 
-	my $property = $property_types->{$_} || $params{$_};
+	my $property = $property_types->{$_} || $param_types{$_};
 
-	Carp::croak "$class: unknown property: $_: expected: @properties"
+	Carp::croak "$class: unknown property/parameter: $_: expected: ",join(',', @properties, @param_names)
 	    unless $property;
 
 	my ($type, $is_array, $_is_struct) = Elive::Util::parse_type($property);
@@ -564,23 +565,20 @@ sub insert {
     my $connection = $opt{connection} || $class->connection
 	or die "not connected";
 
-    my $db_data = $class->_freeze($insert_data, mode => 'insert');
-
+    my %insert_data = %$insert_data;
     my %params = %{delete $opt{param} || {}};
 
-    my %param_types = $class->params;
-
-    foreach (keys %param_types) {
-	next unless exists $db_data->{$_};
-	#
-	# sift parameters from properties
-	#
-	if (exists  $db_data->{$_}) {
-	    $params{$_} ||= delete $db_data->{$_};
-	} elsif (exists $params{$_}) {
-	    $params{$_} = Elive::Util::_freeze($params{$_}, $param_types{$_});
-	}
+    #
+    # sift out additional data included in the insert data, but should
+    # be parameters.
+    #
+    my %param_names = $class->params;
+    foreach (grep {exists $insert_data{$_}} %param_names) {
+	my $val = delete $insert_data{$_};
+	$params{$_} = $val unless exists $params{$_};
     }
+
+    my $db_data = $class->_freeze({%insert_data, %params}, mode => 'insert');
 
     my $adapter = delete $opt{adapter} || 'create'.$class->entity_name;
 
@@ -651,40 +649,32 @@ as parameters.
 =cut
 
 sub update {
-    my ($self, $update_data, %opt) = @_;
+    my ($self, $_update_data, %opt) = @_;
 
     die "attempted to update deleted record"
 	if ($self->_deleted);
 
     my %params = %{ $opt{param} || {} };
-    my %param_types = $self->params;
+    my %update_data;
 
-    if ($update_data) {
+    if ($_update_data) {
 
 	croak 'usage: $obj->update( \%data )'
-	    unless (Elive::Util::_reftype($update_data) eq 'HASH');
+	    unless (Elive::Util::_reftype($_update_data) eq 'HASH');
 
-	foreach (keys %param_types) {
-
-	    my $type = $param_types{$_};
-	    #
-	    # sift parameters from properties
-	    #
-	    if (exists $update_data->{$_}) {
-		$params{$_} = delete $update_data->{$_}
-	    }
-
-	    if (exists $params{$_}) {
-		#
-		# freeze non-db parameters
-		#
-		$params{$_} = Elive::Util::_freeze($params{$_}, $type)
-	    
-	    }
+	%update_data = %{ $_update_data };
+	#
+	# sift out things which are included in the data payload, but should
+	# be parameters.
+	#
+	my %param_names = $self->params;
+	foreach (grep {exists $update_data{$_}} %param_names) {
+	    my $val = delete $update_data{$_};
+	    $params{$_} = $val unless exists $params{$_};
 	}
 
-	$self->set( %$update_data)
-	    if (keys %$update_data);
+	$self->set( %update_data)
+	    if (keys %update_data);
     }
 
     #
@@ -696,12 +686,15 @@ sub update {
     #
     # Nothing to update
     #
+
     return $self unless @updated_properties 
 	|| keys %params;
 
     my %primary_key = map {$_ => 1} ($self->primary_key);
 
-    my %updates;
+    #
+    # merge in pending updates to the current entity.
+    #
 
     foreach (@updated_properties, keys %primary_key) {
 
@@ -713,15 +706,15 @@ sub update {
 				   $self->_db_data->{$_},
 				   $self->$_));
 
-	$updates{$_} = $self->$_;
-
+	$update_data{$_} = $self->$_
+	    unless defined $update_data{$_};
     }
 
     my $adapter = $opt{adapter} || 'update'.$self->entity_name;
 
     $self->check_adapter($adapter);
 
-    my $db_updates = $self->_freeze(\%updates, mode => 'update');
+    my $db_updates = $self->_freeze({%update_data, %params}, mode => 'update');
 
     my $som = $self->connection->call($adapter,
 				      %$db_updates,
@@ -730,7 +723,7 @@ sub update {
 
     my $class = ref($self);
 
-    my @rows = $class->_readback($som, \%updates, $self->connection);
+    my @rows = $class->_readback($som, \%update_data, $self->connection);
     #
     # refresh the object from the database read-back
     #

@@ -39,7 +39,10 @@ __PACKAGE__->collection_name('Preloads');
 
 has 'preloadId' => (is => 'rw', isa => 'Int', required => 1);
 __PACKAGE__->primary_key('preloadId');
-__PACKAGE__->params(meetingId => 'Str');
+__PACKAGE__->params(
+    meetingId => 'Str',
+    fileName => 'Str',
+    );
 __PACKAGE__->_alias(key => 'preloadId');
 
 enum enumPreloadTypes => qw(media whiteboard plan);
@@ -96,30 +99,18 @@ sub upload {
     my %insert_data = %{ $insert_data_ref };
 
     my $binary_data = delete $insert_data{data};
-
     my $length = delete $insert_data{length} || 0;
     $length ||= length($binary_data)
 	if $binary_data;
-
-    $opt{param}{length} = $length
-        if $length;
-
-    if ($insert_data{name}) {
-
-	$_ = File::Basename::basename($_)
-	    for $insert_data{name};
-
-	$insert_data{mimeType} ||= $class->_guess_mimetype($insert_data{name});
-	$insert_data{type}
-	||= ($insert_data{name} =~ m{\.wbd$}ix     ? 'whiteboard'
-	     : $insert_data{name} =~ m{\.elpx?$}ix ? 'plan'
-	     : 'media');
-    }
-
+    #
+    # 1. create initial record
+    #
     my $self = $class->insert(\%insert_data, %opt);
 
     if ($length && $binary_data) {
-
+	#
+	# 2. Now upload data to it
+	#
 	my $adapter = $self->check_adapter('streamPreload');
 
 	my $connection = $self->connection
@@ -196,19 +187,10 @@ sub import_from_server {
     my ($class, $insert_data, %opt) = @_;
 
     my $filename = delete $insert_data->{fileName};
+    my $params = $opt{param} || {};
 
     die "missing fileName parameter"
-	unless $filename;
-
-    $insert_data->{mimeType} ||= $class->_guess_mimetype($filename);
-    $insert_data->{type} 
-	||= ($filename =~ m{\.wbd}ix     ? 'whiteboard'
-	     : $filename =~ m{\.elpx?}ix ? 'plan'
-	     : 'media');
-
-    $insert_data->{name} ||= File::Basename::basename($filename);
-
-    $opt{param}{fileName} = $filename;
+	unless $insert_data->{fileName} || $params->{fileName};
 
     my $adapter = $class->check_adapter('importPreload');
 
@@ -237,6 +219,30 @@ sub list_meeting_preloads {
 			 adapter => $adapter,
 			 %opt
 	);
+}
+
+sub _freeze {
+    my ($class, $db_data, %opt) = @_;
+
+    $db_data = $class->SUPER::_freeze( $db_data, %opt);
+
+    if (my $filename = $db_data->{fileName}) {
+	$db_data->{name} ||= File::Basename::basename($filename);
+    }
+
+    if ($db_data->{name}) {
+
+	$_ = File::Basename::basename($_)
+	    for $db_data->{name};
+
+	$db_data->{mimeType} ||= $class->_guess_mimetype($db_data->{name});
+	$db_data->{type}
+	||= ($db_data->{name} =~ m{\.wbd$}ix     ? 'whiteboard'
+	     : $db_data->{name} =~ m{\.elpx?$}ix ? 'plan'
+	     : 'media');
+    }
+
+    return $db_data;
 }
 
 sub _thaw {
