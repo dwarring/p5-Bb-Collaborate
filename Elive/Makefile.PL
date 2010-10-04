@@ -25,6 +25,7 @@ requires(
     'IO::Interactive'              => 0,
     'IO::Prompt'                   => 0,
     'MIME::Types'                  => 0,
+    'MIME::Base64'                 => 0,
     'Mouse'                        => 0.29,
     'Pod::Usage'                   => 0,  # for elive_raise_meeting
     'Scalar::Util'                 => 0,
@@ -35,6 +36,7 @@ requires(
     'Term::ReadLine::Perl'         => 0,  # fallback for elive_query
     'Time::Local'                  => 0,
     'URI'                          => 0,
+    'URI::Escape'                  => 0,
     'YAML'                         => 0,
     'XML::Simple'                  => 0,
     );

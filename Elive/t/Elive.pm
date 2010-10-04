@@ -16,6 +16,8 @@ locate test authorization from the environment
 
 =cut
 
+use URI;
+
 sub test_connection {
     my $class = shift;
     my %opt = @_;
@@ -29,23 +31,35 @@ sub test_connection {
 
     if (!$opt{only} || $opt{only} eq 'real') {
 
-	if ($user && $pass && $url && $url !~ m{^mock:}i) {
+	if ($url) {
+	    my $uri_obj = URI->new($url, 'http');
+	    my $userinfo = $uri_obj->userinfo; # credentials supplied in URI
 
-	    if ($url =~ m{/v[1-9](/(webservice\.event)?)?$}) {
-		$result{reason} = '$ELIVE_TEST_URL path is SAS specific ([/instance]/vN[/webservice.event])';
+	    if ($userinfo) {
+		my ($uri_user, $uri_pass) = split(':', $userinfo, 2);
+		$user ||= URI::Escape::uri_unescape($uri_user);
+		$pass ||= URI::Escape::uri_unescape($uri_pass)
+		    if $uri_pass;
 	    }
-	    else {
 
-		$result{auth} = [$url, $user, $pass];
+	    if ($user && $pass && $url !~ m{^mock:}i) {
 
-		unless ($opt{noload}) {
-		    #
-		    # don't give our test a helping hand, We're
-		    # testing self load of this module by Elive
-		    #
-		    eval {require Elive::Connection::SDK}; die $@ if $@;
+		if ($url =~ m{/v[1-9](/(webservice\.event)?)?$}) {
+		    $result{reason} = '$ELIVE_TEST_URL path is SAS specific ([/instance]/vN[/webservice.event])';
 		}
-		$result{class} = 'Elive::Connection::SDK';
+		else {
+
+		    $result{auth} = [$url, $user, $pass];
+
+		    unless ($opt{noload}) {
+			#
+			# don't give our test a helping hand, We're
+			# testing self load of this module by Elive
+			#
+			eval {require Elive::Connection::SDK}; die $@ if $@;
+		    }
+		    $result{class} = 'Elive::Connection::SDK';
+		}
 	    }
 	}
 	else {

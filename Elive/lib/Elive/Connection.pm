@@ -1,12 +1,15 @@
 package Elive::Connection;
 use warnings; use strict;
 
+use Carp;
 use Class::Accessor;
 use Class::Data::Inheritable;
+use File::Spec::Unix;
 use HTML::Entities;
 use Scalar::Util;
-
-use Carp;
+require SOAP::Lite;
+use URI;
+use URI::Escape qw{};
 
 use base qw{Class::Accessor};
 
@@ -53,11 +56,6 @@ C<create>, C<insert>, C<list> and C<retrieve>.
 
 =cut
 
-require SOAP::Lite;
-use URI;
-use File::Spec::Unix;
-use HTML::Entities;
-
 __PACKAGE__->mk_accessors( qw{url user pass _soap debug type} );
 
 =head1 METHODS
@@ -102,6 +100,33 @@ sub _connect {
     my $uri_obj = URI->new($url, 'http');
 
     my $uri_path = $uri_obj->path;
+
+    if (my $userinfo = $uri_obj->userinfo) {
+
+	$uri_obj->userinfo('');
+
+	my ($uri_user, $uri_pass) = split(':',$userinfo, 2);
+
+	if ($uri_user) {
+	    if ($user && $user ne $uri_user) {
+		carp 'ignoring user in URI scheme - overridden';
+	    }
+	    else {
+		$user = URI::Escape::uri_unescape($uri_user);
+	    }
+	}
+
+	if ($uri_pass) {
+	    if ($pass && $pass ne $uri_pass) {
+		carp 'ignoring pass in URI scheme - overridden';
+	    }
+	    else {
+		$pass = URI::Escape::uri_unescape($uri_pass);
+	    }
+	}
+    }
+
+    $pass = '' unless defined $pass;
 
     my @path = File::Spec::Unix->splitdir($uri_path);
 

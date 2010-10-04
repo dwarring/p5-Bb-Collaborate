@@ -1,6 +1,6 @@
 #!perl
 use warnings; use strict;
-use Test::More tests => 45;
+use Test::More tests => 40;
 use Test::Exception;
 use Test::Builder;
 use version;
@@ -10,13 +10,11 @@ use t::Elive;
 
 use Carp;
 
-BEGIN {
-    use_ok( 'Elive' );
-    use_ok( 'Elive::Entity::Meeting' );
-    use_ok( 'Elive::Entity::MeetingParameters' );
-    use_ok( 'Elive::Entity::ServerParameters' );
-    use_ok( 'Elive::Entity::ParticipantList' );
-};
+use Elive;
+use Elive::Entity::Meeting;
+use Elive::Entity::MeetingParameters;
+use Elive::Entity::ServerParameters;
+use Elive::Entity::ParticipantList;
 
 our $t = Test::Builder->new;
 our $class = 'Elive::Entity::Meeting' ;

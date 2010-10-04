@@ -12,7 +12,7 @@ use Carp;
 
 =head1 NAME
 
-    Elive::SAS - Base class for the Elive Standard Bridge V2 (SAS)
+    Elive::SAS - Base class for the Elive Standard Bridge (V2)
 
 =head1 VERSION
 
@@ -101,8 +101,8 @@ See also Elive::Connection.
 sub connect {
     my ($class, $url, $login_name, $pass, %opts) = @_;
 
-    die "usage: ${class}->new(url, login_name[, pass])"
-	unless ($class && $url && $login_name);
+    die "usage: ${class}->connect(url, [login_name], [pass])"
+	unless ($class && $url);
 
     eval {require Elive::Connection::SAS};
     die $@ if $@;

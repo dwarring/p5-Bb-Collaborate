@@ -111,8 +111,8 @@ See also Elive::Connection.
 sub connect {
     my ($class, $url, $login_name, $pass, %opts) = @_;
 
-    die "usage: ${class}->new(url, login_name[, pass])"
-	unless ($class && $url && $login_name);
+    die "usage: ${class}->new(url, [login_name] [, pass])"
+	unless ($class && $url);
 
     eval {require Elive::Connection};
     die $@ if $@;

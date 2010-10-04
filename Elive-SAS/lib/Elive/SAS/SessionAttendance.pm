@@ -69,9 +69,7 @@ sub list {
     $fetch_params{startTime}  = Elive::Util::_freeze(shift @$vals, 'HiResDate')
 	if @$vals;
 
-    $class->_fetch(\%fetch_params,
-		   %opt,
-	);
+    return $class->_fetch(\%fetch_params, %opt);
 }
 
 1;

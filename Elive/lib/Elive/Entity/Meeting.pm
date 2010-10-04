@@ -31,6 +31,7 @@ __PACKAGE__->entity_name('Meeting');
 __PACKAGE__->collection_name('Meetings');
 __PACKAGE__->params(
     seats => 'Int',
+    preloadId => 'Int',
     recurrenceCount => 'Int',
     recurrenceDays => 'Int',
     timeZone => 'Str',
@@ -240,21 +241,21 @@ sub add_preload {
     die 'usage: $meeting_obj->add_preload($preload || $preload_id)'
 	unless $preload_id;
 
-    my $meeting_id = $opt{meeting_id} || $self->meetingId;
+    my %params = %{ $opt{param} || {} };
 
+    my $meeting_id = $opt{meeting_id} || $self->meetingId;
     die "unable to determine meeting_id"
 	unless $meeting_id;
+
+    $params{meetingId} ||= $meeting_id;
+    $params{preloadId} = $preload_id;
 
     my $adapter = $self->check_adapter('addMeetingPreload');
 
     my $connection = $self->connection
 	or die "not connected";
 
-    my $som = $connection
-	->call($adapter,
-	       meetingId => Elive::Util::_freeze($meeting_id, 'Int'),
-	       preloadId => Elive::Util::_freeze($preload_id, 'Int'),
-	);
+    my $som = $connection->call($adapter, %{ $self->_freeze( \%params ) });
 
     return $self->_check_for_errors($som);
 }

@@ -3,8 +3,10 @@ use warnings; use strict;
 
 use Class::Accessor;
 use Class::Data::Inheritable;
-use HTML::Entities;
 use Scalar::Util;
+
+use SOAP::Lite;
+use MIME::Base64;
 
 use Carp;
 
@@ -71,6 +73,10 @@ sub soap {
 	$soap->ns( "http://sas.elluminate.com/" => "sas");
 
 	$soap->proxy($proxy);
+
+	my $authoriz = 'Basic '.MIME::Base64::encode_base64($self->user.':'.$self->pass);
+
+	$soap->transport->http_request->headers->push_header('Authorization'=>$authoriz);
 
 	$self->_soap($soap);
     }
@@ -153,22 +159,13 @@ sub _preamble {
     die "Not logged in"
 	unless ($self->user);
 
-    my @user_auth =  (map {HTML::Entities::encode_entities( $_ )} ($self->user, $self->pass));
-
     my @preamble = (
     );
 
     push (@preamble, SOAP::Data->prefix('sas')->name($cmd))
 	if $cmd;
 
-    my $auth = sprintf(<<'EOD', @user_auth);
-<sas:BasicAuth>
-<sas:Name>%s</sas:Name>
-<sas:Password>%s</sas:Password>
-</sas:BasicAuth>
-EOD
-
-return (@preamble, SOAP::Header->type(xml => $auth));
+    return @preamble;
 };
 
 1;

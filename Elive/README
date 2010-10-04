@@ -33,8 +33,7 @@ TESTING
 
         perl Makefile.PL
         make
-        export ELIVE_TEST_URL=http://some_server.com/some_test_instance
-        export ELIVE_TEST_USER=some_admin_user
+        export ELIVE_TEST_URL=http://sdk_user@some_server.com/some_test_instance
         export ELIVE_TEST_PASS=some_password
         make test
 

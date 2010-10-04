@@ -85,7 +85,6 @@ SKIP: {
 
     diag 'server version '.$server_versions->versionName.' ('.$server_versions->versionId.')';
 
-
 }
 
 Elive->disconnect;
