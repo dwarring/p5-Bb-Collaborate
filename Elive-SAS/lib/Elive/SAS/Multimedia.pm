@@ -45,7 +45,7 @@ Uploads content and creates a new multimedia resource.
 
     my $multimedia = Elive::SAS::Multimedia->insert(
              {
-                    filename => 'intro.wav',
+                    filename => 'demo.wav',
                     creatorId =>  'bob',
                     content => $content,
 	     },
