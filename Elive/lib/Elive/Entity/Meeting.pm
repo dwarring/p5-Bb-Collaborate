@@ -257,7 +257,7 @@ sub add_preload {
 
     my $som = $connection->call($adapter, %{ $self->_freeze( \%params ) });
 
-    return $self->_check_for_errors($som);
+    return $connection->_check_for_errors($som);
 }
 
 =head2 check_preload
@@ -290,7 +290,7 @@ sub check_preload {
 	       meetingId => Elive::Util::_freeze($meeting_id, 'Int'),
 	       );
 
-    $self->_check_for_errors($som);
+    $connection->_check_for_errors($som);
 
     my $results = $self->_unpack_as_list($som->result);
 
@@ -329,7 +329,7 @@ sub is_participant {
                meetingId => Elive::Util::_freeze($meeting_id, 'Int'),
                );
 
-    $self->_check_for_errors($som);
+    $connection->_check_for_errors($som);
 
     my $results = $self->_unpack_as_list($som->result);
 
@@ -399,7 +399,7 @@ sub remove_preload {
 				preloadId => Elive::Util::_freeze($preload_id, 'Int'),
 				);
 
-    return $self->_check_for_errors($som);
+    return $connection->_check_for_errors($som);
 }
     
 =head2 buildJNLP 
@@ -472,11 +472,9 @@ sub buildJNLP {
 				%soap_params,
 				);
 
-    $self->_check_for_errors($som);
+    my $results = $self->_get_results($som, $connection);
 
-    my $results = $self->_unpack_as_list($som->result);
-
-    return @$results && Elive::Util::_thaw($results->[0], 'Str');
+    return @$results && $results->[0];
 }
 
 =head2 web_url

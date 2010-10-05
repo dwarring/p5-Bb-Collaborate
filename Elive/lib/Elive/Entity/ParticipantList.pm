@@ -284,7 +284,7 @@ sub _readback {
     #
     # Ok, we need to handle our own error checking and readback.
     #
-    $class->_check_for_errors($som);
+    $connection->_check_for_errors($som);
 
     my $meeting_id = $updates->{meetingId}
     or die "couldn't find meetingId";

@@ -191,6 +191,7 @@ sub set_presentation {
 
     my $results = $class->_get_results(
 	$som,
+	$connection,
 	);
 
     my $success = @$results && $results->[0];
@@ -242,6 +243,7 @@ sub session_url {
 
     my $results = $class->_get_results(
 	$som,
+	$connection,
 	);
 
     my $url = @$results && $results->[0];

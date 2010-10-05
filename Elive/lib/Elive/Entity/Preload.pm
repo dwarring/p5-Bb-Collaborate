@@ -124,7 +124,7 @@ sub upload {
 					       ->value($binary_data)),
 	    );
 
-	$self->_check_for_errors($som);
+	$connection->_check_for_errors($som);
     }
 
     return $self;
@@ -156,9 +156,7 @@ sub download {
 				preloadId => Elive::Util::_freeze($preload_id, 'Int'),
 	);
 
-    $self->_check_for_errors($som);
-
-    my $results = $self->_get_results($som);
+    my $results = $self->_get_results($som, $connection);
 
     return  Elive::Util::_hex_decode($results->[0])
 	if $results->[0];

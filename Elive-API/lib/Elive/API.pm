@@ -12,7 +12,7 @@ use Carp;
 
 =head1 NAME
 
-    Elive::API - Base class for the Elive Standard Bridge (V2)
+    Elive::API - Base class for the Elive Standard Bridge API (V2)
 
 =head1 VERSION
 
@@ -71,8 +71,9 @@ __PACKAGE__->mk_classdata(known_adapters => \%KnownAdapters);
 sub _get_results {
     my $class = shift;
     my $som = shift;
+    my $connection = shift;
 
-    $class->_check_for_errors($som);
+    $connection->_check_for_errors($som);
 
     my @result = ($som->result, $som->paramsout);
 
@@ -88,13 +89,13 @@ sub _get_results {
 
      my $e1 = Elive::API->connect('http://myServer.com/test1', 'user1', 'pass1');
 
-     Elive::API->connect('http://myServer.com/test2', 'user2', 'pass2');
-     my $e2 = Elive->connection;
+     Elive::API->connect('http://user2:pass2@myServer.com/test2');
+     my $e2 = Elive::API->connection;
 
 Connects to an Elluminate server instance. Dies if the connection could not
 be established. If, for example, the SOAP connection or authentication failed.
 
-See also Elive::Connection.
+See also Elive::Connection::API.
 
 =cut
 
@@ -214,6 +215,7 @@ sub delete {
 
     my $results = $self->_get_results(
 	$som,
+	$self->connection,
 	);
 
     my $success = @$results && $results->[0];

@@ -1,9 +1,6 @@
 .cvsignore
 .releaserc
-build_jnlp.pl
 Changes
-Debian_CPANTS.txt-3549
-Debian_CPANTS.txt-6675
 inc/Module/Install.pm
 inc/Module/Install/Base.pm
 inc/Module/Install/Can.pm
@@ -80,5 +77,3 @@ t/Elive/MockSOM.pm
 t/kwalitee.t
 t/pod-coverage.t
 t/pod.t
-webservice.event
-webservice.wsdl

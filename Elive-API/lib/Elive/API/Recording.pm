@@ -83,6 +83,7 @@ sub recording_url {
 
     my $results = $class->_get_results(
 	$som,
+	$connection,
 	);
 
     my $url = @$results && $results->[0];

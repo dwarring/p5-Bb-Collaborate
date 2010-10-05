@@ -405,8 +405,9 @@ sub _unpack_as_list {
 sub _get_results {
     my $class = shift;
     my $som = shift;
+    my $connection = shift;
 
-    $class->_check_for_errors($som);
+    $connection->_check_for_errors($som);
 
     my $results_list = $class->_unpack_as_list($som->result);
 
@@ -527,7 +528,7 @@ sub set {
 }
 
 sub _readback {
-    my ($class, $som, $sent_data, $_connection) = @_;
+    my ($class, $som, $sent_data, $connection) = @_;
     #
     # Inserts and updates normally return a copy of the entity
     # after an insert or update. Confirm that the output record contains
@@ -535,6 +536,7 @@ sub _readback {
 
     my $results = $class->_get_results(
 	$som,
+	$connection,
 	);
     #
     # Check that the return response has our inserts
@@ -771,6 +773,7 @@ sub list {
 
     my $results = $class->_get_results(
 	$som,
+	$connection,
 	);
 
     my $rows = $class->_process_results($results, %opt);
@@ -806,6 +809,7 @@ sub _fetch {
 
     my $results = $class->_get_results(
 	$som,
+	$connection,
 	);
 
     my $rows = $class->_process_results($results, %opt);
@@ -941,6 +945,7 @@ sub delete {
 
     my $results = $self->_get_results(
 	$som,
+	$self->connection,
 	);
 
     my $rows = $self->_process_results( $results );

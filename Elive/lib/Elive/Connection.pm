@@ -37,22 +37,10 @@ have multiple connections:
 
     my $connection1
             = Elive::Connection->connect('http://someserver.com/site1',
-                                        'someUser', 'somePass');
+                                        'user1' => 'pass1');
 
     my $connection2
-            = Elive::Connection->connect('http://someserver.com/site2',
-                                         'anotherUser', 'anotherPass');
-
-All entity constructor and retrieval methods support an optional connection
-parameter. For example:
-
-     my $user = Entity::User->retrieve(
-                     [userId => 123456789000],
-                     connection => $connection1,
-                    );
-
-The C<connection> option can be used on all of the following entity methods:
-C<create>, C<insert>, C<list> and C<retrieve>.
+            = Elive::Connection->connect('http://user2:pass2@someserver.com/site2');
 
 =cut
 
@@ -69,7 +57,7 @@ __PACKAGE__->mk_accessors( qw{url user pass _soap debug type} );
                                         type => 'SDK',
     );
 
-    my $url = $ec->url;   # should be 'http://someserver.com/test'
+    my $url = $ec->url;   #  'http://someserver.com/test'
 
 Establishes a logical SOAP connection. Retrieves the login user, to verify
 connectivity and authentication details.
@@ -171,6 +159,55 @@ sub _connect {
     return $self
 }
 
+sub _check_for_errors {
+    my $class = shift;
+    my $som = shift;
+
+    croak "No response from server"
+	unless $som;
+
+    croak $som->fault->{ faultstring } if ($som->fault);
+
+    my $result = $som->result;
+    my @paramsout = $som->paramsout;
+
+    warn YAML::Dump({result => $result, paramsout => \@paramsout})
+	if ($class->debug);
+
+    my @results = ($result, @paramsout);
+
+    foreach my $result (@results) {
+	next unless Scalar::Util::reftype($result);
+    
+	#
+	# Look for Elluminate-specific errors
+	#
+	if ($result->{Code}
+	    && (my $code = $result->{Code}{Value})) {
+
+	    #
+	    # Elluminate error!
+	    #
+	
+	    my $reason = $result->{Reason}{Text};
+
+	    my $trace = $result->{Detail}{Stack}{Trace};
+	    my @stacktrace;
+	    if ($trace) {
+		@stacktrace = (Elive::Util::_reftype($trace) eq 'ARRAY'
+			       ? @$trace
+			       : $trace);
+
+	    }
+
+	    my %seen;
+
+	    my @error = grep {defined($_) && !$seen{$_}++} ($code, $reason, @stacktrace);
+	    Carp::croak join(' ', @error) || YAML::Dump($result);
+	}
+    }
+}
+
 =head2 call
 
     my $som = ....
@@ -230,7 +267,7 @@ sub DESTROY {
 
 =head1 SEE ALSO
 
-L<SOAP::Lite>
+L<Elive::Connection::SDK> L<Elive::Connection::API> L<SOAP::Lite>
 
 =cut
 

@@ -23,7 +23,7 @@ sub connect {
     my ($class, $url, $user, $pass, %opt) = @_;
 
     my $self = $class->SUPER::_connect($url, $user, $pass, %opt);
-    $self->type('SDK');
+    $self->type($opt{type} || 'SDK');
 
     bless $self, $class;
 
@@ -91,6 +91,7 @@ sub call {
 
     die "bad connection type. expected 'SDK', found: ".$self->type
 	unless $self->type eq 'SDK';
+
     return $self->SUPER::call( $cmd, %params );
 }
 

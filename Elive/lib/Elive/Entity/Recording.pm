@@ -84,9 +84,7 @@ sub download {
 				recordingId => $recording_id,
 	);
 
-    $self->_check_for_errors($som);
-
-    my $results = $self->_get_results($som);
+    my $results = $self->_get_results($som, $connection);
 
     return  Elive::Util::_hex_decode($results->[0])
 	if $results->[0];
@@ -155,7 +153,7 @@ sub upload {
 					       ->value($binary_data)),
 	    );
 
-	$self->_check_for_errors($som);
+	$connection->_check_for_errors($som);
     }
 
     return $self;
@@ -298,11 +296,9 @@ sub buildJNLP {
 				%soap_params,
 				);
 
-    $self->_check_for_errors($som);
+    my $results = $self->_get_results($som, $connection);
 
-    my $results = $self->_unpack_as_list($som->result);
-
-    return @$results && Elive::Util::_thaw($results->[0], 'Str');
+    return @$results && $results->[0];
 }
 
 1;

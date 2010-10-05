@@ -37,14 +37,14 @@ SKIP: {
 	lives_ok( sub{$good_som = $connection->call('getSchedulingManager')}, 'legitimate soap call - lives...');
     }
 
-    lives_ok( sub{Elive->_check_for_errors($good_som)}, '...and lives when checked');
+    lives_ok( sub{$connection->_check_for_errors($good_som)}, '...and lives when checked');
 
    my $bad_som;
     {
 	lives_ok( sub{$bad_som = $connection->call('unknownCommandXXX')}, 'call to unknown adapter - intially lives...');
     }
 
-    dies_ok( sub{Elive->_check_for_errors($bad_som)}, '...but dies when checked');
+    dies_ok( sub{$connection->_check_for_errors($bad_som)}, '...but dies when checked');
 }
 
 Elive->disconnect;

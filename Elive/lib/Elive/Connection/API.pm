@@ -38,7 +38,7 @@ sub connect {
     my ($class, $url, $user, $pass, %opt) = @_;
 
     my $self = $class->SUPER::_connect($url, $user, $pass, %opt);
-    $self->type('API');
+    $self->type($opt{type} || 'API');
 
     bless $self, $class;
 
@@ -84,9 +84,10 @@ sub soap {
 	$soap = SOAP::Lite->new();
 	$soap->ns( "http://schemas.xmlsoap.org/soap/envelope" => "soapenv");
 	$soap->ns( "http://sas.elluminate.com/" => "sas");
-
 	$soap->proxy($proxy);
-
+	#
+	# authentication adapted from www.perlmonks.org/index.pl?node_id=657873
+	#
 	my $authoriz = 'Basic '.MIME::Base64::encode_base64($self->user.':'.$self->pass);
 
 	$soap->transport->http_request->headers->push_header('Authorization'=>$authoriz);

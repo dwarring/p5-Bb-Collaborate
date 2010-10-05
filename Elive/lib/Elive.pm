@@ -61,8 +61,8 @@ Elive is a set of Perl bindings and entity definitions for the Elluminate
 I<Live!> SDK.
 
 The Elluminate SDK runs as a SOAP service and can be used to automate the
-raising, launching and management of meetings; and other related entities,
-including users, groups, preloads, recordings and others.
+raising, management and connection to meetings; and other related entities,
+including users, groups, preloads and recordings.
 
 =head1 BACKGROUND
 
@@ -336,55 +336,6 @@ README file.
 
 =cut
 
-sub _check_for_errors {
-    my $class = shift;
-    my $som = shift;
-
-    croak "No response from server"
-	unless $som;
-
-    croak $som->fault->{ faultstring } if ($som->fault);
-
-    my $result = $som->result;
-    my @paramsout = $som->paramsout;
-
-    warn YAML::Dump({result => $result, paramsout => \@paramsout})
-	if ($class->debug);
-
-    my @results = ($result, @paramsout);
-
-    foreach my $result (@results) {
-	next unless Scalar::Util::reftype($result);
-    
-	#
-	# Look for Elluminate-specific errors
-	#
-	if ($result->{Code}
-	    && (my $code = $result->{Code}{Value})) {
-
-	    #
-	    # Elluminate error!
-	    #
-	
-	    my $reason = $result->{Reason}{Text};
-
-	    my $trace = $result->{Detail}{Stack}{Trace};
-	    my @stacktrace;
-	    if ($trace) {
-		@stacktrace = (Elive::Util::_reftype($trace) eq 'ARRAY'
-			       ? @$trace
-			       : $trace);
-
-	    }
-
-	    my %seen;
-
-	    my @error = grep {defined($_) && !$seen{$_}++} ($code, $reason, @stacktrace);
-	    Carp::croak join(' ', @error) || YAML::Dump($result);
-	}
-    }
-}
-
 =head1 SCRIPTS
 
 =head2 elive_query
@@ -430,15 +381,13 @@ see the README file.
 
 =head1 SEE ALSO
 
-Perl Modules (included in the Elive distribution):
+L<Elive::API> - This is a seperate CPAN module that implements the alternate Elluminate I<Live!> Standard Bridge API. 
+
+The following classes are included in this distribution and implement the SDK bindings:
 
 =over 4
 
-=item Elive::Connection - Elluminate SOAP connection
-
-=item Elive::Struct - base class for Elive::Entity
-
-=item Elive::Entity - base class for all elive entities
+=item Elive::Connection::SDK - Elluminate SOAP connection
 
 =item Elive::Entity::Group
 
@@ -538,9 +487,12 @@ such as users, meetings, preloads and meeting participants.
 
 =item Elive does not support hosted (SAS) systems
 
-The Elive distribution currently supports only the installed server version of
-Elluminate Live which uses the ELM management layer. The current release does
-not support hosted servers deployed with SAS (Session Administration System).
+The Elive distribution only supports the Elluminate SDK which is implemented
+by ELM (Elluminate Live Manager) session manager. This SDK is not support by
+SAS (Session Administration System).
+
+Update: See also the companion CPAN module L<Elive::API> which is under
+construction and will support the alternate Elluminate I<Live!> standard bridge.
 
 =back
 
