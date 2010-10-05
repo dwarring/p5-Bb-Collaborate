@@ -1,18 +1,16 @@
 #!perl
 use warnings; use strict;
-use Test::More tests => 51;
+use Test::More tests => 47;
 use Test::Exception;
 use Test::Builder;
 
 use lib '.';
 use t::Elive;
 
-BEGIN {
-    use_ok('Elive');
-    use_ok( 'Elive::Entity::Preload' );
-    use_ok( 'Elive::Entity::Meeting' );
-    use_ok ('Elive::Util');
-};
+use Elive;
+use Elive::Entity::Preload;
+use Elive::Entity::Meeting;
+use Elive::Util;
 
 our $t = Test::Builder->new;
 my $class = 'Elive::Entity::Preload' ;
@@ -32,8 +30,7 @@ SKIP: {
     my %result = t::Elive->test_connection(only => 'real');
     my $auth = $result{auth};
 
-    skip ($result{reason} || 'skipping live tests',
-	45)
+    skip ($result{reason} || 'skipping live tests', 45)
 	unless $auth;
 
     my $connection_class = $result{class};
