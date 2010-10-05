@@ -1,7 +1,7 @@
 #!perl
 use warnings; use strict;
 use Test::Builder;
-use Test::More tests => 17;
+use Test::More tests => 18;
 use Test::Exception;
 
 use lib '.';
@@ -11,6 +11,7 @@ use Elive;
 use Elive::Connection;
 use Elive::Entity::Recording;
 use Elive::Entity::Meeting;
+use XML::Simple;
 
 my $class = 'Elive::Entity::Recording';
 
@@ -67,8 +68,7 @@ SKIP: {
     my %result = t::Elive->test_connection(only => 'real');
     my $auth = $result{auth};
 
-    skip ($result{reason} || 'skipping live tests',
-	15)
+    skip ($result{reason} || 'skipping live tests', 16)
 	unless $auth;
 
     my $connection_class = $result{class};
@@ -126,6 +126,7 @@ SKIP: {
 	);
 
     ok($recordingJNLP && !ref($recordingJNLP), 'got recording JNLP');
+    lives_ok(sub {XMLin($recordingJNLP)}, 'JNLP is valid XML (XHTML)');
     ok(my $web_url = $recording->web_url, 'got recording web_url()');
 		
     $recording = undef;

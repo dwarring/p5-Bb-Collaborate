@@ -1,6 +1,6 @@
 #!perl
 use warnings; use strict;
-use Test::More tests => 40;
+use Test::More tests => 41;
 use Test::Exception;
 use Test::Builder;
 use version;
@@ -15,6 +15,8 @@ use Elive::Entity::Meeting;
 use Elive::Entity::MeetingParameters;
 use Elive::Entity::ServerParameters;
 use Elive::Entity::ParticipantList;
+
+use XML::Simple;
 
 our $t = Test::Builder->new;
 our $class = 'Elive::Entity::Meeting' ;
@@ -104,7 +106,7 @@ SKIP: {
     # This is a far as we can currently go with a mock connection
     ########################################################################
 
-    skip ($result{reason} || 'skipping live tests', 27)
+    skip ($result{reason} || 'skipping live tests', 28)
 	if $connection_class->isa('t::Elive::MockConnection');
 
     my %meeting_server_data = (
@@ -199,7 +201,8 @@ SKIP: {
 			  )},
 		'$meeting->buildJNLP - lives');
 
-	ok($meetingJNLP && !ref($meetingJNLP), 'got meeting JNLP')
+	ok($meetingJNLP && !ref($meetingJNLP), 'got meeting JNLP');
+	lives_ok(sub {XMLin($meetingJNLP)}, 'JNLP is valid XML (XHTML)');
     };
 
     #
