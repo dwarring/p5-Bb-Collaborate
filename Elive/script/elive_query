@@ -26,6 +26,9 @@ use UNIVERSAL;
 
 use IO::Interactive;
 
+use URI;
+use URI::Escape;
+
 =head1 NAME
 
 elive_query
@@ -560,10 +563,25 @@ sub _getopt {
 }
 
 sub _connect {
-    my ($url,%options) = @_;
+    my ($url, %options) = @_;
 
     my $username = $options{username};
     my $password = $options{password};
+
+    unless ($username && $password) {
+	#
+	# look for credentials encoded in the uri
+	#
+	my $uri_obj = URI->new($url, 'http');
+	my $userinfo = $uri_obj->userinfo; # credentials supplied in URI
+
+	if ($userinfo) {
+	    my ($uri_user, $uri_pass) = split(':', $userinfo, 2);
+	    $username ||= URI::Escape::uri_unescape($uri_user);
+	    $password ||= URI::Escape::uri_unescape($uri_pass)
+		if $uri_pass;
+	}
+    }
 
     $username ||= Elive::Util::prompt('Username: ');
 

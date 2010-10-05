@@ -17,6 +17,9 @@ use Elive::Entity::Meeting;
 use Elive::Entity::Preload;
 use Elive::Entity::User;
 
+use URI;
+use URI::Escape;
+
 =head1 NAME
 
 elive_raise_meeting
@@ -148,11 +151,6 @@ sub main {
     ($url = shift @ARGV)
 	or pod2usage("missing url argument");
 
-    unless (defined $username && $username ne '') {
-	$username = 'serversupport';
-	warn "Using default SDK username: $username\n";
-    }
-
     $recording = lc($recording);
     #
     # accept some of the other symonymns for the various modes as
@@ -174,7 +172,23 @@ sub main {
 	$SIG{__DIE__} = \&Carp::confess;
     }
 
-    $url ||= Elive::Util::prompt('Elluminate Live! server: ');
+    $url ||= Elive::Util::prompt("Url ('http://...'): ");
+
+    unless ($username && $password) {
+	#
+	# look for credentials encoded in the uri
+	#
+	my $uri_obj = URI->new($url, 'http');
+	my $userinfo = $uri_obj->userinfo; # credentials supplied in URI
+
+	if ($userinfo) {
+	    my ($uri_user, $uri_pass) = split(':', $userinfo, 2);
+	    $username ||= URI::Escape::uri_unescape($uri_user);
+	    $password ||= URI::Escape::uri_unescape($uri_pass)
+		if $uri_pass;
+	}
+    }
+
     $username ||= Elive::Util::prompt('Username: ');
     $password ||= Elive::Util::prompt('Password: ', password => 1);
 
