@@ -1,4 +1,4 @@
-package Elive::Connection::SAS;
+package Elive::Connection::API;
 use warnings; use strict;
 
 use Class::Accessor;
@@ -16,6 +16,19 @@ use base qw{Elive::Connection};
 use Elive;
 use Elive::Util;
 
+=head1 NAME
+
+Elive::Connection::API -  Manage Elluminate SOAP v2 endpoint connections.
+
+=head1 DESCRIPTION
+
+This module handles logical connections to the C</v2/webservice.event> endpoint
+on the Elluminate server. This endpoint implements the Standard Bridge API. See
+the L<Elive::API> CPAN module, which uses this connection and implements
+bindings.
+
+=cut
+
 #
 # cache singleton records
 #
@@ -25,7 +38,7 @@ sub connect {
     my ($class, $url, $user, $pass, %opt) = @_;
 
     my $self = $class->SUPER::_connect($url, $user, $pass, %opt);
-    $self->type('SAS');
+    $self->type('API');
 
     bless $self, $class;
 
@@ -43,8 +56,8 @@ sub disconnect {
 sub call {
     my ($self, $cmd, %params) = @_;
 
-    die "bad connection type. expected 'SAS', found: ".$self->type
-	unless $self->type eq 'SAS';
+    die "bad connection type. expected 'API', found: ".$self->type
+	unless $self->type eq 'API';
 
     return $self->SUPER::call( $cmd, %params );
 }
@@ -97,10 +110,10 @@ sub scheduling_manager {
 
     unless ($scheduling_manager) {
 
-	eval {require Elive::SAS::SchedulingManager};
+	eval {require Elive::API::SchedulingManager};
 	die $@ if $@;
 
-	$scheduling_manager = Elive::SAS::SchedulingManager->get(connection => $self);
+	$scheduling_manager = Elive::API::SchedulingManager->get(connection => $self);
 	$self->_scheduling_manager($scheduling_manager);
     }
 
@@ -120,10 +133,10 @@ sub server_configuration {
 
     unless ($server_configuration) {
 
-	eval {require Elive::SAS::ServerConfiguration};
+	eval {require Elive::API::ServerConfiguration};
 	die $@ if $@;
 
-	$server_configuration = Elive::SAS::ServerConfiguration->get(connection => $self);
+	$server_configuration = Elive::API::ServerConfiguration->get(connection => $self);
 	$self->_server_configuration($server_configuration);
     }
 
@@ -143,10 +156,10 @@ sub server_versions {
 
     unless ($server_versions) {
 
-	eval {require Elive::SAS::ServerVersions};
+	eval {require Elive::API::ServerVersions};
 	die $@ if $@;
 
-	$server_versions = Elive::SAS::ServerVersions->get(connection => $self);
+	$server_versions = Elive::API::ServerVersions->get(connection => $self);
 	$self->_server_versions($server_versions);
     }
 

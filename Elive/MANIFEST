@@ -17,7 +17,7 @@ inc/Module/Install/WriteAll.pm
 lib/Elive.pm
 lib/Elive/Array.pm
 lib/Elive/Connection.pm
-lib/Elive/Connection/SAS.pm
+lib/Elive/Connection/API.pm
 lib/Elive/Connection/SDK.pm
 lib/Elive/DAO.pm
 lib/Elive/DAO/Singleton.pm
