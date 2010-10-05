@@ -18,7 +18,7 @@ __PACKAGE__->has_metadata('_deleted');
 
 =head1 NAME
 
-    Elive::DAO - Base class for Elive Data Access Objects
+    Elive::DAO - Abstract class for Elive Data Access Objects
 
 =head1 DESCRIPTION
 
@@ -578,16 +578,13 @@ sub insert {
 	$params{$_} = $val unless exists $params{$_};
     }
 
-    my $db_data = $class->_freeze({%insert_data, %params}, mode => 'insert');
+    my $data_params = $class->_freeze({%insert_data, %params}, mode => 'insert');
 
     my $adapter = delete $opt{adapter} || 'create'.$class->entity_name;
 
     $class->check_adapter($adapter, 'c');
 
-    my $som = $connection->call($adapter,
-				%$db_data,
-				%params,
-	);
+    my $som = $connection->call($adapter, %$data_params);
 
     my @rows = $class->_readback($som, $insert_data, $connection);
 
@@ -714,12 +711,9 @@ sub update {
 
     $self->check_adapter($adapter);
 
-    my $db_updates = $self->_freeze({%update_data, %params}, mode => 'update');
+    my $data_params = $self->_freeze({%update_data, %params}, mode => 'update');
 
-    my $som = $self->connection->call($adapter,
-				      %$db_updates,
-				      %params,
-	);
+    my $som = $self->connection->call($adapter, %$data_params);
 
     my $class = ref($self);
 
