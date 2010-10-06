@@ -277,7 +277,7 @@ sub _readback {
     # complete the readback check.
     #
     my $result = $som->result;
-    return $class->SUPER::_readback($som, $updates, @args)
+    return $class->SUPER::_readback($som, $updates, $connection, @args)
 	if Elive::Util::_reftype($result);
     #
     # Ok, we need to handle our own error checking and readback.
