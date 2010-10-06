@@ -116,7 +116,7 @@ SKIP: {
     );
 
     #
-    # seats are updated via the updateMeeting adapter
+    # seats are updated via the updateMeeting command
     #
     ok($meeting->update({seats => 2}), 'can update number of seats in the meeting');
 

@@ -184,7 +184,7 @@ sub set_presentation {
 	or croak "Not connected";
 
     my $som = $connection->call(
-	$class->check_adapter( 'setSessionPresentation'),
+	'setSessionPresentation',
 	sessionId => Elive::Util::_freeze($session_id, 'Int'),
 	presentationIds => Elive::Util::_freeze($presentation_ids, 'Elive::API::List'),
 	);
@@ -236,10 +236,7 @@ sub session_url {
 
     $params{displayName} = Elive::Util::_freeze($display_name, 'Str');
 
-    my $som = $connection->call(
-	$class->check_adapter('buildSessionUrl'),
-	%params,
-	);
+    my $som = $connection->call('buildSessionUrl' => %params);
 
     my $results = $class->_get_results(
 	$som,

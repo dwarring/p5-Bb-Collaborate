@@ -76,10 +76,7 @@ sub recording_url {
 
     $params{recordingId} = Elive::Util::_freeze($recording_id, 'Int');
 
-    my $som = $connection->call(
-	$class->check_adapter('buildRecordingUrl'),
-	%params,
-	);
+    my $som = $connection->call('buildRecordingUrl' => %params);
 
     my $results = $class->_get_results(
 	$som,
@@ -100,7 +97,7 @@ sub recording_url {
 sub list {
     my ($self, %opt) = @_;
 
-    $opt{adapter} ||= 'listRecordingLong';
+    $opt{command} ||= 'listRecordingLong';
 
     return $self->SUPER::list(%opt);
 }

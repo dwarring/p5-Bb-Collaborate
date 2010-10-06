@@ -77,7 +77,7 @@ sub insert {
     my ($class, $insert_data, %opt) = @_;
 
     my $self = $class->SUPER::insert($insert_data,
-				     adapter => 'uploadMultimediaContent',
+				     command => 'uploadMultimediaContent',
 				     %opt);
 
     return $self;

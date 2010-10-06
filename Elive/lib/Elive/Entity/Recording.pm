@@ -75,12 +75,10 @@ sub download {
     die "unable to get a recording_id"
 	unless $recording_id;
 
-    my $adapter = $self->check_adapter('getRecordingStream');
-
     my $connection = $self->connection
 	or die "not connected";
 
-    my $som = $connection->call($adapter,
+    my $som = $connection->call('getRecordingStream',
 				recordingId => $recording_id,
 	);
 
@@ -140,12 +138,10 @@ sub upload {
 
     if ($size && $binary_data) {
 
-	my $adapter = $class->check_adapter('streamRecording');
-
 	my $connection = $self->connection
 	    or die "not connected";
 
-	my $som = $connection->call($adapter,
+	my $som = $connection->call('streamRecording',
 				    recordingId => $self->recordingId,
 				    length => $size,
 				    stream => (SOAP::Data
@@ -290,11 +286,7 @@ sub buildJNLP {
 	$soap_params{'userId'} = Elive::Util::_freeze($_, 'Str');
     }
 
-    my $adapter = $self->check_adapter('buildRecordingJNLP');
-
-    my $som = $connection->call($adapter,
-				%soap_params,
-				);
+    my $som = $connection->call('buildRecordingJNLP', %soap_params);
 
     my $results = $self->_get_results($som, $connection);
 

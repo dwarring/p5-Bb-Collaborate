@@ -39,35 +39,6 @@ Implements Elive Standard Bridge V2 (API) API bindings
 
 =cut
 
-our %KnownAdapters = (
-
-    buildSessionUrl => 'r',
-    buildRecordingUrl => 'r',
-
-    getSchedulingManager => 'r',
-    getServerConfiguration => 'r',
-    getServerVersions => 'r',
- 
-    listPresentationContent => 'r',
-    listRecordingLong => 'r',
-    listRecordingShort => 'r',
-    listSession => 'r',
-    listSessionAttendance => 'r',
-    listSessionTelephony => 'r',
-
-    removeSession => 'r',
-
-    setSession => 'cu',
-    setSessionMultimedia => 'u',
-    setSessionTelephony => 'u',
-
-    uploadMultimediaContent => 'c',
-    uploadPresentationContent => 'c',
-
-    );
-
-__PACKAGE__->mk_classdata(known_adapters => \%KnownAdapters);
-
 sub _get_results {
     my $class = shift;
     my $som = shift;
@@ -139,7 +110,7 @@ __PACKAGE__->mk_classdata('connection');
 sub update {
     my ($class, $data, %opt) = @_;
 
-    $opt{adapter} ||= 'set'.$class->entity_name;
+    $opt{command} ||= 'set'.$class->entity_name;
 
     return $class->SUPER::update($data, %opt);
 }
@@ -151,10 +122,13 @@ sub update {
 sub _fetch {
     my ($class, $key, %opt) = @_;
 
-    $opt{adapter} ||= $class->check_adapter(
+    #
+    # Let the connection resolve which command to use
+    #
+
+    $opt{command} ||=
 	['get'.$class->entity_name,
-	 'list'.$class->entity_name],
-	'r');				    
+	 'list'.$class->entity_name];
 
     return $class->SUPER::_fetch($key, %opt);
 }
@@ -166,14 +140,14 @@ sub _fetch {
 sub insert {
     my ($class, $data, %opt) = @_;
 
-    $opt{adapter} ||= 'set'.$class->entity_name;
+    $opt{command} ||= 'set'.$class->entity_name;
 
     return $class->SUPER::insert($data, %opt);
 }
 
 =head2 list
 
-Generic list method. Most adapters allow a ranging expression to narrow the
+Generic list method. Most commands allow a ranging expression to narrow the
 selection. This is passed in using the C<filter> option. For example:
 
     my $bobs_sessions = Elive::API::Session->list(filter => {userId => 'bob'});
@@ -185,7 +159,7 @@ sub list {
 
     my $filter = delete $opt{filter};
 
-    $opt{adapter} ||= $self->check_adapter('list'.$self->entity_name);
+    $opt{command} ||= 'list'.$self->entity_name;
 
     return $self->_fetch( $self->_freeze($filter), %opt );
 }
@@ -207,11 +181,9 @@ sub delete {
 	$_ => shift( @id );
     } @primary_key;
 
-    my $adapter = $opt{adapter} || 'remove'.$self->entity_name;
-    $self->check_adapter($adapter);
+    my $command = $opt{command} || 'remove'.$self->entity_name;
 
-    my $som = $self->connection->call($adapter,
-				      @params);
+    my $som = $self->connection->call($command, @params);
 
     my $results = $self->_get_results(
 	$som,

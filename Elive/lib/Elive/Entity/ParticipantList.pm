@@ -69,10 +69,10 @@ sub _retrieve_all {
     my ($class, $vals, %opt) = @_;
 
     #
-    # No getXxxx adapter use listXxxx
+    # No getXxxx command use listXxxx
     #
     return $class->SUPER::_retrieve_all($vals,
-				       adapter => 'listParticipants',
+				       command => 'listParticipants',
 				       %opt);
 }
 
@@ -149,17 +149,16 @@ sub update {
 
 	#
 	# treat an empty list as an implied reset. The 'setParticipantList'
-        # adapter will barf otherwise.
+        # command will barf otherwise.
 	#
 	goto sub {$self->reset(%opt)};
     }
 
-    my $adapter = $opt{adapter} || $self->check_adapter('setParticipantList');
-
     if ($self->is_changed) {
-	$self->SUPER::update(undef,
-			     adapter => $adapter,
-			     %opt);
+
+	$opt{command} ||= 'setParticipantList';
+	$self->SUPER::update(undef, %opt);
+
     }
     elsif ($self->_is_lazy) {
 	#
@@ -206,10 +205,9 @@ sub reset {
     my %updates
 	= (participants => [{user => $facilitator_id, role => 2}]);
 
-    return $self->update(\%updates,
-		  adapter => $self->check_adapter('resetParticipantList'),
-		  %opt,
-	);
+    $opt{command} ||= 'resetParticipantList';
+
+    return $self->update(\%updates, %opt);
 }
 
 =head2 insert

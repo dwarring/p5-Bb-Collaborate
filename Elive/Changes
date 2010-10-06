@@ -1,17 +1,28 @@
 Revision history for Elive
 
 0.74_1  tba
-        Essential changes to implement Elive::SAS - A new companion CPAN
-        module that implements the ELM Standard V2 Bridge. Note dependencies
-        on Elive, Elive::Connection::SAS, Elive::Array & Elive::DAO.
 
-	Elive::SAS Support:
-        - Factored out Elive::DAO (Data Access Object) from Elive::Entity
-	- New mixin class Elive::DAO::Singleton
-        - New classes Elive::Connection::SDK & Elive::Connection::SAS
+        Essential changes to implement Elive::API - A new companion CPAN module
+        that implements bindings to the ELM Standard API Bridge V2.
+
+        Elive::API has a dependancy on the Elive bundle and actively uses classes
+        Elive::Connection::API, Elive::Array, Elive::DAO and Elive::DAO::Singleton.
+
+	Refactoring to support Elive::API:
+        - Elive::Entity gutted to only contain ELM specialisations. The bulk of it
+          has been moved to a new class, Elive::DAO.
+	- Added new mixin class Elive::DAO::Singleton
+        - Add subclasses Elive::Connection::SDK & Elive::Connection::API
+        - Elive::_check_for_errors moved to Elive::Connection
+        - Elive known_adapter() && check_adapter() methods replaced by
+          known_command() and check_command() methods in Elive::Connection::SDK
+          and Elive::Connection::API
 
         Bug fixes:
-        - added 'adapter' property to Elive::Entity::Meeting
+        - Added 'adapter' property to Elive::Entity::Meeting
+
+        Enhancements:
+        - General support for credentials embedded in urls, E.g: http://user@host.org/inst
 
 0.73    3rd September 2010
         - Added script tests to manifest

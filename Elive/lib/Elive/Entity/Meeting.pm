@@ -213,10 +213,8 @@ sub list_user_meetings_by_date {
 	die 'usage: $class->user_meetings_by_date([$user, $start_date, $end_date])'
     }
 
-    my $adapter = $class->check_adapter('listUserMeetingsByDate');
-
     return $class->_fetch($class->_freeze(\%fetch_params),
-			  adapter => $adapter,
+			  command => 'listUserMeetingsByDate',
 			  %opt,
 	);
 }
@@ -250,12 +248,11 @@ sub add_preload {
     $params{meetingId} ||= $meeting_id;
     $params{preloadId} = $preload_id;
 
-    my $adapter = $self->check_adapter('addMeetingPreload');
-
     my $connection = $self->connection
 	or die "not connected";
 
-    my $som = $connection->call($adapter, %{ $self->_freeze( \%params ) });
+    my $som = $connection->call('addMeetingPreload',
+				%{ $self->_freeze( \%params ) });
 
     return $connection->_check_for_errors($som);
 }
@@ -279,13 +276,11 @@ sub check_preload {
     die "unable to determine meeting_id"
 	unless $meeting_id;
 
-    my $adapter = $self->check_adapter('checkMeetingPreload');
-
     my $connection = $self->connection
 	or die "not connected";
 
     my $som = $connection
-	->call($adapter,
+	->call('checkMeetingPreload',
 	       preloadId => Elive::Util::_freeze($preload_id, 'Int'),
 	       meetingId => Elive::Util::_freeze($meeting_id, 'Int'),
 	       );
@@ -316,15 +311,13 @@ sub is_participant {
     die "unable to determine meeting_id"
 	unless $meeting_id;
 
-    my $adapter = $opt{adapter} || 'isParticipant';
-
-    $self->check_adapter($adapter);
-
     my $connection = $self->connection
         or die "not connected";
 
+    my $command = $opt{command} || 'isParticipant';
+
     my $som = $connection
-        ->call($adapter,
+        ->call($command,
                userId => Elive::Util::_freeze($user, 'Str'),
                meetingId => Elive::Util::_freeze($meeting_id, 'Int'),
                );
@@ -347,7 +340,7 @@ Checks that the user is a meeting moderator.
 sub is_moderator {
     my ($self, $user, %opt) = @_;
 
-    return $self->is_participant($user, %opt, adapter => 'isModerator');
+    return $self->is_participant($user, %opt, command => 'isModerator');
 }
 
 sub _readback_check {
@@ -392,9 +385,7 @@ sub remove_preload {
     my $connection = $self->connection
 	or die "not connected";
 
-    my $adapter = $self->check_adapter('deleteMeetingPreload');
-
-    my $som = $connection->call($adapter,
+    my $som = $connection->call('deleteMeetingPreload',
 				meetingId => Elive::Util::_freeze($meeting_id, 'Int'),
 				preloadId => Elive::Util::_freeze($preload_id, 'Int'),
 				);
@@ -466,11 +457,7 @@ sub buildJNLP {
 	$soap_params{m{^\d+$}x? 'userId' : 'userName'} = Elive::Util::_freeze($_, 'Str');
     }
 
-    my $adapter = $self->check_adapter('buildMeetingJNLP');
-
-    my $som = $connection->call($adapter,
-				%soap_params,
-				);
+    my $som = $connection->call('buildMeetingJNLP', %soap_params);
 
     my $results = $self->_get_results($som, $connection);
 

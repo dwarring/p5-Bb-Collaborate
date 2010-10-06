@@ -80,7 +80,7 @@ sub insert {
     my ($class, $insert_data, %opt) = @_;
 
     my $self = $class->SUPER::insert($insert_data,
-				     adapter => 'uploadPresentationContent',
+				     command => 'uploadPresentationContent',
 				     %opt);
 
     return $self;

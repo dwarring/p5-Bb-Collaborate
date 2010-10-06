@@ -41,7 +41,7 @@ SKIP: {
    isa_ok($reports->[0], 'Elive::Entity::Report', 'reports[0]');
 
    #
-   # note that the list method (listReports adapter) does not return the
+   # note that the list method (listReports command) does not return the
    # list body. We need to refetch
    my $report_id;
 

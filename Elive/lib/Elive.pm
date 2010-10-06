@@ -216,61 +216,6 @@ sub debug {
     return $DEBUG || 0;
 }
 
-=head2 check_adapter
-
-    my $adapter1 = Elive->check_adapter([qw{getUser listUser}])
-    my $adapter2 = Elive->check_adapter(deleteUser => 'd')
-
-Find the first known adapter in the list. Raise an error if it's unknown;
-
-See also: elive_lint_config.
-
-=cut
-
-sub check_adapter {
-    my $class = shift;
-    my $adapters = shift;
-    my $crud = shift; #create, read, update or delete
-
-    $adapters = [$adapters]
-	unless Elive::Util::_reftype($adapters) eq 'ARRAY';
-
-    my $usage = "usage: \$class->check_adapter(\$name[,'c'|'r'|'u'|'d'])";
-    die $usage unless @$adapters && $adapters->[0];
-
-    my $known_adapters = $class->known_adapters;
-
-    die "no known adapters for class: $class"
-	unless $known_adapters && (keys %{$known_adapters});
-
-    my ($adapter) = grep {exists $known_adapters->{$_}} @$adapters;
-
-    croak "Unknown adapter(s): @{$adapters}"
-	unless $adapter;
-
-    if ($crud) {
-	$crud = lc(substr($crud,0,1));
-	die $usage
-	    unless $crud =~ m{^[c|r|u|d]$}xi;
-
-	my $adapter_type = $known_adapters->{$adapter};
-	die "misconfigured adapter: $adapter"
-	    unless $adapter_type &&  $adapter_type  =~ m{^[c|r|u|d]+$}xi;
-
-	die "adapter $adapter. Type mismatch. Expected $crud, found $adapter_type"
-	    unless ($crud =~ m{[$adapter_type]}i);
-    }
-
-    return $adapter;
-}
-
-=head2 known_adapters
-
-Returns an array of hash-value pairs for all Elluminate I<Live!> adapters
-required by Elive. This list is cross-checked by the script elive_lint_config. 
-
-=cut
-
 our %Meta_Data;
 
 =head2 has_metadata
@@ -322,8 +267,8 @@ Elluminate Services Errors:
 
 =item   "Unable to determine a command for the key : Xxxx"
 
-This may indicate that the particular command adaptor is is not available
-for your site instance. Please follow the instructions in the README file
+This may indicate that the particular command is is not available for your
+site instance. Please follow the instructions in the README file
 for detecting and repairing missing adapters.
 
 =item   "User [<username>], not permitted to access the command {<command>]"
@@ -381,7 +326,7 @@ see the README file.
 
 =head1 SEE ALSO
 
-L<Elive::API> - This is a seperate CPAN module that implements the alternate Elluminate I<Live!> Standard Bridge API. 
+L<Elive::API> - This is a separate CPAN module that implements the alternate Elluminate I<Live!> Standard Bridge API. 
 
 The following classes are included in this distribution and implement the SDK bindings:
 

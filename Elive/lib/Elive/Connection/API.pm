@@ -29,6 +29,35 @@ bindings.
 
 =cut
 
+our %KnownCommands = (
+
+    buildSessionUrl => 'r',
+    buildRecordingUrl => 'r',
+
+    getSchedulingManager => 'r',
+    getServerConfiguration => 'r',
+    getServerVersions => 'r',
+ 
+    listPresentationContent => 'r',
+    listRecordingLong => 'r',
+    listRecordingShort => 'r',
+    listSession => 'r',
+    listSessionAttendance => 'r',
+    listSessionTelephony => 'r',
+
+    removeSession => 'r',
+
+    setSession => 'cu',
+    setSessionMultimedia => 'u',
+    setSessionTelephony => 'u',
+
+    uploadMultimediaContent => 'c',
+    uploadPresentationContent => 'c',
+
+    );
+
+__PACKAGE__->mk_classdata(known_commands => \%KnownCommands);
+
 #
 # cache singleton records
 #

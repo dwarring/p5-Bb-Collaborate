@@ -35,7 +35,8 @@ SKIP: {
 
    my $bad_som;
     {
-	lives_ok( sub{$bad_som = $connection->call('unknownCommandXXX')}, 'call to unknown adapter - intially lives...');
+	local($connection->known_commands->{'unknownCommandXXX'}) = 'r';
+	lives_ok( sub{$bad_som = $connection->call('unknownCommandXXX')}, 'call to unknown command - intially lives...');
     }
 
     dies_ok( sub{$connection->_check_for_errors($bad_som)}, '...but dies when checked');

@@ -111,12 +111,10 @@ sub upload {
 	#
 	# 2. Now upload data to it
 	#
-	my $adapter = $self->check_adapter('streamPreload');
-
 	my $connection = $self->connection
 	    or die "not connected";
 
-	my $som = $connection->call($adapter,
+	my $som = $connection->call('streamPreload',
 				    preloadId => $self->preloadId,
 				    length => $length,
 				    stream => (SOAP::Data
@@ -147,12 +145,10 @@ sub download {
     die "unable to get a preload_id"
 	unless $preload_id;
 
-    my $adapter = $self->check_adapter('getPreloadStream');
-
     my $connection = $self->connection
 	or die "not connected";
 
-    my $som = $connection->call($adapter,
+    my $som = $connection->call('getPreloadStream',
 				preloadId => Elive::Util::_freeze($preload_id, 'Int'),
 	);
 
@@ -186,14 +182,12 @@ sub import_from_server {
 
     my $params = $opt{param} || {};
 
-    die "missing fileName parameter"
+    die "missing required parameter: fileName"
 	unless $insert_data->{fileName} || $params->{fileName};
 
-    my $adapter = $class->check_adapter('importPreload');
+    $opt{command} ||= 'importPreload',;
 
-    return $class->insert($insert_data,
-			  adapter => $adapter,
-			  %opt);
+    return $class->insert($insert_data, %opt);
 }
 
 =head2 list_meeting_preloads
@@ -210,12 +204,9 @@ sub list_meeting_preloads {
     die 'usage: $preload_obj->list_meeting_preloads($meeting)'
 	unless $meeting_id;
 
-    my $adapter = $self->check_adapter('listMeetingPreloads');
+    $opt{command} ||= 'listMeetingPreloads';
 
-    return $self->_fetch({meetingId => $meeting_id},
-			 adapter => $adapter,
-			 %opt
-	);
+    return $self->_fetch({meetingId => $meeting_id}, %opt);
 }
 
 sub _freeze {

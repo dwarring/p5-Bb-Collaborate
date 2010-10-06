@@ -11,7 +11,7 @@ require SOAP::Lite;
 use URI;
 use URI::Escape qw{};
 
-use base qw{Class::Accessor};
+use base qw{Class::Accessor Class::Data::Inheritable};
 
 use Elive;
 use Elive::Util;
@@ -208,6 +208,61 @@ sub _check_for_errors {
     }
 }
 
+=head2 check_command
+
+    my $command1 = Elive->check_command([qw{getUser listUser}])
+    my $command2 = Elive->check_command(deleteUser => 'd')
+
+Find the first known command in the list. Raise an error if it's unknown;
+
+See also: elive_lint_config.
+
+=cut
+
+sub check_command {
+    my $class = shift;
+    my $commands = shift;
+    my $crud = shift; #create, read, update or delete
+
+    $commands = [$commands]
+	unless Elive::Util::_reftype($commands) eq 'ARRAY';
+
+    my $usage = "usage: \$class->check_command(\$name[,'c'|'r'|'u'|'d'])";
+    die $usage unless @$commands && $commands->[0];
+
+    my $known_commands = $class->known_commands;
+
+    die "no known commands for class: $class"
+	unless $known_commands && (keys %{$known_commands});
+
+    my ($command) = grep {exists $known_commands->{$_}} @$commands;
+
+    croak "Unknown command(s): @{$commands}"
+	unless $command;
+
+    if ($crud) {
+	$crud = lc(substr($crud,0,1));
+	die $usage
+	    unless $crud =~ m{^[c|r|u|d]$}xi;
+
+	my $command_type = $known_commands->{$command};
+	die "misconfigured command: $command"
+	    unless $command_type &&  $command_type  =~ m{^[c|r|u|d]+$}xi;
+
+	die "command $command. Type mismatch. Expected $crud, found $command_type"
+	    unless ($crud =~ m{[$command_type]}i);
+    }
+
+    return $command;
+}
+
+=head2 known_commands
+
+Returns an array of hash-value pairs for all Elluminate I<Live!> commands
+required by Elive. This list is cross-checked by the script elive_lint_config. 
+
+=cut
+
 =head2 call
 
     my $som = ....
@@ -219,6 +274,8 @@ SOAP::SOM object.
 
 sub call {
     my ($self, $cmd, %params) = @_;
+
+    $cmd = $self->check_command($cmd);
 
     my @soap_params = $self->_preamble($cmd);
 

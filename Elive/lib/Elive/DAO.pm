@@ -582,11 +582,11 @@ sub insert {
 
     my $data_params = $class->_freeze({%insert_data, %params}, mode => 'insert');
 
-    my $adapter = delete $opt{adapter} || 'create'.$class->entity_name;
+    my $command = delete $opt{command} || 'create'.$class->entity_name;
 
-    $class->check_adapter($adapter, 'c');
+    $connection->check_command($command => 'c');
 
-    my $som = $connection->call($adapter, %$data_params);
+    my $som = $connection->call($command, %$data_params);
 
     my @rows = $class->_readback($som, $insert_data, $connection);
 
@@ -709,13 +709,13 @@ sub update {
 	    unless defined $update_data{$_};
     }
 
-    my $adapter = $opt{adapter} || 'update'.$self->entity_name;
+    my $command = $opt{command} || 'update'.$self->entity_name;
 
-    $self->check_adapter($adapter);
+    $self->connection->check_command($command => 'u');
 
     my $data_params = $self->_freeze({%update_data, %params}, mode => 'update');
 
-    my $som = $self->connection->call($adapter, %$data_params);
+    my $som = $self->connection->call($command, %$data_params);
 
     my $class = ref($self);
 
@@ -766,10 +766,10 @@ sub list {
     die "misconfigured class $class - has neither a collection_name or entity_name"
 	unless $collection_name;
 
-    my $adapter = $opt{adapter} || 'list'.$collection_name;
-    $class->check_adapter($adapter);
+    my $command = $opt{command} || 'list'.$collection_name;
+    $connection->check_command($command => 'r');
 
-    my $som = $connection->call($adapter, @params);
+    my $som = $connection->call($command, @params);
 
     my $results = $class->_get_results(
 	$som,
@@ -795,16 +795,16 @@ sub _fetch {
     my $connection = $opt{connection} || $class->connection
 	or die "no connection active";
 
-    my $adapter = $opt{adapter} || 'get'.$class->entity_name;
+    my $command = $opt{command} || 'get'.$class->entity_name;
 
-    warn "get: entity name for $class: ".$class->entity_name.", adapter: ".$adapter
+    warn "get: entity name for $class: ".$class->entity_name.", command: ".$command
 	if $class->debug;
 
-    $class->check_adapter($adapter);
+    $connection->check_command($command => 'r');
 
     my $db_query_frozen = $class->_freeze( $db_query );
 
-    my $som = $connection->call($adapter,
+    my $som = $connection->call($command,
 				%{ $db_query_frozen });
 
     my $results = $class->_get_results(
@@ -937,11 +937,10 @@ sub delete {
 	$_ => shift( @id );
     } @primary_key;
 
-    my $adapter = $opt{adapter} || 'delete'.$self->entity_name;
-    $self->check_adapter($adapter);
+    my $command = $opt{command} || 'delete'.$self->entity_name;
+    $self->connection->check_command($command => 'd');
 
-    my $som = $self->connection->call($adapter,
-				      @params);
+    my $som = $self->connection->call($command, @params);
 
     my $results = $self->_get_results(
 	$som,
