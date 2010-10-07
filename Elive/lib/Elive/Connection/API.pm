@@ -63,6 +63,22 @@ __PACKAGE__->mk_classdata(known_commands => \%KnownCommands);
 #
 __PACKAGE__->mk_accessors( qw{_scheduling_manager _server_configuration _server_versions} );
 
+=head2 connect
+
+    my $ec1 = Elive::Connection::API->connect('http://someserver.com/test',
+                                        'user1', 'pass1', debug => 1,
+    );
+
+    my $url1 = $ec1->url;   #  'http://someserver.com/test'
+
+    my $ec2 =  Elive::Connection::API->connect('http://user2:pass2@someserver.com/test', undef, undef, debug => 1);
+    my $url2 = $ec2->url;   #  'http://someserver.com/test'
+
+Establishes a SOAP connection. Retrieves the login user, to verify
+connectivity and authentication details.
+
+=cut
+
 sub connect {
     my ($class, $url, $user, $pass, %opt) = @_;
 
@@ -74,13 +90,32 @@ sub connect {
     return $self;
 }
 
+=head2 disconnect
+
+Closes a connection and frees any resources related to the connection.
+
+=cut
+
 sub disconnect {
     my $self = shift;
 
     $self->SUPER::disconnect;
 
+    $self->_scheduling_manager(undef);
+    $self->_server_configuration(undef);
+    $self->_server_versions(undef);
+
     return;
 }
+
+=head2 call
+
+    my $som = $self->call( $cmd, %params );
+
+Performs an Elluminate SOAP method call. Returns the response as a
+SOAP::SOM object.
+
+=cut
 
 sub call {
     my ($self, $cmd, %params) = @_;
@@ -90,6 +125,14 @@ sub call {
 
     return $self->SUPER::call( $cmd, %params );
 }
+
+=head2 soap
+
+    my $soap_lite_obj = $connection->soap;
+
+Returns the underlying L<SOAP::Lite> object for the connection.
+
+=cut
 
 sub soap {
     my ($self) = shift;

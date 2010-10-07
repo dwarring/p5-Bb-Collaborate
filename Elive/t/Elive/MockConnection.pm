@@ -24,15 +24,20 @@ use t::Elive::MockSOM;
 __PACKAGE__->mk_accessors( qw{mockdb server_details_id} );
 
 sub connect {
+    goto \&_connect;
+}
+
+sub _connect {
     my ($class, $url,  $user, $pass, %opt) = @_;
 
     my $self = {};
     bless $self, $class;
 
     $url ||= 'http://elive_mock_connection';
-    $url =~ s{/$}{};
-    $url =~ s{/webservice\.event$}{};
-    $url =~ s{/v2$}{};
+    $url =~ s{/$}{};                    # lose trailing '/'
+    $url =~ s{/webservice\.event$}{};   # lose endpoint
+    $url =~ s{/v2$}{};                  # lose adapter path
+    $url =~ s{http://(.*)\@}{http://};  # lose credentials
     $self->url($url);
 
     $self->user($user);

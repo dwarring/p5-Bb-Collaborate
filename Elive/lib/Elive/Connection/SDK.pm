@@ -98,6 +98,21 @@ our %KnownCommands = (
 
 __PACKAGE__->mk_classdata(known_commands => \%KnownCommands);
 
+=head2 connect
+
+    my $ec1 = Elive::Connection::SDK->connect('http://someserver.com/test',
+                                        'user1', 'pass1', debug => 1,
+    );
+    my $url1 = $ec1->url;   #  'http://someserver.com/test'
+
+    my $ec2 =  Elive::Connection::SDK->connect('http://user2:pass2@someserver.com/test', undef, undef, debug => 1);
+    my $url2 = $ec2->url;   #  'http://someserver.com/test'
+
+Establishes a SOAP connection. Retrieves the login user, to verify
+connectivity and authentication details.
+
+=cut
+
 sub connect {
     my ($class, $url, $user, $pass, %opt) = @_;
 
@@ -115,6 +130,12 @@ sub connect {
 
     return $self;
 }
+
+=head2 disconnect
+
+Closes a connection and frees any resources related to the connection.
+
+=cut
 
 sub disconnect {
     my $self = shift;
@@ -163,6 +184,15 @@ sub soap {
 
     return $soap;
 }
+
+=head2 call
+
+    my $som = $self->call( $cmd, %params );
+
+Performs an Elluminate SOAP method call. Returns the response as a
+SOAP::SOM object.
+
+=cut
 
 sub call {
     my ($self, $cmd, %params) = @_;

@@ -52,15 +52,17 @@ __PACKAGE__->mk_accessors( qw{url user pass _soap debug type} );
 
 =head2 connect
 
-    my $ec = Elive::Connection->connect('http://someserver.com/test',
+    my $sdk_c1 = Elive::Connection->connect('http://someserver.com/test',
                                         'user1', 'pass1', debug => 1,
                                         type => 'SDK',
     );
 
-    my $url = $ec->url;   #  'http://someserver.com/test'
+    my $url1 = $sdk_c1->url;   #  'http://someserver.com/test'
 
-Establishes a logical SOAP connection. Retrieves the login user, to verify
-connectivity and authentication details.
+    my $sdk_c2 =  Elive::Connection->connect('http://user2:pass2@someserver.com/test', undef, undef, type => 'SDK);
+    my $url2 = $sdk_c2->url;   #  'http://someserver.com/test'
+
+Establishes a SOAP connection. Possible types are: SDK (L<Elive::Connection::SDK>), or 'API' (L<Elive::Connection::SDK>).
 
 =cut
 
@@ -83,15 +85,18 @@ sub connect {
 sub _connect {
     my ($class, $url, $user, $pass, %opt) = @_;
 
+    my $debug = $opt{debug}||0;
+
     $url =~ s{/$}{}x;
 
     my $uri_obj = URI->new($url, 'http');
+    my $userinfo = $uri_obj->userinfo;
 
-    my $uri_path = $uri_obj->path;
+    if ($userinfo) {
 
-    if (my $userinfo = $uri_obj->userinfo) {
-
-	$uri_obj->userinfo('');
+	#
+	# extract and remove any credentials from the url
+	#
 
 	my ($uri_user, $uri_pass) = split(':',$userinfo, 2);
 
@@ -113,6 +118,11 @@ sub _connect {
 	    }
 	}
     }
+    else {
+	warn "no credentials in url: $url" if $debug;
+    }
+
+    my $uri_path = $uri_obj->path;
 
     $pass = '' unless defined $pass;
 
@@ -144,9 +154,12 @@ sub _connect {
 
     $uri_obj->path(File::Spec::Unix->catdir(@path));
 
-    my $debug = $opt{debug}||0;
-
     my $restful_url = $uri_obj->as_string;
+
+    #
+    # ugly
+    #
+    $restful_url =~ s{\Q${userinfo}\E\@}{} if $userinfo;
 
     my $self = {};
     bless $self, $class;
@@ -265,7 +278,7 @@ required by Elive. This list is cross-checked by the script elive_lint_config.
 
 =head2 call
 
-    my $som = ....
+    my $som = $self->call( $cmd, %params );
 
 Performs an Elluminate SOAP method call. Returns the response as a
 SOAP::SOM object.

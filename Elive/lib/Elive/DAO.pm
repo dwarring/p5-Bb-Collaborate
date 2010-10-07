@@ -22,9 +22,8 @@ __PACKAGE__->has_metadata('_deleted');
 
 =head1 DESCRIPTION
 
-This is an abstract class for mapping objects to data.
-
-It provides a simple mapping from the objects to database entities.
+This is an abstract class for retrieving and managing objects mapped to a
+datastore.
 
 =cut
 
@@ -96,14 +95,19 @@ sub url {
 
 =head2 construct
 
-    my $user = Entity::User->construct({userId = 123456,
-                                        loginName => 'demo_user',
-                                        role => {
-                                            roleId => 1
-                                        },
-                                       });
+    my $user = Entity::User->construct(
+            {userId = 123456,
+             loginName => 'demo_user',
+             role => {
+                 roleId => 1
+               }
+             },
+             overwrite => 1,        # overwrite any unsaved changes in cache
+             connection => $conn,   # connection to use
+             copy => 1,             # return a simple blessed uncached object.
+           );
 
-Construct an entity from data.
+Construct an entity from data. A copy is ma
 
 =cut
 
@@ -534,10 +538,7 @@ sub _readback {
     # after an insert or update. Confirm that the output record contains
     # the updates and return it.
 
-    my $results = $class->_get_results(
-	$som,
-	$connection,
-	);
+    my $results = $class->_get_results($som, $connection);
     #
     # Check that the return response has our inserts
     #
@@ -549,10 +550,14 @@ sub _readback {
 
 =head2 insert
 
-    my $new_user = Elive::Entity::User->insert({loginName => 'demo_user',
-                                                email => 'demo.user@test.org',
-                                                role => 1,
-                                               });
+    my $new_user = Elive::Entity::User->insert(
+             {loginName => 'demo_user',
+              email => 'demo.user@test.org'}
+             },
+             connection => $con,   # connection to use,
+             command => $cmd,      # soap command to use
+             param => \%params,    # additional soap params,
+             );
 
 print "inserted user with id: ".$new_user->userId."\n";
 
@@ -643,7 +648,11 @@ as parameters.
     $obj->update;         # save
 
     # change and save foo and bar. All in one go.
-    $obj->update({foo => 'Foo', bar => 'Bar'});
+    $obj->update({foo => 'Foo', bar => 'Bar'},
+                 command => $cmd,      # soap command to use
+                 params => \%params,   # additional soap params,
+                 changed => \@props,   # properties to update,
+                );
 
 =cut
 
@@ -742,7 +751,12 @@ sub update {
 
 =head2 list
 
-    my $users = Elive::Entity::Users->list(filter => 'surname = smith')
+    my $users = Elive::Entity::Users->list(
+		    filter => 'surname = smith',  # filter results (server side)
+		    command => $cmd,              # soap command to use
+		    connection => $conn,          # connection to use
+		    raw => 1,                     # return unblessed data
+                );
 
 Retrieve a list of objects from a table.
 
@@ -804,8 +818,7 @@ sub _fetch {
 
     my $db_query_frozen = $class->_freeze( $db_query );
 
-    my $som = $connection->call($command,
-				%{ $db_query_frozen });
+    my $som = $connection->call($command, %{$db_query_frozen});
 
     my $results = $class->_get_results(
 	$som,
@@ -831,7 +844,11 @@ sub _fetch {
 
 =head2 retrieve
 
-    my $user = Elive::Entity::User->retrieve($user_id)
+    my $user = Elive::Entity::User->retrieve(
+                        $user_id,
+                        reuse => 1,  # use cached data if present.
+                        );
+    
 
 Retrieve a single entity objects by primary key.
 
