@@ -53,7 +53,7 @@ sub main {
 
     print "Checking: $config_file\n";
 
-    my %required_adapters = Elive::Connection::SDK->known_commands;
+    my %required_adapters = %{ Elive::Connection::SDK->known_commands };
     my %found;
 
     my $config = XMLin($config_file,
