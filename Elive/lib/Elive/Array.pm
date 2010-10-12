@@ -75,7 +75,8 @@ Add elements to an array.
 sub add {
     my ($self, @elems) =  @_;
 
-    @elems = grep {defined} @elems;
+    @elems = (map {Scalar::Util::reftype($_)? $_: split(';')} 
+	      grep {defined} @elems);
 
     if (my $element_class = $self->element_class) {
 	foreach (@elems) {

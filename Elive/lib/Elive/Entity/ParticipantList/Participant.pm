@@ -37,6 +37,16 @@ sub _parse {
     my $class = shift;
     local ($_) = shift;
 
+    if (Scalar::Util::blessed($_)
+	&& eval{$_->isa('Elive::Entity::User')}
+	) {
+	#
+	# coerce user to participant
+	#
+	return {user => $_,
+		role => {roleId => 3}};
+    }
+
     return $_ if Scalar::Util::reftype($_);
 
     m{^ \s* (.*?) \s* (= (\d) \s*)? $}x

@@ -446,7 +446,7 @@ sub _readback_check {
     # record, after performing the update. This routine may be
     # run to check that the expected updates have been applied
     #
-    croak "Didn't receive a response for ".$class->entity_name
+    croak "Didn't receive a response".($opt{command}? ' for '.$opt{command}: '').' on '.$class->entity_name
 	unless @$rows;
 
     foreach my $row (@$rows) {
@@ -532,7 +532,7 @@ sub set {
 }
 
 sub _readback {
-    my ($class, $som, $sent_data, $connection) = @_;
+    my ($class, $som, $sent_data, $connection, %opt) = @_;
     #
     # Inserts and updates normally return a copy of the entity
     # after an insert or update. Confirm that the output record contains
@@ -543,7 +543,7 @@ sub _readback {
     # Check that the return response has our inserts
     #
     my $rows = $class->_process_results( $results );
-    $class->_readback_check($sent_data, $rows);
+    $class->_readback_check($sent_data, $rows, %opt);
 
     return @$rows;
 }
@@ -585,15 +585,15 @@ sub insert {
 	$params{$_} = $val unless exists $params{$_};
     }
 
-    my $data_params = $class->_freeze({%insert_data, %params}, mode => 'insert');
+    my $data_params = $class->_freeze({%insert_data, %params});
 
-    my $command = delete $opt{command} || 'create'.$class->entity_name;
+    my $command = $opt{command} || 'create'.$class->entity_name;
 
     $connection->check_command($command => 'c');
 
     my $som = $connection->call($command, %$data_params);
 
-    my @rows = $class->_readback($som, $insert_data, $connection);
+    my @rows = $class->_readback($som, $insert_data, $connection, %opt);
 
     my @objs = (map {$class->construct( $_, connection => $connection )}
 		@rows);
@@ -691,12 +691,6 @@ sub update {
     my @updated_properties = ($opt{changed}
 			      ? @{$opt{changed}} 
 			      : $self->is_changed);
-    #
-    # Nothing to update
-    #
-
-    return $self unless @updated_properties 
-	|| keys %params;
 
     my %primary_key = map {$_ => 1} ($self->primary_key);
 
@@ -722,13 +716,13 @@ sub update {
 
     $self->connection->check_command($command => 'u');
 
-    my $data_params = $self->_freeze({%update_data, %params}, mode => 'update');
+    my $data_params = $self->_freeze({%update_data, %params});
 
     my $som = $self->connection->call($command, %$data_params);
 
     my $class = ref($self);
 
-    my @rows = $class->_readback($som, \%update_data, $self->connection);
+    my @rows = $class->_readback($som, \%update_data, $self->connection, %opt);
     #
     # refresh the object from the database read-back
     #
@@ -833,12 +827,8 @@ sub _fetch {
     #
     return []
 	unless @$rows;
-    #
-    # Check that the return matches our query
-    #
-    my $read_back_query = $opt{readback} || $db_query;
 
-    $class->_readback_check($read_back_query, $rows);
+    $class->_readback_check($db_query, $rows, %opt);
     return [map {$class->construct( $_, connection => $connection )} @$rows];
 }
 

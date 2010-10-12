@@ -13,7 +13,7 @@ __PACKAGE__->entity_name('User');
 __PACKAGE__->collection_name('Users');
 
 has 'userId' => (is => 'rw', isa => 'Str', required => 1,
-		 documentation => 'user identifier (usually numeric)');
+		 documentation => 'user identifier (numeric, unless LDAP configured)');
 __PACKAGE__->primary_key('userId');
 __PACKAGE__->params(userName => 'Str');
 

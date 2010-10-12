@@ -30,9 +30,10 @@ Add additional participants
 =cut
 
 sub add {
-    my ($class, @args) = @_;
+    my ($class, @elems) = @_;
 
-    my @participants = map {Elive::Entity::ParticipantList::Participant->_parse($_)} @args;
+    @elems = map {Scalar::Util::reftype($_)? $_: split(';')} grep {defined} @elems;
+    my @participants = map {Elive::Entity::ParticipantList::Participant->_parse($_)} @elems;
 
     return $class->SUPER::add(@participants);
 }

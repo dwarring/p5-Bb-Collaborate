@@ -1,24 +1,26 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 6;
+use Test::More tests => 4;
 use Test::Warn;
 
 package main;
 
-BEGIN {
-    use_ok( 'Elive::Connection' );
-    use_ok( 'Elive::Entity::Group' );
-    use_ok( 'Elive::Entity::ParticipantList' );
-};
+use Elive::Connection;
+use Elive::Entity::Group;
+use Elive::Entity::ParticipantList;
 
 use Scalar::Util;
 
-my $URL1 = 'http://test1.org';
+my $URL1 = 'http://user:pass@test1.org';
+my $URL1_no_auth = 'http://test1.org';
 
 my $K1 = '1256168907389';
 my $K2 = '112233445566';
 my $K3 = '111222333444';
-my $C1 = Elive::Connection->connect($URL1);
+my $C1 = Elive::Connection->_connect($URL1);
+my $C2 = Elive::Connection->_connect($URL1_no_auth);
+
+is ($C1->url, $C2->url, 'credentials stripped from url');
 
 Elive->connection($C1);
 
@@ -32,7 +34,7 @@ my $user_k2 =  Elive::Entity::User->construct(
      loginName => 'repeat'},
     );
 
-is(substr($user_k1->url, 0, length($URL1)), $URL1, 'object url is based on connection url');
+is(substr($user_k1->url, 0, length($URL1_no_auth)), $URL1_no_auth, 'object url is based on connection url');
 
 my $group_k1 = Elive::Entity::Group->construct(
     {
