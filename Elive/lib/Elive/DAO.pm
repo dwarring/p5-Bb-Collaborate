@@ -227,6 +227,36 @@ sub _freeze {
 # _thaw - perform database to perl type conversions
 #
 
+sub __dereference_adapter {
+    my $class = shift;
+    my $db_data = shift;
+    my $path = shift;
+
+    my $adapter_found;
+    my $entity_data;
+
+    if (Elive::Util::_reftype($db_data) eq 'HASH') {
+
+	my %adapters;
+	@adapters{ grep {m{(Adapter|Response)$}} keys %$db_data } = undef;
+
+	my ($adapter) = grep {exists $adapters{$_}} ($class->entity_name.'Adapter',
+						      $class->entity_name.'Response');					
+
+	if ($adapter) {
+	    delete $adapters{ $adapter };
+	    $entity_data = $db_data->{$adapter};
+	    $$path .= $adapter;
+	}
+
+	my @unknown_adapters = sort keys %adapters;
+	die "unknown adapters in response:: @unknown_adapters"
+	    if @unknown_adapters;
+    }
+
+    return $entity_data;
+}
+
 sub _thaw {
     my $class = shift;
     my $db_data = shift;
@@ -234,35 +264,8 @@ sub _thaw {
 
     $path .= '/';
 
-    my $entity_data;
-    my $adapter_found;
-
-    if (Elive::Util::_reftype($db_data) eq 'HASH') {
-
-	my ($response_tag) =  grep {exists $db_data->{$_}} ($class->entity_name.'Adapter',
-							    $class->entity_name.'Response');					
-
-	my @unknown_adapters
-	    = grep {m{(Adapter|Response)$}
-		    && (!$response_tag || $_ ne $response_tag)} (keys %$db_data);
-
-	die "unknown adapters in response:: @unknown_adapters"
-	    if @unknown_adapters;
-
-	if ($response_tag) {
-
-	    warn "path $path: response tag for $class: $response_tag"
-		if $class->debug;
-
-	    $entity_data = $db_data->{$response_tag};
-	    $path .= $response_tag;
-	    $adapter_found = 1;
-	}
-    }
-
-    unless ($adapter_found) {
-	$entity_data = $db_data;
-    }
+    my $entity_data = __dereference_adapter( $class, $db_data, \$path)
+	or return;
 
     my $data_type = Elive::Util::_reftype($entity_data) || 'Scalar';
     die "thawing $class. expected $path to contain HASH data. found: $data_type"
@@ -294,6 +297,8 @@ sub _thaw {
 	$prop_key_map{ ucfirst($alias) } = $to;
     }
 
+    my $property_types = $class->property_types;
+
     foreach my $key (keys %$entity_data) {
 
 	my $val = $entity_data->{ $key };
@@ -301,11 +306,12 @@ sub _thaw {
 	$data{$prop_key} = $val;
     }
 
-    my $property_types = $class->property_types;
 
-    foreach my $col (grep {defined $data{ $_ }} @properties) {
+    foreach my $col (grep {defined $data{$_}} @properties) {
 
 	my ($type, $expect_array, $is_struct) = Elive::Util::parse_type($property_types->{$col});
+
+	next unless $col && defined $data{$col};
 
 	for my $val ($data{$col}) {
 
