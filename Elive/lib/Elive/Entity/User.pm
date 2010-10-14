@@ -59,7 +59,16 @@ coerce 'Elive::Entity::User' => from 'Str'
 
 =head1 NAME
 
-    Elive::Entity::User - Elluminate Users entity class
+Elive::Entity::User - Elluminate Users entity class
+
+=cut
+
+=head1 DESCRIPTION
+
+These are used to query and maintain information on regisisted Elluminate I<Live!> users.
+
+If the site is configured for LDAP, users are mapped to LDAP. Access becomes readonly, and
+the C<create()>, C<update>, C<update_password> and C<delete> methods are no longer applicable.
 
 =cut
 
@@ -212,7 +221,8 @@ sub change_password {
 
 =head2 delete
 
-    $user_obj->delete([force => 1]);
+    $user_obj->delete();
+    $admin_user_obj->delete(force => 1);
 
 Delete user objects. As a safeguard, you need to pass C<force =E<gt> 1> to delete
 system administrator accounts, or the login user.
