@@ -13,6 +13,20 @@ use Elive::Entity::User;
 use Elive::Entity::Role;
 use Elive::Entity::Group;
 
+=head1 NAME
+
+Elive::Entity::ParticipantList::Participant - A Single Meeting Participant
+
+=head1 DESCRIPTION
+
+This is a component of L<Elive::Entity::ParticipantList::Participants>. It contains details on a
+participating user, including their details and participation role (normally 2 for a moderator or 3
+for a regular participant).
+
+=head1 METHODS
+
+=cut
+
 __PACKAGE__->entity_name('Participant');
 
 has 'user' => (is => 'rw', isa => 'Elive::Entity::User|Str',
@@ -90,24 +104,10 @@ sub _parse {
 coerce 'Elive::Entity::ParticipantList::Participant' => from 'Str'
     => via { Elive::Entity::ParticipantList::Participant->new(Elive::Entity::ParticipantList::Participant->_parse_participant($_)) };
 
-=head1 NAME
-
-Elive::Entity::ParticipantList::Participant - A Single Meeting Participant
-
-=head1 DESCRIPTION
-
-This is a component of L<Elive::Entity::ParticipantList::Participants>. It contains details on a
-participating user, including their details and participation role (normally 2 for a moderator or 3
-for a regular participant).
-
-=head1 METHODS
-
-=cut
-
 =head2 participant
 
-Returns a participant. This can either be of type L<Elive::Entity::User>, or
-L<Elive::Entity::Group>:
+Returns a participant. This can either be of type L<Elive::Entity::User> (type: 0), or
+L<Elive::Entity::Group> (type 1).
 
 =cut
 
