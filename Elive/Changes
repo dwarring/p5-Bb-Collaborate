@@ -1,28 +1,37 @@
 Revision history for Elive
 
-0.74_1  tba
+0.74_2  14th October 2010
+
+        Support for LDAP groups in participant lists
+        - Elive::Entity::ParticipantList has been significantly refactored.
+          It now correctly interprets the 'type' property (introduced ~ ELM
+          v3.0) and supports both 'user' and 'group' properties.
+        - Group support also added to elive_raise_meeting - see pod
+
+        Bug fixes:
+        - Added 'adapter' property to Elive::Entity::Meeting
+
+        Other Enhancements:
+        - General support for credentials embedded in urls, E.g:
+          http://user@host.org/inst
+
+0.74_1  7th October 2010
 
         Essential changes to implement Elive::API - A new companion CPAN module
         that implements bindings to the ELM Standard API Bridge V2.
 
-        Elive::API has a dependancy on the Elive bundle and actively uses classes
-        Elive::Connection::API, Elive::Array, Elive::DAO and Elive::DAO::Singleton.
+        The classes in this distribution that referenced by ELive::API are
+        Elive::Connection::API, Elive::Array, Elive::DAO and
+        Elive::DAO::Singleton.
 
-	Refactoring to support Elive::API:
-        - Elive::Entity gutted to only contain ELM specialisations. The bulk of it
-          has been moved to a new class, Elive::DAO.
+        - Elive::Entity now only contains ELM specialisations. The generic
+          portion has been moved to create a new base class, Elive::DAO.
 	- Added new mixin class Elive::DAO::Singleton
         - Add subclasses Elive::Connection::SDK & Elive::Connection::API
         - Elive::_check_for_errors moved to Elive::Connection
         - Elive known_adapter() && check_adapter() methods replaced by
           known_command() and check_command() methods in Elive::Connection::SDK
           and Elive::Connection::API
-
-        Bug fixes:
-        - Added 'adapter' property to Elive::Entity::Meeting
-
-        Enhancements:
-        - General support for credentials embedded in urls, E.g: http://user@host.org/inst
 
 0.73    3rd September 2010
         - Added script tests to manifest

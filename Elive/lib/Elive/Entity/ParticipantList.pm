@@ -9,6 +9,7 @@ extends 'Elive::Entity';
 use Elive::Entity::ParticipantList::Participant;
 use Elive::Entity::ParticipantList::Participants;
 use Elive::Entity::User;
+use Elive::Entity::Group;
 use Elive::Entity::Role;
 use Elive::Entity::Meeting;
 use Elive::Util;
@@ -41,7 +42,7 @@ This is the entity class for meeting participants.
 
 The participants property is an array of type Elive::Entity::Participant.
 
-=head2 Participants
+=head2 User Participants
 
 The I<participants> property may be specified in the format: userId[=roleId],
 where the role is 3 for a normal participant or 2 for a meeting moderator.
@@ -63,6 +64,36 @@ Or an array of hashrefs:
     $participant_list->participants([{user => 111111, role =>2},
                                      {user => 222222}]);
     $participant_list->update;
+
+=head2 Groups of Participants
+
+Groups are applicable under LDAP. If you add groups to the participant list,
+then all members of the group may join the meeting, and are assigned the
+given role.
+
+By convention, a leading '*' indicates a group:
+
+    #
+    # Set alice and bob as moderators. Then add all students in the
+    # cookery class:
+    #
+    $participant_list->participants('alice=2;bob=2;*cookery_class=3');
+    $participant_list->update;
+
+Similar to the above:
+
+    $participant_list->participants(['alice=2', 'bob=2', '*cookery_class=3']);
+    $participant_list->update;
+
+As a list of hashrefs:
+
+    $participant_list->participants([
+              {user => 'alice', role => 2},
+              {user => 'bob', role => 2},
+              {group => 'cookery_class', role => 3},
+    ]);
+    $participant_list->update;
+
 
 =cut
 
@@ -89,56 +120,6 @@ This method updates meeting participants.
          = Elive::Entity::ParticipantList->retrieve([$meeting_id]);
     $participant_list->participants->add('alice', 'bob');
     $participant_list->update;
-
-You can also use the following shortcut to add individual users:
-
-    $participant_list->update(undef, add => ['bob=3', 'alice=3']);
-
-The C<addParticipant> and C<setParticipantList> can have problems handling
-large participants lists that are getting into the 1000s (E.g. an open forum
-with a large number of eligable participants). For this reason participants are
-added in batches. The default size is lots of 250 users, but this can be tuned via the batch_size option:
-
-    $participant_list->update({participants => \@big_list},
-                               batch_size => 150,
-                              );
-
-By default, the C<update> method will throw an error if it failed to add all
-the requested participants, or if there were any errors during the batch
-updates. You may instead chose to return and handle the results yourself:
-
-    $participant_list->update(undef,
-            add => \@big_list,
-            results => \(my $results));
-
-    my $errors = $results->errors;
-    warn "error(s) adding participants: @$errors"
-        if @$errors;
-
-    my $unknown = $results->unknown;
-    warn "unknown participant(s): @$unknown"
-        if @$unknown;
-
-    my $failed = $results->failed;
-    if (@$failed) {
-        #
-        # retry failed participants at a lower batch size
-        #
-        $participant_list->update(undef, add => $failed,
-            results => \(my $retry_results), batch_size => 10);
-
-        my $failed_again = $retry_results->failed;
-        if (@$failed_again) {
-            warn "failed to add participants after retry: @$failed_again";
-   
-            my $fatal_errors = $retry_results->errors;
-            die "fatal SOAP error(s): @$fatal_errors"
-         }         
-    }
-
-
-This will supress the throwing of most errors and will instead return an
-L<Elive::Entity::ParticipantList::Results> object.
 
 Note:
 
@@ -184,21 +165,47 @@ sub update {
     #
     # Weed out duplicates and make sure that the facilator is included
     #
-    my %roles;
+    my %users;
+    my %groups;
 
     foreach (@raw_participants) {
 	my $participant = Elive::Entity::ParticipantList::Participant->_parse($_);
-	my $userId = Elive::Entity::User->stringify( $participant->{user} );
-	my $roleId = Elive::Entity::Role->stringify( $participant->{role} );
-	$roles{ $userId } = $roleId;
+	my $id;
+	my $roleId = Elive::Entity::Role->stringify( $participant->{role} )
+	    || 3;
+
+	if ($participant->{type}) {
+	    $id = Elive::Entity::Group->stringify( $participant->{group} );
+	    $groups{ $id } = $roleId;
+	}
+	else {
+	    $id = Elive::Entity::User->stringify( $participant->{user} );
+	    $users{ $id } = $roleId;
+	}
     }
 
     #
     # make sure that the facilitator is included with a moderator role
     #
-    $roles{ $meeting->facilitatorId } = 2;
+    $users{ $meeting->facilitatorId } = 2;
 
-    my $participants_str = join(';', map{$_.'='.$roles{$_}} sort keys %roles);
+    foreach my $group_id (keys %groups) {
+	#
+	# Current restriction with passing groups via setParticipantList
+	# etc adapters.
+	#
+	carp "client side expansion of group: $group_id";
+	my $role = $groups{ $group_id };
+	my $group = Elive::Entity::Group->retrieve($group_id,
+						   connection => $self->connection);
+	foreach (@{ $group->members }) {
+	    $users{ $_ } ||= $role;
+	}
+    }
+
+    my @participants_arr =  map{$_.'='.$users{$_}} sort keys %users;
+
+    my $participants_str = join(';', @participants_arr);
     $self->_set_participant_list( $participants_str );
     #
     # do our readback
@@ -207,8 +214,9 @@ sub update {
     my $class = ref($self);
     $class->retrieve([$self->id], connection => $self->connection);
 
-    $class->_readback_check( $self, [{meetingId => $self->meetingId,
-				     participants => $participants_str}] );
+    $class->_readback_check({meetingId => $self->meetingId,
+			     participants => \@participants_arr},
+			    [$self]);
 
     return $self;
 }
@@ -216,10 +224,10 @@ sub update {
 sub _set_participant_list {
     my ($self, $participants_str, %opt) = @_;
 
-    my %params = (
-	meetingId => Elive::Util::_freeze($self->meetingId => 'Int'),
-	users => $participants_str,
-	);
+    my %params = %{ $opt{param} || {} };
+
+    $params{meetingId} = Elive::Util::_freeze($self->meetingId => 'Int');
+    $params{users} = $participants_str;
 
     my $som = $self->connection->call('setParticipantList' => %params);
 
@@ -283,7 +291,50 @@ sub list {return shift->_not_available}
 
 =item Elive::Entity::Participant
 
-=item 
+=back
+
+=cut
+
+sub _thaw {
+    my ($class, $db_data, @args) = @_;
+
+    $db_data = Elive::Util::_clone( $db_data );  # take a copy
+    #
+    # the soap record has a Participant property that can either
+    # be of type user or group. However, Elive has seperate 'user'
+    # and 'group' properties. Resolve here.
+    #
+    if ($db_data->{ParticipantListAdapter}) {
+	if (my $participants = $db_data->{ParticipantListAdapter}{Participants}) {
+	    $participants = [$participants]
+		unless Elive::Util::_reftype($participants) eq 'ARRAY';
+
+	    foreach (@$participants) {
+		my $p = $_->{ParticipantAdapter};
+		if ($p && $p->{Participant}) {
+		    #
+		    # peek at the the type property. 0 => user, 1 => group
+		    # a group record, rename to Group, otherwise treat
+		    #
+		    if ($p->{Type}) {
+			$p->{Group} = delete $p->{Participant}
+		    }
+		    else {
+			$p->{User} = delete $p->{Participant}
+		    }
+		}
+	    }
+	}
+    }
+
+    return $class->SUPER::_thaw($db_data, @args);
+}
+
+=head1 BUGS AND RESTRICTIONS
+
+Groups are currently being expanded on the client side, rather than being
+passed through for inclusion in the participant list. This is due to current
+restrictions in with the C<setParticipant> adapters etc..
 
 =cut
 

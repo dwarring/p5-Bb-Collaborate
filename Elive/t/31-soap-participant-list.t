@@ -152,7 +152,7 @@ SKIP: {
 	$participant_list->participants->add($gate_crasher.'=3');
 	$participant_list->update($gate_crasher.'=3');
 	    },
-	    'unchecked add of unknown participant - dies');
+	    'add of unknown participant - dies');
 
     lives_ok(sub {$participant_list->update({participants => []})},
 	     'clearing participants - lives');

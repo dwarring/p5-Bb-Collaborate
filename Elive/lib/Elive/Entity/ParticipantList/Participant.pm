@@ -11,12 +11,18 @@ use Scalar::Util;
 use Elive::Util;
 use Elive::Entity::User;
 use Elive::Entity::Role;
+use Elive::Entity::Group;
 
 __PACKAGE__->entity_name('Participant');
 
 has 'user' => (is => 'rw', isa => 'Elive::Entity::User|Str',
-	       documentation => 'User attending the meeting',
+	       documentation => 'User or group attending the meeting',
 	       coerce => 1,
+    );
+
+has 'group' => (is => 'rw', isa => 'Elive::Entity::Group|Str',
+		documentation => 'User or group attending the meeting',
+		coerce => 1,
     );
 
 has 'role' => (is => 'rw', isa => 'Elive::Entity::Role|Str',
@@ -25,39 +31,60 @@ has 'role' => (is => 'rw', isa => 'Elive::Entity::Role|Str',
     );
 
 has 'type' => (is => 'rw', isa => 'Int',
-	       documentation => 'Not sure what this is',
+	       documentation => 'type of participant; 0: user, 1: group'
     );
-
-#
-# name change under 9.5
-#
-__PACKAGE__->_alias(participant => 'user');
 
 sub _parse {
     my $class = shift;
     local ($_) = shift;
 
-    if (Scalar::Util::blessed($_)
-	&& eval{$_->isa('Elive::Entity::User')}
-	) {
-	#
-	# coerce user to participant
-	#
-	return {user => $_,
-		role => {roleId => 3}};
+    if (Scalar::Util::blessed($_)) {
+
+	if (eval{$_->isa('Elive::Entity::User')}) {
+	    #
+	    # coerce participant as regular user
+	    #
+	    return {
+		user => $_,
+		role => {roleId => 3},
+		type => 0,
+	    }
+	}
+
+	if (eval{$_->isa('Elive::Entity::Group')}) {
+	    #
+	    # coerce to group of participants
+	    #
+	    return {
+		group => $_,
+		role => {roleId => 3},
+		type => 1,
+	    }
+	}
     }
 
     return $_ if Scalar::Util::reftype($_);
 
-    m{^ \s* (.*?) \s* (= (\d) \s*)? $}x
+    # A leading '*' indicates an LDAP group. Examples:
+    # 'bob=3' => user:bob, role:3, type: 0 (user)
+    # 'alice' => user:bob, role:3 (defaulted), type: 0 (user)
+    # '*mygroup=2' => group:mygroup, role:2 type:1 (group)
+
+    m{^ \s* (\*?) \s* (.*?) \s* (= (\d) \s*)? $}x
 	or die "'$_' not in format: userId=role";
 
-    my $userId = $1;
-    my $roleId = $3;
+    my $is_group = $1;
+    my $id = $2;
+    my $roleId = $4;
     $roleId = 3 unless defined $roleId;
 
-    return {user => {userId => $userId},
-	    role => {roleId => $roleId}};
+    my %parse = $is_group
+	? (group => {groupId => $id}, type => 1)
+	: (user => {userId => $id}, type => 0);
+
+    $parse{role}{roleId} = $roleId;
+
+    return \%parse;
 }
 
 coerce 'Elive::Entity::ParticipantList::Participant' => from 'Str'
@@ -77,6 +104,19 @@ for a regular participant).
 
 =cut
 
+=head2 participant
+
+Returns a participant. This can either be of type L<Elive::Entity::User>, or
+L<Elive::Entity::Group>:
+
+=cut
+
+sub participant {
+    my ($self) = @_;
+
+    return $self->type? $self->group: $self->user;
+}
+
 =head2 stringify
 
 Returns a string of the form userId=role. This value is used for
@@ -93,7 +133,12 @@ sub stringify {
     #
     # Stringify to the format used for updates: userId=role
     #
-    return Elive::Entity::User->stringify($data->{user}).'='.Elive::Entity::Role->stringify($data->{role});
+    if ($data->{type} && $data->{type} == 1) {
+	return '*' . Elive::Entity::Group->stringify($data->{group}).'='.Elive::Entity::Role->stringify($data->{role});
+    }
+    else {
+	return Elive::Entity::User->stringify($data->{user}).'='.Elive::Entity::Role->stringify($data->{role});
+    }
 }
 
 =head1 SEE ALSO

@@ -14,17 +14,29 @@ __PACKAGE__->collection_name('Groups');
 has 'groupId' => (is => 'rw', isa => 'Str', required => 1);
 __PACKAGE__->primary_key('groupId');
 
-has 'name' => (is => 'rw', isa => 'Str', required => 1,
+has 'name' => (is => 'rw', isa => 'Str',
 	       documentation => 'name of the group');
 __PACKAGE__->_alias(groupName => 'name', freeze => 1);
 
-has 'members' => (is => 'rw', isa => 'Elive::Array', required => 1,
+has 'members' => (is => 'rw', isa => 'Elive::Array',
 		  coerce => 1,
 		  documentation => "ids of users in the group");
 __PACKAGE__->_alias(groupMembers => 'members', freeze => 1);
 
 has 'dn' => (is => 'rw', isa => 'Str',
 	       documentation => 'LDAP Domain (where applicable)');
+
+coerce 'Elive::Entity::Group' => from 'HashRef'
+          => via {Elive::Entity::Group->construct($_,
+						 %Elive::_construct_opts) };
+
+coerce 'Elive::Entity::Group' => from 'Str'
+          => via {
+	      my $group_id = $_;
+	      $group_id =~ s{^ \s* \* \s*}{}x;  # just in case leading '*' leaks through
+
+	      Elive::Entity::Group->construct({groupId => $group_id}, 
+					      %Elive::_construct_opts) };
 
 =head1 NAME
 

@@ -27,6 +27,7 @@ elive_raise_meeting
 =head1 SYNOPSIS
 
   elive_raise_meeting http://myserver.com/my-site[:port] userid[=role] [userid[=role]]...
+  elive_raise_meeting http://myserver.com/my-site[:port] '*groupId[=role]' ...
 
   Authentication
 
@@ -223,6 +224,7 @@ sub main {
 	: Elive->login;
 
     my @participants;
+    my @groups;
 
     foreach my $spec (map {split(';',$_)} @ARGV) {
 
@@ -232,7 +234,9 @@ sub main {
 	my $user_spec;
 	my $role;
 
-	if (($user_spec,$role) = ($spec =~ m{^([^=]+)=([^=]+)$}x)) {
+	my $is_group = ($spec =~ s{^ \s* \*}{}gx);
+
+	if (($user_spec, $role) = ($spec =~ m{^\s*([^=]*)=([^=]+)$}x)) {
 	    die "non-numeric role: $spec\n"
 		unless $role =~ m{^\d+$}x;
 	}
@@ -254,12 +258,24 @@ sub main {
 	next if ($user_spec eq $facilitator->userId
 		 || $user_spec eq $facilitator->loginName);
 
-	push (@participants, 
-	      {
-		  user => $user_spec,
-		  role => $role,
-	      },
-	    );
+	if ($is_group) {
+	    push (@groups, 
+		  {
+		      group => $user_spec,
+		      role => $role,
+		      type => 1,
+		  },
+		);
+	}
+	else {
+	    push (@participants, 
+		  {
+		      user => $user_spec,
+		      role => $role,
+		      type => 0,
+		  },
+		);
+	}
 
     }
 
@@ -271,7 +287,8 @@ sub main {
     #
     # Vet participants
     #
-    @participants = _get_participants(@participants);
+    @participants = _get_users(@participants) if @participants;
+    @groups = _get_groups(@groups) if @groups;
 
     my $existing_preload;
 
@@ -358,9 +375,9 @@ sub main {
 	    $server_parameters->update;
 	};
 
-	if (@participants) {
+	if (@participants || @groups) {
 
-	    setup_participants($meeting, @participants);
+	    setup_participants($meeting, @participants, @groups);
 
 	}
 	else {
@@ -429,15 +446,26 @@ sub setup_participants {
     my $participant_objs = $participant_list->participants;
 
     my @participants_display = map  {
-	my $user_obj = $_->user;
-	my $loginName = $user_obj->loginName;
-	my $email = $user_obj->email;
+	if ($_->type) {
+	    my $group_obj = $_->group;
+	    my $id = $group_obj->groupid;
+	    my $name = $group_obj->name;
 
-	my $participant_str = ($loginName || $user_obj->userId);
-	$participant_str .= ' <'.$email.'>'
-	    if $email;
+	    my $participant_str = '*'.$id;
+	    $participant_str .= ' <group:'.$name.'>'
+		if $name;
+	}
+	else {
+	    my $user_obj = $_->user;
+	    my $loginName = $user_obj->loginName;
+	    my $email = $user_obj->email;
 
-	$participant_str;
+	    my $participant_str = ($loginName || $user_obj->userId);
+	    $participant_str .= ' <'.$email.'>'
+		if $email;
+
+	    $participant_str;
+	}
     } @$participant_objs;
 
     print "participants: ".join(', ', @participants_display)."\n";
@@ -446,7 +474,7 @@ sub setup_participants {
 
 ########################################################################
 
-sub _get_participants {
+sub _get_users {
     my @participants_in = @_;
 
     my %user_roles;
@@ -479,16 +507,67 @@ sub _get_participants {
 
 	if ($role) {
 	    push (@participants_out, {user => $user->userId,
-				      role => $role});
+				      role => $role,
+				      type => 0,
+		  });
 	}
     }
 
     my @users_not_found = keys %user_roles;
 
-    die "unknown participants(s): @users_not_found\n"
+    die "unknown user(s): @users_not_found\n"
 	if @users_not_found;
 
     return @participants_out;
+}
+
+########################################################################
+
+sub _get_groups {
+    my @groups_in = @_;
+
+    my %group_roles;
+
+    foreach (@groups_in) {
+
+	my $group = $_->{group};
+	my $role = $_->{role};
+	
+	die "bad groupname: $group\n"
+	    if $group =~ m{'}x;
+
+	$group_roles{$group} = $role || 3;
+    }
+
+    my $filter = join(' OR ',
+		      map {sprintf("groupId='%s' OR groupName='%s'",
+				   $_, $_)}
+		      (keys %group_roles)
+	);
+
+    my $groups = Elive::Entity::Group->list(filter => $filter);
+
+    my @groups_out;
+
+    foreach my $group (@$groups) {
+
+	my $role = delete($group_roles{$group->groupId})
+	    || delete($group_roles{$group->groupName});
+
+	if ($role) {
+	    push (@groups_out, {group => $group->groupId,
+			       role => $role,
+			       type => 1,
+		  });
+	}
+    }
+
+    my @groups_not_found = keys %group_roles;
+
+    die "unknown group(s): @groups_not_found\n"
+	if @groups_not_found;
+
+    return @groups_out;
 }
 
 ########################################################################
