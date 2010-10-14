@@ -87,7 +87,7 @@ Revision history for Elive
           versions of SOAP::Lite. Encoding/decoding of HTML entities now
           properly handled. Thanks SOAP::Lite maintainers!
 
-        - Minor refactorings refactorings to Elive codebase in order to pass
+        - Minor refactorings to Elive codebase in order to pass
           Test::Perl::Critic severity level 4 tests (00c-critic.t).
 
           -- Most commonly, Atomic parsing of subroutine arguments. E.g.
@@ -264,7 +264,7 @@ Revision history for Elive
 
 0.46    28th October
         - Remove Mouse 'get_attribute_map()' usage. Depreciated and
-          producing warnings wit Mouse 0.40+.
+          producing warnings under Mouse 0.40+.
 
 0.45    26th October
         - Fixed syntax error in elive_raise_meeting.
