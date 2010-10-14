@@ -254,7 +254,7 @@ sub __dereference_adapter {
 	    if @unknown_adapters;
     }
 
-    return $entity_data;
+    return $entity_data || $db_data;
 }
 
 sub _thaw {
