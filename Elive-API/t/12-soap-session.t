@@ -15,9 +15,6 @@ our $class = 'Elive::API::Session' ;
 
 our $connection;
 
-use Carp;
-$SIG{__DIE__} = \&Carp::confess;
-
 SKIP: {
 
     my $skippable = 21;
@@ -77,33 +74,25 @@ SKIP: {
 	is_deeply($session->$_, $insert_data{$_}, "session $_ as expected");
     }
 
-    my %update_str_data = (
+    my %update_data = (
 	chairNotes => 'test moderator notes. Here are some entities: & > <',
 	nonChairNotes => 'test user notes; some more entities: &gt;',
-    );
-    
-    my %update_int_data = (
 	raiseHandOnEnter => 1,
 	maxTalkers => 3,
 	recordingModeType => 2,
 	);
 
-    $session->update({ %update_str_data,
-		       %update_int_data});
+    $session->update(\%update_data);
 
     $session = undef;
 
     ok ($session = Elive::API::Session->retrieve([$session_id]),
 	'Refetch of session');
 
-    foreach (keys %update_str_data) {
+    foreach (keys %update_data) {
 	#
 	# returned record doesn't contain password
-	ok($session->$_ eq $update_str_data{$_}, "session update $_ as expected");
-    }
-
-    foreach (keys %update_int_data) {
-	ok($session->$_ == $update_int_data{$_}, "session update $_ as expected");
+	is($session->$_, $update_data{$_}, "session update $_ as expected");
     }
 
     my $session_url;
