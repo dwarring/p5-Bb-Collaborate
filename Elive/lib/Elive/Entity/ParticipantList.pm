@@ -129,10 +129,6 @@ Note:
 resultant list wont be empty, but will have the moderator as the sole
 participant.
 
-=item the c<setParticipantList> SOAP command can overflow if there are 100s of
-participants, so the C<addParticipant> is used instead. If there are more 300
-participants, they are batched an inserted in lots of 250.
-
 =back
 
 =cut
@@ -289,7 +285,9 @@ sub list {return shift->_not_available}
 
 =item Elive::Entity::Meeting
 
-=item Elive::Entity::Participant
+=item Elive::Entity::ParticipantList::Participants
+
+=item Elive::Entity::ParticipantList::Participant
 
 =back
 

@@ -67,9 +67,6 @@ Elive::Entity::User - Elluminate Users entity class
 
 These are used to query and maintain information on regisisted Elluminate I<Live!> users.
 
-If the site is configured for LDAP, users are mapped to LDAP. Access becomes readonly, and
-the C<create()>, C<update>, C<update_password> and C<delete> methods are no longer applicable.
-
 =cut
 
 =head1 METHODS

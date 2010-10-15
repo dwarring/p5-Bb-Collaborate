@@ -107,7 +107,8 @@ sub url {
              copy => 1,             # return a simple blessed uncached object.
            );
 
-Construct an entity from data. A copy is ma
+Construct an entity from data. A copy is made of the data for use by the
+c<is_changed> and c<revert> methods.
 
 =cut
 
@@ -565,7 +566,7 @@ sub _readback {
              param => \%params,    # additional soap params,
              );
 
-print "inserted user with id: ".$new_user->userId."\n";
+    print "inserted user with id: ".$new_user->userId."\n";
 
 Inserts a new entity. The primary key should not be specified. It is
 generated for you and returned with the newly created object.
@@ -1030,9 +1031,6 @@ BEGIN {
 			 or Carp::carp "doesn't look like a hi-res date: $_")}
         => message {"invalid date: $_"};
 }
-
-# passing some global flags through from our parent constructor:
-# $Elive::_construct_opts       - this is copy don't register it as an object
 
 sub DEMOLISH {
     my ($self) = shift;
