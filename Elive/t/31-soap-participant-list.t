@@ -53,7 +53,7 @@ SKIP: {
     my $participants_deep_ref = [{user => Elive->login->userId,
 				  role => 2}];
     #
-    # NB. It's not neccessary to insert prior to update, but since we allow it
+    # NB. not neccessary to insert prior to update, but since we allow it
     lives_ok(
 	sub {my $_p = Elive::Entity::ParticipantList->insert(
 		 {meetingId => $meeting->meetingId,
@@ -123,7 +123,8 @@ SKIP: {
 
     }
     else {
-	$t->skip('unable to find any other users to act as participants(?)',7);
+	$t->skip('unable to find any other users to act as participants(?)',)
+	    for (1..7);
     }
 
     $participant_list->reset();
