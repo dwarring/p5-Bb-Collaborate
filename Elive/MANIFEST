@@ -1,7 +1,6 @@
 .cvsignore
 .releaserc
 Changes
-emacs-X11.exe.stackdump
 inc/Module/Install.pm
 inc/Module/Install/Base.pm
 inc/Module/Install/Can.pm
