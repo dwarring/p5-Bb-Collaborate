@@ -1,23 +1,23 @@
-package Elive::API::Presentation;
+package Elive::StandardV2::Multimedia;
 use warnings; use strict;
 
 use Mouse;
 
-extends 'Elive::API';
+extends 'Elive::StandardV2';
 
 use Scalar::Util;
 use Carp;
 
 =head1 NAME
 
-Elive::API::Presentation - Scheduling Manager entity class
+Elive::StandardV2::Multimedia - Scheduling Manager entity class
 
 =cut
 
-__PACKAGE__->entity_name('Presentation');
+__PACKAGE__->entity_name('Multimedia');
 
-has 'presentationId' => (is => 'rw', isa => 'Int', required => 1);
-__PACKAGE__->primary_key('presentationId');
+has 'multimediaId' => (is => 'rw', isa => 'Int', required => 1);
+__PACKAGE__->primary_key('multimediaId');
 __PACKAGE__->params(
     content => 'Str'
     );
@@ -33,19 +33,19 @@ has 'filename' => (is => 'rw', isa => 'Str');
 
 =head2 insert
 
-Uploads content and creates a new presentation resource.
+Uploads content and creates a new multimedia resource.
 
     # get the binary data from somewhere
-    open (my $rec_fh, '<', $presentation_path)
-        or die "unable to open $presentation_path: $!";
+    open (my $rec_fh, '<', $multimedia_path)
+        or die "unable to open $multimedia_path: $!";
 
     my $content = do {local $/ = undef; <$rec_fh>};
-    die "no presentation data: $presentation_path"
+    die "no multimedia data: $multimedia_path"
         unless ($content);
 
-    my $presentation = Elive::API::Presentation->insert(
+    my $multimedia = Elive::StandardV2::Multimedia->insert(
              {
-                    filename => 'intro.wav',
+                    filename => 'demo.wav',
                     creatorId =>  'bob',
                     content => $content,
 	     },
@@ -60,7 +60,7 @@ sub _freeze {
     $db_data = $class->SUPER::_freeze( $db_data );
 
     for (grep {$_} $db_data->{content}) {
-##	$db_data->{size} ||= Elive::Util::_freeze( length($_), 'Int');
+	$db_data->{size} ||= Elive::Util::_freeze( length($_), 'Int');
 
 	#
 	# (a bit of layer bleed here...). Do we need a seperate daat type
@@ -68,9 +68,6 @@ sub _freeze {
 	#
 	eval {require SOAP::Lite}; die $@ if $@;
 	$_ = SOAP::Data->type(base64 => $_);
-##	use MIME::Base64;
-##	chomp($_ = MIME::Base64::encode_base64( $_ ));
-	
     }
 
     return $db_data;
@@ -80,7 +77,7 @@ sub insert {
     my ($class, $insert_data, %opt) = @_;
 
     my $self = $class->SUPER::insert($insert_data,
-				     command => 'uploadPresentationContent',
+				     command => 'uploadMultimediaContent',
 				     %opt);
 
     return $self;

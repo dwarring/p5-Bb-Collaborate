@@ -1,4 +1,4 @@
-package Elive::Connection::API;
+package Elive::StandardV2::Connection;
 use warnings; use strict;
 
 use Class::Accessor;
@@ -18,13 +18,13 @@ use Elive::Util;
 
 =head1 NAME
 
-Elive::Connection::API -  Manage Elluminate SOAP v2 endpoint connections.
+Elive::StandardV2::Connection -  Manage Elluminate SOAP v2 endpoint connections.
 
 =head1 DESCRIPTION
 
 This module handles logical connections to the C</v2/webservice.event> endpoint
 on the Elluminate server. This endpoint implements the Standard Bridge API. See
-the L<Elive::API> CPAN module, which uses this connection and implements
+the L<Elive::StandardV2> CPAN module, which uses this connection and implements
 bindings.
 
 =cut
@@ -65,13 +65,13 @@ __PACKAGE__->mk_accessors( qw{_scheduling_manager _server_configuration _server_
 
 =head2 connect
 
-    my $ec1 = Elive::Connection::API->connect('http://someserver.com/test',
-                                        'user1', 'pass1', debug => 1,
+    my $ec1 = Elive::StandardV2::Connection->connect('http://someserver.com/test',
+                                                     'user1', 'pass1', debug => 1,
     );
 
     my $url1 = $ec1->url;   #  'http://someserver.com/test'
 
-    my $ec2 =  Elive::Connection::API->connect('http://user2:pass2@someserver.com/test', undef, undef, debug => 1);
+    my $ec2 =  Elive::StandardV2::Connection->connect('http://user2:pass2@someserver.com/test', undef, undef, debug => 1);
     my $url2 = $ec2->url;   #  'http://someserver.com/test'
 
 Establishes a SOAP connection. Retrieves the login user, to verify
@@ -83,8 +83,6 @@ sub connect {
     my ($class, $url, $user, $pass, %opt) = @_;
 
     my $self = $class->SUPER::_connect($url, $user, $pass, %opt);
-    $self->type($opt{type} || 'API');
-
     bless $self, $class;
 
     return $self;
@@ -116,15 +114,6 @@ Performs an Elluminate SOAP method call. Returns the response as a
 SOAP::SOM object.
 
 =cut
-
-sub call {
-    my ($self, $cmd, %params) = @_;
-
-    die "bad connection type. expected 'API', found: ".$self->type
-	unless $self->type eq 'API';
-
-    return $self->SUPER::call( $cmd, %params );
-}
 
 =head2 soap
 
@@ -183,10 +172,10 @@ sub scheduling_manager {
 
     unless ($scheduling_manager) {
 
-	eval {require Elive::API::SchedulingManager};
+	eval {require Elive::StandardV2::SchedulingManager};
 	die $@ if $@;
 
-	$scheduling_manager = Elive::API::SchedulingManager->get(connection => $self);
+	$scheduling_manager = Elive::StandardV2::SchedulingManager->get(connection => $self);
 	$self->_scheduling_manager($scheduling_manager);
     }
 
@@ -206,10 +195,10 @@ sub server_configuration {
 
     unless ($server_configuration) {
 
-	eval {require Elive::API::ServerConfiguration};
+	eval {require Elive::StandardV2::ServerConfiguration};
 	die $@ if $@;
 
-	$server_configuration = Elive::API::ServerConfiguration->get(connection => $self);
+	$server_configuration = Elive::StandardV2::ServerConfiguration->get(connection => $self);
 	$self->_server_configuration($server_configuration);
     }
 
@@ -229,10 +218,10 @@ sub server_versions {
 
     unless ($server_versions) {
 
-	eval {require Elive::API::ServerVersions};
+	eval {require Elive::StandardV2::ServerVersions};
 	die $@ if $@;
 
-	$server_versions = Elive::API::ServerVersions->get(connection => $self);
+	$server_versions = Elive::StandardV2::ServerVersions->get(connection => $self);
 	$self->_server_versions($server_versions);
     }
 

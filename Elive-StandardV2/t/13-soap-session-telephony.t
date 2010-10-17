@@ -6,18 +6,15 @@ use Test::Builder;
 use version;
 
 use lib '.';
-use t::Elive::API;
+use t::Elive::StandardV2;
 
-use Elive::API::Session;
-use Elive::API::SessionTelephony;
+use Elive::StandardV2::Session;
+use Elive::StandardV2::SessionTelephony;
 
 our $t = Test::Builder->new;
-our $class = 'Elive::API::Session' ;
+our $class = 'Elive::StandardV2::Session' ;
 
 our $connection;
-
-use Carp;
-$SIG{__DIE__} = \&Carp::confess;
 
 SKIP: {
 
@@ -27,16 +24,16 @@ SKIP: {
     skip('DateTime is required to run this test', $skippable)
 	if $@;
 
-    my %result = t::Elive::API->test_connection();
+    my %result = t::Elive::StandardV2->test_connection();
     my $auth = $result{auth};
 
    skip ($result{reason} || 'skipping live tests', $skippable)
 	unless $auth && @$auth;
 
-    use Elive::Connection::API;
+    use Elive::StandardV2::Connection;
     my $connection_class = $result{class};
     $connection = $connection_class->connect(@$auth);
-    Elive::API->connection($connection);
+    Elive::StandardV2->connection($connection);
 
     my $dt = DateTime->now->truncate(to => 'minute');
 
@@ -80,7 +77,7 @@ SKIP: {
 
     $session_telephony = undef;
 
-    lives_ok(sub {$session_telephony = Elive::API::SessionTelephony->retrieve([$session])},
+    lives_ok(sub {$session_telephony = Elive::StandardV2::SessionTelephony->retrieve([$session])},
 	     'retrieve session telephony (direct) lives');
 
     foreach (keys %telephony_data) {

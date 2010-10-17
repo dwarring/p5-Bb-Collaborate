@@ -1,16 +1,16 @@
-package Elive::API::SessionAttendance;
+package Elive::StandardV2::SessionAttendance;
 use warnings; use strict;
 
 use Mouse;
 use Carp;
 
-extends 'Elive::API';
+extends 'Elive::StandardV2';
 
-use Elive::API::SessionAttendance::Attendees;
+use Elive::StandardV2::SessionAttendance::Attendees;
 
 =head1 NAME
 
-Elive::API::SessionAttendance - Elluminate Session Attendance Report
+Elive::StandardV2::SessionAttendance - Elluminate Session Attendance Report
 
 =head1 DESCRIPTION
 
@@ -34,7 +34,7 @@ has 'roomOpened' => (is => 'rw', isa => 'HiResDate', required => 1,
 has 'roomClosed' => (is => 'rw', isa => 'HiResDate', required => 1,
 		       documentation => 'date and time that room shut down');
 
-has 'attendees' => (is => 'rw', isa => 'Elive::API::SessionAttendance::Attendees',
+has 'attendees' => (is => 'rw', isa => 'Elive::StandardV2::SessionAttendance::Attendees',
 		    coerce => 1, documentation => 'Session attendees',);
 
 # give soap a helping hand
@@ -49,9 +49,9 @@ __PACKAGE__->_alias(attendeeResponseCollection => 'attendees');
     my $session_id = '123456789012';
     my $yesterday = DateTime->today->subtract(days => 1);
 
-    my $attendance = Elive::API::SessionAttendance->list([$session, $yesterday->epoch.'000']);
+    my $attendance = Elive::StandardV2::SessionAttendance->list([$session, $yesterday->epoch.'000']);
 
-Gets a session attendance report. It returns a reference to an array of Elive::API::SessionAttendance objects.
+Gets a session attendance report. It returns a reference to an array of Elive::StandardV2::SessionAttendance objects.
 
 =cut
 

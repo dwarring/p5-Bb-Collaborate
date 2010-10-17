@@ -4,9 +4,9 @@ use warnings;
 use Test::More;
 
 use Elive; # to get version
-use Elive::API; # to get version
+use Elive::StandardV2; # to get version
 
-diag( "Testing Elive::API $Elive::API::VERSION, Elive $Elive::VERSION, Perl $], $^X" );
+diag( "Testing Elive::StandardV2 $Elive::StandardV2::VERSION, Elive $Elive::VERSION, Perl $], $^X" );
 
 my $MODULE = 'Test::Strict';
 eval "use $MODULE";

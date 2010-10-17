@@ -6,12 +6,12 @@ use Test::Builder;
 use version;
 
 use lib '.';
-use t::Elive::API;
+use t::Elive::StandardV2;
 
-use Elive::API::SessionAttendance;
+use Elive::StandardV2::SessionAttendance;
 
 our $t = Test::Builder->new;
-our $class = 'Elive::API::SessionAttendance' ;
+our $class = 'Elive::StandardV2::SessionAttendance' ;
 
 our $connection;
 
@@ -22,7 +22,7 @@ SKIP: {
 
     my $skippable = 4;
 
-    my %result = t::Elive::API->test_connection();
+    my %result = t::Elive::StandardV2->test_connection();
     my $auth = $result{auth};
 
    skip ($result{reason} || 'skipping live tests', $skippable)
@@ -30,7 +30,7 @@ SKIP: {
 
     my $connection_class = $result{class};
     $connection = $connection_class->connect(@$auth);
-    Elive::API->connection($connection);
+    Elive::StandardV2->connection($connection);
 
     my $good_som;
     {

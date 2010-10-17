@@ -1,6 +1,6 @@
-Elive-API
+Elive-StandardV2
 
-This module implements Elluminate V2 (API) API bindings
+Perl bindings for the Elluminate Live Standard Bridge V2 API
 
 INSTALLATION
 
@@ -16,21 +16,21 @@ SUPPORT AND DOCUMENTATION
 After installing, you can find documentation for this module with the
 perldoc command.
 
-    perldoc Elive::API
+    perldoc Elive::StandardV2
 
 You can also look for information at:
 
     RT, CPAN's request tracker
-        http://rt.cpan.org/NoAuth/Bugs.html?Dist=Elive-API
+        http://rt.cpan.org/NoAuth/Bugs.html?Dist=Elive-StandardV2
 
     AnnoCPAN, Annotated CPAN documentation
-        http://annocpan.org/dist/Elive-API
+        http://annocpan.org/dist/Elive-StandardV2
 
     CPAN Ratings
-        http://cpanratings.perl.org/d/Elive-API
+        http://cpanratings.perl.org/d/Elive-StandardV2
 
     Search CPAN
-        http://search.cpan.org/dist/Elive-API/
+        http://search.cpan.org/dist/Elive-StandardV2/
 
 
 LICENSE AND COPYRIGHT

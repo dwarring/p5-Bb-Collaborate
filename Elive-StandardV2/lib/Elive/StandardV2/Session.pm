@@ -1,23 +1,23 @@
-package Elive::API::Session;
+package Elive::StandardV2::Session;
 use warnings; use strict;
 
 use Mouse;
 
-extends 'Elive::API';
+extends 'Elive::StandardV2';
 
 use Scalar::Util;
 use Carp;
 
 use Elive::Util;
 
-use Elive::API::List;
-use Elive::API::SessionAttendance;
-use Elive::API::SessionTelephony;
-use Elive::API::Presentation;
+use Elive::StandardV2::List;
+use Elive::StandardV2::SessionAttendance;
+use Elive::StandardV2::SessionTelephony;
+use Elive::StandardV2::Presentation;
 
 =head1 NAME
 
-Elive::API::Session - Elluminate Session instance class
+Elive::StandardV2::Session - Elluminate Session instance class
 
 =head1 DESCRIPTION
 
@@ -42,7 +42,7 @@ has 'boundaryTime' => (is => 'rw', isa => 'Int',
 	       documentation => 'boundary time minutes: 0, 15, 30...',
     );
 
-has 'chairList' => (is => 'rw', isa => 'Elive::API::List', coerce => 1,
+has 'chairList' => (is => 'rw', isa => 'Elive::StandardV2::List', coerce => 1,
 	       documentation => 'list of chair-persons (comma separated)',
     );
 
@@ -57,7 +57,7 @@ has 'creatorId' => (is => 'rw', isa => 'Str', required => 1,
 has 'endTime' => (is => 'rw', isa => 'HiResDate', required => 1,
 	      documentation => 'session end time');
 
-has 'groupingList' => (is => 'rw', isa => 'Elive::API::List', coerce => 1,
+has 'groupingList' => (is => 'rw', isa => 'Elive::StandardV2::List', coerce => 1,
 	       documentation => 'list of courses etc (user defined)',
     );
 
@@ -81,7 +81,7 @@ has 'mustBeSupervised' => (is => 'rw', isa => 'Bool',
 			   documentation => 'Session number be supervised',
     );
 
-has 'nonChairList' => (is => 'rw', isa => 'Elive::API::List', coerce => 1,
+has 'nonChairList' => (is => 'rw', isa => 'Elive::StandardV2::List', coerce => 1,
 	       documentation => 'list of participants (comma separated)',
     );
 
@@ -135,14 +135,14 @@ has 'versionId' => (is => 'rw', isa => 'Int',
 
     my $attendance = $session->attendance( $yesterday->epoch.'000' );
 
-Reports on session attendance for a given day. It returns a reference to an array of Elive::API::SessionAttendance objects.
+Reports on session attendance for a given day. It returns a reference to an array of Elive::StandardV2::SessionAttendance objects.
 
 =cut
 
 sub attendance {
     my ($self, $start_time, %opt) = @_;
 
-    return Elive::API::SessionAttendance->list([$self, $start_time]);
+    return Elive::StandardV2::SessionAttendance->list([$self, $start_time]);
 }
 
 =head2 telephony
@@ -153,7 +153,7 @@ sub attendance {
         chairPIN   => '6342',
      });
 
-Returns an Elive::API::Telephony object for the given session. This can then
+Returns an Elive::StandardV2::Telephony object for the given session. This can then
 be used to get or set the sessions's telephony characterisitics.
 
 =cut
@@ -161,7 +161,7 @@ be used to get or set the sessions's telephony characterisitics.
 sub telephony {
     my ($self, %opt) = @_;
 
-    return Elive::API::SessionTelephony->retrieve([$self], %opt, reuse => 1);
+    return Elive::StandardV2::SessionTelephony->retrieve([$self], %opt, reuse => 1);
 }
 
 =head2 set_presentation
@@ -186,7 +186,7 @@ sub set_presentation {
     my $som = $connection->call(
 	'setSessionPresentation',
 	sessionId => Elive::Util::_freeze($session_id, 'Int'),
-	presentationIds => Elive::Util::_freeze($presentation_ids, 'Elive::API::List'),
+	presentationIds => Elive::Util::_freeze($presentation_ids, 'Elive::StandardV2::List'),
 	);
 
     my $results = $class->_get_results(

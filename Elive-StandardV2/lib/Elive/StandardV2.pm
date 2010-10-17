@@ -1,4 +1,4 @@
-package Elive::API;
+package Elive::StandardV2;
 use warnings; use strict;
 
 use Mouse;
@@ -12,7 +12,7 @@ use Carp;
 
 =head1 NAME
 
-    Elive::API - Base class for the Elive Standard Bridge API (V2)
+    Elive::StandardV2 - Base class for the Elive Standard Bridge StandardV2 (V2)
 
 =head1 VERSION
 
@@ -28,14 +28,14 @@ Quick summary of what the module does.
 
 Perhaps a little code snippet.
 
-    use Elive::API;
+    use Elive::StandardV2;
 
-    my $foo = Elive::API->new();
+    my $foo = Elive::StandardV2->new();
     ...
 
 =head1 DESCRIPTION
 
-Implements Elive Standard Bridge V2 (API) API bindings
+Implements Elive Standard Bridge V2 (StandardV2) StandardV2 bindings
 
 =cut
 
@@ -58,15 +58,15 @@ sub _get_results {
 
 =head2 connect
 
-     my $e1 = Elive::API->connect('http://myServer.com/test1', 'user1', 'pass1');
+     my $e1 = Elive::StandardV2->connect('http://myServer.com/test1', 'user1', 'pass1');
 
-     Elive::API->connect('http://user2:pass2@myServer.com/test2');
-     my $e2 = Elive::API->connection;
+     Elive::StandardV2->connect('http://user2:pass2@myServer.com/test2');
+     my $e2 = Elive::StandardV2->connection;
 
 Connects to an Elluminate server instance. Dies if the connection could not
 be established. If, for example, the SOAP connection or authentication failed.
 
-See also Elive::Connection::API.
+See also Elive::Connection::StandardV2.
 
 =cut
 
@@ -76,10 +76,10 @@ sub connect {
     die "usage: ${class}->connect(url, [login_name], [pass])"
 	unless ($class && $url);
 
-    eval {require Elive::Connection::API};
+    eval {require Elive::StandardV2::Connection};
     die $@ if $@;
 
-    my $connection = Elive::Connection::API->connect(
+    my $connection = Elive::StandardV2::Connection->connect(
 	$url,
 	$login_name,
 	$pass,
@@ -94,7 +94,7 @@ sub connect {
 
 =head2 connection
 
-     $e1 = Elive::API->connection
+     $e1 = Elive::StandardV2->connection
          or warn 'no elive connection active';
 
 Returns the default Elive connection handle.
@@ -150,7 +150,7 @@ sub insert {
 Generic list method. Most commands allow a ranging expression to narrow the
 selection. This is passed in using the C<filter> option. For example:
 
-    my $bobs_sessions = Elive::API::Session->list(filter => {userId => 'bob'});
+    my $bobs_sessions = Elive::StandardV2::Session->list(filter => {userId => 'bob'});
 
 =cut
 
@@ -203,8 +203,8 @@ David Warring, C<< <david.warring at gmail.com> >>
 
 =head1 BUGS
 
-Please report any bugs or feature requests to C<bug-elive-api at rt.cpan.org>, or through
-the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Elive-API>.  I will be notified, and then you'll
+Please report any bugs or feature requests to C<bug-elive-standardv2 at rt.cpan.org>, or through
+the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Elive-StandardV2>.  I will be notified, and then you'll
 automatically be notified of progress on your bug as I make changes.
 
 
@@ -213,7 +213,7 @@ automatically be notified of progress on your bug as I make changes.
 
 You can find documentation for this module with the perldoc command.
 
-    perldoc Elive::API
+    perldoc Elive::StandardV2
 
 
 You can also look for information at:
@@ -222,19 +222,19 @@ You can also look for information at:
 
 =item * RT: CPAN's request tracker
 
-L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=Elive-API>
+L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=Elive-StandardV2>
 
 =item * AnnoCPAN: Annotated CPAN documentation
 
-L<http://annocpan.org/dist/Elive-API>
+L<http://annocpan.org/dist/Elive-StandardV2>
 
 =item * CPAN Ratings
 
-L<http://cpanratings.perl.org/d/Elive-API>
+L<http://cpanratings.perl.org/d/Elive-StandardV2>
 
 =item * Search CPAN
 
-L<http://search.cpan.org/dist/Elive-API/>
+L<http://search.cpan.org/dist/Elive-StandardV2/>
 
 =back
 

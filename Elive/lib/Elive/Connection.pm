@@ -54,32 +54,24 @@ __PACKAGE__->mk_accessors( qw{url user pass _soap debug type} );
 
     my $sdk_c1 = Elive::Connection->connect('http://someserver.com/test',
                                         'user1', 'pass1', debug => 1,
-                                        type => 'SDK',
     );
 
     my $url1 = $sdk_c1->url;   #  'http://someserver.com/test'
 
-    my $sdk_c2 =  Elive::Connection->connect('http://user2:pass2@someserver.com/test', undef, undef, type => 'SDK);
+    my $sdk_c2 =  Elive::Connection->connect('http://user2:pass2@someserver.com/test', undef, undef);
     my $url2 = $sdk_c2->url;   #  'http://someserver.com/test'
 
-Establishes a SOAP connection. Possible types are: SDK (L<Elive::Connection::SDK>), or 'API' (L<Elive::Connection::SDK>).
+Establishes a SOAP connection.
 
 =cut
 
 sub connect {
     my ($class, $url, $user, $pass, %opt) = @_;
-
-    my $type = $opt{type} || 'SDK';
-
-    my $connection_class = "Elive::Connection::${type}";
-
-    eval "require ${connection_class}";
-    die "unable to require ${connection_class}: $@"
-	if $@;
-
-    my $connection = $connection_class->connect($url, $user, $pass, %opt);
-
-    return $connection;
+    #
+    # for backwards compatibility
+    #
+    require Elive::Connection::SDK;
+    return Elive::Connection::SDK->connect($url, $user => $pass, %opt);
 }
 
 sub _connect {

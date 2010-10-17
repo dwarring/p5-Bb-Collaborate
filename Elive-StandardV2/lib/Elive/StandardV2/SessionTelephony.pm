@@ -1,9 +1,9 @@
-package Elive::API::SessionTelephony;
+package Elive::StandardV2::SessionTelephony;
 use warnings; use strict;
 
 use Mouse;
 
-extends 'Elive::API';
+extends 'Elive::StandardV2';
 
 use Scalar::Util;
 use Carp;
@@ -12,7 +12,7 @@ use Elive::Util;
 
 =head1 NAME
 
-Elive::API::SessionTelephony - Elluminate SessionTelephony instance class
+Elive::StandardV2::SessionTelephony - Elluminate SessionTelephony instance class
 
 =head1 DESCRIPTION
 

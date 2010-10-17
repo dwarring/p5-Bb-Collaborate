@@ -5,12 +5,12 @@ use warnings;
 use inc::Module::Install;
 perl_version    5.005;
 
-name           ('Elive-API');
-module_name    ('Elive::API');
+name           ('Elive-StandardV2');
+module_name    ('Elive::StandardV2');
 author         ('David Warring <david.warring@gmail.com>');
-version_from   ('lib/Elive/API.pm');
+version_from   ('lib/Elive/StandardV2.pm');
 license	       ('perl');
-abstract       ('Elluminate Live (c) API (v2) bindings');
+abstract       ('Perl binds for the Elluminate Live (c) Standard Bridge V2 API');
 install_script ();
 
 requires(

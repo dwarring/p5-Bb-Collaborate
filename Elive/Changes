@@ -17,8 +17,8 @@ Revision history for Elive
 
 0.74_1  7th October 2010
 
-        Essential changes to implement Elive::API - A new companion CPAN module
-        that implements bindings to the ELM Standard API Bridge V2.
+        Essential changes to implement Elive::StandardV2 - A new companion
+        CPAN module that implements bindings to ELM Standard API Bridge V2.
 
         The classes in this distribution that referenced by ELive::API are
         Elive::Connection::API, Elive::Array, Elive::DAO and

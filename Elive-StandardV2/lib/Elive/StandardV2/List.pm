@@ -1,4 +1,4 @@
-package Elive::API::List;
+package Elive::StandardV2::List;
 use warnings; use strict;
 
 use Mouse;
@@ -9,7 +9,7 @@ extends 'Elive::Array';
 
 =head1 NAME
 
-Elive::API::List - Base class for an array. Typically chair-persons, participants, courses
+Elive::StandardV2::List - Base class for an array. Typically chair-persons, participants, courses
 
 =cut
 
@@ -25,17 +25,17 @@ Add additional elements
 
 =cut
 
-coerce 'Elive::API::List' => from 'ArrayRef'
+coerce 'Elive::StandardV2::List' => from 'ArrayRef'
           => via {
 	      my @participants = grep {$_ ne ''} map {split(',')} @$_;
-	      Elive::API::List->new(\@participants);
+	      Elive::StandardV2::List->new(\@participants);
 };
 
-coerce 'Elive::API::List' => from 'Str'
+coerce 'Elive::StandardV2::List' => from 'Str'
           => via {
 	      my @participants = grep {$_ ne ''} split(',');
 
-	      Elive::API::List->new(\@participants);
+	      Elive::StandardV2::List->new(\@participants);
           };
 
 =head2 stringify

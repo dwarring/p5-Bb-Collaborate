@@ -1,5 +1,5 @@
 ---
-abstract: 'Elluminate Live (c) API (v2) bindings'
+abstract: 'Perl binds for the Elluminate Live (c) Standard Bridge V2 API'
 author:
   - 'David Warring <david.warring@gmail.com>'
 build_requires:
@@ -12,13 +12,13 @@ build_requires:
 configure_requires:
   ExtUtils::MakeMaker: 6.42
 distribution_type: module
-generated_by: 'Module::Install version 0.99'
+generated_by: 'Module::Install version 1.00'
 license: perl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
   version: 1.4
-module_name: Elive::API
-name: Elive-API
+module_name: Elive::StandardV2
+name: Elive-StandardV2
 no_index:
   directory:
     - inc
@@ -40,5 +40,5 @@ requires:
   perl: 5.005
 resources:
   license: http://dev.perl.org/licenses/
-  repository: https://elive.svn.sourceforge.net/svnroot/elive/trunk/Elive-API
+  repository: https://elive.svn.sourceforge.net/svnroot/elive/trunk/Elive-StandardV2
 version: 0.00_1

@@ -116,11 +116,8 @@ connectivity and authentication details.
 sub connect {
     my ($class, $url, $user, $pass, %opt) = @_;
 
-    my $self = $class->SUPER::_connect($url, $user, $pass, %opt);
-    $self->type($opt{type} || 'SDK');
-
+    my $self = $class->_connect($url, $user, $pass, %opt);
     bless $self, $class;
-
     #
     # The login name should be a valid user in the database.
     # retrieve it as a way of authenticating the user and
@@ -196,10 +193,8 @@ SOAP::SOM object.
 
 sub call {
     my ($self, $cmd, %params) = @_;
-    $params{adapter} ||= 'default';
 
-    die "bad connection type. expected 'SDK', found: ".$self->type
-	unless $self->type eq 'SDK';
+    $params{adapter} ||= 'default';
 
     return $self->SUPER::call( $cmd, %params );
 }

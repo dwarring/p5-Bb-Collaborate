@@ -1,13 +1,13 @@
-package t::Elive::API;
+package t::Elive::StandardV2;
 use warnings; use strict;
 
 =head1 NAME
 
-t::Elive::API
+t::Elive::StandardV2
 
 =head1 DESCRIPTION
 
-Testing support package for Elive::API
+Testing support package for Elive::StandardV2
 
 =cut
 =head2 auth
@@ -41,13 +41,13 @@ sub test_connection {
 	}
 
 	if ($user && $pass && $url !~ m{^mock:}i) {
-	    $result{auth} = [$url, $user, $pass, type => 'API'];
+	    $result{auth} = [$url, $user, $pass, type => 'StandardV2'];
 	    if (my $debug = Elive->debug) {
 		push (@{$result{auth}}, debug => $debug);
 	    }
-	    eval {require Elive::Connection::API};
+	    eval {require Elive::StandardV2::Connection};
 	    die $@ if $@;
-	    $result{class} = 'Elive::Connection::API';
+	    $result{class} = 'Elive::StandardV2::Connection';
 	}
     }
     else {

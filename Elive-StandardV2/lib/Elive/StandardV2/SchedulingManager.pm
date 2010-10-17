@@ -1,15 +1,15 @@
-package Elive::API::SchedulingManager;
+package Elive::StandardV2::SchedulingManager;
 use warnings; use strict;
 
 use Mouse;
 
-extends 'Elive::DAO::Singleton','Elive::API';
+extends 'Elive::DAO::Singleton','Elive::StandardV2';
 
 use Scalar::Util;
 
 =head1 NAME
 
-Elive::API::SchedulingManager - Scheduling Manager entity class
+Elive::StandardV2::SchedulingManager - Scheduling Manager entity class
 
 =cut
 

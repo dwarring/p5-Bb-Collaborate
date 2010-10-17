@@ -4,9 +4,9 @@ use Test::More tests => 11;
 use Test::Exception;
 
 use lib '.';
-use t::Elive::API;
+use t::Elive::StandardV2;
 
-use Elive::API;
+use Elive::StandardV2;
 # don't 'use' anything here! We're testing Elive's ability to load the
 # other required classes (Elive::Connection, Elive::Entity::User etc)
 
@@ -14,7 +14,7 @@ our $t = Test::Builder->new;
 
 SKIP: {
 
-    my %result = t::Elive::API->test_connection(noload => 1);
+    my %result = t::Elive::StandardV2->test_connection(noload => 1);
     my $auth = $result{auth};
 
     skip ($result{reason} || 'skipping live tests',
@@ -25,14 +25,14 @@ SKIP: {
 
     my $connection;
 
-    if ($connection_class eq 'Elive::Connection::API') {
+    if ($connection_class eq 'Elive::StandardV2::Connection') {
 	#
 	# exercise a direct connection from Elive main. No preload
 	# of connection or entity classes.
 	#
 	diag ("connecting: user=$auth->[1], url=$auth->[0]");
 	
-	$connection = Elive::API->connect(@$auth);
+	$connection = Elive::StandardV2::Connection->connect(@$auth);
     }
     else {
 	eval "require $connection_class";
@@ -41,7 +41,7 @@ SKIP: {
 	diag ("connecting: user=$auth->[1], url=$auth->[0]");
 
 	$connection = $connection_class->connect(@$auth);
-	Elive::API->connection($connection);
+	Elive::StandardV2->connection($connection);
     }
 
     ok($connection, 'got connection');
@@ -51,7 +51,7 @@ SKIP: {
     my $scheduling_manager;
     lives_ok (sub {$scheduling_manager = $connection->scheduling_manager},
 	      '$connection->scheduling_manager - lives');
-    isa_ok($scheduling_manager, 'Elive::API::SchedulingManager','scheduling_manager');
+    isa_ok($scheduling_manager, 'Elive::StandardV2::SchedulingManager','scheduling_manager');
     my $min_version_num = '3.3.2';
     my $max_version_num = '3.3.2';
 
@@ -69,19 +69,19 @@ SKIP: {
 	|| $manager !~ m{^($tested_managers)$}) {
 	diag "************************";
 	diag "Note: Elluminate Live! server version is ".$server_version_num;
-	diag "      This Elive::API release ($Elive::API::VERSION) has been tested against $tested_managers on 3.3.2 - ".$max_version_num;
-	diag "      You might want to check CPAN for a more recent version of Elive::API.";
+	diag "      This Elive::StandardV2 release ($Elive::StandardV2::VERSION) has been tested against $tested_managers on 3.3.2 - ".$max_version_num;
+	diag "      You might want to check CPAN for a more recent version of Elive::StandardV2.";
 	diag "************************";
     }
 
     my $server_configuration;
     lives_ok (sub{$server_configuration = $connection->server_configuration}, 'get server_configuration - lives');
-    isa_ok($server_configuration, 'Elive::API::ServerConfiguration','server_configuration');
+    isa_ok($server_configuration, 'Elive::StandardV2::ServerConfiguration','server_configuration');
 
 
     my $server_versions;
     lives_ok (sub{$server_versions = $connection->server_versions}, 'get server_versions - lives');
-    isa_ok($server_versions, 'Elive::API::ServerVersions','server_versions');
+    isa_ok($server_versions, 'Elive::StandardV2::ServerVersions','server_versions');
 
     diag 'server version '.$server_versions->versionName.' ('.$server_versions->versionId.')';
 

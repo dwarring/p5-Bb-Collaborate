@@ -1,15 +1,15 @@
-package Elive::API::ServerConfiguration;
+package Elive::StandardV2::ServerConfiguration;
 use warnings; use strict;
 
 use Mouse;
 
-extends 'Elive::DAO::Singleton','Elive::API';
+extends 'Elive::DAO::Singleton','Elive::StandardV2';
 
 use Scalar::Util;
 
 =head1 NAME
 
-Elive::API::ServerConfiguration - Server Configuration entity class
+Elive::StandardV2::ServerConfiguration - Server Configuration entity class
 
 =cut
 
@@ -30,7 +30,7 @@ has 'timeZone' => (is => 'rw', isa => 'Bool');
 
 =head2 list
 
-    my $server_config = Elive::API::ServerConfiguration->get();
+    my $server_config = Elive::StandardV2::ServerConfiguration->get();
 
 Return the server configuration details.
 

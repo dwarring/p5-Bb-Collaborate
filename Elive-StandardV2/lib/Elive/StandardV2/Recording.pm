@@ -1,9 +1,9 @@
-package Elive::API::Recording;
+package Elive::StandardV2::Recording;
 use warnings; use strict;
 
 use Mouse;
 
-extends 'Elive::API';
+extends 'Elive::StandardV2';
 
 use Scalar::Util;
 use Carp;
@@ -12,7 +12,7 @@ use Elive::Util;
 
 =head1 NAME
 
-Elive::API::Recording - Elluminate Recording instance class
+Elive::StandardV2::Recording - Elluminate Recording instance class
 
 =head1 DESCRIPTION
 
@@ -90,7 +90,7 @@ sub recording_url {
 
 =head2 list
 
-    my $bobs_recordings = Elive::API::Recordings->(filter => {userId => 'bob'});
+    my $bobs_recordings = Elive::StandardV2::Recordings->(filter => {userId => 'bob'});
 
 =cut
 

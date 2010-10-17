@@ -6,12 +6,12 @@ use Test::Builder;
 use version;
 
 use lib '.';
-use t::Elive::API;
+use t::Elive::StandardV2;
 
-use Elive::API::Session;
+use Elive::StandardV2::Session;
 
 our $t = Test::Builder->new;
-our $class = 'Elive::API::Session' ;
+our $class = 'Elive::StandardV2::Session' ;
 
 our $connection;
 
@@ -23,16 +23,17 @@ SKIP: {
     skip('DateTime is required to run this test', $skippable)
 	if $@;
 
-    my %result = t::Elive::API->test_connection();
+    my %result = t::Elive::StandardV2->test_connection();
     my $auth = $result{auth};
 
    skip ($result{reason} || 'skipping live tests', $skippable)
 	unless $auth && @$auth;
 
-    use Elive::Connection::API;
+    eval{require Elive::StandardV2::Connection};
+    die $@ if $@;
     my $connection_class = $result{class};
     $connection = $connection_class->connect(@$auth);
-    Elive::API->connection($connection);
+    Elive::StandardV2->connection($connection);
 
     my $dt = DateTime->now->truncate(to => 'minute');
 
@@ -86,7 +87,7 @@ SKIP: {
 
     $session = undef;
 
-    ok ($session = Elive::API::Session->retrieve([$session_id]),
+    ok ($session = Elive::StandardV2::Session->retrieve([$session_id]),
 	'Refetch of session');
 
     foreach (keys %update_data) {
@@ -109,7 +110,7 @@ SKIP: {
     lives_ok(sub {$session->delete},'session deletion - lives');
 
     my $deleted_session;
-    eval {$deleted_session = Elive::API::Session->retrieve([$session_id])};
+    eval {$deleted_session = Elive::StandardV2::Session->retrieve([$session_id])};
 
     ok($@ || !$deleted_session, "can't retrieve deleted session");
 }

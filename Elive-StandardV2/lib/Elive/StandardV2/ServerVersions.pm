@@ -1,15 +1,15 @@
-package Elive::API::ServerVersions;
+package Elive::StandardV2::ServerVersions;
 use warnings; use strict;
 
 use Mouse;
 
-extends 'Elive::DAO::Singleton','Elive::API';
+extends 'Elive::DAO::Singleton','Elive::StandardV2';
 
 use Scalar::Util;
 
 =head1 NAME
 
-Elive::API::ServerVersions - Server Versions entity class
+Elive::StandardV2::ServerVersions - Server Versions entity class
 
 =cut
 
@@ -26,7 +26,7 @@ has 'versionMaxFilmersLimit' => (is => 'rw', isa => 'Int');
 
 =head2 list
 
-    my $versions = Elive::API::ServerVersions->get;
+    my $versions = Elive::StandardV2::ServerVersions->get;
 
 Returns the server version information for the current connection.
 

@@ -1,17 +1,17 @@
-package Elive::API::SessionAttendance::Attendee;
+package Elive::StandardV2::SessionAttendance::Attendee;
 use warnings; use strict;
 
 use Mouse;
 
-extends 'Elive::API';
+extends 'Elive::StandardV2';
 
 =head1 NAME
 
-Elive::API::SessionAttendance::Attendee - Elluminate Attendee instance class
+Elive::StandardV2::SessionAttendance::Attendee - Elluminate Attendee instance class
 
 =head1 DESCRIPTION
 
-This is the element class of Elive::API::SessionAttendance::Attendees
+This is the element class of Elive::StandardV2::SessionAttendance::Attendees
 
 =cut
 
