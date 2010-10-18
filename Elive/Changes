@@ -9,7 +9,9 @@ Revision history for Elive
         - Group support also added to elive_raise_meeting - see pod
 
         Bug fixes:
-        - Added 'adapter' property to Elive::Entity::Meeting
+        - Elive::Entity::User: Added 'adapter' property to
+        - Elive::Entity::Preload - Make sure that the preload has an
+          'ownerId' defined. Seems to require it.
 
         Other Enhancements:
         - General support for credentials embedded in urls, E.g:

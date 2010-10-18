@@ -49,9 +49,9 @@ for group selection of meeting participants.
 
 The C<members> property contains the group members as an array of user IDs.
 
-If the a site is configured for LDAP, groups are mapped to LDAP groups. Access become readonly,
-and the C<create()>, C<update> and C<delete> methods are no longer applicable.
-
+If the a site is configured for LDAP, groups are mapped to LDAP groups. 
+Group access becomes read-only. The affected methods are: C<insert>, C<update>,
+and C<delete>.
 =cut
 
 =head1 METHODS

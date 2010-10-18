@@ -1,6 +1,6 @@
 #!perl
 use warnings; use strict;
-use Test::More tests => 47;
+use Test::More tests => 48;
 use Test::Exception;
 use Test::Builder;
 
@@ -30,7 +30,7 @@ SKIP: {
     my %result = t::Elive->test_connection(only => 'real');
     my $auth = $result{auth};
 
-    skip ($result{reason} || 'skipping live tests', 45)
+    skip ($result{reason} || 'skipping live tests', 46)
 	unless $auth;
 
     my $connection_class = $result{class};
@@ -79,12 +79,13 @@ SKIP: {
     {
 	type => 'media',
 	name => 'test.wav',
-	ownerId => Elive->login,
+	# omit owner id.
 	data => $data[1],
     },
     );
 
     is($preloads[1]->mimeType, 'audio/x-wav','expected value for mimeType (guessed)');
+    is($preloads[1]->ownerId, Elive->login->userId,'preload owner id defaults to login user');
 
     $preloads[2] = Elive::Entity::Preload->upload(
     {

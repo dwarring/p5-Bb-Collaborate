@@ -42,6 +42,7 @@ __PACKAGE__->primary_key('preloadId');
 __PACKAGE__->params(
     meetingId => 'Str',
     fileName => 'Str',
+    length => 'Int',
     );
 __PACKAGE__->_alias(key => 'preloadId');
 
@@ -96,27 +97,31 @@ MIME::Types.
 sub upload {
     my ($class, $insert_data_ref, %opt) = @_;
 
+    croak 'usage: $class->upload( {name => $filename, data => $binary_data, ...} )'
+	unless Elive::Util::_reftype($insert_data_ref) eq 'HASH'
+	&& $insert_data_ref->{data} && $insert_data_ref->{name};
+
+    my $connection = $opt{connection} || $class->connection
+	or die "not connected";
+
     my %insert_data = %{ $insert_data_ref };
 
     my $binary_data = delete $insert_data{data};
-    my $length = delete $insert_data{length} || 0;
-    $length ||= length($binary_data)
-	if $binary_data;
+
+    $insert_data{length} ||= length($binary_data);
+    $insert_data{ownerId} ||= $connection->login;
     #
     # 1. create initial record
     #
     my $self = $class->insert(\%insert_data, %opt);
 
-    if ($length && $binary_data) {
+    if ($insert_data{length} && $binary_data) {
 	#
 	# 2. Now upload data to it
 	#
-	my $connection = $self->connection
-	    or die "not connected";
-
 	my $som = $connection->call('streamPreload',
 				    preloadId => $self->preloadId,
-				    length => $length,
+				    length => $insert_data{length},
 				    stream => (SOAP::Data
 					       ->type('hexBinary')
 					       ->value($binary_data)),

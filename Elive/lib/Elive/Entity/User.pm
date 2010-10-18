@@ -253,8 +253,8 @@ Elluminate I<Live!> can be configured to use LDAP for user management and
 authentication.
 
 If LDAP is in use, the fetch and retrieve methods will continue to operate
-via the Elluminate SOAP command layer. However use access becomes read-only.
-The affected methods are: insert, update, delete and change_password.
+via the Elluminate SOAP command layer. User access becomes read-only.
+The affected methods are: C<insert>, C<update>, C<delete> and C<change_password>.
 
 =cut
 
