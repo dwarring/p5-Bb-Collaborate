@@ -326,7 +326,7 @@ see the README file.
 
 =head1 SEE ALSO
 
-L<Elive::API> - This is a separate CPAN module that implements the alternate Elluminate I<Live!> Standard Bridge API. 
+L<Elive::StandardV2> - This is a separate CPAN module that implements the alternate Elluminate I<Live!> Standard Bridge API (v2). 
 
 The following classes are included in this distribution and implement the SDK bindings:
 
@@ -436,8 +436,8 @@ The Elive distribution only supports the Elluminate SDK which is implemented
 by ELM (Elluminate Live Manager) session manager. This SDK is not support by
 SAS (Session Administration System).
 
-Update: See also the companion CPAN module L<Elive::API> which is under
-construction and will support the alternate Elluminate I<Live!> standard bridge.
+Update: See also the companion CPAN module L<Elive::StandardV2> which is under
+construction and will support the alternate Elluminate I<Live!> standard bridge (v2).
 
 =back
 
