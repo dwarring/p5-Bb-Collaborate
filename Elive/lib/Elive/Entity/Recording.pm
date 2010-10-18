@@ -258,7 +258,7 @@ Preferences E<gt>E<gt> Session Access E<gt>E<gt> Lock Recording Playback to Clie
 
 It represents a fixed client IP address for launching the recording playback.
 
-See also L<http://en.wikipedia.org/wiki/JNLP>.
+See also L<http://wikipedia.org/wiki/JNLP>.
 
 =cut
 

@@ -73,7 +73,7 @@ has  'restrictedMeeting' => (is => 'rw', isa => 'Bool',
 			     documentation => "Restricted meeting");
 
 has 'adapter' => (is => 'rw', isa => 'Str',
-		  documentation => 'adapter used to create the meeting/session');
+		  documentation => 'adapter used to create the meeting/session. E.g.: "default", "standardv2"');
 
 =head1 METHODS
 
