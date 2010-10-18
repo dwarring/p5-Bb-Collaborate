@@ -1,6 +1,6 @@
 #!perl
 use warnings; use strict;
-use Test::More tests => 48;
+use Test::More tests => 49;
 use Test::Exception;
 use Test::Builder;
 
@@ -30,7 +30,7 @@ SKIP: {
     my %result = t::Elive->test_connection(only => 'real');
     my $auth = $result{auth};
 
-    skip ($result{reason} || 'skipping live tests', 46)
+    skip ($result{reason} || 'skipping live tests', 47)
 	unless $auth;
 
     my $connection_class = $result{class};
@@ -54,6 +54,7 @@ SKIP: {
     is($preloads[0]->mimeType, 'application/octet-stream','expected value for mimeType (guessed)');
     ok($preloads[0]->name =~ m{test(\.wbd)?$}, 'preload name, as expected');
     is($preloads[0]->ownerId, Elive->login->userId, 'preload ownerId, as expected');
+    is($preloads[0]->size, length($data[0]), 'preload size, as expected');
 
     my $data_download = $preloads[0]->download;
 
