@@ -16,7 +16,6 @@ use Carp;
 
 __PACKAGE__->entity_name('Preload');
 __PACKAGE__->collection_name('Preloads');
-__PACKAGE__->derivable(qw{download web_url});
 
 has 'preloadId' => (is => 'rw', isa => 'Int', required => 1);
 __PACKAGE__->primary_key('preloadId');

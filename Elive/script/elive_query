@@ -446,7 +446,9 @@ sub _select {
 	print "No results.\n";
     }
     elsif ($opt{dump} && $opt{dump} =~ /^(yaml)$/i) {
-        print YAML::Dump({$entity_name => [map {_fetch_row_href($props, $_)} @$rows]});
+	foreach (@$rows) {
+	    print YAML::Dump({$entity_name => _fetch_row_href($props, $_)});
+	}
     }
     else {
 	foreach my $row (@$rows) {
