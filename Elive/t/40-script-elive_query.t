@@ -139,9 +139,9 @@ SKIP: {
 
 	lives_ok(sub {($data, @guff) = YAML::Load($stdout)}, 'output is parsable YAML');
 	isa_ok($data, 'HASH', 'result');
-	ok($data->{ServerDetails}[0]{serverDetailsId}, 'hash structure contains ServerDetails[0].serverDetailsId');
+	ok($data->{ServerDetails}{serverDetailsId}, 'hash structure contains ServerDetails.serverDetailsId');
 
-	ok(!@guff, 'single result returned');
+	ok(!@guff, 'single result returned for singleton entity');
 
     };
 

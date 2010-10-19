@@ -318,6 +318,10 @@ sub string {
 	    return $dt->stringify($_)
 		if eval{$dt->can('stringify')};
 	}
+
+	if ($reftype eq 'ARRAY') {
+	    return join(';', map {string($_ => $data_type)} @$_)
+	}
     }
 
     #

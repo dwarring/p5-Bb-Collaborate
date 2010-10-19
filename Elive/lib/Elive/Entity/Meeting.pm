@@ -29,7 +29,6 @@ Elive::Entity::MeetingParameters and Elive::Entity::ServerParameters.
 
 __PACKAGE__->entity_name('Meeting');
 __PACKAGE__->collection_name('Meetings');
-__PACKAGE__->derivable(qw{participants web_url});
 __PACKAGE__->params(
     seats => 'Int',
     preloadId => 'Int',
@@ -40,6 +39,9 @@ __PACKAGE__->params(
     startDate => 'HiResDate',
     endDate => 'HiResDate',
     );
+
+# help out elive_query; expansion of 'select ** from meeting...'
+__PACKAGE__->derivable(qw{participant_list list_recordings list_preloads web_url});
 
 has 'meetingId' => (is => 'rw', isa => 'Int', required => 1);
 __PACKAGE__->primary_key('meetingId');
@@ -590,22 +592,6 @@ sub participant_list {
 		   connection => $self->connection,
 		   @args,
 	);
-}
-
-=head2 participants
-
-    my $meeting = Elive::Entity::Meeting->retrieve([$meeting_id]);
-    my $participants = $meeting->participants;
-
-A utility function to retrieve the list of participants for the meeting.
-It returns an L<Elive::Entity::ParticipantList::Participants> object;
-
-=cut
-
-sub participants {
-    my $self = shift;
-    my $participant_list = $self->participant_list;
-    return $participant_list? $participant_list->participants: [];
 }
 
 =head2 list_preloads
