@@ -29,6 +29,7 @@ Elive::Entity::MeetingParameters and Elive::Entity::ServerParameters.
 
 __PACKAGE__->entity_name('Meeting');
 __PACKAGE__->collection_name('Meetings');
+__PACKAGE__->derivable(qw{participants web_url});
 __PACKAGE__->params(
     seats => 'Int',
     preloadId => 'Int',
@@ -429,7 +430,7 @@ page, or send email attachments  with mime type C<application/x-java-jnlp-file>.
 Under Windows, and other desktops, files are usually saved  with extension
 C<JNLP>.
 
-See also L<http://en.wikipedia.org/wiki/JNLP>.
+See also L<http://wikipedia.org/wiki/JNLP>.
 
 =cut
 
@@ -573,6 +574,7 @@ sub server_parameters {
 
     my $meeting = Elive::Entity::Meeting->retrieve([$meeting_id]);
     my $participant_list = $meeting->participant_list;
+    my $participants = $meeting->participants;
 
 Utility method to return the participant_list associated with a meeting.
 See also L<Elive::Entity::ParticipantList>.
@@ -588,6 +590,22 @@ sub participant_list {
 		   connection => $self->connection,
 		   @args,
 	);
+}
+
+=head2 participants
+
+    my $meeting = Elive::Entity::Meeting->retrieve([$meeting_id]);
+    my $participants = $meeting->participants;
+
+A utility function to retrieve the list of participants for the meeting.
+It returns an L<Elive::Entity::ParticipantList::Participants> object;
+
+=cut
+
+sub participants {
+    my $self = shift;
+    my $participant_list = $self->participant_list;
+    return $participant_list? $participant_list->participants: [];
 }
 
 =head2 list_preloads

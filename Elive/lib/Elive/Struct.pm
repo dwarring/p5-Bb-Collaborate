@@ -56,9 +56,10 @@ In particular meeting participants stringify to userId=role, eg
 BEGIN {
     __PACKAGE__->mk_classdata('_entities' => {});
     __PACKAGE__->mk_classdata('_aliases');
+    __PACKAGE__->mk_classdata('_derivable' => []);
     __PACKAGE__->mk_classdata('_entity_name');
-    __PACKAGE__->mk_classdata('_primary_key', []);
-    __PACKAGE__->mk_classdata('_params', {});
+    __PACKAGE__->mk_classdata('_primary_key' => []);
+    __PACKAGE__->mk_classdata('_params' => {});
     __PACKAGE__->mk_classdata('collection_name');
     __PACKAGE__->mk_classdata('_isa');
 };
@@ -283,6 +284,21 @@ sub params {
 	if (keys %params);
 
     return %{$entity_class->_params};
+}
+
+=head2 derivable
+
+    Setter/getter for derivable field(s) for this entity class
+
+=cut
+
+sub derivable {
+    my ($entity_class, @derivable) = @_;
+
+    $entity_class->_derivable(\@derivable)
+	if (@derivable);
+
+    return @{$entity_class->_derivable};
 }
 
 =head2 entities

@@ -184,6 +184,7 @@ sub main {
 		    print "      - prop1,prop2,.. - show selected properties\n";
 		    print "      - *              - show all properties\n";
 		    print "      - *?             - show only defined properties\n";
+		    print "      - **             - show extra data (usually slower)\n";
 		    print "quit                   - exit elive_query\n\n";
 		}
 		elsif ($keyw  =~ m{^(connect)$}i) {
@@ -254,18 +255,26 @@ sub main {
 			my $entity_class = ($entities{$entity}
 					    || $entity_collections{$entity});
 
+
+			$entity_class = 'Elive::script::elive_query::MegaMeeting'
+			    if $entity_class eq 'Elive::Entity::Meeting';
+
 			if (!$entity_class) {
 			    print STDERR "Unknown entity: $entity\n";
 			    $valid = 0;
 			}
 			else {
-			    if (@props == 1 && $props[0] =~ m{^(\*)(\??)$}x) {
+			    if (@props == 1 && $props[0] =~ m{^(\*)(\*)?(\??)$}x) {
 				#
 				# '*'  select all
+				# '**' select all + derivable
 				# '*?' select all defined
 				#
-				$hide_undef = $2? 1: 0;
+				my $include_derivable = $2? 1: 0;
+				$hide_undef = $3? 1: 0;
 				@props = $entity_class->properties;
+				push (@props, $entity_class->derivable)
+				    if ($include_derivable);
 			    }
 			    else {
 				foreach (@props) {
@@ -373,13 +382,20 @@ sub _select {
     my $hide_undef = $opt{hide_undef};
 
     my $property_types = $entity_class->property_types;
+    my %derivable;
+    @derivable{ $entity_class->derivable } = undef;
     my $entity_name = $entity_class->entity_name;
     my ($pkey) = $entity_class->primary_key;
 
     foreach (@$props) {
 	
-	unless (exists $property_types->{$_}) {
-	    print STDERR "unknown $entity_name property: $_\n";
+	unless (exists $property_types->{$_} || exists $derivable{$_}) {
+
+	    print STDERR "unknown property: $_\n";
+	    print STDERR "$entity_name has primary properties: ".join(', ', sort keys %$property_types)."\n";
+	    if (keys %derivable) {
+		print STDERR "(also has secondary properties: ".join(', ', sort keys %derivable).")\n";
+	    }
 	    return;
 	}
     }
@@ -524,7 +540,6 @@ sub _fetch_row_href {
 
     my %vals = (map {
 	my $val = $row->$_;
-	$val = defined($val) ? Elive::Util::string($val) : undef;
 	$_ => $val
 	} @$props);
 
@@ -600,3 +615,73 @@ sub _connect {
     print STDERR "ok\n";
     return $connection;
 }
+
+########################################################################
+
+package Elive::script::elive_query::MegaMeeting;
+use Mouse;
+
+use Elive::Entity::Meeting;
+use Elive::Entity::ServerParameters;
+use Elive::Entity::MeetingParameters;
+
+use base 'Elive::Entity::Meeting';
+
+#
+# dummy extended object. Composite of Meeting ServerParameters and
+# Meeting parameters objects
+#
+
+sub properties {
+    return Elive::Entity::Meeting->properties;
+}
+
+sub property_types {
+    return Elive::Entity::Meeting->property_types
+}
+
+sub derivable {
+    my $class = shift;
+
+    return grep {$_ ne 'meetingId'} (
+	Elive::Entity::Meeting->derivable,
+
+	Elive::Entity::ServerParameters->properties,
+	Elive::Entity::ServerParameters->derivable,
+
+	Elive::Entity::MeetingParameters->properties,
+	Elive::Entity::MeetingParameters->derivable,
+	);
+}
+
+BEGIN {
+
+    my %delegates = (
+	'Elive::Entity::ServerParameters' => '_cache_server_parameters',
+	'Elive::Entity::MeetingParameters' => '_cache_meeting_parameters',
+	);
+
+    foreach my $delegate_class (sort keys %delegates) {
+
+	my $cache_accessor = $delegates{ $delegate_class };
+
+	foreach my $method (grep {$_ ne 'meetingId'} ($delegate_class->properties, $delegate_class->derivable)) {
+
+	    my $delegate_subref = $delegate_class->can($method);
+
+	    no strict 'refs';
+
+	    my $subref = sub {
+		my $self = shift;
+
+		$self->{$cache_accessor} ||=  $delegate_class->retrieve( $self->meetingId, reuse => 1);
+	    
+		$self->{$cache_accessor}->$method(@_);
+	    };
+
+	    *{$method} = $subref;
+	}
+    }
+}
+
+1;

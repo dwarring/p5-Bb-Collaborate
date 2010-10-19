@@ -1,5 +1,11 @@
 Revision history for Elive
 
+0.74    18th October 2010
+
+        Bug Fixes:
+        - Elive::Entity::Preload - Make sure that the preload has an 'ownerId'
+          defined. It seems to be required for preloads to function properly.
+
 0.74_2  14th October 2010
 
         Support for LDAP groups in participant lists
@@ -9,9 +15,8 @@ Revision history for Elive
         - Group support also added to elive_raise_meeting - see pod
 
         Bug fixes:
-        - Elive::Entity::User: Added 'adapter' property to
-        - Elive::Entity::Preload - Make sure that the preload has an
-          'ownerId' defined. Seems to require it.
+        - Elive::Entity::Meeting: Added 'adapter' property. Interesting
+          vlaues include: 'default' & 'standardv2'.
 
         Other Enhancements:
         - General support for credentials embedded in urls, E.g:

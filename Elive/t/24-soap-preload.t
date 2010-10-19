@@ -82,10 +82,11 @@ SKIP: {
 	name => 'test.wav',
 	# omit owner id.
 	data => $data[1],
+	# omit mime type
     },
     );
 
-    is($preloads[1]->mimeType, 'audio/x-wav','expected value for mimeType (guessed)');
+    is($preloads[1]->mimeType, 'audio/x-wav','expected value for mimeType (defaulted)');
     is($preloads[1]->ownerId, Elive->login->userId,'preload owner id defaults to login user');
 
     $preloads[2] = Elive::Entity::Preload->upload(

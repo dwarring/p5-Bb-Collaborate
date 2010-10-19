@@ -8,6 +8,7 @@ use Elive::Util;
 
 __PACKAGE__->entity_name('Recording');
 __PACKAGE__->collection_name('Recordings');
+__PACKAGE__->derivable(qw{download web_url});
 
 has 'recordingId' => (is => 'rw', isa => 'Str', required => 1);
 __PACKAGE__->primary_key('recordingId');

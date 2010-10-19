@@ -23,7 +23,7 @@ has 'supervised' => (is => 'rw', isa => 'Bool',
     documentation => 'whether the moderator can see private messages');
 
 has 'enableTelephony' => (is => 'rw', isa => 'Bool');
-has 'telephonyType' => (is => 'rw', isa => 'Str');
+has 'telephonyType' => (is => 'rw', isa => 'Ref');
 has 'moderatorTelephonyAddress' => (is => 'rw', isa => 'Str');
 has 'moderatorTelephonyPIN' => (is => 'rw', isa => 'Str');
 has 'participantTelephonyAddress' => (is => 'rw', isa => 'Str');
