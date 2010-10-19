@@ -532,6 +532,7 @@ sub _fetch_row_aref {
 		map {$row->$_}
 		@$props);
 
+    s{\n}{\\n}g foreach grep {defined} @vals;
 
     return \@vals;
 }
