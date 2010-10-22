@@ -7,11 +7,11 @@ Elive - Elluminate Live! (c) SDK bindings
 
 =head1 VERSION
 
-Version 0.74
+Version 0.75
 
 =cut
 
-our $VERSION = '0.74';
+our $VERSION = '0.75';
 
 use Class::Data::Inheritable;
 use base qw{Class::Data::Inheritable};
@@ -332,27 +332,27 @@ The following classes are included in this distribution and implement the SDK bi
 
 =over 4
 
-=item Elive::Connection::SDK - Elluminate SOAP connection
+=item L<Elive::Connection::SDK> - Elluminate SOAP connection
 
-=item Elive::Entity::Group
+=item L<Elive::Entity::Group>
 
-=item Elive::Entity::Meeting
+=item L<Elive::Entity::Meeting>
 
-=item Elive::Entity::MeetingParameters
+=item L<Elive::Entity::MeetingParameters>
 
-=item Elive::Entity::ParticipantList
+=item L<Elive::Entity::ParticipantList>
 
-=item Elive::Entity::Preload
+=item L<Elive::Entity::Preload>
 
-=item Elive::Entity::Recording
+=item L<Elive::Entity::Recording>
 
-=item Elive::Entity::Report
+=item L<Elive::Entity::Report>
 
-=item Elive::Entity::ServerDetails
+=item L<Elive::Entity::ServerDetails>
 
-=item Elive::Entity::ServerParameters
+=item L<Elive::Entity::ServerParameters>
 
-=item Elive::Entity::User
+=item L<Elive::Entity::User>
 
 =back
 
@@ -360,11 +360,11 @@ Scripts (included in the Elive distribution):
 
 =over 4
 
-=item elive_query - simple interactive queries on Elive entities
+=item L<elive_query> - simple interactive queries on Elive entities
 
-=item elive_raise_meeting - sample script that create meetings via one-liners
+=item L<elive_raise_meeting> - sample script that create meetings via one-liners
 
-=item elive_lint_config - sanity checker for  Elluminate site configurations
+=item L<elive_lint_config> - sanity checker for  Elluminate site configurations
 
 =back
 

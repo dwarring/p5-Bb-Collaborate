@@ -13,7 +13,7 @@ __PACKAGE__->element_class('Elive::Entity::ParticipantList::Participant');
 
 =head1 NAME
 
-Elive::Entity::ParticipantList::Participants - Base class for an array of participants
+Elive::Entity::ParticipantList::Participants - a list of participants
 
 =cut
 
