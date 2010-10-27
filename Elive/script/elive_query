@@ -176,7 +176,7 @@ sub main {
 
 		if (lc($keyw) eq substr('help',0, length($keyw))) {
 		    print "Elive query $elive_version help:\n\n";
-		    print "connect url [user] - connect to an Elluminate Live! server\n";
+		    print "connect url - connect to an Elluminate Live! server\n";
 		    print "describe [entity_name] - list/show entities\n";
 		    print "debug = [0|1|2|3] - set debugging level\n";
 		    print "select <expr> from entity [where exp]\n";
@@ -256,7 +256,7 @@ sub main {
 					    || $entity_collections{$entity});
 
 
-			$entity_class = 'Elive::script::elive_query::MegaMeeting'
+			$entity_class = 'Elive::script::elive_query::ViewMeeting'
 			    if $entity_class eq 'Elive::Entity::Meeting';
 
 			if (!$entity_class) {
@@ -273,8 +273,10 @@ sub main {
 				my $include_derivable = $2? 1: 0;
 				$hide_undef = $3? 1: 0;
 				@props = $entity_class->properties;
-				push (@props, $entity_class->derivable)
-				    if ($include_derivable);
+				if ($include_derivable) {
+				    my %derivable = $entity_class->derivable;
+				    push (@props, sort keys %derivable);
+				}
 			    }
 			    else {
 				foreach (@props) {
@@ -301,7 +303,7 @@ sub main {
 		    }
 
 		    unless ($valid) {
-			print STDERR  "usage: select props|* from ".join('|', sort keys %entities)." [where filter|id=val];\n";
+			print STDERR  "usage: select props|*|**|*? from ".join('|', sort keys %entities)." [where filter|id=val];\n";
 		    }
 		}
 		elsif ($keyw !~ m{^(quit)$}x) {
@@ -369,7 +371,16 @@ sub _show {
 	if ($is_entity) {
 	    _show($entities, $property, $nesting + 1, $type);
 	}
+    }
 
+
+    my %derivable = $entity_class->derivable;
+
+    %derivable = Elive::script::elive_query::ViewMeeting->derivable
+	if $entity_class eq 'Elive::Entity::Meeting';
+
+    if (my @derivable_cols = sort keys %derivable) {
+	print "${sp}  (also selectable: ".join(', ', sort @derivable_cols).")\n"
     }
 
     return;
@@ -382,8 +393,7 @@ sub _select {
     my $hide_undef = $opt{hide_undef};
 
     my $property_types = $entity_class->property_types;
-    my %derivable;
-    @derivable{ $entity_class->derivable } = undef;
+    my %derivable = $entity_class->derivable;
     my $entity_name = $entity_class->entity_name;
     my ($pkey) = $entity_class->primary_key;
 
@@ -392,9 +402,9 @@ sub _select {
 	unless (exists $property_types->{$_} || exists $derivable{$_}) {
 
 	    print STDERR "unknown property: $_\n";
-	    print STDERR "$entity_name has primary properties: ".join(', ', sort keys %$property_types)."\n";
+	    print STDERR "$entity_name has properties: ".join(', ', sort keys %$property_types)."\n";
 	    if (keys %derivable) {
-		print STDERR "(also has secondary properties: ".join(', ', sort keys %derivable).")\n";
+		print STDERR "(also selectable: ".join(', ', sort keys %derivable).")\n";
 	    }
 	    return;
 	}
@@ -447,13 +457,13 @@ sub _select {
     }
     elsif ($opt{dump} && $opt{dump} =~ /^(yaml)$/i) {
 	foreach (@$rows) {
-	    print YAML::Dump({$entity_name => _fetch_row_href($props, $_)});
+	    print YAML::Dump({$entity_name => _fetch_row_href($props, \%derivable, $_)});
 	}
     }
     else {
 	foreach my $row (@$rows) {
 	    
-	    my $row =  _fetch_row_aref($props, $row);
+	    my $row =  _fetch_row_aref($props, \%derivable, $row);
 	    push(@output, $row);
 	}
 
@@ -526,10 +536,12 @@ sub _select {
 
 sub _fetch_row_aref {
     my $props = shift;
+    my $derivable = shift;
     my $row = shift;
 
-    my @vals = (map {defined($_) ? Elive::Util::string($_) : undef}
+    my @vals = (map {Elive::Util::string($_)} 
 		map {$row->$_}
+		map {$derivable->{$_} || $_}
 		@$props);
 
     s{\n}{\\n}g foreach grep {defined} @vals;
@@ -539,10 +551,13 @@ sub _fetch_row_aref {
 
 sub _fetch_row_href {
     my $props = shift;
+    my $derivable = shift;
     my $row = shift;
 
+
     my %vals = (map {
-	my $val = $row->$_;
+	my $meth = $derivable->{$_} || $_;
+	my $val = $row->$meth;
 	$_ => $val
 	} @$props);
 
@@ -621,7 +636,7 @@ sub _connect {
 
 ########################################################################
 
-package Elive::script::elive_query::MegaMeeting;
+package Elive::script::elive_query::ViewMeeting;
 use Mouse;
 
 use Elive::Entity::Meeting;
@@ -646,15 +661,17 @@ sub property_types {
 sub derivable {
     my $class = shift;
 
-    return grep {$_ ne 'meetingId'} (
+    my %derivable = (
 	Elive::Entity::Meeting->derivable,
 
-	Elive::Entity::ServerParameters->properties,
+	(map {$_ => $_} Elive::Entity::ServerParameters->properties),
 	Elive::Entity::ServerParameters->derivable,
 
-	Elive::Entity::MeetingParameters->properties,
+	(map {$_ => $_} Elive::Entity::MeetingParameters->properties),
 	Elive::Entity::MeetingParameters->derivable,
 	);
+
+    return %derivable;
 }
 
 BEGIN {
@@ -668,7 +685,13 @@ BEGIN {
 
 	my $cache_accessor = $delegates{ $delegate_class };
 
-	foreach my $method (grep {$_ ne 'meetingId'} ($delegate_class->properties, $delegate_class->derivable)) {
+	my %methods = ($delegate_class->derivable,
+		       map {$_ => $_} $delegate_class->properties);
+
+	foreach my $alias (keys %methods) {
+
+	    next if $alias eq 'meetingId';
+	    my $method = $methods{$alias};
 
 	    my $delegate_subref = $delegate_class->can($method);
 
@@ -682,7 +705,7 @@ BEGIN {
 		$self->{$cache_accessor}->$method(@_);
 	    };
 
-	    *{$method} = $subref;
+	    *{$alias} = $subref;
 	}
     }
 }

@@ -41,7 +41,11 @@ __PACKAGE__->params(
     );
 
 # help out elive_query; expansion of 'select ** from meeting...'
-__PACKAGE__->derivable(qw{participant_list list_recordings list_preloads web_url});
+__PACKAGE__->derivable(
+    participants => '_participants',
+    recordings => 'list_recordings',
+    preloads => 'list_preloads',
+    url => 'web_url');
 
 has 'meetingId' => (is => 'rw', isa => 'Int', required => 1);
 __PACKAGE__->primary_key('meetingId');
@@ -592,6 +596,13 @@ sub participant_list {
 		   connection => $self->connection,
 		   @args,
 	);
+}
+
+#
+# just to help out elive_query
+#
+sub _participants {
+    return (my $self = shift)->participant_list->participants;
 }
 
 =head2 list_preloads

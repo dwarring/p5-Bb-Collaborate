@@ -1,5 +1,9 @@
 Revision history for Elive
 
+0.75    28th October 2010
+        elive_query: Added the ability to select on derived methods
+	
+
 0.74    18th October 2010
 
         Bug Fixes:
