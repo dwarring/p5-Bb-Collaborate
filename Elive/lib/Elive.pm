@@ -7,11 +7,11 @@ Elive - Elluminate Live! (c) SDK bindings
 
 =head1 VERSION
 
-Version 0.75
+Version 0.76
 
 =cut
 
-our $VERSION = '0.75';
+our $VERSION = '0.76';
 
 use Class::Data::Inheritable;
 use base qw{Class::Data::Inheritable};
