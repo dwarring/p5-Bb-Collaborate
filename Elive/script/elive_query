@@ -39,6 +39,7 @@ elive_query
 
     -user someuser              # server login user
     -pass somepass              # server login password
+    -c 'select ....'            # execute the given command(s)
     -debug=n                    # 1=some, 2=verbose, 3=verbose + soap
     -dump=yaml                  # dump format
     -? -help                    # obtain help
@@ -102,8 +103,11 @@ sub main {
     our $elive_version = ${Elive::VERSION};
     our %entities = %{Elive::Entity->entities};
     our %entity_collections;
-    our $term = Term::ReadLine->new('elive shell');
-    our $is_tty = IO::Interactive::is_interactive();
+    #
+    # this may barf if /dev/tty can't be opened. E.g. when exxecuting from cron
+    our $is_tty = eval { IO::Interactive::is_interactive() };
+    our $term = eval{ Term::ReadLine->new('elive shell') }
+      if $is_tty;
 
     foreach (keys %entities) {
 	#
@@ -146,8 +150,11 @@ sub main {
 	    if $server_version;
     }
 
+    my @command_opts = @{ $options{command} || [] };
+    my $has_command_opts = @command_opts;
+
     print "Elive query $elive_version (c) 2009 - 2010 ${server_version_str}. Type 'help' for help\n"
-	if $is_tty && !defined $options{command};
+	if $is_tty && !$has_command_opts;
 
     my $cmd;
     my $keyw;
@@ -155,16 +162,16 @@ sub main {
 
     while (($keyw||'') ne 'quit') {
 
-	if (defined $options{command}) {
-	    $cmd = $options{command};
+	if ($has_command_opts) {
+	    $cmd = shift( @command_opts );
 	}
 	else {
-	    $cmd = $is_tty? $term->readline($prompt): <STDIN>;
+	    $cmd = $is_tty && $term? $term->readline($prompt): <STDIN>;
 	}
 
 	last unless $cmd;
 
-	$term->addhistory($cmd);
+	$term->addhistory($cmd) if $term;
 	#
 	# strip leading white-space & trailing white-space + semicolon
 	#
@@ -309,13 +316,11 @@ sub main {
 		elsif ($keyw !~ m{^(quit)$}x) {
 		    print STDERR "unrecognised command: $keyw, type 'help' for help\n";
 		}
-	}
+	    }
 	    else {
 		print STDERR "unrecognised command  - type 'help' for help\n";
 	    }
 	}
-
-	last if defined $options{command};
     }
 
     Elive->disconnect;
@@ -571,7 +576,7 @@ sub _getopt {
     Getopt::Long::GetOptions(\%options,
 			     'username|user=s',
 			     'password|pass=s',
-			     'command|c=s',
+			     'command|c=s@',
                              'dump=s',
 			     'debug=i',
 			     'help|?',
