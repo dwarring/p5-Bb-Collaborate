@@ -476,7 +476,7 @@ sub _readback_check {
 		    warn YAML::Dump({read => $read_val, write => $write_val})
 			if ($class->debug >= 2);
 
-		    croak "${class}: Update consistancy check failed on $_ (${property_type}), wrote:".Elive::Util::string($write_val, $property_type).", read-back:".Elive::Util::string($read_val, $property_type);
+		    croak "${class}: Update consistancy check failed on $_ (${property_type}), sent:".Elive::Util::string($write_val, $property_type).", read-back:".Elive::Util::string($read_val, $property_type);
 		}
 	    }
 	}

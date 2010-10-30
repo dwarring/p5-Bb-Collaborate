@@ -15,9 +15,6 @@ use base qw{Class::Accessor Class::Data::Inheritable};
 
 use Elive;
 use Elive::Util;
-use Elive::Entity;
-use Elive::Entity::User;
-use Elive::Entity::ServerDetails;
 
 =head1 NAME
 

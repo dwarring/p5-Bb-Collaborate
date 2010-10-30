@@ -279,4 +279,14 @@ sub server_details {
     return $server_details;
 }
 
+=head2 version
+
+Return the Elluminate I<Live!> Manager version
+
+=cut
+
+sub version {
+    return (my $self = shift)->server_details->version;
+}
+
 1;

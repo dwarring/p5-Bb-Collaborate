@@ -7,6 +7,8 @@ use Mouse::Util::TypeConstraints;
 use Elive;
 use base qw{Elive};
 
+use Scalar::Util;
+
 __PACKAGE__->mk_classdata('element_class');
 
 coerce 'Elive::Array' => from 'Str'
@@ -49,6 +51,9 @@ sub stringify {
     my $self = shift;
     my $arr  = shift || $self;
     my $type = shift || $self->element_class;
+
+    $arr = [split(';', $arr)]
+	if defined $arr && !Scalar::Util::reftype($arr);
 
     return join(';', sort map {Elive::Util::string($_, $type)} @$arr)
 }

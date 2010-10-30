@@ -243,4 +243,14 @@ sub _preamble {
     return @preamble;
 };
 
+=head2 version
+
+Return the Elluminate I<Live!> Manager version
+
+=cut
+
+sub version {
+    return (my $self = shift)->server_versions->versionName;
+}
+
 1;

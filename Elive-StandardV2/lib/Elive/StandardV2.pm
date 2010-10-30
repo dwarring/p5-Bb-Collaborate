@@ -4,7 +4,7 @@ use warnings; use strict;
 use Mouse;
 use Mouse::Util::TypeConstraints;
 
-use Elive '0.74_1';
+use Elive '0.75';
 
 extends 'Elive::DAO';
 
@@ -38,6 +38,28 @@ Perhaps a little code snippet.
 Implements Elive Standard Bridge V2 (StandardV2) StandardV2 bindings
 
 =cut
+
+=head2 data_classes
+
+returns a list of all implemented entity classes
+
+=cut
+
+sub data_classes {
+    my $class = shift;
+    return qw(
+      Elive::StandardV2::Multimedia
+      Elive::StandardV2::Presentation
+      Elive::StandardV2::Recording
+      Elive::StandardV2::SchedulingManager
+      Elive::StandardV2::ServerConfiguration
+      Elive::StandardV2::ServerVersions
+      Elive::StandardV2::SessionAttendance
+      Elive::StandardV2::SessionAttendance
+      Elive::StandardV2::Session
+      Elive::StandardV2::SessionTelephony
+   );
+}
 
 sub _get_results {
     my $class = shift;
@@ -157,11 +179,32 @@ selection. This is passed in using the C<filter> option. For example:
 sub list {
     my ($self, %opt) = @_;
 
-    my $filter = delete $opt{filter};
+    my $filter = delete $opt{filter} || {};
+
+    $filter = $self->_parse_filter($filter)
+	unless Scalar::Util::reftype $filter;
 
     $opt{command} ||= 'list'.$self->entity_name;
 
-    return $self->_fetch( $self->_freeze($filter), %opt );
+    return $self->_fetch( $filter, %opt );
+}
+
+#
+# rudimentry parse of expressions of the form:
+#  <field1> = <val1> and <field2> = <val2>
+# largely for the benefit of elive_query
+#
+
+sub _parse_filter {
+    my ($self, $expr) = @_;
+    my (%critera) = map {
+	my ($field, $val) = m{^ \s* (\w+) \s* = (.*?) $}x;
+	carp "selection not in format <field> = <val>"
+	    unless length($val);
+	$field => $val;
+    } split(qr{ \s* and \s*}ix, $expr);
+
+    return \%critera;
 }
 
 =head2 delete

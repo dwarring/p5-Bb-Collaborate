@@ -1,8 +1,16 @@
 Revision history for Elive
 
+0.76
+        elive_query: added -adapter option for integration with
+        Elive::StandardV2
+
 0.75    28th October 2010
-        elive_query: Added the ability to select on derived methods
-	
+        elive_query: Extended the range of data that can be selected for
+        meetings. This includes data for meeting parameters and server
+        parameters. Also now selectable are associated participants,
+        recordings and preloads.
+
+	    select name,participants,url from meeting where id = 1234567890123
 
 0.74    18th October 2010
 

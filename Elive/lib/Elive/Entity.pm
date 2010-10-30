@@ -15,6 +15,29 @@ This class implements the default Elluminate live SDK.
 
 =cut
 
+=head2 data_classes
+
+returns a list of all implemented entity classes
+
+=cut
+
+sub data_classes {
+    my $class = shift;
+    return qw(
+      Elive::Entity::Group
+      Elive::Entity::MeetingParameters
+      Elive::Entity::Meeting
+      Elive::Entity::ParticipantList
+      Elive::Entity::Preload
+      Elive::Entity::Recording
+      Elive::Entity::Report
+      Elive::Entity::Role
+      Elive::Entity::ServerDetails
+      Elive::Entity::ServerParameters
+      Elive::Entity::User
+   );
+}
+
 #
 # Normalise our data and reconstruct arrays.
 #

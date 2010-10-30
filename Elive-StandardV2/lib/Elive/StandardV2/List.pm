@@ -7,6 +7,8 @@ use Mouse::Util::TypeConstraints;
 use Elive::Array;
 extends 'Elive::Array';
 
+use Scalar::Util;
+
 =head1 NAME
 
 Elive::StandardV2::List - Base class for an array. Typically chair-persons, participants, courses
@@ -50,7 +52,11 @@ sub stringify {
     my $arr  = shift || $self;
     my $type = shift || $self->element_class;
 
-    return join(',', sort map {Elive::Util::string($_, $type)} @$_)
+    $arr = [split(';', $arr)]
+	if defined $arr && !Scalar::Util::reftype($arr);
+
+
+    return join(',', sort map {Elive::Util::string($_, $type)} @$arr)
 }
 
 

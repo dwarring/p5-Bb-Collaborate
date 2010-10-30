@@ -372,9 +372,7 @@ sub _cmp_col {
 	# Note shallow comparision of entities and arrays.
 	#
 	my $t = $array_type || $type;
-	$v1 = $t->stringify($v1) if ref($v1);
-	$v2 = $t->stringify($v2) if ref($v2);
-       return $v1 cmp $v2;
+	return $t->stringify($v1) cmp $t->stringify($v2);
     }
 
     my $cmp;

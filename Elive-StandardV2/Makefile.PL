@@ -20,7 +20,7 @@ requires(
     'Carp'                         => 0,  # for scripts
     'File::Spec'                   => 0,
     'File::Basename'               => 0,
-    'Elive'                        => '0.74_1',
+    'Elive'                        => '0.75',
     'Getopt::Long'                 => 2.35,  # for scripts
     'Mouse'                        => 0.56,
     'Pod::Usage'                   => 0,  # for elive_raise_meeting
