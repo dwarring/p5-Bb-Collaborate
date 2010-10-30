@@ -40,23 +40,24 @@ sub parse_type {
     #
     ($type) = split(/[ \| \] ]/x, $type);
 
-    my $is_array;
+    my $array_type;
     my $is_struct;
     my $elemental_type = $type;
 
     if ($type =~ m{^Elive::}) {
 
-	if ($is_array = $type->can('element_class')) {
+	if ($type->can('element_class')) {
 	    $elemental_type = $type->element_class || 'Str';
+	    $array_type = $type;
 	}
 
 	$is_struct = ($elemental_type  =~ m{^Elive::})
 	    && $elemental_type->isa('Elive::Struct');
     }
 
-    my $is_ref = $is_array || $is_struct || $elemental_type =~ m{^Ref}x;
+    my $is_ref = $array_type || $is_struct || $elemental_type =~ m{^Ref}x;
 
-    return ($elemental_type, $is_array, $is_struct, $is_ref);
+    return ($elemental_type, $array_type, $is_struct, $is_ref);
 }
 
 #

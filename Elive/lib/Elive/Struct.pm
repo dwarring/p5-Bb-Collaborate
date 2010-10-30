@@ -353,88 +353,62 @@ sub _ordered_attributes {
 }
 
 sub _cmp_col {
-    my ($class, $data_type, $_v1, $_v2, %opt) = @_;
+    my ($class, $data_type, $v1, $v2, %opt) = @_;
 
     #
     # Compare two values for a property 
     #
 
     return
-	unless (defined $_v1 && defined $_v2);
+	unless (defined $v1 && defined $v2);
 
-    my ($type, $is_array, $is_struct) = Elive::Util::parse_type($data_type);
-    my @v1 = ($is_array? @$_v1: ($_v1));
-    my @v2 = ($is_array? @$_v2: ($_v2));
+    my ($type, $array_type, $is_struct) = Elive::Util::parse_type($data_type);
 
-    my $cmp = scalar @v1 <=> scalar @v2;
-
-    unless ($cmp) {
-
+    if (!defined $v2 || !defined $v2) {
+	return;
+    }
+    elsif ($array_type || $is_struct) {
 	#
-	# unequal arrays lengths => unequal
+	# Note shallow comparision of entities and arrays.
 	#
+	my $t = $array_type || $type;
+	$v1 = $t->stringify($v1) if ref($v1);
+	$v2 = $t->stringify($v2) if ref($v2);
+       return $v1 cmp $v2;
+    }
 
-	if (scalar @v1 == 0) {
+    my $cmp;
 
+    if ($type =~ m{^Ref}ix) {
+	$cmp = YAML::Dump($v1) cmp YAML::Dump($v2);
+    }
+    else {
+	#
+	# Elemental comparision. Use normalised frozen values
+	#
+	$v1 = Elive::Util::_freeze($v1, $type);
+	$v2 = Elive::Util::_freeze($v2, $type);
+
+	if ($type =~ m{^(Str|Enum|HiResDate)}ix) {
 	    #
-	    # Empty arrays => equal
+	    # string comparision. works on simple strings and
+	    # stringified entities. Also used for hires dates
+	    # integer comparision may result in arithmetic overflow
 	    #
-
-	    $cmp = undef;
+	    $cmp = ($opt{case_insensitive}
+		    ? uc($v1) cmp uc($v2)
+		    : $v1 cmp $v2);
+	}
+	elsif ($type =~ m{^Bool}ix) {
+	    # boolean comparison
+	    $cmp = ($v1 eq 'true'? 1: 0) <=> ($v2 eq 'true'? 1: 0);
+	}
+	elsif ($type =~ m{^Int}ix) {
+	    # int comparision
+	    $cmp = $v1 <=> $v2;
 	}
 	else {
-	    #
-	    # arrays are of equal lengths. compare values
-	    #
-	    for (@v1, @v2) {
-		#
-		# work with normalised frozen values
-		#
-		$_ = ($is_struct       ? $type->stringify($_)
-		      : $type eq 'Ref' ? YAML::Dump($_) # no freeze method avail
-		      : Elive::Util::_freeze($_, $type));
-	    }
-
-	    if ($is_array) {
-
-		#
-		# Order of elements does not matter
-		#
-
-		@v1 = sort {$class->_cmp_col($type, $a, $b, %opt)} @v1;
-		@v2 = sort {$class->_cmp_col($type, $a, $b, %opt)} @v2;
-	    }
-
-	    for (my $i = 0; $i < @v1; $i++) {
-
-		my $v1 = $v1[$i];
-		my $v2 = $v2[$i];
-
-		if ($is_struct || $type =~ m{^(Str|Enum|HiResDate)}ix) {
-		    #
-		    # string comparision. works on simple strings and
-		    # stringified entities. Also used for hires dates
-		    # integer comparision may result in arithmetic overflow
-		    #
-		    $cmp ||= ($opt{case_insensitive}
-			      ? uc($v1) cmp uc($v2)
-			      : $v1 cmp $v2);
-		}
-		elsif ($type =~ m{^Bool}ix) {
-		    # boolean comparison
-		    $cmp ||= ($v1 eq 'true'? 1: 0) <=> ($v2 eq 'true'? 1: 0);
-		}
-		elsif ($type =~ m{^Int}ix) {
-		    # int comparision
-		    $cmp ||= $v1 <=> $v2;
-		}
-		elsif ($type =~ m{^Ref}ix) {
-		    $cmp ||= YAML::Dump($v1) cmp YAML::Dump($v2);
-		}
-		else {
-		    Carp::croak "class $class: unknown type: $type\n";
-		}
-	    }
+	    Carp::croak "class $class: unknown type: $type\n";
 	}
     }
 
