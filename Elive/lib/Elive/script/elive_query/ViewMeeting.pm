@@ -9,36 +9,33 @@ use base 'Elive::Entity::Meeting';
 
 =head1 DESCRIPTION
 
-Utility class for C<elive_query> Composite of Meeting ServerParameters and
-Meeting parameters objects.
+Support class for C<elive_query> Composite view of Meetings, ServerParameters
+and Meeting parameters classes.
 
 =cut
 
-sub properties {
-    return Elive::Entity::Meeting->properties;
-}
+sub _init {
 
-sub property_types {
-    return Elive::Entity::Meeting->property_types
-}
+    no strict 'refs';
 
-sub derivable {
-    my $class = shift;
+    *{properties} = sub {Elive::Entity::Meeting->properties};
+    *{property_types} = sub {Elive::Entity::Meeting->property_types};
 
-    my %derivable = (
-	Elive::Entity::Meeting->derivable,
+    *{derivable} = sub {
+	my $class = shift;
 
-	(map {$_ => $_} Elive::Entity::ServerParameters->properties),
-	Elive::Entity::ServerParameters->derivable,
+	my %derivable = (
+	    Elive::Entity::Meeting->derivable,
 
-	(map {$_ => $_} Elive::Entity::MeetingParameters->properties),
-	Elive::Entity::MeetingParameters->derivable,
-	);
+	    (map {$_ => $_} Elive::Entity::ServerParameters->properties),
+	    Elive::Entity::ServerParameters->derivable,
 
-    return %derivable;
-}
+	    (map {$_ => $_} Elive::Entity::MeetingParameters->properties),
+	    Elive::Entity::MeetingParameters->derivable,
+	    );
 
-BEGIN {
+	return %derivable;
+    };
 
     my %delegates = (
 	'Elive::Entity::ServerParameters' => '_cache_server_parameters',
@@ -59,12 +56,10 @@ BEGIN {
 
 	    my $delegate_subref = $delegate_class->can($method);
 
-	    no strict 'refs';
-
 	    my $subref = sub {
 		my $self = shift;
 
-		$self->{$cache_accessor} ||=  $delegate_class->retrieve( $self->meetingId, reuse => 1);
+		$self->{$cache_accessor} ||=  $delegate_class->retrieve( $self->meetingId, reuse => 1, connection => $self->connection);
 	    
 		$self->{$cache_accessor}->$method(@_);
 	    };

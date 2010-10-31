@@ -1,6 +1,6 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 51;
+use Test::More tests => 54;
 use Test::Warn;
 
 use Elive::Struct;
@@ -18,6 +18,7 @@ ok($class->_cmp_col('Int', 20, '020') == 0, '_cmp Int ==');
 ok($class->_cmp_col('Int', 20, 10) > 0, '_cmp Int >');
 ok(! defined ($class->_cmp_col('Int', undef, 10)), '_cmp Int undef');
 ok(! defined ($class->_cmp_col('Int', 10, undef)), '_cmp undef Int');
+ok(! defined ($class->_cmp_col('Int', undef, undef)), '_cmp undef undef');
 
 ok($class->_cmp_col('HiResDate', '1251063623412', '1251063623413') < 0, '_cmp HiResDate <');
 ok($class->_cmp_col('HiResDate', '1251063623413', '1251063623413') == 0, '_cmp HiResDate ==');
@@ -65,6 +66,15 @@ _participant_array_tests('mixed',
 			 {user => 'mmmm', role => 3},
 			 {user => {userId => 'zzzz'}, role => {roleId => 3}},
     );
+
+
+ok(! $class->_cmp_col('Elive::Entity::ParticipantList::Participants',
+		      'a;b;c', 'c;b;a'),
+   '_cmp entity array == (stringified)');
+
+ok( $class->_cmp_col('Elive::Entity::ParticipantList::Participants',
+		      'a;b;c', 'x;b;a'),
+   '_cmp entity array != (stringified)');
 
 ########################################################################
 

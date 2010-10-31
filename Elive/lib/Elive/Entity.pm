@@ -17,7 +17,7 @@ This class implements the default Elluminate live SDK.
 
 =head2 data_classes
 
-returns a list of all implemented entity classes
+returns a list of all entity classes
 
 =cut
 
@@ -31,7 +31,6 @@ sub data_classes {
       Elive::Entity::Preload
       Elive::Entity::Recording
       Elive::Entity::Report
-      Elive::Entity::Role
       Elive::Entity::ServerDetails
       Elive::Entity::ServerParameters
       Elive::Entity::User
