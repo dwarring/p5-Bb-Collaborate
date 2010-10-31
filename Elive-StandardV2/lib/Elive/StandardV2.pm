@@ -192,13 +192,13 @@ sub list {
 #
 # rudimentry parse of expressions of the form:
 #  <field1> = <val1> and <field2> = <val2>
-# largely for the benefit of elive_query
+# bit of a hack largely for the benefit of elive_query
 #
 
 sub _parse_filter {
     my ($self, $expr) = @_;
     my (%critera) = map {
-	my ($field, $val) = m{^ \s* (\w+) \s* = (.*?) $}x;
+	my ($field, $val) = m{^ \s* (\w+) \s* [\!=<>]+ (.*?) $}x;
 	carp "selection not in format <field> = <val>"
 	    unless length($val);
 	$field => $val;

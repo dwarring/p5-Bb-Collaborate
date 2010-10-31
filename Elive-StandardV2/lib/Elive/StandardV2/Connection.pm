@@ -38,12 +38,15 @@ our %KnownCommands = (
     getServerConfiguration => 'r',
     getServerVersions => 'r',
  
+    listMultimediaContent => 'r',
     listPresentationContent => 'r',
     listRecordingLong => 'r',
     listRecordingShort => 'r',
     listSession => 'r',
     listSessionAttendance => 'r',
     listSessionTelephony => 'r',
+    listSessionMultimedia => 'r',
+    listSessionPresentation => 'r',
 
     removeSession => 'r',
 

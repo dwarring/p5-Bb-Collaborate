@@ -2,7 +2,7 @@
 package Elive::script::elive_query;
 use warnings; use strict;
 use YAML;
-use Carp; $SIG{__DIE__} = \&Carp::confess;
+use Carp;
 use Getopt::Long qw{};
 
 use Elive;

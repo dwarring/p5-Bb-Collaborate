@@ -83,4 +83,14 @@ sub insert {
     return $self;
 }
 
+sub list {
+    my ($self, %opts) = @_;
+
+    return $self->SUPER::list(
+	command => sub {
+	    my ($_crud, $params) = @_;
+	    exists $params->{sessionId}? 'listSessionMultimedia': 'listMultimediaContent'},
+	%opts);
+}
+
 1;

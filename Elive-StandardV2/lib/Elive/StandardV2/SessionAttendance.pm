@@ -49,27 +49,10 @@ __PACKAGE__->_alias(attendeeResponseCollection => 'attendees');
     my $session_id = '123456789012';
     my $yesterday = DateTime->today->subtract(days => 1);
 
-    my $attendance = Elive::StandardV2::SessionAttendance->list([$session, $yesterday->epoch.'000']);
+    my $attendance = Elive::StandardV2::SessionAttendance->list(sessionId => $session, startTime => $yesterday->epoch.'000');
 
 Gets a session attendance report. It returns a reference to an array of Elive::StandardV2::SessionAttendance objects.
 
 =cut
-
-sub list {
-    my ($class, $vals, %opt) = @_;
-
-   croak "usage: ${class}->list( [\$session, \$start_of_day] )"
-       unless Elive::Util::_reftype($vals) eq 'ARRAY';
-
-    my %fetch_params;
-
-    $fetch_params{sessionId}  = Elive::Util::_freeze(shift @$vals, 'Int')
-	if @$vals;
-
-    $fetch_params{startTime}  = Elive::Util::_freeze(shift @$vals, 'HiResDate')
-	if @$vals;
-
-    return $class->_fetch(\%fetch_params, %opt);
-}
 
 1;

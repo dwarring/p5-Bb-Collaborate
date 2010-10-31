@@ -27,6 +27,11 @@ This is the main entity class for sessions.
 
 __PACKAGE__->entity_name('Session');
 
+__PACKAGE__->params(
+    userId => 'Str',
+    groupingId => 'Str',
+    );
+
 has 'sessionId' => (is => 'rw', isa => 'Int', required => 1);
 __PACKAGE__->primary_key('sessionId');
 
