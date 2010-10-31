@@ -458,9 +458,6 @@ sub _readback_check {
 
     foreach my $row (@$rows) {
 
-	$row = $class->new($row)
-	    unless Scalar::Util::blessed($row);
-
 	my $property_types = $class->property_types;
 
 	foreach ($class->properties) {
