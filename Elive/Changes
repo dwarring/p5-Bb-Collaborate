@@ -1,8 +1,13 @@
 Revision history for Elive
 
-0.76
-        elive_query: added -adapter option for integration with
-        Elive::StandardV2
+0.76    10th November 2010
+        work on elive_query:
+        - added -adapter option. For impending integration with
+          Elive::StandardV2. Added data_classes() method to Elive::DAO for
+          discovery of entity classes.
+        - IO::Interactive::is_interactive() dieing when executed from debian
+          5 cron (error opening /dev/tty). Now evaled; assume non-interactive
+          on eval error.
 
 0.75    28th October 2010
         elive_query: Extended the range of data that can be selected for
@@ -11,6 +16,10 @@ Revision history for Elive
         recordings and preloads.
 
 	    select name,participants,url from meeting where id = 1234567890123
+
+        In particular, 'select ** from meeting' will retrieve all data from
+        Meeting, MeetingParameters and ServerParameters. This involves 2
+        secondary SOAP calls to retrieve associated data. Slow, but thorough.
 
 0.74    18th October 2010
 

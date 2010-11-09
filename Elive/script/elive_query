@@ -94,8 +94,11 @@ sub main {
     #
     # this may barf if /dev/tty can't be opened. E.g. when exxecuting from cron
     our $is_tty = eval { IO::Interactive::is_interactive() };
-    our $term = eval{ Term::ReadLine->new('elive shell') }
-    if $is_tty;
+
+    our $term;
+    if ($is_tty) {
+	$term = eval{ Term::ReadLine->new('elive shell') }
+    }
 
     my $prompt = "elive> ";
     our $connection;

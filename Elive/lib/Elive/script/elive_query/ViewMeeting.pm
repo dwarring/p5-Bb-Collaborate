@@ -1,4 +1,5 @@
 package Elive::script::elive_query::ViewMeeting;
+use warnings; use strict;
 use Mouse;
 
 use Elive::Entity::Meeting;
