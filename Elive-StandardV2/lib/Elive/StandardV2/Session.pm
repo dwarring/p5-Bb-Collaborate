@@ -140,16 +140,18 @@ has 'versionId' => (is => 'rw', isa => 'Int',
 
     my $attendance = $session->attendance( $yesterday->epoch.'000' );
 
-Reports on session attendance for a given day. It returns a reference to an array of Elive::StandardV2::SessionAttendance objects.
+Reports on session attendance for a given day. It returns a reference to an array of L<Elive::StandardV2::SessionAttendance> objects.
 
 =cut
 
 sub attendance {
     my ($self, $start_time, %opt) = @_;
 
-    return Elive::StandardV2::SessionAttendance->list(filter => {
-	sessionId => $self->sessionId,
-	startTime => $start_time,},
+    return Elive::StandardV2::SessionAttendance->list(
+	filter=> {
+	    sessionId => $self->sessionId,
+	    startTime => $start_time,
+	},
 	connection => $self->connection,
 	%opt,
 	);
@@ -180,7 +182,9 @@ sub telephony {
 
 =head2 set_presentation
 
-Sets the list of presentation ids for a given session
+    $session->set_presentation([$presentation_1, $presentation_2]);
+
+Associates Presentations with Sessions.
 
 =cut
 
@@ -201,6 +205,43 @@ sub set_presentation {
 	'setSessionPresentation',
 	sessionId => Elive::Util::_freeze($session_id, 'Int'),
 	presentationIds => Elive::Util::_freeze($presentation_ids, 'Elive::StandardV2::List'),
+	);
+
+    my $results = $class->_get_results(
+	$som,
+	$connection,
+	);
+
+    my $success = @$results && $results->[0];
+
+    return $success;
+}
+			      
+=head2 set_multimedia
+
+    $session->set_multimedia([$multimedia_1, $multimedia_2]);
+
+Associates Multimedias with Sessions.
+
+=cut
+
+sub set_multimedia {
+    my ($class, $multimedia_ids, %opt) = @_;
+
+    my $session_id = delete $opt{sessionId};
+    $session_id ||= $class->sessionId
+	if Scalar::Util::blessed($class);
+
+    croak 'usage: $'.(ref($class)||$class).'->set_multimedia(\@multimedia_ids)'
+	unless Scalar::Util::reftype( $multimedia_ids ) eq 'ARRAY';
+
+    my $connection = $opt{connection} || $class->connection
+	or croak "Not connected";
+
+    my $som = $connection->call(
+	'setSessionMultimedia',
+	sessionId => Elive::Util::_freeze($session_id, 'Int'),
+	multimediaIds => Elive::Util::_freeze($multimedia_ids, 'Elive::StandardV2::List'),
 	);
 
     my $results = $class->_get_results(
