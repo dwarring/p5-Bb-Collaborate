@@ -4,7 +4,7 @@ use warnings; use strict;
 use Mouse;
 use Mouse::Util::TypeConstraints;
 
-use Elive '0.75';
+use Elive '0.76';
 
 extends 'Elive::DAO';
 
@@ -18,24 +18,22 @@ use Carp;
 
 Version 0.00_1
 
+** DEVELOPER RELEASE - UNDER CONSTRUCTION **
+
+
 =cut
 
 our $VERSION = '0.00_1';
 
 =head1 SYNOPSIS
 
-Quick summary of what the module does.
-
-Perhaps a little code snippet.
-
-    use Elive::StandardV2;
-
-    my $foo = Elive::StandardV2->new();
-    ...
+** DEVELOPER RELEASE - UNDER CONSTRUCTION **
 
 =head1 DESCRIPTION
 
 Implements Elive Standard Bridge V2 (StandardV2) StandardV2 bindings
+
+** DEVELOPER RELEASE - UNDER CONSTRUCTION **
 
 =cut
 

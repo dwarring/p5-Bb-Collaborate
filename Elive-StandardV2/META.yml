@@ -28,7 +28,7 @@ requires:
   Class::Accessor: 0
   Class::Data::Inheritable: 0
   Date::Parse: 0
-  Elive: 0.74_1
+  Elive: 0.75
   File::Basename: 0
   File::Spec: 0
   Getopt::Long: 2.35
@@ -40,5 +40,5 @@ requires:
   perl: 5.005
 resources:
   license: http://dev.perl.org/licenses/
-  repository: https://elive.svn.sourceforge.net/svnroot/elive/trunk/Elive-StandardV2
+  repository: https://dwarring@elive.svn.sourceforge.net/svnroot/elive/trunk/Elive-StandardV2
 version: 0.00_1

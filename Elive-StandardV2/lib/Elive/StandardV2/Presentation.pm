@@ -19,7 +19,8 @@ __PACKAGE__->entity_name('Presentation');
 has 'presentationId' => (is => 'rw', isa => 'Int', required => 1);
 __PACKAGE__->primary_key('presentationId');
 __PACKAGE__->params(
-    content => 'Str'
+    content => 'Str',
+    sessionId => 'Int',
     );
 
 has 'description' => (is => 'rw', isa => 'Str');
@@ -86,13 +87,26 @@ sub insert {
     return $self;
 }
 
+=head2 list
+
+    my $session_presentations = Elive::StandardV2::Presentation->list(
+                                   filter => {sessionId => $my_session->id}
+                                );
+
+Lists sessions. You will need to provide a filter that contains at least one
+of: C<creatorId>, C<presentationId>, C<description> or C<sessionId>.
+
+=cut
+
 sub list {
     my ($self, %opts) = @_;
 
     return $self->SUPER::list(
 	command => sub {
 	    my ($_crud, $params) = @_;
-	    exists $params->{sessionId}? 'listSessionMultimedia': 'listMultimediaContent'},
+
+	    return $params->{sessionId} ? 'listSessionPresentation': 'listPresentationContent'
+	},
 	%opts);
 }
 

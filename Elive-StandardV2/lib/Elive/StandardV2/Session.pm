@@ -147,7 +147,12 @@ Reports on session attendance for a given day. It returns a reference to an arra
 sub attendance {
     my ($self, $start_time, %opt) = @_;
 
-    return Elive::StandardV2::SessionAttendance->list([$self, $start_time]);
+    return Elive::StandardV2::SessionAttendance->list(filter => {
+	sessionId => $self->sessionId,
+	startTime => $start_time,},
+	connection => $self->connection,
+	%opt,
+	);
 }
 
 =head2 telephony
@@ -166,7 +171,11 @@ be used to get or set the sessions's telephony characterisitics.
 sub telephony {
     my ($self, %opt) = @_;
 
-    return Elive::StandardV2::SessionTelephony->retrieve([$self], %opt, reuse => 1);
+    return Elive::StandardV2::SessionTelephony->retrieve([$self],
+							 reuse => 1,
+							 connection => $self->connection,
+							 %opt,
+	);
 }
 
 =head2 set_presentation
