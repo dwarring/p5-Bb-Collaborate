@@ -24,7 +24,7 @@ has 'versionMaxFilmersLimit' => (is => 'rw', isa => 'Int');
 
 =cut
 
-=head2 list
+=head2 get
 
     my $versions = Elive::StandardV2::ServerVersions->get;
 

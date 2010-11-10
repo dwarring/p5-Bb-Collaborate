@@ -11,7 +11,7 @@ use Scalar::Util;
 
 =head1 NAME
 
-Elive::StandardV2::List - Base class for an array. Typically chair-persons, participants, courses
+Elive::StandardV2::List - Abstract for arrays. Typically chair-persons, participants or courses
 
 =cut
 

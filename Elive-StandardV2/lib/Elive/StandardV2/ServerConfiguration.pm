@@ -28,7 +28,7 @@ has 'timeZone' => (is => 'rw', isa => 'Bool');
 
 =cut
 
-=head2 list
+=head2 get
 
     my $server_config = Elive::StandardV2::ServerConfiguration->get();
 
