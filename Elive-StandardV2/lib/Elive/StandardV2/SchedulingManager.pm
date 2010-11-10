@@ -22,19 +22,12 @@ has 'version' => (is => 'rw', isa => 'Str');
 
 =cut
 
-=head2 list
+=head2 get
 
-    my ($server) = Elive::Entity::ServerDetails->list();
+    my $scheduling_manager = Elive::StandardV2::SchedulingManager->get();
 
-Return the server details. Note that their is a single record. You should
-always expect to retrieve one record from each connection.
+Return the scheduling manager details.
 
 =cut
-
-sub list {
-    my ($class, %opt) = @_;
-
-    return $class->_fetch({}, %opt);
-}
 
 1;
