@@ -13,4 +13,4 @@ eval "use $MODULE";
 plan skip_all => "$MODULE not available for strict tests"
     if $@;
 
-all_perl_files_ok( 'lib', 'script' );
+all_perl_files_ok( 'lib');

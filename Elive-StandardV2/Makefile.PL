@@ -24,6 +24,7 @@ requires(
     'Getopt::Long'                 => 2.35,  # for scripts
     'Mouse'                        => 0.56,
     'Pod::Usage'                   => 0,  # for elive_raise_meeting
+    'SOAP::Lite'                   => 0.712,
     'URI'                          => 0,
     'YAML'                         => 0,
     'XML::Simple'                  => 0,
