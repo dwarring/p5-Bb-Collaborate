@@ -1,9 +1,8 @@
 #!perl
 use warnings; use strict;
-use Test::More tests => 27;
+use Test::More tests => 28;
 use Test::Exception;
 use Test::Builder;
-use version;
 
 use lib '.';
 use t::Elive;
@@ -24,7 +23,7 @@ SKIP: {
     my %result = t::Elive->test_connection( only => 'real');
     my $auth = $result{auth};
 
-    skip ($result{reason} || 'skipping live tests', 27)
+    skip ($result{reason} || 'skipping live tests', 28)
 	unless $auth;
 
     my $connection_class = $result{class};
@@ -173,6 +172,34 @@ SKIP: {
 
     is($p->[0]->role && $p->[0]->role->roleId, 2,
        'participant_list reset - single participant has moderator role');
+
+    #
+    # stress test underlying setParticipantList command
+    # we need to do a direct call to bypass readback checks
+    #
+    my @big_user_list;
+
+    if ($connection->server_details->version lt '10.0.2') {
+	$t->skip('skipping participant stress test for Elluminate < v10.0.2');
+    }
+    elsif ($participant2) { 
+      MAKE_BIG_LIST:
+	while (1) {
+	    foreach ($participant1, $participant2, @participants) {
+		push (@big_user_list, rand() < .1 ? t::Elive::generate_id(): $_->userId);
+		last MAKE_BIG_LIST
+		    if @big_user_list > 2500;
+	    }
+	}
+
+	my $participants_str = Elive->login->userId.'=2;'.join(';', map {$_.'=3'} @big_user_list);
+	lives_ok(sub{$participant_list->_set_participant_list($participants_str)},
+		  'participants list stress test - lives'
+	    );
+    }
+    else {
+	$t->skip('not enough participants to run stress test');
+    }
 
     #
     # tidy up
