@@ -10,7 +10,7 @@ module_name    ('Elive::StandardV2');
 author         ('David Warring <david.warring@gmail.com>');
 version_from   ('lib/Elive/StandardV2.pm');
 license	       ('perl');
-abstract       ('Perl binds for the Elluminate Live (c) Standard Bridge V2 API');
+abstract       ('Elluminate Live (c) Standard Bridge V2 API bindings');
 install_script ();
 
 requires(

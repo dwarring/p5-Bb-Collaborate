@@ -136,7 +136,7 @@ has 'versionId' => (is => 'rw', isa => 'Int',
 
 =head2 attendance
 
-    my $today = DateTime->yesterday->subtract(days => 1);
+    my $yesterday = DateTime->today->subtract(days => 1);
 
     my $attendance = $session->attendance( $yesterday->epoch.'000' );
 

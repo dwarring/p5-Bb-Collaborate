@@ -1,5 +1,5 @@
 ---
-abstract: 'Perl binds for the Elluminate Live (c) Standard Bridge V2 API'
+abstract: 'Elluminate Live (c) Standard Bridge V2 API bindings'
 author:
   - 'David Warring <david.warring@gmail.com>'
 build_requires:

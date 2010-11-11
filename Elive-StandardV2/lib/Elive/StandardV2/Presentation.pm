@@ -10,7 +10,7 @@ use Carp;
 
 =head1 NAME
 
-Elive::StandardV2::Presentation - Scheduling Manager entity class
+Elive::StandardV2::Presentation - Presentation entity class
 
 =cut
 

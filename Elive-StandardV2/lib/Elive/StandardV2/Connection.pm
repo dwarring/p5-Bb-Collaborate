@@ -168,7 +168,7 @@ sub soap {
 
 =head2 scheduling_manager
 
-Returns the scheduling manager for this connection (see L<Elive::Entity::SchedulingManager>).
+Returns the scheduling manager for this connection (see L<Elive::StandardV2::SchedulingManager>).
 
 =cut
 
@@ -191,7 +191,7 @@ sub scheduling_manager {
 
 =head2 server_configuration
 
-Returns the server configuration for this connection (see L<Elive::Entity::ServerConfiguration>).
+Returns the server configuration for this connection (see L<Elive::StandardV2::ServerConfiguration>).
 
 =cut
 
@@ -214,7 +214,7 @@ sub server_configuration {
 
 =head2 server_versions
 
-Returns the server versions for this connection (see L<Elive::Entity::ServerVersions>).
+Returns the server versions for this connection (see L<Elive::StandardV2::ServerVersions>).
 
 =cut
 
