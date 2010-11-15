@@ -16,14 +16,14 @@ Elive::StandardV2 - Perl bindings for the Elluminate Live Standard Bridge (V2)
 
 =head1 VERSION
 
-Version 0.00_2
+Version 0.00_3
 
 ** DEVELOPER RELEASE - UNDER CONSTRUCTION **
 
 
 =cut
 
-our $VERSION = '0.00_2';
+our $VERSION = '0.00_3';
 
 =head1 SYNOPSIS
 
@@ -31,7 +31,7 @@ our $VERSION = '0.00_2';
 
 =head1 DESCRIPTION
 
-Implements Elive Standard Bridge V2 (StandardV2) StandardV2 bindings
+Implements Elluminate C<Live!> Standard Bridge V2 API bindings
 
 ** DEVELOPER RELEASE - UNDER CONSTRUCTION **
 
@@ -54,9 +54,8 @@ sub data_classes {
       Elive::StandardV2::SchedulingManager
       Elive::StandardV2::ServerConfiguration
       Elive::StandardV2::ServerVersions
-      Elive::StandardV2::SessionAttendance
-      Elive::StandardV2::SessionAttendance
       Elive::StandardV2::Session
+      Elive::StandardV2::SessionAttendance
       Elive::StandardV2::SessionTelephony
    );
 }
@@ -123,6 +122,23 @@ __PACKAGE__->mk_classdata('connection');
 
 =head2 update
 
+Abstract method to commit outstanding object updates to the server.
+
+    $obj->{foo} = 'Foo';  # change foo attribute directly
+    $foo->update;         # save
+
+    $obj->bar('Bar');     # change bar via its accessor
+    $obj->update;         # save
+
+Updates may also be passed as parameters.
+
+   # change and save foo and bar. All in one go.
+    $obj->update({foo => 'Foo', bar => 'Bar'},
+                 command => $cmd,      # soap command to use
+                 params => \%params,   # additional soap params,
+                 changed => \@props,   # properties to update,
+                );
+
 =cut
 
 sub update {
@@ -153,6 +169,16 @@ sub _fetch {
 
 =head2 insert
 
+Abstract method to create new entity instances on the server:
+
+    my $multimedia = Elive::StandardV2::Multimedia->insert(
+             {
+                    filename => 'demo.wav',
+                    creatorId =>  'bob',
+                    content => $content,
+	     },
+         );
+
 =cut
 
 sub insert {
@@ -165,7 +191,7 @@ sub insert {
 
 =head2 list
 
-Generic list method. Most commands allow a ranging expression to narrow the
+Abstract list method. Most commands allow a ranging expression to narrow the
 selection. This is passed in using the C<filter> option. For example:
 
     my $bobs_sessions = Elive::StandardV2::Session->list(filter => {userId => 'bob'});
@@ -187,8 +213,8 @@ sub list {
 
 #
 # rudimentry parse of expressions of the form:
-#  <field1> = <val1> and <field2> = <val2>
-# bit of a hack largely for the benefit of elive_query
+# <field1> = <val1> and <field2> = <val2>
+# A bit of a hack, largely for the benefit of elive_query
 #
 
 sub _parse_filter {
@@ -198,12 +224,16 @@ sub _parse_filter {
 	carp "selection not in format <field> = <val>"
 	    unless length($val);
 	$field => $val;
-    } split(qr{ \s* and \s*}ix, $expr);
+    } split(qr{ \s+ and \s+}ix, $expr);
 
     return \%critera;
 }
 
 =head2 delete
+
+Abstract method to delete entities from the server:
+
+    $multimedia->delete;
 
 =cut
 
