@@ -36,7 +36,7 @@ has 'sessionId' => (is => 'rw', isa => 'Int', required => 1);
 __PACKAGE__->primary_key('sessionId');
 
 has 'accessType' => (is => 'rw', isa => 'Int',
-	       documentation => 'creator user id',
+	       documentation => 'access type; 1:private, 2:restricted, 3:public',
     );
 
 has 'allowInSessionInvites' => (is => 'rw', isa => 'Bool',
@@ -110,7 +110,7 @@ has 'raiseHandOnEnter' => (is => 'rw', isa => 'Bool',
     );
 
 has 'recordingModeType' => (is => 'rw', isa => 'Int',
-			    documentation => '0, 1, 2',
+			    documentation => 'Recording mode type: 1:manual, 2:automatic, 3:disabled',
     );
 
 has 'reserveSeats' => (is => 'rw', isa => 'Int',
@@ -165,8 +165,8 @@ sub attendance {
         chairPIN   => '6342',
      });
 
-Returns an Elive::StandardV2::Telephony object for the given session. This can then
-be used to get or set the sessions's telephony characterisitics.
+Returns an L<Elive::StandardV2::Telephony> object for the given session. This
+can then be used to get or set the sessions's telephony characterisitics.
 
 =cut
 

@@ -12,18 +12,18 @@ use Carp;
 
 =head1 NAME
 
-    Elive::StandardV2 - Perl bindings for the Elluminate Live Standard Bridge (V2)
+Elive::StandardV2 - Perl bindings for the Elluminate Live Standard Bridge (V2)
 
 =head1 VERSION
 
-Version 0.00_1
+Version 0.00_2
 
 ** DEVELOPER RELEASE - UNDER CONSTRUCTION **
 
 
 =cut
 
-our $VERSION = '0.00_1';
+our $VERSION = '0.00_2';
 
 =head1 SYNOPSIS
 
