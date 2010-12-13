@@ -27,7 +27,7 @@ elive_raise_meeting
 =head1 SYNOPSIS
 
   elive_raise_meeting http://myserver.com/my-site[:port] userid[=role] [userid[=role]]...
-  elive_raise_meeting http://myserver.com/my-site[:port] '*groupId[=role]' ...
+  elive_raise_meeting http://user:pass@myserver.com/my-site[:port] ...
 
   Authentication
 
@@ -70,6 +70,7 @@ elive_raise_meeting
 
     -? --help                   # print this help
     -v --version                # print version and exit
+    --debug=n                   # set debug level
 
 =head1 DESCRIPTION
 

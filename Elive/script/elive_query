@@ -272,34 +272,35 @@ sub main {
 					    || $entity_collections{$entity});
 
 
-			if ($entity_class eq 'Elive::Entity::Meeting') {
-			    require Elive::script::elive_query::ViewMeeting;
-			    $entity_class = 'Elive::script::elive_query::ViewMeeting';
-			    $entity_class->_init;
-			}
-
 			if (!$entity_class) {
 			    print STDERR "Unknown entity: $entity\n";
 			    $valid = 0;
 			}
 			else {
-			    if (@props == 1 && $props[0] =~ m{^(\*)(\*)?(\??)$}x) {
-				#
-				# '*'  select all
-				# '**' select all + derivable
-				# '*?' select all defined
-				#
-				my $include_derivable = $2? 1: 0;
-				$hide_undef = $3? 1: 0;
-				@props = $entity_class->properties;
-				if ($include_derivable) {
-				    my %derivable = $entity_class->derivable;
-				    push (@props, sort keys %derivable);
-				}
+			    if ($entity_class eq 'Elive::Entity::Meeting') {
+				require Elive::script::elive_query::ViewMeeting;
+				$entity_class = 'Elive::script::elive_query::ViewMeeting';
+				$entity_class->_init;
 			    }
 			    else {
-				foreach (@props) {
-				    $valid = 0 unless m{^ [a-zA-Z_-]+ $}x;
+				if (@props == 1 && $props[0] =~ m{^(\*)(\*)?(\??)$}x) {
+				    #
+				    # '*'  select all
+				    # '**' select all + derivable
+				    # '*?' select all defined
+				    #
+				    my $include_derivable = $2? 1: 0;
+				    $hide_undef = $3? 1: 0;
+				    @props = $entity_class->properties;
+				    if ($include_derivable) {
+					my %derivable = $entity_class->derivable;
+					push (@props, sort keys %derivable);
+				    }
+				}
+				else {
+				    foreach (@props) {
+					$valid = 0 unless m{^ [a-zA-Z_-]+ $}x;
+				    }
 				}
 			    }
 			}
