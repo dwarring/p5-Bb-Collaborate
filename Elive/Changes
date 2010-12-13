@@ -1,5 +1,15 @@
 Revision history for Elive
 
+0.78    8th December 2010
+        - Removed bogus dependency on IO::Prompt. Causing unneccessary
+          build problems on Windows.
+
+0.77    8th December 2010
+        - Added tests on setting big meeting participant lists. Bug fixed
+          in pending Elluminate 10.0.2 release.
+        - Downgraded  Term::Readline::Perl dependency from required to
+          recommended. alternatives include Term::Readline::TTYtter
+
 0.76    10th November 2010
         work on elive_query:
         - added -adapter option. For impending integration with

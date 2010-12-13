@@ -38,6 +38,10 @@ foreach my $accessor (qw/_connection _db_data/) {
     __PACKAGE__->has_metadata($accessor);
 }
 
+=head1 METHODS
+
+=cut
+
 =head2 connection
 
     my $default_connection = Elive::Entity::User->connection;
@@ -73,10 +77,6 @@ sub _url {
 	    .'/'.
 	    $path);
 }
-
-=head1 METHODS
-
-=cut
 
 =head2 url
 
@@ -641,15 +641,15 @@ sub live_entities {
 
 =head2 update
 
-Apply our updates to the server. This call will commit outstanding
-changes to the object and also apply any further updates passed
-as parameters.
+Apply updates. The following commits outstanding changes to the object.
 
-    $obj->{foo} = 'Foo';  # change foo directly
+    $obj->{foo} = 'Foo';  # change foo attribute directly
     $foo->update;         # save
 
     $obj->bar('Bar');     # change bar via its accessor
     $obj->update;         # save
+
+ Updates may also be passed as parameters:
 
     # change and save foo and bar. All in one go.
     $obj->update({foo => 'Foo', bar => 'Bar'},
@@ -1083,15 +1083,6 @@ The following are all equivalent, and are all ok:
     push (@{ $p_list->participants        }, $user);
     push (@{ $p_list->{participants}      }, $user);
     push (@{ $p_list->get('participants') }, $user);
-
-=head2 Extending and Subclassing Entities
-
-Entity instance classes are simply Mouse objects that use this class
-(Elive::Entity) as base. It should be quite possible to extend existing
-entity classes.
-
-Mouse is being used instead of Moose, at this stage, it does the job, is
-smaller, faster (at this stage) and has far fewer dependencies.
 
 =cut
 

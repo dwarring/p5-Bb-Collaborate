@@ -253,7 +253,7 @@ sub id {
 
 =head2 primary_key
 
-    Setter/getter for primary key field(s) for this entity class
+Setter/getter for primary key field(s) for this entity class
 
     my @pkey = MyApp::Entity::User->primary_key
 
@@ -270,7 +270,7 @@ sub primary_key {
 
 =head2 params
 
-    Setter/getter for parameter field(s) for this entity class
+Setter/getter for parameter field(s) for this entity class
 
     Elive::Entity::User->params(loginName => 'Str');
     my %params = MyApp::Entity::User->params;

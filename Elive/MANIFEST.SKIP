@@ -1,5 +1,3 @@
-# Elive::Commmand - under construction
-lib/Elive/Command.pm
 # Subversion
 \B\.svn\b
 \.mine$

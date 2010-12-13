@@ -3,7 +3,6 @@ use warnings; use strict;
 use Test::More tests => 29;
 use Test::Exception;
 use Test::Builder;
-use version;
 
 use lib '.';
 use t::Elive;
@@ -30,9 +29,6 @@ SKIP: {
     my $connection_class = $result{class};
     $connection = $connection_class->connect(@$auth);
     Elive->connection($connection);
-
-    my $server_version = $connection->server_details->version;
-    my $server_version_num = version->new($server_version)->numify;
 
     my $meeting_start = time();
     my $meeting_end = $meeting_start + 900;

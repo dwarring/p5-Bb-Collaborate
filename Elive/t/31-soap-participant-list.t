@@ -1,6 +1,6 @@
 #!perl
 use warnings; use strict;
-use Test::More tests => 28;
+use Test::More tests => 30;
 use Test::Exception;
 use Test::Builder;
 
@@ -8,6 +8,7 @@ use lib '.';
 use t::Elive;
 
 use Carp;
+use version;
 
 use Elive;
 use Elive::Entity::Meeting;
@@ -23,12 +24,17 @@ SKIP: {
     my %result = t::Elive->test_connection( only => 'real');
     my $auth = $result{auth};
 
-    skip ($result{reason} || 'skipping live tests', 28)
+    skip ($result{reason} || 'skipping live tests', 30)
 	unless $auth;
 
     my $connection_class = $result{class};
     my $connection = $connection_class->connect(@$auth);
     Elive->connection($connection);
+
+    #
+    # ELM 3.3.4 / 10.0.2 includea significant bug fixes
+    our $elm_3_3_4_or_better =  (version->declare( $connection->server_details->version )->numify
+				 > version->declare( '10.0.1' )->numify);
 
     my $meeting_start = time();
     my $meeting_end = $meeting_start + 900;
@@ -98,6 +104,9 @@ SKIP: {
 	      },
 	      'get_users - lives');
 
+    #
+    # only want a handful
+    #
     @participants = @participants[0 .. 9]
 	if (@participants > 10);
 
@@ -106,7 +115,13 @@ SKIP: {
 	$participant_list->participants->add($participant1->userId.'=3');
 
 	lives_ok(sub {$participant_list->update}, 'setting of participant - lives');
-##	ok($meeting->is_participant( $participant1), 'is_participant($participant1)');
+	if ($elm_3_3_4_or_better) {
+	    ok($meeting->is_participant( $participant1), 'is_participant($participant1)');
+	}
+	else {
+	    $t->skip('is_participant() - broken prior to ELM 3.3.4 / 10.0.2');
+	}
+
 	ok(!$meeting->is_moderator( $participant1), '!is_moderator($participant1)');
 
 	ok((grep {$_->user->userId eq $participant1->userId} @{ $participant_list->participants }), 'participant 1 found in participant list');
@@ -114,8 +129,15 @@ SKIP: {
 
 	$participant_list->participants->add($participant2->userId.'=3');
 	$participant_list->update();
-##	ok($meeting->is_participant( $participant2), 'is_participant($participant2)');
-	ok(!$meeting->is_moderator( $participant2), '!is_moderator($participant2)');
+
+	if ($elm_3_3_4_or_better) {
+	    ok($meeting->is_participant( $participant2), 'is_participant($participant2)');
+	}   
+        else {  
+            $t->skip('is_participant() - broken prior to ELM 3.3.4 / 10.0.2');
+        }
+
+ 	ok(!$meeting->is_moderator( $participant2), '!is_moderator($participant2)');
 
 	ok((grep {$_->user->userId eq $participant2->userId} @{ $participant_list->participants }), 'participant 2 found in participant list');
 	ok((grep {$_->user->userId eq $participant2->userId && $_->role->roleId == 3} @{ $participant_list->participants }), 'participant 2 is not a moderator');
@@ -173,20 +195,28 @@ SKIP: {
     is($p->[0]->role && $p->[0]->role->roleId, 2,
        'participant_list reset - single participant has moderator role');
 
-    #
-    # stress test underlying setParticipantList command
-    # we need to do a direct call to bypass readback checks
-    #
-    my @big_user_list;
-
-    if ($connection->server_details->version lt '10.0.2') {
-	$t->skip('skipping participant stress test for Elluminate < v10.0.2');
+    if (! $elm_3_3_4_or_better ) {
+	#
+	# The next test verifies bug fixes under ELM 3.3.4/10.0.2. It probably wont
+	# work with 10.0.1 or earlier.
+	#
+	$t->skip('skipping participant long-list test for Elluminate < v10.0.2');
     }
     elsif ($participant2) { 
+	#
+	# stress test underlying setParticipantList command we need to do a direct SOAP
+	# call to bypass overly helpful readback checsk and removal of duiplicates.
+	#
+	my @big_user_list;
+
       MAKE_BIG_LIST:
 	while (1) {
 	    foreach ($participant1, $participant2, @participants) {
-		push (@big_user_list, rand() < .1 ? t::Elive::generate_id(): $_->userId);
+		#
+		# include a smattering of unknown users
+		#
+		my $user = rand() < .1 ? t::Elive::generate_id(): $_->userId;
+		push (@big_user_list, $user);
 		last MAKE_BIG_LIST
 		    if @big_user_list > 2500;
 	    }
@@ -194,11 +224,11 @@ SKIP: {
 
 	my $participants_str = Elive->login->userId.'=2;'.join(';', map {$_.'=3'} @big_user_list);
 	lives_ok(sub{$participant_list->_set_participant_list($participants_str)},
-		  'participants list stress test - lives'
+		  'participants long-list test - lives'
 	    );
     }
     else {
-	$t->skip('not enough participants to run stress test');
+	$t->skip('not enough participants to run long-list test');
     }
 
     #
