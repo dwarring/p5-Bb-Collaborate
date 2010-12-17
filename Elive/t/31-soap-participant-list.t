@@ -205,7 +205,7 @@ SKIP: {
     elsif ($participant2) { 
 	#
 	# stress test underlying setParticipantList command we need to do a direct SOAP
-	# call to bypass overly helpful readback checsk and removal of duiplicates.
+	# call to bypass overly helpful readback checks and removal of duplicates.
 	#
 	my @big_user_list;
 
