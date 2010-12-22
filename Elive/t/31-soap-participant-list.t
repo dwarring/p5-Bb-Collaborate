@@ -1,6 +1,6 @@
 #!perl
 use warnings; use strict;
-use Test::More tests => 30;
+use Test::More tests => 31;
 use Test::Exception;
 use Test::Builder;
 
@@ -24,15 +24,14 @@ SKIP: {
     my %result = t::Elive->test_connection( only => 'real');
     my $auth = $result{auth};
 
-    skip ($result{reason} || 'skipping live tests', 30)
+    skip ($result{reason} || 'skipping live tests', 31)
 	unless $auth;
 
     my $connection_class = $result{class};
     my $connection = $connection_class->connect(@$auth);
     Elive->connection($connection);
-
     #
-    # ELM 3.3.4 / 10.0.2 includea significant bug fixes
+    # ELM 3.3.4 / 10.0.2 includes significant bug fixes
     our $elm_3_3_4_or_better =  (version->declare( $connection->server_details->version )->numify
 				 > version->declare( '10.0.1' )->numify);
 
@@ -200,7 +199,8 @@ SKIP: {
 	# The next test verifies bug fixes under ELM 3.3.4/10.0.2. It probably wont
 	# work with 10.0.1 or earlier.
 	#
-	$t->skip('skipping participant long-list test for Elluminate < v10.0.2');
+	$t->skip('skipping participant long-list test for Elluminate < v10.0.2')
+	    for (1..2);
     }
     elsif ($participant2) { 
 	#
@@ -226,9 +226,22 @@ SKIP: {
 	lives_ok(sub{$participant_list->_set_participant_list($participants_str)},
 		  'participants long-list test - lives'
 	    );
+	#
+	# refetch the participant list and check that all real users
+	# are present
+	#
+	my @expected_users = sort map {$_->userId} ($participant1, $participant2, @participants);
+
+	$participant_list = Elive::Entity::ParticipantList->retrieve([$meeting->meetingId]);
+	my $participants = $participant_list->participants;
+
+	my @actual_users = sort map {$_->user->userId} @$participants;
+
+	is_deeply(\@actual_users, \@expected_users, "participant list as expected (long list with repeats and unknown users)");
     }
     else {
-	$t->skip('not enough participants to run long-list test');
+	$t->skip('not enough participants to run long-list test')
+	    for (1..2);
     }
 
     #
