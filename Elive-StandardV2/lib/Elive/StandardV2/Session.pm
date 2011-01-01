@@ -166,7 +166,7 @@ sub attendance {
      });
 
 Returns an L<Elive::StandardV2::Telephony> object for the given session. This
-can then be used to get or set the sessions's telephony characterisitics.
+can then be used to get or set the session's telephony characterisitics.
 
 =cut
 
