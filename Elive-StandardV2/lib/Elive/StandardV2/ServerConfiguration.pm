@@ -22,7 +22,7 @@ has 'raiseHandOnEnter' => (is => 'rw', isa => 'Bool');
 has 'mayUseTelephony' => (is => 'rw', isa => 'Bool');
 has 'mayUseSecureSignOn' => (is => 'rw', isa => 'Bool');
 has 'mustReserveSeats' => (is => 'rw', isa => 'Bool');
-has 'timeZone' => (is => 'rw', isa => 'Bool');
+has 'timeZone' => (is => 'rw', isa => 'Str');
 
 =head1 METHODS
 
