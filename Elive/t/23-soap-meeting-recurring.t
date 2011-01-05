@@ -1,15 +1,13 @@
 #!perl
 use warnings; use strict;
-use Test::More tests => 8;
+use Test::More tests => 7;
 use Test::Exception;
 
 use lib '.';
 use t::Elive;
 
-BEGIN {
-    use_ok( 'Elive' );
-    use_ok( 'Elive::Entity::Meeting' );
-};
+use Elive;
+use Elive::Entity::Meeting;
 
 my $class = 'Elive::Entity::Meeting' ;
 
@@ -18,7 +16,7 @@ SKIP: {
     my %result = t::Elive->test_connection(only => 'real');
     my $auth = $result{auth};
 
-    skip ($result{reason} || 'skipping live tests', 6)
+    skip ($result{reason} || 'skipping live tests', 7)
 	unless $auth;
 
     my $connection_class = $result{class};
@@ -39,7 +37,8 @@ SKIP: {
 	
     );
 
-    my @meetings = ($class->insert({%meeting_int_data, %meeting_str_data}));
+    my @meetings;
+    lives_ok (sub {@meetings = $class->insert({%meeting_int_data, %meeting_str_data})}, 'creation of recurring meeting - lives');
 
     ok(@meetings == 3, 'got three meeting occurences')
 	or exit;
