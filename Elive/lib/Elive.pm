@@ -326,9 +326,7 @@ see the README file.
 
 =head1 SEE ALSO
 
-L<Elive::StandardV2> - This is a separate CPAN module that implements the alternate Elluminate I<Live!> Standard Bridge API (v2). 
-
-The following classes are included in this distribution and implement the SDK bindings:
+=head2 Modules in the Elive distribution
 
 =over 4
 
@@ -356,7 +354,7 @@ The following classes are included in this distribution and implement the SDK bi
 
 =back
 
-Scripts (included in the Elive distribution):
+=head2 Scripts in the Elive Distribution
 
 =over 4
 
@@ -368,7 +366,14 @@ Scripts (included in the Elive distribution):
 
 =back
 
-Elluminate I<Live!> Documentation, installed with Elluminate.
+=head2 Related CPAN Modules
+
+L<Elive::StandardV2> - This is a separate CPAN module that implements the alternate Elluminate I<Live!> Standard Bridge API (v2). 
+
+=head2 Elluminate Documentation
+
+The following is either installed with Elluminate I<Live!> Documentation, or
+can be obtained from Elluminate.
 
 =over 4
 
@@ -391,12 +396,13 @@ Describes setting up multiple site instances.
 
 =over 4
 
-=item Database Access
+=item Databases
 
-The Elluminate I<Live!> advanced configuration guide mentions that it can be
-configured to use other databases that support a JDBC bridge (most databases
-in widespread use). It specifically mentions SQL Server or Oracle. MySQL
-is supported with 9.5.0 
+Elluminate site instances by default use McKoi - a lightweight pure
+Java/JDBC database.
+
+You might want to Consider using other databases, such as  SQL Server, Oracle
+or MySQL. These are supported by Elluminate and have JDBC bridges available.
 
 =item LDAP Authentication
 
