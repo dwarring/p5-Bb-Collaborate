@@ -36,7 +36,7 @@ elive_query
 
 =head1 DESCRIPTION
 
-Simple read-only query shell for Elive. 
+Simple read-only query shell/REPL for Elive.
 
 =head2 Entity Data Queries
 
@@ -56,7 +56,7 @@ For example:
 
     elive>
 
-=head2 Entity Metadata
+=head2 Describing Entities
 
 You can also use this script to describe Elive entity structures:
 
@@ -92,7 +92,7 @@ sub main {
     our $elive_version = ${Elive::VERSION};
     our %entity_collections;
     #
-    # this may barf if /dev/tty can't be opened. E.g. when exxecuting from cron
+    # this may barf if /dev/tty can't be opened. E.g. when executing from cron
     our $is_tty = eval { IO::Interactive::is_interactive() };
 
     our $term;
@@ -125,6 +125,13 @@ sub main {
     };
 
     warn "adapter class: $adapter_class\n" if Elive->debug;
+
+    if ($adapter_class eq 'Elive::Entity') {
+	# snick in our private classes
+	require Elive::script::elive_query::ViewMeeting;
+	Elive::script::elive_query::ViewMeeting->_init;
+    }
+
     our @data_classes = $adapter_class->data_classes;
     our %entities;
 
@@ -278,29 +285,26 @@ sub main {
 			}
 			else {
 			    if ($entity_class eq 'Elive::Entity::Meeting') {
-				require Elive::script::elive_query::ViewMeeting;
 				$entity_class = 'Elive::script::elive_query::ViewMeeting';
-				$entity_class->_init;
+			    }
+
+			    if (@props == 1 && $props[0] =~ m{^(\*)(\*)?(\??)$}x) {
+				#
+				# '*'  select all
+				# '**' select all + derivable
+				# '*?' select all defined
+				#
+				my $include_derivable = $2? 1: 0;
+				$hide_undef = $3? 1: 0;
+				@props = $entity_class->properties;
+				if ($include_derivable) {
+				    my %derivable = $entity_class->derivable;
+				    push (@props, sort keys %derivable);
+				}
 			    }
 			    else {
-				if (@props == 1 && $props[0] =~ m{^(\*)(\*)?(\??)$}x) {
-				    #
-				    # '*'  select all
-				    # '**' select all + derivable
-				    # '*?' select all defined
-				    #
-				    my $include_derivable = $2? 1: 0;
-				    $hide_undef = $3? 1: 0;
-				    @props = $entity_class->properties;
-				    if ($include_derivable) {
-					my %derivable = $entity_class->derivable;
-					push (@props, sort keys %derivable);
-				    }
-				}
-				else {
-				    foreach (@props) {
-					$valid = 0 unless m{^ [a-zA-Z_-]+ $}x;
-				    }
+				foreach (@props) {
+				    $valid = 0 unless m{^ [a-zA-Z_-]+ $}x;
 				}
 			    }
 			}

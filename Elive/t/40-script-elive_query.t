@@ -18,13 +18,13 @@ if ( not $ENV{TEST_AUTHOR} ) {
 eval "use Test::Script::Run 0.04";
 
 if ( $EVAL_ERROR ) {
-    my $msg = 'Test::Script::Run 0.40 required to run scripts';
+    my $msg = 'Test::Script::Run 0.04+ required to run scripts';
     plan( skip_all => $msg );
 }
 
 local ($ENV{TERM}) = 'dumb';
 
-plan(tests => 17);
+plan(tests => 19);
 
 my $script_name = 'elive_query';
 
@@ -90,14 +90,12 @@ SKIP: {
     my %result = t::Elive->test_connection(only => 'real');
     my $auth = $result{auth};
 
-    skip ($result{reason} || 'skipping live tests',
-	7)
+    skip ($result{reason} || 'skipping live tests', 9)
 	unless $auth && @$auth >= 3;
 
     my ($url, $user, $pass) = @$auth;
 
-    
-    do {
+    foreach my $selection (qw(serverDetailsId * **), 'name,serverDetailsId') {
 	#
 	# simple query on server details
 	#
@@ -106,10 +104,9 @@ SKIP: {
 	    [$url,
 	     -user => $user,
 	     -pass => $pass,
-	     -c => 'select serverDetailsId from serverDetails']);
+	     -c => "select $selection from serverDetails"]);
        
-	ok($stderr =~ m{^connecting}i, "$script_name -c 'connecting...' message");
-	ok($stdout =~ m{serverDetailsId .* \w+ }ixs, "$script_name -c expected select output");
+	ok($stdout =~ m{serverDetailsId .* \w+ }ixs, "$script_name 'select $selection from serverDetails expected select output");
 	
     };
 
