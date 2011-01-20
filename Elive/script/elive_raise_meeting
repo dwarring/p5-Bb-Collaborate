@@ -31,8 +31,8 @@ elive_raise_meeting
 
   Authentication
 
-    -user someAdminUser          # server login user
-    -pass somePass               # server login password
+    -user someAdminUser          # SDK/SOAP username
+    -pass somePass               # SDK/SOAP password
 
   Basic
 
