@@ -13,6 +13,11 @@ __PACKAGE__->derivable(url => 'web_url');
 has 'recordingId' => (is => 'rw', isa => 'Str', required => 1);
 __PACKAGE__->primary_key('recordingId');
 
+__PACKAGE__->params(
+    userId => 'Str',
+    userIP => 'Str',
+    );
+
 has 'creationDate' => (is => 'rw', isa => 'HiResDate', required => 1,
 		       documentation => 'creation date and time of the recording');
 
@@ -276,18 +281,10 @@ sub buildJNLP {
 
     my %soap_params = (recordingId => $recording_id);
 
-    for (map {Elive::Util::_freeze($_, 'Str')} grep {$_} $opt{userIP}) {
+    $soap_params{'userIP'} = $opt{userIP} if $opt{userIP}; # elm 9.1+ compat
+    $soap_params{'userId'} = $opt{userId} || $connection->login->userId;
 
-	$soap_params{'userIp'} = $_; # elm 9.0 compat
-	$soap_params{'userIP'} = $_; # elm 9.1+ compat
-    }
-
-    for ($opt{userId} || $connection->login->userId) {
-
-	$soap_params{'userId'} = Elive::Util::_freeze($_, 'Str');
-    }
-
-    my $som = $connection->call('buildRecordingJNLP', %soap_params);
+    my $som = $connection->call('buildRecordingJNLP', %{$self->_freeze(\%soap_params)});
 
     my $results = $self->_get_results($som, $connection);
 

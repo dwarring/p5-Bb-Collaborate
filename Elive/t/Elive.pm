@@ -112,6 +112,7 @@ and will introduce some pretty fat build dependencies.
 sub a_week_between {
     my $start = shift;
     my $end = shift;
+
     my $seconds_in_a_week = 7 * 24 * 60 * 60;
     #
     # just test that the dates are a week apart to within an hour and a

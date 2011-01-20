@@ -222,10 +222,10 @@ sub _set_participant_list {
 
     my %params = %{ $opt{param} || {} };
 
-    $params{meetingId} = Elive::Util::_freeze($self->meetingId => 'Int');
+    $params{meetingId} = $opt{meetingId} || $self;
     $params{users} = $participants_str;
 
-    my $som = $self->connection->call('setParticipantList' => %params);
+    my $som = $self->connection->call('setParticipantList' => %{$self->_freeze(\%params)});
 
     $self->connection->_check_for_errors( $som );
 }

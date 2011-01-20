@@ -1,5 +1,10 @@
 Revision history for Elive
 
+0.79    January 2011
+        - Eliminated remaining direct uses of Elive::Util::_freeze() function
+          in entity classes. Replaced with preferred Elive::DAO::_freeze() &
+          params() methods.
+
 0.78    8th December 2010
         - Removed bogus dependency on IO::Prompt. Causing unneccessary
           build problems on Windows.
@@ -7,8 +12,8 @@ Revision history for Elive
 0.77    8th December 2010
         - Added tests on setting big meeting participant lists. Bug fixed
           in pending Elluminate 10.0.2 release.
-        - Downgraded  Term::Readline::Perl dependency from required to
-          recommended. alternatives include Term::Readline::TTYtter
+        - Downgraded  Term::Readline::Perl dependency from 'required' to
+          'recommended'. alternatives include Term::Readline::TTYtter
 
 0.76    10th November 2010
         work on elive_query:
@@ -47,7 +52,7 @@ Revision history for Elive
 
         Bug fixes:
         - Elive::Entity::Meeting: Added 'adapter' property. Interesting
-          vlaues include: 'default' & 'standardv2'.
+          values include: 'default' & 'standardv2'.
 
         Other Enhancements:
         - General support for credentials embedded in urls, E.g:

@@ -132,7 +132,7 @@ sub _connect {
     # -- http://mysite/myinst/default
     # -- http://mysite/myinst/default/webservice.event
     #
-    # there's some ambiguity, they've named an instance v1 ... v9 - yikes!
+    # there's some ambiguity, an instance named v1 ... v9 will cause trouble!
     #
 
     if (@path && $path[-1] =~ m{^v(\d+)$}) {

@@ -38,6 +38,9 @@ __PACKAGE__->params(
     userId => 'Str',
     startDate => 'HiResDate',
     endDate => 'HiResDate',
+    version => 'Str',
+    displayName => 'Str',
+    userName => 'Str',
     );
 
 # help out elive_query; expansion of 'select ** from meeting...'
@@ -288,9 +291,11 @@ sub check_preload {
 
     my $som = $connection
 	->call('checkMeetingPreload',
-	       preloadId => Elive::Util::_freeze($preload_id, 'Int'),
-	       meetingId => Elive::Util::_freeze($meeting_id, 'Int'),
-	       );
+	       %{ $self->_freeze({ preloadId => $preload_id,
+				   meetingId => $meeting_id,
+				 });
+	       }
+	);
 
     $connection->_check_for_errors($som);
 
@@ -325,9 +330,11 @@ sub is_participant {
 
     my $som = $connection
         ->call($command,
-               userId => Elive::Util::_freeze($user, 'Str'),
-               meetingId => Elive::Util::_freeze($meeting_id, 'Int'),
-               );
+	       %{ $self->_freeze({ userId => $user,
+				   meetingId => $meeting_id,
+				})
+	       }
+	);
 
     $connection->_check_for_errors($som);
 
@@ -393,8 +400,10 @@ sub remove_preload {
 	or die "not connected";
 
     my $som = $connection->call('deleteMeetingPreload',
-				meetingId => Elive::Util::_freeze($meeting_id, 'Int'),
-				preloadId => Elive::Util::_freeze($preload_id, 'Int'),
+				 %{ $self->_freeze({ meetingId => $meeting_id,
+						     preloadId => $preload_id,
+						   })
+				 }
 				);
 
     return $connection->_check_for_errors($som);
@@ -455,16 +464,18 @@ sub buildJNLP {
 
     foreach my $param (qw(version password displayName)) {
 	my $val = delete $opt{$param};
-	$soap_params{$param} = Elive::Util::_freeze($val, 'Str')
+	$soap_params{$param} = $val
 	    if defined $val;
     }
 
     for (delete $opt{user} || $connection->login->userId) {
 
-	$soap_params{m{^\d+$}x? 'userId' : 'userName'} = Elive::Util::_freeze($_, 'Str');
+	$soap_params{m{^\d+$}x? 'userId' : 'userName'} = $_;
     }
 
-    my $som = $connection->call('buildMeetingJNLP', %soap_params);
+    my $som = $connection->call('buildMeetingJNLP',
+				%{$self->_freeze(\%soap_params)}
+				),;
 
     my $results = $self->_get_results($som, $connection);
 
@@ -496,26 +507,12 @@ sub web_url {
     my ($self, %opt) = @_;
 
     my $meeting_id = $opt{meeting_id} || $self->meetingId;
-    $meeting_id = Elive::Util::_freeze($meeting_id, 'Str');
 
-   die "no meeting_id given"
+    die "no meeting_id given"
 	unless $meeting_id;
 
     my $connection = $self->connection || $opt{connection}
 	or die "not connected";
-
-    if (ref($self)) {
-	#
-	# dealing with an object
-	#
-	$meeting_id ||= $self->meetingId;
-    }
-    elsif (ref($meeting_id)) {  # an object
-	$meeting_id = $meeting_id->meetingId;
-    }
-
-    die "no meeting_id given"
-	unless $meeting_id;
 
     my $url = $connection->url;
 
@@ -529,6 +526,8 @@ sub web_url {
 
     die "unrecognised action: $action"
 	unless exists $Actions{$action};
+
+    $meeting_id = Elive::Util::_freeze($meeting_id, 'Str');
 
     return sprintf($Actions{$action},
 		   $url, $meeting_id);

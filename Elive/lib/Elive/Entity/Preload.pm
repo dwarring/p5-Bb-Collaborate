@@ -154,7 +154,7 @@ sub download {
 	or die "not connected";
 
     my $som = $connection->call('getPreloadStream',
-				preloadId => Elive::Util::_freeze($preload_id, 'Int'),
+				%{$self->_freeze({preloadId => $preload_id})}
 	);
 
     my $results = $self->_get_results($som, $connection);
