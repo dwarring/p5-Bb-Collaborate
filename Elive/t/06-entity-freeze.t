@@ -1,16 +1,14 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 38;
+use Test::More tests => 33;
 use Test::Warn;
 use Scalar::Util;
 
-BEGIN {
-    use_ok( 'Elive::Connection' );
-    use_ok( 'Elive::Entity::User' );
-    use_ok( 'Elive::Entity::ParticipantList' );
-    use_ok( 'Elive::Entity::ServerParameters' );
-    use_ok( 'Elive::Util');
-};
+use Elive::Connection;
+use Elive::Entity::User;
+use Elive::Entity::ParticipantList;
+use Elive::Entity::ServerParameters;
+use Elive::Util;
 
 is(Elive::Util::_freeze('123456', 'Int'), '123456', 'simple Int');
 is(Elive::Util::_freeze('+123456', 'Int'), '123456', 'Int with plus sign');

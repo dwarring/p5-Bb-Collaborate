@@ -1,15 +1,13 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 7;
+use Test::More tests => 4;
 use Test::Warn;
 
 package main;
 
-BEGIN {
-    use_ok( 'Elive::Connection' );
-    use_ok( 'Elive::Entity::Group' );
-    use_ok( 'Elive::Entity::ParticipantList' );
-};
+use Elive::Connection;
+use Elive::Entity::Group;
+use Elive::Entity::ParticipantList;
 
 use Scalar::Util;
 

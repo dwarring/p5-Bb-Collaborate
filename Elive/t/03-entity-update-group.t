@@ -1,13 +1,11 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 19;
+use Test::More tests => 16;
 use Test::Warn;
 
-BEGIN {
-    use_ok( 'Elive::Connection' );
-    use_ok( 'Elive::Entity::User' );
-    use_ok( 'Elive::Entity::Group' );
-}
+use Elive::Connection;
+use Elive::Entity::User;
+use Elive::Entity::Group;
 
 Elive->connection(Elive::Connection->connect('http://test.org'));
 

@@ -1,16 +1,14 @@
 #!perl
 use warnings; use strict;
-use Test::More tests => 21;
+use Test::More tests => 19;
 use Test::Exception;
 use Scalar::Util;
 
 use lib '.';
 use t::Elive;
 
-BEGIN {
-    use_ok( 'Elive' );
-    use_ok( 'Elive::Entity::User' );
-};
+use Elive;
+use Elive::Entity::User;
 
 my $class = 'Elive::Entity::User' ;
 

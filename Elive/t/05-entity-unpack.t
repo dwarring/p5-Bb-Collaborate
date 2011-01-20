@@ -13,14 +13,12 @@ to arrays.
 =cut
 
 use warnings; use strict;
-use Test::More tests => 8;
+use Test::More tests => 7;
 use Test::Warn;
 
 use Storable;
 
-BEGIN {
-    use_ok( 'Elive::Entity' );
-};
+use Elive::Entity;
 
 my %user = (
 	'FirstName' => 'Blinky',
