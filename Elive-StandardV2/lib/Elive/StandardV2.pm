@@ -83,7 +83,7 @@ sub _get_results {
 Connects to an Elluminate server instance. Dies if the connection could not
 be established. If, for example, the SOAP connection or authentication failed.
 
-See also Elive::Connection::StandardV2.
+See also Elive::StandardV2::Connection.
 
 =cut
 
