@@ -11,7 +11,7 @@ use t::Elive::StandardV2;
 use Elive::StandardV2::Session;
 
 our $t = Test::Builder->new;
-our $class = 'Elive::StandardV2::Session' ;
+our $class = 'Elive::StandardV2::Session';
 
 our $connection;
 
@@ -115,5 +115,5 @@ SKIP: {
     ok($@ || !$deleted_session, "can't retrieve deleted session");
 }
 
-Elive->disconnect;
+Elive::StandardV2->disconnect;
 

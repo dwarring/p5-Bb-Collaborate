@@ -53,7 +53,7 @@ SKIP: {
 	      '$connection->scheduling_manager - lives');
     isa_ok($scheduling_manager, 'Elive::StandardV2::SchedulingManager','scheduling_manager');
     my $min_version_num = '3.3.2';
-    my $max_version_num = '3.3.2';
+    my $max_version_num = '3.3.5';
 
     ok(my $server_version = $scheduling_manager->version, 'got server version');
     ok(my $server_manager = $scheduling_manager->manager, 'got server manager');
@@ -87,5 +87,5 @@ SKIP: {
 
 }
 
-Elive->disconnect;
+Elive::StandardV2->disconnect;
 

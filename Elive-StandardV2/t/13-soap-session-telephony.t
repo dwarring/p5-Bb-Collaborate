@@ -88,5 +88,5 @@ SKIP: {
 
 }
 
-Elive->disconnect;
+Elive::StandardV2->disconnect;
 

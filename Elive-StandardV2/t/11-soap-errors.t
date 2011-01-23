@@ -48,5 +48,5 @@ SKIP: {
     dies_ok( sub{$connection->_check_for_errors($bad_som)}, '...but dies when checked');
 }
 
-Elive->disconnect;
+Elive::StandardV2->disconnect;
 
