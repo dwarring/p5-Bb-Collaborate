@@ -23,9 +23,7 @@ Elive::StandardV2::Connection -  Manage Elluminate SOAP v2 endpoint connections.
 =head1 DESCRIPTION
 
 This module handles logical connections to the C</v2/webservice.event> endpoint
-on the Elluminate server. This endpoint implements the Standard Bridge API. See
-the L<Elive::StandardV2> CPAN module, which uses this connection and implements
-bindings.
+on the Elluminate server. This endpoint implements the Standard Bridge API.
 
 =cut
 
