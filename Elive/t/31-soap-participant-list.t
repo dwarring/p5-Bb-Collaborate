@@ -1,6 +1,6 @@
 #!perl
 use warnings; use strict;
-use Test::More tests => 29;
+use Test::More tests => 31;
 use Test::Exception;
 use Test::Builder;
 
@@ -24,7 +24,7 @@ SKIP: {
     my %result = t::Elive->test_connection( only => 'real');
     my $auth = $result{auth};
 
-    skip ($result{reason} || 'skipping live tests', 29)
+    skip ($result{reason} || 'skipping live tests', 31)
 	unless $auth;
 
     my $connection_class = $result{class};
@@ -202,7 +202,11 @@ SKIP: {
 	$t->skip('skipping participant long-list test for Elluminate < v10.0.2')
 	    for (1..2);
     }
-    elsif ($participant2) { 
+    elsif ( !$participant2 )  {
+	$t->skip('not enough participants to run long-list test')
+	    for (1..2);
+    }
+    else { 
 	#
 	# stress test underlying setParticipantList command we need to do a direct SOAP
 	# call to bypass overly helpful readback checks and removal of duplicates.
@@ -230,7 +234,11 @@ SKIP: {
 	# refetch the participant list and check that all real users
 	# are present
 	#
-	my @expected_users = sort map {$_->userId} ($participant1, $participant2, @participants);
+	my @users_in =  (Elive->login, $participant1, $participant2, @participants);
+	my @user_ids_in = map {$_->userId} @users_in;
+	my %users_seen;
+	@users_seen{ @user_ids_in } = undef;
+	my @expected_users = sort keys %users_seen;
 
 	$participant_list = Elive::Entity::ParticipantList->retrieve([$meeting->meetingId]);
 	my $participants = $participant_list->participants;
@@ -238,10 +246,6 @@ SKIP: {
 	my @actual_users = sort map {$_->user->userId} @$participants;
 
 	is_deeply(\@actual_users, \@expected_users, "participant list as expected (long list with repeats and unknown users)");
-    }
-    else {
-	$t->skip('not enough participants to run long-list test')
-	    for (1..2);
     }
 
     #
