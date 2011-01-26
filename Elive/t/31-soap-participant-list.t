@@ -245,7 +245,7 @@ SKIP: {
 
 	my @actual_users = sort map {$_->user->userId} @$participants;
 
-	is_deeply(\@actual_users, \@expected_users, "participant list as expected (long list with repeats and unknown users)");
+	is_deeply(\@actual_users, \@expected_users, "participant list as expected (no repeats or unknown users)");
     }
 
     #
