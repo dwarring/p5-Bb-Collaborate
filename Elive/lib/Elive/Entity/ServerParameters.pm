@@ -15,10 +15,17 @@ __PACKAGE__->primary_key('meetingId');
 
 has 'seats' => (is => 'rw', isa => 'Int',
     documentation => 'Number of available seats');
+__PACKAGE__->_alias(requiredSeats => 'seats');
+
 has 'boundaryMinutes' => (is => 'rw', isa => 'Int',
     documentation => 'meeting boundary time');
+__PACKAGE__->_alias(boundary => 'boundaryMinutes', freeze => 1);
+__PACKAGE__->_alias(boundaryTime => 'boundaryMinutes'); # v 9.5.0 +
+
 has 'fullPermissions' => (is => 'rw', isa => 'Bool', required => 1,
     documentation => 'whether participants can perform activities (e.g. use whiteboard) before the supervisor arrives');
+__PACKAGE__->_alias(permissionsOn => 'fullPermissions', freeze => 1);
+
 has 'supervised' => (is => 'rw', isa => 'Bool',
     documentation => 'whether the moderator can see private messages');
 
@@ -32,15 +39,6 @@ has 'serverTelephonyAddress' => (is => 'rw', isa => 'Str');
 has 'serverTelephonyPIN' => (is => 'rw', isa => 'Str');
 has 'serverTelephonyAddress' => (is => 'rw', isa => 'Str');
 has 'redirectURL' => (is => 'rw', isa => 'Str');
-
-#
-# maintain aliases for version compatibility and freeze/thaw inconsistancies
-#
-
-__PACKAGE__->_alias(requiredSeats => 'seats');
-__PACKAGE__->_alias(boundaryTime => 'boundaryMinutes'); # v 9.5.0 +
-__PACKAGE__->_alias(boundary => 'boundaryMinutes', freeze => 1);
-__PACKAGE__->_alias(permissionsOn => 'fullPermissions', freeze => 1);
 
 =head1 NAME
 
