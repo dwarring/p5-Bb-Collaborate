@@ -156,6 +156,62 @@ sub update {
 	or die "meeting not found: ".$meeting_id;
 
 
+    my ($users, $groups) = $self->_users_and_groups;
+
+    #
+    # make sure that the facilitator is included with a moderator role
+    #
+    $users->{ $meeting->facilitatorId } = 2;
+
+    foreach my $group_id (keys %$groups) {
+	#
+	# Current restriction with passing groups via setParticipantList
+	# etc adapters.
+	#
+	carp "client side expansion of group: $group_id";
+	my $role = $groups->{ $group_id };
+	my $group = Elive::Entity::Group->retrieve($group_id,
+						   connection => $self->connection);
+	foreach (@{ $group->members }) {
+	    $users->{ $_ } ||= $role;
+	}
+    }
+
+    my @participants_arr =  map{$_.'='.$users->{$_}} sort keys %$users;
+
+    my $participants_str = join(';', @participants_arr);
+    $self->_set_participant_list( $participants_str );
+    #
+    # do our readback
+    #
+    $self->revert;
+    my $class = ref($self);
+    $self = $class->retrieve([$self->id], connection => $self->connection);
+
+    my ($added_users, $_added_groups) = $self->_users_and_groups;
+    #
+    # a common scenario is adding unknown users. Check for this specific
+    # condition and raise a specific friendlier error.
+    #
+    my %requested_users = %$users;
+    my $requested_user_count = scalar keys %requested_users;
+    delete @requested_users{ keys %$added_users };
+    my @rejected_users = sort keys %requested_users;
+    my $rejected_user_count = scalar @rejected_users;
+
+    Carp::croak "unable to add $rejected_user_count of $requested_user_count participants as follows: @rejected_users"
+	if $rejected_user_count;
+
+    $class->_readback_check({meetingId => $self->meetingId,
+			     participants => \@participants_arr},
+			    [$self]);
+
+    return $self;
+}
+
+sub _users_and_groups {
+    my $self = shift;
+
     my @raw_participants = @{ $self->participants || [] };
 
     #
@@ -180,41 +236,7 @@ sub update {
 	}
     }
 
-    #
-    # make sure that the facilitator is included with a moderator role
-    #
-    $users{ $meeting->facilitatorId } = 2;
-
-    foreach my $group_id (keys %groups) {
-	#
-	# Current restriction with passing groups via setParticipantList
-	# etc adapters.
-	#
-	carp "client side expansion of group: $group_id";
-	my $role = $groups{ $group_id };
-	my $group = Elive::Entity::Group->retrieve($group_id,
-						   connection => $self->connection);
-	foreach (@{ $group->members }) {
-	    $users{ $_ } ||= $role;
-	}
-    }
-
-    my @participants_arr =  map{$_.'='.$users{$_}} sort keys %users;
-
-    my $participants_str = join(';', @participants_arr);
-    $self->_set_participant_list( $participants_str );
-    #
-    # do our readback
-    #
-    $self->revert;
-    my $class = ref($self);
-    $class->retrieve([$self->id], connection => $self->connection);
-
-    $class->_readback_check({meetingId => $self->meetingId,
-			     participants => \@participants_arr},
-			    [$self]);
-
-    return $self;
+    return (\%users, \%groups);
 }
 
 sub _set_participant_list {

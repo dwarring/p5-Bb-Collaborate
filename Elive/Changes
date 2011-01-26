@@ -1,9 +1,14 @@
 Revision history for Elive
 
-0.80
+0.80    28th January 2011
+        - Elive::Entity::ParticipantList. Detect and catch the common
+          scenario of attempting to add unknown users. Now croaks with a
+          friendlier and easily caught error message:
+
+              "unable to add 7 of 35 participants as follows: user1 user2 ..."
+
         - Eliminated remaining direct uses of Elive::Util::_freeze() function
-          in entity classes. Replaced with preferred Elive::DAO::_freeze() &
-          params() methods.
+          with Elive::DAO::->_freeze() for consistancy.
 
 0.79    21st January 2011
         - bugfix to elive_query. Had silently broken 'select * ...' queries
