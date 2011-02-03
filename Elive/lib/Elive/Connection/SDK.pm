@@ -17,6 +17,31 @@ use Elive::Entity;
 use Elive::Entity::User;
 use Elive::Entity::ServerDetails;
 
+=head1 NAME
+
+Elive::Connection::SDK - Manage Elluminate Live SDK SOAP connections.
+
+=head1 DESCRIPTION
+
+This module handles logical connections to Elluminate I<Live!> sites.
+
+Most of the time, you won't need to use this module directly, rather
+you'll create a default connection via L<Elive>:
+
+    Elive->connect('http://someserver.com', 'someuser', 'somepass');
+
+However, if you need to manage multiple sites and/or servers. You can
+have multiple connections:
+
+    my $connection1
+            = Elive::Connection->connect('http://someserver.com/site1',
+                                        'user1' => 'pass1');
+
+    my $connection2
+            = Elive::Connection->connect('http://user2:pass2@someserver.com/site2');
+
+=cut
+
 __PACKAGE__->mk_accessors( qw{_login _server_details} );
 
 our %KnownCommands = (

@@ -18,26 +18,13 @@ use Elive::Util;
 
 =head1 NAME
 
-Elive::Connection -  Manage Elluminate SOAP connections.
+Elive::Connection - Manage Elluminate Live SOAP connections.
 
 =head1 DESCRIPTION
 
-This module handles logical connections to Elluminate I<Live!> sites.
+This is an abstract class for managing connections and related resources.
 
-Most of the time, you won't need to use this module directly, rather
-you'll create a default connection via L<Elive>:
-
-    Elive->connect('http://someserver.com', 'someuser', 'somepass');
-
-However, if you need to manage multiple sites and/or servers. You can
-have multiple connections:
-
-    my $connection1
-            = Elive::Connection->connect('http://someserver.com/site1',
-                                        'user1' => 'pass1');
-
-    my $connection2
-            = Elive::Connection->connect('http://user2:pass2@someserver.com/site2');
+Most of the time, you'll be dealing with specific class instances; See L<Elive::Connection::SDK> L<Elive::Connection::API>.
 
 =cut
 
@@ -78,7 +65,8 @@ sub _connect {
 
     $url =~ s{/$}{}x;
 
-    my $uri_obj = URI->new($url, 'http');
+    my $uri_obj = URI->new($url);
+
     my $userinfo = $uri_obj->userinfo;
 
     if ($userinfo) {
