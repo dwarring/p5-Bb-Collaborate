@@ -598,6 +598,14 @@ sub insert {
     my %params = %{delete $opt{param} || {}};
 
     #
+    # resolve any aliasas
+    #
+    my %aliases = $class->_to_aliases;
+    for (grep {exists $insert_data{$_}} (keys %aliases)) {
+	my $att = $aliases{$_};
+	$insert_data{$att} = delete $insert_data{$_};
+    }
+    #
     # sift out additional data included in the insert data, but should
     # be parameters.
     #
@@ -605,14 +613,6 @@ sub insert {
     foreach (grep {exists $insert_data{$_}} %param_names) {
 	my $val = delete $insert_data{$_};
 	$params{$_} = $val unless exists $params{$_};
-    }
-    #
-    # also resolve any aliasas
-    #
-    my %aliases = $class->_to_aliases;
-    for (grep {exists $insert_data{$_}} (keys %aliases)) {
-	my $att = $aliases{$_};
-	$insert_data{$att} = delete $insert_data{$_};
     }
 
     my $data_params = $class->_freeze({%insert_data, %params});
@@ -701,6 +701,15 @@ sub update {
 	    unless (Elive::Util::_reftype($_update_data) eq 'HASH');
 
 	%update_data = %{ $_update_data };
+
+	#
+	# resolve any aliasas
+	#
+	my %aliases = $self->_to_aliases;
+	for (grep {exists $update_data{$_}} (keys %aliases)) {
+	    my $att = $aliases{$_};
+	    $update_data{$att} = delete $update_data{$_};
+	}
 	#
 	# sift out things which are included in the data payload, but should
 	# be parameters.
@@ -709,14 +718,6 @@ sub update {
 	foreach (grep {exists $update_data{$_}} %param_names) {
 	    my $val = delete $update_data{$_};
 	    $params{$_} = $val unless exists $params{$_};
-	}
-	#
-	# also resolve any aliasas
-	#
-	my %aliases = $self->_to_aliases;
-	for (grep {exists $update_data{$_}} (keys %aliases)) {
-	    my $att = $aliases{$_};
-	    $update_data{$att} = delete $update_data{$_};
 	}
 
 	$self->set( %update_data)
