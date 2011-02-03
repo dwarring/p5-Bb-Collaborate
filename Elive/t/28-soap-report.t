@@ -8,16 +8,17 @@ use t::Elive;
 
 use Elive;
 
-my $class = 'Elive::Entity::Report' ;
-use_ok($class);
+use XML::Simple;
+
+my $class = 'Elive::Entity::Report';
+use Elive::Entity::Report;
 
 SKIP: {
 
     my %result = t::Elive->test_connection(only => 'real');
     my $auth = $result{auth};
 
-    skip ($result{reason} || 'skipping live tests',
-	6)
+    skip ($result{reason} || 'skipping live tests', 7)
 	unless $auth;
 
     my $connection_class = $result{class};
@@ -51,7 +52,8 @@ SKIP: {
    lives_ok (sub {$rpt = Elive::Entity::Report->retrieve([$report_id])},
                  'retrieve reports[0].id - lives');
 
-   ok($rpt->xml, 'reports[0].xml - populated');
+    ok($rpt->xml, 'reports[0].xml - populated');
+    lives_ok(sub {XMLin($rpt->xml)}, 'reports[0] content is valid XML');
 
     Elive->disconnect;
 
