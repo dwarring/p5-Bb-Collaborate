@@ -21,6 +21,7 @@ __PACKAGE__->primary_key('multimediaId');
 __PACKAGE__->params(
     content => 'Str',
     sessionId => 'Int',
+    size => 'Int',
     );
 
 has 'description' => (is => 'rw', isa => 'Str');

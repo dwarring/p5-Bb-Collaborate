@@ -28,8 +28,11 @@ This is the main entity class for sessions.
 __PACKAGE__->entity_name('Session');
 
 __PACKAGE__->params(
+    displayName => 'Str',
     userId => 'Str',
     groupingId => 'Str',
+    presentationIds => 'Elive::StandardV2::List',
+    sessionId => 'Int',
     );
 
 has 'sessionId' => (is => 'rw', isa => 'Int', required => 1);
@@ -165,7 +168,7 @@ sub attendance {
         chairPIN   => '6342',
      });
 
-Returns an L<Elive::StandardV2::Telephony> object for the given session. This
+Returns an L<Elive::StandardV2::SessionTelephony> object for the given session. This
 can then be used to get or set the session's telephony characterisitics.
 
 =cut
@@ -200,12 +203,12 @@ sub set_presentation {
 
     my $connection = $opt{connection} || $class->connection
 	or croak "Not connected";
+    my $params = $class->_freeze({
+	sessionId => $session_id,
+	presentationIds => $presentation_ids
+				 });
 
-    my $som = $connection->call(
-	'setSessionPresentation',
-	sessionId => Elive::Util::_freeze($session_id, 'Int'),
-	presentationIds => Elive::Util::_freeze($presentation_ids, 'Elive::StandardV2::List'),
-	);
+    my $som = $connection->call(setSessionPresentation => %$params);
 
     my $results = $class->_get_results(
 	$som,
@@ -238,11 +241,12 @@ sub set_multimedia {
     my $connection = $opt{connection} || $class->connection
 	or croak "Not connected";
 
-    my $som = $connection->call(
-	'setSessionMultimedia',
-	sessionId => Elive::Util::_freeze($session_id, 'Int'),
-	multimediaIds => Elive::Util::_freeze($multimedia_ids, 'Elive::StandardV2::List'),
-	);
+    my $params = $class->_freeze({
+	sessionId => $session_id,
+	multimediaIds => $multimedia_ids
+				 });
+	
+    my $som = $connection->call(setSessionMultimedia => %$params);
 
     my $results = $class->_get_results(
 	$som,
@@ -279,19 +283,19 @@ sub session_url {
     croak "unable to determine session_id"
 	unless $session_id;
 
-    $params{sessionId} = Elive::Util::_freeze($session_id, 'Int');
+    $params{sessionId} = $session_id;
 
     my $user_id = $opt{user_id} || $opt{userId}
 	or croak "missing required field: user_id";
 
-    $params{userId} = Elive::Util::_freeze($user_id, 'Str');
+    $params{userId} = $user_id,;
 
     my $display_name = $opt{display_name} || $opt{displayName}
 	or croak "missing required field: display_name";
 
-    $params{displayName} = Elive::Util::_freeze($display_name, 'Str');
+    $params{displayName} = $display_name;
 
-    my $som = $connection->call('buildSessionUrl' => %params);
+    my $som = $connection->call('buildSessionUrl' => %{ $class->_freeze(\%params) });
 
     my $results = $class->_get_results(
 	$som,

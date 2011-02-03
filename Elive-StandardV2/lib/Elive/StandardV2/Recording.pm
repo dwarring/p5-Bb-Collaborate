@@ -74,9 +74,9 @@ sub recording_url {
     croak "unable to determine recording_id"
 	unless $recording_id;
 
-    $params{recordingId} = Elive::Util::_freeze($recording_id, 'Int');
+    my $params = $class->_freeze({recordingId => $recording_id});
 
-    my $som = $connection->call('buildRecordingUrl' => %params);
+    my $som = $connection->call('buildRecordingUrl' => %$params);
 
     my $results = $class->_get_results(
 	$som,
