@@ -82,13 +82,6 @@ SKIP: {
 	is($meeting_params->$_, $parameter_data{$_}, "meeting parameter $_ as expected");
     }
 
-    ########################################################################
-    # This is a far as we can currently go with a mock connection
-    ########################################################################
-
-    skip ($result{reason} || 'skipping live tests', 17)
-	if $connection_class->isa('t::Elive::MockConnection');
-
     #
     # high level check of our aliasing. updating inSessionInvitations should
     # be equivalent to updating inSessionInvitation
@@ -96,6 +89,13 @@ SKIP: {
     lives_ok( sub {$meeting_params->update({inSessionInvitations => 0})}, "update inSessionInvitations (alias) - lives");
     ok( ! $meeting_params->inSessionInvitation, "update inSessionInvitation via alias - as expected" );
     
+    ########################################################################
+    # This is a far as we can currently go with a mock connection
+    ########################################################################
+
+    skip ($result{reason} || 'skipping live tests', 15)
+	if $connection_class->isa('t::Elive::MockConnection');
+
     my %meeting_server_data = (
 	boundaryMinutes => 15,
 	fullPermissions => 1,
