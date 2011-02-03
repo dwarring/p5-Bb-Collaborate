@@ -199,7 +199,7 @@ sub update {
     my @rejected_users = sort keys %requested_users;
     my $rejected_user_count = scalar @rejected_users;
 
-    Carp::croak "unable to add $rejected_user_count of $requested_user_count participants as follows: @rejected_users"
+    Carp::croak "unable to add $rejected_user_count of $requested_user_count participants; rejected users: @rejected_users"
 	if $rejected_user_count;
 
     $class->_readback_check({meetingId => $self->meetingId,
