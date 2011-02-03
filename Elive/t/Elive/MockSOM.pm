@@ -61,9 +61,6 @@ sub _pack_data {
 		my ($adapter, $packed_data) = _pack_data($type, $_);
 		$_ = {$adapter => $packed_data};
 	    }
-	    else {
-		$_ = Elive::Util::_freeze($_, $is_array? $property: $type);
-	    }
 	}
     }
 
