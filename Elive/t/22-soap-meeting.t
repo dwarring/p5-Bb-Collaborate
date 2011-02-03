@@ -1,6 +1,6 @@
 #!perl
 use warnings; use strict;
-use Test::More tests => 29;
+use Test::More tests => 32;
 use Test::Exception;
 use Test::Builder;
 
@@ -68,17 +68,17 @@ SKIP: {
 	recordingStatus => 'remote',
 	raiseHandOnEnter => 1,
 	maxTalkers => 3,
+	inSessionInvitation => 1,
 	);
 
     my $meeting_params = Elive::Entity::MeetingParameters->retrieve([$meeting->meetingId]);
 
     isa_ok($meeting_params, 'Elive::Entity::MeetingParameters', 'meeting_params');
 
+
     $meeting_params->update(\%parameter_data);
 
     foreach (keys %parameter_data) {
-	#
-	# returned record doesn't contain password
 	is($meeting_params->$_, $parameter_data{$_}, "meeting parameter $_ as expected");
     }
 
@@ -86,9 +86,16 @@ SKIP: {
     # This is a far as we can currently go with a mock connection
     ########################################################################
 
-    skip ($result{reason} || 'skipping live tests', 15)
+    skip ($result{reason} || 'skipping live tests', 17)
 	if $connection_class->isa('t::Elive::MockConnection');
 
+    #
+    # high level check of our aliasing. updating inSessionInvitations should
+    # be equivalent to updating inSessionInvitation
+    #
+    lives_ok( sub {$meeting_params->update({inSessionInvitations => 0})}, "update inSessionInvitations (alias) - lives");
+    ok( ! $meeting_params->inSessionInvitation, "update inSessionInvitation via alias - as expected" );
+    
     my %meeting_server_data = (
 	boundaryMinutes => 15,
 	fullPermissions => 1,

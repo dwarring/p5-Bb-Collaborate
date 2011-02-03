@@ -1,11 +1,18 @@
 Revision history for Elive
 
+0.81    4th February 2011
+        - Resolve aliases on entity insert and update. For example the following are now
+          equivalent:
+
+                Elive::Entity::Meeting->insert({privateMeeting => 1, ...}); # use real attribute name
+                Elive::Entity::Meeting->insert({private => 1, ...}); # use alias name
+
 0.80    28th January 2011
         - Elive::Entity::ParticipantList. Detect and catch the common
           scenario of attempting to add unknown users. Now croaks with a
           friendlier and easily caught error message:
 
-              "unable to add 7 of 35 participants as follows: user1 user2 ..."
+              "unable to add 7 of 35 participants; rejected users: user1 user2 ..."
 
         - Eliminated remaining direct uses of Elive::Util::_freeze() function
           with Elive::DAO::->_freeze() for consistancy.

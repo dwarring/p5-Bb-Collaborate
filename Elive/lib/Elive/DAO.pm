@@ -182,17 +182,18 @@ sub _freeze {
     my $class = shift;
     my $db_data = Storable::dclone(shift || {});
 
-    my @properties = $class->properties;
     my $property_types = $class->property_types || {};
     my %param_types = $class->params;
-    my @param_names = sort keys %param_types;
 
     foreach (keys %$db_data) {
 
 	my $property = $property_types->{$_} || $param_types{$_};
 
-	Carp::croak "$class: unknown property/parameter: $_: expected: ",join(',', @properties, @param_names)
-	    unless $property;
+	unless ($property) {
+	    my @properties = $class->properties;
+	    my @param_names = sort keys %param_types;
+	    Carp::croak "$class: unknown property/parameter: $_: expected: ",join(',', @properties, @param_names);
+	}
 
 	my ($type, $is_array, $_is_struct) = Elive::Util::parse_type($property);
 
@@ -552,6 +553,23 @@ sub _readback {
     return @$rows;
 }
 
+sub _to_aliases {
+    my $class = shift;
+
+    my $aliases = $class->_get_aliases;
+
+    my %aliased_to;
+
+    foreach my $alias (keys %$aliases) {
+	my $to = $aliases->{$alias}{to}
+	|| die "malformed alias: $alias";
+
+	$aliased_to{$alias} = $to;
+    }
+
+    return %aliased_to;
+}
+
 =head2 insert
 
     my $new_user = Elive::Entity::User->insert(
@@ -587,6 +605,14 @@ sub insert {
     foreach (grep {exists $insert_data{$_}} %param_names) {
 	my $val = delete $insert_data{$_};
 	$params{$_} = $val unless exists $params{$_};
+    }
+    #
+    # also resolve any aliasas
+    #
+    my %aliases = $class->_to_aliases;
+    for (grep {exists $insert_data{$_}} (keys %aliases)) {
+	my $att = $aliases{$_};
+	$insert_data{$att} = delete $insert_data{$_};
     }
 
     my $data_params = $class->_freeze({%insert_data, %params});
@@ -683,6 +709,14 @@ sub update {
 	foreach (grep {exists $update_data{$_}} %param_names) {
 	    my $val = delete $update_data{$_};
 	    $params{$_} = $val unless exists $params{$_};
+	}
+	#
+	# also resolve any aliasas
+	#
+	my %aliases = $self->_to_aliases;
+	for (grep {exists $update_data{$_}} (keys %aliases)) {
+	    my $att = $aliases{$_};
+	    $update_data{$att} = delete $update_data{$_};
 	}
 
 	$self->set( %update_data)
