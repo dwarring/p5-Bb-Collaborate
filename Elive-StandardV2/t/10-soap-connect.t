@@ -17,8 +17,7 @@ SKIP: {
     my %result = t::Elive::StandardV2->test_connection(noload => 1);
     my $auth = $result{auth};
 
-    skip ($result{reason} || 'skipping live tests',
-	11)
+    skip ($result{reason} || 'skipping live tests', 11)
 	unless $auth && @$auth;
 
     my $connection_class = $result{class};
@@ -85,7 +84,6 @@ SKIP: {
 
     diag 'server version '.$server_versions->versionName.' ('.$server_versions->versionId.')';
 
+    $connection->disconnect;
 }
-
-Elive::StandardV2->disconnect;
 
