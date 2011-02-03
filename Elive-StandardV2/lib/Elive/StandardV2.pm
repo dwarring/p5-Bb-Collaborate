@@ -16,14 +16,14 @@ Elive::StandardV2 - Perl bindings for the Elluminate Live Standard Bridge (V2)
 
 =head1 VERSION
 
-Version 0.00_3
+Version 0.00_4
 
 ** DEVELOPER RELEASE - UNDER CONSTRUCTION **
 
 
 =cut
 
-our $VERSION = '0.00_3';
+our $VERSION = '0.00_4';
 
 =head1 SYNOPSIS
 
@@ -122,7 +122,7 @@ __PACKAGE__->mk_classdata('connection');
 
 =head2 update
 
-Abstract method to commit outstanding object updates to the server.
+Inherited method to commit outstanding object updates to the server.
 
     $obj->{foo} = 'Foo';  # change foo attribute directly
     $foo->update;         # save
@@ -169,7 +169,7 @@ sub _fetch {
 
 =head2 insert
 
-Abstract method to create new entity instances on the server:
+Inherited method to create new entity instances on the server:
 
     my $multimedia = Elive::StandardV2::Multimedia->insert(
              {
@@ -191,8 +191,8 @@ sub insert {
 
 =head2 list
 
-Abstract list method. Most commands allow a ranging expression to narrow the
-selection. This is passed in using the C<filter> option. For example:
+Inerited selection method. Most commands allow a ranging expression to narrow
+the selection. This is passed in using the C<filter> option. For example:
 
     my $bobs_sessions = Elive::StandardV2::Session->list(filter => {userId => 'bob'});
 
@@ -231,7 +231,7 @@ sub _parse_filter {
 
 =head2 delete
 
-Abstract method to delete entities from the server:
+Inherited method to delete entities from the server:
 
     $multimedia->delete;
 
