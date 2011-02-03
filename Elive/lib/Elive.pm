@@ -7,11 +7,11 @@ Elive - Elluminate Live! (c) SDK bindings
 
 =head1 VERSION
 
-Version 0.80
+Version 0.81
 
 =cut
 
-our $VERSION = '0.80';
+our $VERSION = '0.81';
 
 use Class::Data::Inheritable;
 use base qw{Class::Data::Inheritable};
@@ -27,11 +27,10 @@ The following (somewhat contrived) example sets up a meeting of selected
 participants:
 
     use Elive;
-    use Elive::Connection;
     use Elive::Entity::User;
     use Elive::Entity::Meeting;
 
-    my $MeetingName = 'Meeting of the Smiths';
+    my $meeting_name = 'Meeting of the Smiths';
 
     Elive->connect('http://someEllumServer.com/test',
                    'serversupport', 'mypass');
@@ -43,7 +42,7 @@ participants:
     my $end   = $start + 30 * 60; # runs for half an hour
 
     my $meeting = Elive::Entity::Meeting->insert({
-	 name           => $MeetingName,
+	 name           => $meeting_name,
 	 facilitatorId  => Elive->login,
 	 start          => $start . '000',
 	 end            => $end   . '000',
@@ -104,7 +103,7 @@ be established. If, for example, the SOAP connection or user login failed.
 The login user must either be an Elluminate I<Live!> system administrator
 account, or a user that has been granted access to the SDK (see README file).
 
-See also Elive::Connection.
+See also L<Elive::Connection::SDK>.
 
 =cut
 
