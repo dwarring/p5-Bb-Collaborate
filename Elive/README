@@ -1,17 +1,17 @@
-Elive is a Perl distribution for scripting management and integration
-of Elluminate Live! virtual classroom servers.
+Elluminate Live! (c) is software for virtual online classrooms. It is suitable for meetings, demonstrations web conferences, seminars and IT deployment, training and support.
 
-You can, for example, use it to query or add users, create sessions, assign
-users as class participants and change server settings.
+Elive is a set of Perl bindings and entity definitions for the Elluminate Live!
+SDK. You can, for example, use it to query or add users, create sessions,
+assign users as class participants and change server settings.
 
-You will need to be able to login in to your SOAP service using an
-Elluminate system administrator level account.
+Some manual configuration may be required on your Elluminate Live! server to
+enable access to SOAP services. Please see the troubleshooting section below.
 
 IMPORTANT NOTE
 
-    The Elive distribution currently supports only the installed server
-    version of Elluminate Live which uses the ELM (Elluminate Live Manager)
-    versions 2.7 - 3.2.2. Elive does not support access to hosted servers
+    The Elive distribution supports only the installed server version of
+    Elluminate Live which uses the ELM (Elluminate Live Manager) versions
+    2.7 - 3.2.2. Elive does not support access to hosted servers
     deployed with SAS (Session Administration System).
 
 INSTALLATION
@@ -22,6 +22,52 @@ INSTALLATION
         make
         make test
         make install
+
+SERVER CONFIGURATION
+
+    Prior to Elluminate 9.5, all users with a role of '0' (System
+    Administrator) have been given full access to the SDK.
+
+    From Elluminate 9.5 onwards, you will need to manually configure
+    SDK access.
+
+    To do this, firstly stop all Elluminate services.
+
+    Then you'll need to edit the configuration.xml for the site instance.
+
+	    Under Linux, the configuration can be found under:
+
+		 /opt/ElluminateLive/manager/tomcat/webapps
+
+	    or under Windows:
+
+		 C:/Program Files/ElluminateLive/manager/tomcat/webapps
+
+	    The actual configuration is then in the sub-path:
+
+		 ROOT/WEB-INF/resources/configuration.xml
+
+	     or for any additional sites built with the instance manager:
+
+		 mysite/WEB-INF/resources/configuration.xml
+
+	Edit the file and add a user entry to the security section:
+
+	    <elm>
+		...
+	       <proxymanager enable="true">
+		 <proxy name="web" ..>
+		  ...
+		  <security adapter-name="default">
+		    <permissions>
+		      ...
+		      <!-- ++ ADD THIS -->
+		      <user name="some_user">
+			 <allow command="*" />
+		      </user>
+		      <!-- -- ADD THIS -->
+		    </permissions>
+		    ...
 
 TESTING
 
@@ -75,57 +121,14 @@ POST INSTALLATION
 
         % elive_raise_meeting --user admin_user http://myserver/mysite -name 'Test'
 
-
 TROUBLESHOOTING
 
     'User [<username>], not permitted to access the command {<command>]'
     --------------------------------------------------------------------
-    Historically, all users with a role of '0' (System Administrator) have
-    been given access to the SDK.
-
-    If your are running Elm 3.0 / Elluminate 9.5 or higher, you can grant
-    SDK access to individual users in the Elluminate configuration.
-
-    You will need to do this if you are using LDAP authentication.
-
-    To do this, firstly stop all Elluminate services.
-
-    Then you'll need to edit the configuration.xml for the site instance.
-
-	    Under Linux, the configuration can be found under:
-
-		 /opt/ElluminateLive/manager/tomcat/webapps
-
-	    or under Windows:
-
-		 C:/Program Files/ElluminateLive/manager/tomcat/webapps
-
-	    The actual configuration is then in the sub-path:
-
-		 ROOT/WEB-INF/resources/configuration.xml
-
-	     or for any additional sites built with the instance manager:
-
-		 mysite/WEB-INF/resources/configuration.xml
-
-	Edit the file and add a user entry to the security section:
-
-	    <elm>
-		...
-	       <proxymanager enable="true">
-		 <proxy name="web" ..>
-		  ...
-		  <security adapter-name="default">
-		    <permissions>
-		      ...
-		      <!-- ++ ADD THIS -->
-		      <user name="some_user">
-			 <allow command="*" />
-		      </user>
-		      <!-- -- ADD THIS -->
-		    </permissions>
-		    ...
-
+    You are connected to the SOAP services with an account that has not
+    been setup for full SDK access. Please see the Server Configuration
+    section above.
+    
     'Unable to determine a command for the key Xxxxx'
     -------------------------------------------------
     This may indicate that some of the adapters are missing from
@@ -195,7 +198,7 @@ SUPPORT AND DOCUMENTATION
 
 COPYRIGHT AND LICENCE
 
-Copyright (C) 2009-2010 David Warring
+Copyright (C) 2009-2011 David Warring
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
