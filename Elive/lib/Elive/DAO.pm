@@ -772,7 +772,7 @@ sub update {
     # Save the db image
     #
     my $db_data = $self->construct(Elive::Util::_clone($self),
-	copy => 1);
+				   copy => 1);
     #
     # Make sure our db data doesn't have db data!
     #

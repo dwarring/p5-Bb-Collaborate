@@ -7,11 +7,11 @@ Elive - Elluminate Live! (c) SDK bindings
 
 =head1 VERSION
 
-Version 0.81
+Version 0.82
 
 =cut
 
-our $VERSION = '0.81';
+our $VERSION = '0.82';
 
 use Class::Data::Inheritable;
 use base qw{Class::Data::Inheritable};
@@ -486,7 +486,7 @@ assistance with the development of this module.
 
 =head1 COPYRIGHT & LICENSE
 
-Copyright 2009-2010 David Warring, all rights reserved.
+Copyright 2009-2011 David Warring, all rights reserved.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
