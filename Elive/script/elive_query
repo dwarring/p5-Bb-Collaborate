@@ -169,7 +169,7 @@ sub main {
     my @command_opts = @{ $options{command} || [] };
     my $has_command_opts = @command_opts;
 
-    print "Elive query $elive_version (c) 2009 - 2010 ${server_version_str}. Type 'help' for help\n"
+    print "Elive query $elive_version (c) 2009 - 2011 ${server_version_str}. Type 'help' for help\n"
 	if $is_tty && !$has_command_opts;
 
     my $cmd;
@@ -608,7 +608,7 @@ sub _getopt {
     pod2usage(0) if ($options{help});
 
     if ($options{version}) {
-	print "Elive v${Elive::VERSION} (c) 2009-2010\n";
+	print "Elive v${Elive::VERSION} (c) 2009-2011\n";
 	exit 0;
     }
 
