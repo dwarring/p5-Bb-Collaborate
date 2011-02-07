@@ -18,13 +18,18 @@ use Carp;
 # live site is running LDAP, in which case user access becomes
 # read only.
 #
+my %opt;
+$opt{only} = 'mock'
+    unless $ENV{ELIVE_TEST_USER_UPDATES};
 
-my %result = t::Elive->test_connection(only => 'mock');
+my %result = t::Elive->test_connection(%opt);
 my $auth = $result{auth};
 
 my $connection_class = $result{class};
 my $connection = $connection_class->connect(@$auth);
 Elive->connection($connection);
+
+diag "user test url: ".$connection->url;
 
 my %insert_data = (
     loginName => 'some_test_user',
@@ -58,6 +63,13 @@ my %update_data = (
 
 $pleb_user->update(\%update_data);
 
+#
+# try out the changePassword. The password is never returned. The best we
+# can do is check that it lives.
+#
+lives_ok(sub {$pleb_user->change_password( t::Elive::generate_id() )},
+	 'change_password - lives');
+
 foreach (keys %update_data) {
     my $expected_value = $_ eq 'loginPassword'
 	? ''	# passwords are not echoed
@@ -71,11 +83,11 @@ if (my $existing_user = $class->get_by_loginName('test_admin')) {
     $existing_user->delete;
 }
 
-my $admin_user = $class->insert({userName => "test_admin", # alias for loginName
+my $admin_user = $class->insert({loginName => "test_admin", # alias for loginName
 				 role => 0,
 				 loginPassword => t::Elive::generate_id(),
 				 email => 'test@acme.org'},);
-is($admin_user->loginName, 'test_admin', 'insert alias (userName aliased to loginName)');
+
 my $admin_id = $admin_user->userId;
 
 $admin_user = undef;

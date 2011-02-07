@@ -1,5 +1,10 @@
 Revision history for Elive
 
+0.82
+        - Elive::Entity::User->insert() - to mirror SDK changes. The password
+          was previously handled seperately via the 'changePassword' command,
+          but is now a required field in the initial insert. 
+
 0.81    4th February 2011
         - Resolve aliases on entity insert and update. For example the following are now
           equivalent:

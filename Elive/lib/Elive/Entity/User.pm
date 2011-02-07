@@ -23,7 +23,6 @@ has 'loginPassword' => (is => 'rw', isa => 'Str');
 
 has 'loginName' => (is => 'rw', isa => 'Str',
 		    documentation => 'login name - must be unique');
-__PACKAGE__->_alias(userName => 'loginName');
 		    
 has 'email' => (is => 'rw', isa => 'Str',
 		documentation => 'users email address');
@@ -127,22 +126,6 @@ Insert a new user
 
 =cut
 
-sub insert {
-    my ($class, $data_href, %opt) = @_;
-
-    my $self = $class->SUPER::insert( $data_href, %opt );
-
-    #
-    # seems we have to insert a record, then set the password
-    #
-    my $password = $data_href->{loginPassword};
-    if (defined $password and $password ne '') {
-	$self->change_password($password);
-    }
-
-    return $self;
-}
-
 =head2 update
 
     my $user_obj = Elive::Entity::user->retrieve([$user_id]);
@@ -171,23 +154,7 @@ sub update {
 	    if ($self->role->stringify <= 0);
     }
 
-    $self->set( %update_data)
-	if (keys %update_data);
-    
-    #
-    # A password change requires special handling
-    #
-    my @changed = $self->is_changed;
-    my @changed1  = grep {$_ ne 'loginPassword'} @changed;
-    my $password_changed = @changed != @changed1;
-    my $password = delete $self->{loginPassword};
-
-    my $ret = $self->SUPER::update( undef, %opt, changed => \@changed1 );
-
-    $self->change_password($password)
-	if $password_changed;
-
-    return $ret;
+    return $self->SUPER::update( $data_href, %opt);
 }
 
 =head2 change_password
