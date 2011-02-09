@@ -90,6 +90,12 @@ TESTING
                file on the server. Set this to enable testing of the
                Elive::Entity::Preload::import_from_server() method.
 
+    ELIVE_TEST_USER_UPDATES - set this to true to enable insert and update
+    of user accounts on a live server (t/26-soap-user.t).
+
+    ELIVE_TEST_GROUP_UPDATES - set this to true to enable insert and update
+    of groups on a live server (t/27-soap-group.t).
+
     WARNING: These tests will both create and delete various entities
     instances. For this reason you should by wary of running the live
     tests on production sites.

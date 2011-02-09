@@ -240,12 +240,12 @@ sub _users_and_groups {
 }
 
 sub _set_participant_list {
-    my ($self, $participants_str, %opt) = @_;
+    my ($self, $participants, %opt) = @_;
 
     my %params = %{ $opt{param} || {} };
 
     $params{meetingId} = $opt{meetingId} || $self;
-    $params{users} = $participants_str;
+    $params{users} = $participants;
 
     my $som = $self->connection->call('setParticipantList' => %{$self->_freeze(\%params)});
 

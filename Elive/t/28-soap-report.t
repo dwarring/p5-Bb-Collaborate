@@ -53,7 +53,7 @@ SKIP: {
                  'retrieve reports[0].id - lives');
 
     ok($rpt->xml, 'reports[0].xml - populated');
-    lives_ok(sub {XMLin($rpt->xml)}, 'reports[0] content is valid XML');
+    lives_ok(sub {XMLin($rpt->xml)}, 'reports[0].xml is valid XML');
 
     Elive->disconnect;
 

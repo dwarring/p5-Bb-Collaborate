@@ -479,6 +479,12 @@ sub set {
     my %entity_column = map {$_ => 1} ($self->properties);
     my %primary_key = map {$_ => 1} ($self->primary_key);
 
+    my %aliases = $self->_to_aliases;
+    for (grep {exists $data{$_}} (keys %aliases)) {
+	my $att = $aliases{$_};
+	$data{$att} = delete $data{$_};
+    }
+ 
     foreach (keys %data) {
 
 	unless ($entity_column{$_}) {
