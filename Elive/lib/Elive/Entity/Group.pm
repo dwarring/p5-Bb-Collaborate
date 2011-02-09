@@ -6,7 +6,7 @@ use Mouse::Util::TypeConstraints;
 
 extends 'Elive::Entity';
 
-use Elive::Array;
+use Elive::Entity::Group::Members;
 
 __PACKAGE__->entity_name('Group');
 __PACKAGE__->collection_name('Groups');
@@ -18,7 +18,7 @@ has 'name' => (is => 'rw', isa => 'Str',
 	       documentation => 'name of the group');
 __PACKAGE__->_alias(groupName => 'name', freeze => 1);
 
-has 'members' => (is => 'rw', isa => 'Elive::Array',
+has 'members' => (is => 'rw', isa => 'Elive::Entity::Group::Members',
 		  coerce => 1,
 		  documentation => "ids of users in the group");
 __PACKAGE__->_alias(groupMembers => 'members', freeze => 1);
@@ -97,7 +97,7 @@ Inserts a new group from data.
 sub update {
     my ($self, $data, %opt) = @_;
     #
-    # updateGroup complains unless the groupName is included.
+    # updateGroup barfs unless the groupName is included as a parameter.
     #
     $self->set(%$data);
     my @changed = $self->is_changed;
@@ -105,19 +105,6 @@ sub update {
 	unless grep {$_ eq 'name'} @changed;
 
     return $self->SUPER::update( undef, %opt, changed => \@changed);
-}
-
-#
-# Seems that elluminate 9.7 can return a single element containing
-# the members, each separated by ';'.
-
-sub _thaw {
-    my ($class, $db_data, @args) = @_;
-
-    my $data = $class->SUPER::_thaw($db_data, @args);
-    $data->{members} = [map {split(';')} @{ $data->{members} || [] }];
-
-    return $data;
 }
 
 1;
