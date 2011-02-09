@@ -145,15 +145,27 @@ As a safeguard, you'll need to pass C<force =E<gt> 1> to update:
 
 =cut
 
+sub _safety_check {
+    my ($self, %opt) = @_;
+
+    unless ($opt{force}) {
+
+	my $connection = $opt{connection} || $self->connection
+	    or die "Not connected";
+
+	die "Cowardly refusing to update SDK user"
+	    if $self->userId eq $connection->login->userId;
+
+	die "Cowardly refusing to update system admin account for ".$self->loginName.": (pass force => 1 to override)"
+	    if ($self->role->stringify <= 0);
+    }
+}
+
 sub update {
     my ($self, $data_href, %opt) = @_;
     my %update_data = %{$data_href || {}};
 
-    unless ($opt{force}) {
-	die "Cowardly refusing to update system admin account for ".$self->loginName.": (pass force => 1 to override)"
-	    if ($self->role->stringify <= 0);
-    }
-
+    $self->_safety_check(%opt);
     return $self->SUPER::update( $data_href, %opt);
 }
 
@@ -174,11 +186,13 @@ This is equivalent to:
 sub change_password {
     my ($self, $new_password, %opt) = @_;
 
-    $self->SUPER::update({loginPassword => $new_password},
-			 adapter => 'changePassword',
-			 %opt,
-	)
-	if (defined $new_password && $new_password ne '');
+    if (defined $new_password && $new_password ne '') {
+	$self->_safety_check(%opt);
+	$self->SUPER::update({loginPassword => $new_password},
+			     adapter => 'changePassword',
+			     %opt,
+	    )
+    }
 
     return $self;
 }
@@ -196,20 +210,7 @@ system administrator accounts, or the login user.
 sub delete {
     my ($self, %opt) = @_;
 
-    unless ($opt{force}) {
-	die "Cowardly refusing to delete system admin account for ".$self->loginName.": (pass force => 1 to override)"
-	    if (Elive::Util::string($self->role) == 0);
-
-	my $connection = $self->connection;
-
-	my $login = $connection->login;
-	die "Not loggged in" unless $login;
-	#
-	# Less cowardly, methinks!
-	#
-	die "Refusing to delete the login user ".$login->loginName.": (pass force => 1 to override)"
-	    if $login->userId eq $self->userId;   
-    }
+    $self->_safety_check(%opt);
 
     return $self->SUPER::delete( %opt );
 }
