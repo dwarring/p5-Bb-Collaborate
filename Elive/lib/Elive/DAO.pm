@@ -605,15 +605,6 @@ sub insert {
 	my $att = $aliases{$_};
 	$insert_data{$att} = delete $insert_data{$_};
     }
-    #
-    # sift out additional data included in the insert data, but should
-    # be parameters.
-    #
-    my %param_names = $class->params;
-    foreach (grep {exists $insert_data{$_}} %param_names) {
-	my $val = delete $insert_data{$_};
-	$params{$_} = $val unless exists $params{$_};
-    }
 
     my $data_params = $class->_freeze({%insert_data, %params});
 
@@ -687,41 +678,32 @@ Apply updates. The following commits outstanding changes to the object.
 =cut
 
 sub update {
-    my ($self, $_update_data, %opt) = @_;
+    my ($self, $_update_params, %opt) = @_;
 
     die "attempted to update deleted record"
 	if ($self->_deleted);
 
     my %params = %{ $opt{param} || {} };
-    my %update_data;
+    my %update_params;
 
-    if ($_update_data) {
+    if ($_update_params) {
 
 	croak 'usage: $obj->update( \%data )'
-	    unless (Elive::Util::_reftype($_update_data) eq 'HASH');
+	    unless (Elive::Util::_reftype($_update_params) eq 'HASH');
 
-	%update_data = %{ $_update_data };
-
-	#
-	# resolve any aliasas
-	#
-	my %aliases = $self->_to_aliases;
-	for (grep {exists $update_data{$_}} (keys %aliases)) {
-	    my $att = $aliases{$_};
-	    $update_data{$att} = delete $update_data{$_};
-	}
+	%update_params = %{ $_update_params };
 	#
 	# sift out things which are included in the data payload, but should
 	# be parameters.
 	#
 	my %param_names = $self->params;
-	foreach (grep {exists $update_data{$_}} %param_names) {
-	    my $val = delete $update_data{$_};
+	foreach (grep {exists $update_params{$_}} %param_names) {
+	    my $val = delete $update_params{$_};
 	    $params{$_} = $val unless exists $params{$_};
 	}
 
-	$self->set( %update_data)
-	    if (keys %update_data);
+	$self->set( %update_params)
+	    if (keys %update_params);
     }
 
     #
@@ -736,6 +718,7 @@ sub update {
     #
     # merge in pending updates to the current entity.
     #
+    my %updates;
 
     foreach (@updated_properties, keys %primary_key) {
 
@@ -747,21 +730,20 @@ sub update {
 				   $self->_db_data->{$_},
 				   $self->$_));
 
-	$update_data{$_} = $self->$_
-	    unless defined $update_data{$_};
+	$updates{$_} = $self->$_;
     }
 
     my $command = $opt{command} || 'update'.$self->entity_name;
 
     $self->connection->check_command($command => 'u');
 
-    my $data_params = $self->_freeze({%update_data, %params});
+    my $data_params = $self->_freeze({%updates, %params});
 
     my $som = $self->connection->call($command, %$data_params);
 
     my $class = ref($self);
 
-    my @rows = $class->_readback($som, \%update_data, $self->connection, %opt);
+    my @rows = $class->_readback($som, \%updates, $self->connection, %opt);
     #
     # refresh the object from the database read-back
     #
