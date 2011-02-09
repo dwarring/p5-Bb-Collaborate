@@ -94,6 +94,19 @@ Inserts a new group from data.
 
 =cut
 
+sub update {
+    my ($self, $data, %opt) = @_;
+    #
+    # updateGroup complains unless the groupName is included.
+    #
+    $self->set(%$data);
+    my @changed = $self->is_changed;
+    push (@changed, 'name')
+	unless grep {$_ eq 'name'} @changed;
+
+    return $self->SUPER::update( undef, %opt, changed => \@changed);
+}
+
 #
 # Seems that elluminate 9.7 can return a single element containing
 # the members, each separated by ';'.

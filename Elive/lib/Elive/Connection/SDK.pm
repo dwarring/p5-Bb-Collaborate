@@ -112,6 +112,7 @@ our %KnownCommands = (
 	streamPreload => 'u',
 	streamRecording => 'u',
 
+	updateGroup => 'u',
 	updateMeeting => 'u',
 	updateMeetingParameters => 'u',
 	updateRecording => 'u',
