@@ -112,7 +112,7 @@ my $member_list_1 = Elive::Entity::Group->construct(
 								   {
         groupId => 54321,
 	name => 'group_1',
-        members => '212121;222222;fred'
+        members => '212121,222222,fred'
 	});
 
 my $members_1 = $member_list_1->members;
@@ -123,7 +123,7 @@ is($members_1->[2], 'fred', 'member list user[2] (alphanumeric - ldap compat)');
 
 $members_1->add('late_comer');
 is($members_1->[-1], 'late_comer', 'member add');
-is($members_1->stringify, '212121;222222;fred;late_comer', 'member list stringification');
+is($members_1->stringify, '212121,222222,fred,late_comer', 'member list stringification');
 
 $member_list_1->revert;
 

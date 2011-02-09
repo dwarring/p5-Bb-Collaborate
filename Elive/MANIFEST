@@ -19,6 +19,7 @@ lib/Elive/DAO.pm
 lib/Elive/DAO/Singleton.pm
 lib/Elive/Entity.pm
 lib/Elive/Entity/Group.pm
+lib/Elive/Entity/Group/Members.pm
 lib/Elive/Entity/Meeting.pm
 lib/Elive/Entity/MeetingParameters.pm
 lib/Elive/Entity/ParticipantList.pm

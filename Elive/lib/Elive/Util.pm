@@ -35,9 +35,6 @@ sub-structure.
 sub parse_type {
     my $type = shift;
 
-    #
-    # Elive::Array::
-    #
     ($type) = split(/[ \| \] ]/x, $type);
 
     my $array_type;
@@ -57,7 +54,7 @@ sub parse_type {
 
     my $is_ref = $array_type || $is_struct || $elemental_type =~ m{^Ref}x;
 
-    return ($elemental_type, $array_type, $is_struct, $is_ref);
+    return ($elemental_type, $array_type, $is_struct, $is_ref, $type);
 }
 
 #

@@ -5,7 +5,7 @@ SDK. You can, for example, use it to query or add users, create sessions,
 assign users as class participants and change server settings.
 
 Some manual configuration may be required on your Elluminate Live! server to
-enable access to SOAP services. Please see the troubleshooting section below.
+enable access to SOAP services. Please see the server configurarion section.
 
 IMPORTANT NOTE
 
@@ -91,10 +91,13 @@ TESTING
                Elive::Entity::Preload::import_from_server() method.
 
     ELIVE_TEST_USER_UPDATES - set this to true to enable insert and update
-    of user accounts on a live server (t/26-soap-user.t).
+    of user accounts on a live server (t/26-soap-user.t). 
 
     ELIVE_TEST_GROUP_UPDATES - set this to true to enable insert and update
     of groups on a live server (t/27-soap-group.t).
+
+    The User and Group update tests can only be run on sites that have not been
+    configured for LDAP.
 
     WARNING: These tests will both create and delete various entities
     instances. For this reason you should by wary of running the live

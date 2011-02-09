@@ -79,8 +79,7 @@ is_deeply(\@actual_members, \@expected_members, 'members after insert');
 #    groupName => name
 #    gourpMembers => members
 
-my $group2 = $class->insert(
-    {
+my $group2 = $class->insert({
 	groupName => $group_name.'#2',  # groupName => name
 	members => \@users
     });
@@ -93,7 +92,8 @@ my @member_ids = sort ($user_ids{alice}, $user_ids{bob});
 $group2->update({name => $group_name.'#3', groupMembers => \@member_ids});
 
 is_deeply($group2->{name}, $group_name.'#3', 'update of group name');
-is_deeply($group2->{members}, \@member_ids, 'update alias (groupMembers aliased to members)');
+my @actual_members2 = sort @{ $group2->{members} };
+is_deeply(\@actual_members2, \@member_ids, 'update alias (groupMembers aliased to members)');
 
 #
 # try some variations
@@ -102,7 +102,8 @@ my @member_ids2 = sort ($user_ids{alice}, $user_ids{bob}, $user_ids{trev});
 $group2->members(\@member_ids2);
 $group2->update;
 
-is_deeply($group2->{members}, \@member_ids2, 'update alias#2 (groupMembers aliased to members)');
+@actual_members2 = sort @{ $group2->{members} };
+is_deeply(\@actual_members2, \@member_ids2, 'update alias#2 (groupMembers aliased to members)');
 
 lives_ok(sub {$group->delete; $group2->delete}, 'group delete - lives');
 

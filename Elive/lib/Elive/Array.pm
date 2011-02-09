@@ -10,18 +10,18 @@ use base qw{Elive};
 use Scalar::Util;
 
 __PACKAGE__->mk_classdata('element_class');
+__PACKAGE__->mk_classdata('separator' => ';');
 
 coerce 'Elive::Array' => from 'Str'
           => via {
-	      my $a = [ split(';') ];
-	      bless ($a,'Elive::Array');
-	      $a;
+	      my $a = [ split(__PACKAGE__->separator) ];
+	      bless ($a, __PACKAGE__);
           };
 
 coerce 'Elive::Array' => from 'ArrayRef'
           => via {
 	      my @a = map {Elive::Util::string($_)} @$_;
-	      bless (\@a,'Elive::Array');
+	      bless (\@a, __PACKAGE__);
           };
 
 require UNIVERSAL;
@@ -52,10 +52,10 @@ sub stringify {
     my $arr  = shift || $self;
     my $type = shift || $self->element_class;
 
-    $arr = [split(';', $arr)]
+    $arr = [split($self->separator, $arr)]
 	if defined $arr && !Scalar::Util::reftype($arr);
 
-    return join(';', sort map {Elive::Util::string($_, $type)} @$arr)
+    return join($self->separator, sort map {Elive::Util::string($_, $type)} @$arr)
 }
 
 =head2 new
@@ -80,7 +80,7 @@ Add elements to an array.
 sub add {
     my ($self, @elems) =  @_;
 
-    @elems = (map {Scalar::Util::reftype($_)? $_: split(';')} 
+    @elems = (map {Scalar::Util::reftype($_)? $_: split($self->separator)} 
 	      grep {defined} @elems);
 
     if (my $element_class = $self->element_class) {
