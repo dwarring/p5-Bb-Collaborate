@@ -85,7 +85,7 @@ sub _parse {
     # '*mygroup=2' => group:mygroup, role:2 type:1 (group)
 
     m{^ \s* (\*?) \s* (.*?) \s* (= (\d) \s*)? $}x
-	or die "'$_' not in format: userId=role";
+	or die "'$_' not in format: userId=role or *groupId=role (role being a digit)";
 
     my $is_group = $1;
     my $id = $2;
@@ -102,7 +102,7 @@ sub _parse {
 }
 
 coerce 'Elive::Entity::ParticipantList::Participant' => from 'Str'
-    => via { Elive::Entity::ParticipantList::Participant->new(Elive::Entity::ParticipantList::Participant->_parse_participant($_)) };
+    => via { __PACKAGE__->new( __PACKAGE__->_parse_participant($_) ) };
 
 =head2 participant
 

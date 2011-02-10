@@ -13,7 +13,7 @@ __PACKAGE__->element_class('Elive::Entity::ParticipantList::Participant');
 
 =head1 NAME
 
-Elive::Entity::ParticipantList::Participants - a list of participants
+Elive::Entity::ParticipantList::Participants - A list of participants
 
 =cut
 
@@ -32,7 +32,7 @@ Add additional participants
 sub add {
     my ($class, @elems) = @_;
 
-    @elems = map {Scalar::Util::reftype($_)? $_: split(';')} grep {defined} @elems;
+    @elems = map {Scalar::Util::reftype($_)? $_: split($class->separator)} grep {defined} @elems;
     my @participants = map {Elive::Entity::ParticipantList::Participant->_parse($_)} @elems;
 
     return $class->SUPER::add(@participants);
@@ -48,7 +48,7 @@ coerce 'Elive::Entity::ParticipantList::Participants' => from 'ArrayRef'
 
 coerce 'Elive::Entity::ParticipantList::Participants' => from 'Str'
           => via {
-	      my @participants = map {Elive::Entity::ParticipantList::Participant->_parse($_)} split(';');
+	      my @participants = map {Elive::Entity::ParticipantList::Participant->_parse($_)} split(__PACKAGE__->separator);
 
 	      my $a = [ map {Elive::Entity::ParticipantList::Participant->new($_)} @participants ];
 	      Elive::Entity::ParticipantList::Participants->new($a);
