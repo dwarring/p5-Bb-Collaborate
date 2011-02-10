@@ -75,11 +75,11 @@ and C<delete>.
     );
 
     #
-    # insert from a ';' separated string of user IDs
+    # insert from a comma separated string of user IDs
     #
     my $group = Elive::Entity::Group->insert({
 	name => 'Elluminati',
-	members => '111111;222222;333333',
+	members => '111111,222222,333333',
      },
     );
 
@@ -90,7 +90,7 @@ Inserts a new group from data.
 =head2 update 
 
     $group->update({members => [111111,'222222', $alice->userId, $bob]});
-    $group->update({members => '111111;222222;333333'});
+    $group->update({members => '111111,222222,333333'});
 
 =cut
 
