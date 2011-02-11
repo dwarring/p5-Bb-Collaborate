@@ -1,4 +1,6 @@
-Elluminate Live! (c) is software for virtual online classrooms. It is suitable for meetings, demonstrations web conferences, seminars and IT deployment, training and support.
+Elluminate Live! (c) is software for virtual online classrooms. It is suitable
+for meetings, demonstrations web conferences, seminars and IT deployment,
+training and support.
 
 Elive is a set of Perl bindings and entity definitions for the Elluminate Live!
 SDK. You can, for example, use it to query or add users, create sessions,
@@ -7,12 +9,16 @@ assign users as class participants and change server settings.
 Some manual configuration may be required on your Elluminate Live! server to
 enable access to SOAP services. Please see the server configurarion section.
 
-IMPORTANT NOTE
+COMPATIBILITY
 
-    The Elive distribution supports only the installed server version of
-    Elluminate Live which uses the ELM (Elluminate Live Manager) versions
-    2.7 - 3.2.2. Elive does not support access to hosted servers
-    deployed with SAS (Session Administration System).
+    The Elive distribution only supports only self hosted Elluminate Live!
+    servers.
+
+    - works best with ELM (Elluminate Live Manager) version 3.0 - 3.3.5 and
+      Elluminate Live! version 9.5 - 10.0.2
+
+    - does not support access to externally hosted servers deployed with SAS
+      (Session Administration System).
 
 INSTALLATION
 
