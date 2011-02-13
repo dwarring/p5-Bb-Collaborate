@@ -118,7 +118,7 @@ This method updates meeting participants.
 
     my $participant_list
          = Elive::Entity::ParticipantList->retrieve([$meeting_id]);
-    $participant_list->participants->add('alice', 'bob');
+    $participant_list->participants->add($alice->userId, $bob->userId);
     $participant_list->update;
 
 Note:
@@ -171,16 +171,16 @@ sub update {
 	carp "client side expansion of group: $group_id";
 	my $role = $groups->{ $group_id };
 	my $group = Elive::Entity::Group->retrieve($group_id,
-						   connection => $self->connection);
+						   connection => $self->connection,
+						   reuse => 1,
+	    );
+
 	foreach (@{ $group->members }) {
-	    $users->{ $_ } ||= $role;
-	}
+            $users->{ $_ } ||= $role;
+        }
     }
 
-    my @participants_arr =  map{$_.'='.$users->{$_}} sort keys %$users;
-
-    my $participants_str = join(';', @participants_arr);
-    $self->_set_participant_list( $participants_str );
+    my $participants = $self->_set_participant_list( $users );
     #
     # do our readback
     #
@@ -203,7 +203,7 @@ sub update {
 	if $rejected_user_count;
 
     $class->_readback_check({meetingId => $self->meetingId,
-			     participants => \@participants_arr},
+			     participants => $participants},
 			    [$self]);
 
     return $self;
@@ -214,9 +214,6 @@ sub _users_and_groups {
 
     my @raw_participants = @{ $self->participants || [] };
 
-    #
-    # Weed out duplicates and make sure that the facilator is included
-    #
     my %users;
     my %groups;
 
@@ -240,16 +237,25 @@ sub _users_and_groups {
 }
 
 sub _set_participant_list {
-    my ($self, $participants, %opt) = @_;
+    my $self = shift;
+    my $users = shift;
 
-    my %params = %{ $opt{param} || {} };
+    my @participants;
 
-    $params{meetingId} = $opt{meetingId} || $self;
-    $params{users} = $participants;
+    foreach (keys %$users) {
+	push(@participants, Elive::Entity::ParticipantList::Participant->new({user => $_, role => $users->{$_}, type => 0}) )
+    }
+
+    my %params;
+
+    $params{meetingId} = $self;
+    $params{users} = \@participants;
 
     my $som = $self->connection->call('setParticipantList' => %{$self->_freeze(\%params)});
 
     $self->connection->_check_for_errors( $som );
+
+    return \@participants;
 }
 
 =head2 reset 
@@ -280,12 +286,9 @@ Note that if you empty the participant list, C<reset> will be called.
 sub insert {
     my ($class, $data, %opt) = @_;
 
-    my $self;
-
     my $meeting_id = delete $data->{meetingId}
     or die "can't insert participant list without meetingId";
-    $self = $class->retrieve([$meeting_id],
-			     reuse => 1);
+    my $self = $class->retrieve([$meeting_id], reuse => 1);
 
     $self->update($data, %opt);
 
@@ -321,7 +324,7 @@ sub _thaw {
     $db_data = Elive::Util::_clone( $db_data );  # take a copy
     #
     # the soap record has a Participant property that can either
-    # be of type user or group. However, Elive has seperate 'user'
+    # be of type user or group. However, Elive has separate 'user'
     # and 'group' properties. Resolve here.
     #
     if ($db_data->{ParticipantListAdapter}) {

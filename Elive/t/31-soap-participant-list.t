@@ -35,6 +35,7 @@ SKIP: {
     our $elm_3_3_4_or_better =  (version->declare( $connection->server_details->version )->numify
 				 > version->declare( '10.0.1' )->numify);
 
+
     my $meeting_start = time();
     my $meeting_end = $meeting_start + 900;
 
@@ -226,9 +227,25 @@ SKIP: {
 	    }
 	}
 
-	my $participants_str = Elive->login->userId.'=2;'.join(';', map {$_.'=3'} @big_user_list);
-	lives_ok(sub{$participant_list->_set_participant_list($participants_str)},
-		  'participants long-list test - lives'
+	#
+	# low level test that the setParticipantList adapter will accept
+	# a logn list. was a problem prior to elm 3.3.4
+	#
+
+	lives_ok(sub{
+	    my $participants_str = join(';', 
+					Elive->login->userId.'=2',
+					map {$_.'=3'} @big_user_list
+		);
+	    my %params = (
+		meetingId => $meeting,
+		users => $participants_str
+		);
+	    my $som = $connection->call('setParticipantList' => %{Elive::Entity::ParticipantList->_freeze(\%params)});
+
+	    $connection->_check_for_errors( $som );
+		 },
+		 'participants long-list test - lives'
 	    );
 	#
 	# refetch the participant list and check that all real users
