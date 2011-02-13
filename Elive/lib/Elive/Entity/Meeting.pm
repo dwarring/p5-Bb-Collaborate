@@ -109,7 +109,7 @@ has 'adapter' => (is => 'rw', isa => 'Str',
     # Set the meeting participants
     #
     my $participant_list = $meeting->participant_list;
-    $participant_list->participants([qw(smith jones)]);
+    $participant_list->participants([$smith->userId, $jones->userId]);
     $participant_list->update;
 
 A series of meetings can be created using the C<recurrenceCount> and
