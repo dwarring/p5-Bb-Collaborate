@@ -395,7 +395,7 @@ Describes setting up multiple site instances.
 
 =over 4
 
-=item Databases
+=item SQL Access
 
 Elluminate site instances by default use McKoi - a lightweight pure
 Java/JDBC database.
@@ -403,10 +403,26 @@ Java/JDBC database.
 You might want to Consider using other databases, such as  SQL Server, Oracle
 or MySQL. These are supported by Elluminate and have JDBC bridges available.
 
+However, Elluminate Live! also bundles the JDBCQueryTool, which can be used
+for basic single user SQL access to McKoi databases.
+
+The site instance needs to be shutdown. Then, on the server:
+
+    % cd /opt/ElluminateLive/manager/tomcat/webapps/<instance>/WEB-INF/
+    % /opt/ElluminateLive/jre/bin/java -cp lib/mckoidb.jar com.mckoi.tools.JDBCQueryTool -url "jdbc:mckoi:local://./resources/db.conf" -u admin -p admin
+
+This should give you an SQL window, providing you have write access to the
+database and log files, and you have a X display to the server.
+
+The first command to try might be 'show tables'.
+
+As always, be careful running update and delete commands on a live production
+database!
+
 =item LDAP Authentication
 
 Elluminate I<Live!> can also be configured to use an LDAP repository for
-user authentication.  Users can still be retrieved or listed.
+user authentication.  Users can still be retrieved or listed via the SDK.
 
 =over 4
 
@@ -438,7 +454,7 @@ such as users, meetings, preloads and meeting participants.
 =item Elive does not support hosted (SAS) systems
 
 The Elive distribution only supports the Elluminate SDK which is implemented
-by ELM (Elluminate Live Manager) session manager. This SDK is not support by
+by ELM (Elluminate Live Manager) session manager. This SDK is not supported by
 SAS (Session Administration System).
 
 Update: See also the companion CPAN module L<Elive::StandardV2> which is under
