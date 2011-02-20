@@ -460,8 +460,11 @@ Return a hashref of documentation for properties
 sub property_doco {
     my $class = shift;
 
+    my @atts = $class->_ordered_attributes;
+    use YAML; warn YAML::Dump({class => $class, atts => \@atts});
+
     return {
-	map {$_->name => $_->{documentation}} ($class->_ordered_attributes)
+	map {$_->name => $_->{documentation}} @atts
     };
 }
 

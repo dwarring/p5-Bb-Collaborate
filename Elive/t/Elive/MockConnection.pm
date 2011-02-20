@@ -110,6 +110,15 @@ sub call {
 
 	if (my $entity_class = ($entities->{$entity_name} || $collections{$entity_name})) {
 
+	    #
+	    # dereference aliases
+	    #
+	    my %aliases = $entity_class->_to_aliases;
+	    for (grep {exists $params{$_}} (keys %aliases)) {
+		my $att = $aliases{$_};
+		$params{$att} = delete $params{$_};
+	    }
+
 	    my @primary_key = @{ $entity_class->_primary_key };
 
 	    $params{$primary_key[0]} ||= $self->server_details_id

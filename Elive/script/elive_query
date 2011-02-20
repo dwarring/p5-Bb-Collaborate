@@ -3,6 +3,7 @@ package Elive::script::elive_query;
 use warnings; use strict;
 use YAML;
 use Carp;
+$SIG{__DIE__} = \&Carp::confess;
 use Getopt::Long qw{};
 
 use Elive;
@@ -125,12 +126,6 @@ sub main {
     };
 
     warn "adapter class: $adapter_class\n" if Elive->debug;
-
-    if ($adapter_class eq 'Elive::Entity') {
-	# snick in our private classes
-	require Elive::script::elive_query::ViewMeeting;
-	Elive::script::elive_query::ViewMeeting->_init;
-    }
 
     our @data_classes = $adapter_class->data_classes;
     our %entities;
@@ -284,9 +279,6 @@ sub main {
 			    $valid = 0;
 			}
 			else {
-			    if ($entity_class eq 'Elive::Entity::Meeting') {
-				$entity_class = 'Elive::script::elive_query::ViewMeeting';
-			    }
 
 			    if (@props == 1 && $props[0] =~ m{^(\*)(\*)?(\??)$}x) {
 				#
@@ -396,11 +388,7 @@ sub _show {
 	}
     }
 
-
     my %derivable = $entity_class->derivable;
-
-    %derivable = Elive::script::elive_query::ViewMeeting->derivable
-	if $entity_class eq 'Elive::Entity::Meeting';
 
     if (my @derivable_cols = sort keys %derivable) {
 	print "${sp}  (also selectable: ".join(', ', sort @derivable_cols).")\n"
