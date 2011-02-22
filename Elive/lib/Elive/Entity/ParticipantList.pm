@@ -12,6 +12,7 @@ use Elive::Entity::User;
 use Elive::Entity::Group;
 use Elive::Entity::Role;
 use Elive::Entity::Meeting;
+use Elive::Entity::InvitedGuest;
 use Elive::Util;
 
 use Scalar::Util;
@@ -156,7 +157,7 @@ sub update {
 	or die "meeting not found: ".$meeting_id;
 
 
-    my ($users, $groups) = $self->_users_and_groups;
+    my ($users, $groups) = $self->_collate_participants;
 
     #
     # make sure that the facilitator is included with a moderator role
@@ -188,7 +189,7 @@ sub update {
     my $class = ref($self);
     $self = $class->retrieve([$self->id], connection => $self->connection);
 
-    my ($added_users, $_added_groups) = $self->_users_and_groups;
+    my ($added_users, $_added_groups) = $self->_collate_participants;
     #
     # a common scenario is adding unknown users. Check for this specific
     # condition and raise a specific friendlier error.
@@ -209,13 +210,14 @@ sub update {
     return $self;
 }
 
-sub _users_and_groups {
+sub _collate_participants {
     my $self = shift;
 
     my @raw_participants = @{ $self->participants || [] };
 
     my %users;
     my %groups;
+    my %guests;
 
     foreach (@raw_participants) {
 	my $participant = Elive::Entity::ParticipantList::Participant->_parse($_);
@@ -223,17 +225,24 @@ sub _users_and_groups {
 	my $roleId = Elive::Entity::Role->stringify( $participant->{role} )
 	    || 3;
 
-	if ($participant->{type}) {
-	    $id = Elive::Entity::Group->stringify( $participant->{group} );
-	    $groups{ $id } = $roleId;
-	}
-	else {
+	if (! $participant->{type} ) {
 	    $id = Elive::Entity::User->stringify( $participant->{user} );
 	    $users{ $id } = $roleId;
 	}
+	elsif ($participant->{type} == 1) {
+	    $id = Elive::Entity::Group->stringify( $participant->{group} );
+	    $groups{ $id } = $roleId;
+	}
+	elsif ($participant->{type} == 2) {
+	    $id = Elive::Entity::InvitedGuest->stringify( $participant->{guest} );
+	    $guests{ $id } = $roleId;
+	}
+	else {
+	    carp("unknown type: $participant->{type} in participant list: ".$self->id);
+	}
     }
 
-    return (\%users, \%groups);
+    return (\%users, \%groups, \%guests);
 }
 
 sub _set_participant_list {
