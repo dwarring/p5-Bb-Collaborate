@@ -1,21 +1,20 @@
 package Elive::Entity::Session;
 use warnings; use strict;
+
+use Class::Data::Inheritable;
+use base 'Class::Data::Inheritable';
+BEGIN {
+    __PACKAGE__->mk_classdata(_response_handler => 'Elive::Entity::Session::Base');
+}
+
 use Mouse;
+use Mouse::Util::TypeConstraints;
 
-use Class::Accessor;
+extends __PACKAGE__->_response_handler;
 
-use Elive::Entity;
-use Elive::Entity::Meeting;
-use Elive::Entity::ServerParameters;
-use Elive::Entity::MeetingParameters;
+=head1 NAME
 
-use base 'Elive::Entity';
-use base 'Class::Accessor';
-
-__PACKAGE__->mk_classdata('meeting');
-__PACKAGE__->mk_classdata('server_parameters');
-__PACKAGE__->mk_classdata('meeting_parameters');
-__PACKAGE__->mk_classdata('participants');
+Elive::Entity::Session - Elluminate Session entity class
 
 =head1 DESCRIPTION
 
@@ -25,9 +24,6 @@ The Command Toolkit includes C<createSession> and C<updateSession>.
 
 These are alternate commands for setting up meetings and associated entities,
 including meeting, server details, meeting parameters and participants.
-
-Some meeting properties can only be supported through the session view,
-including restricted meetings, redirect Urls and groups of participants.
 
 =cut
 
@@ -121,22 +117,6 @@ sub is_changed {
 	);
 }
 
-sub _process_results {
-    my ($class, $soap_results, %opt) = @_;
-    use YAML; die YAML::Dump {_process_results_tba => {results => $soap_results, opt => \%opt}};
-
-    my %expected = (
-	MeetingAdapter => 'Elive::Entity::Meeting',
-	MeetingParameterAdapter => 'Elive::Entity::MeetingParameters',
-	ServerParametersAdapter => 'Elive::Entity::ServerParameters',
-	ParticipantListAdapter => 'Elive::Entity::ParticipantList',
-	);
-
-    # the invited guests are oddly seperated from other participants
-
-    my %data;
-}
-
 do {
 
     #flatten out all the properties accessors
@@ -179,5 +159,11 @@ do {
 	}
     }
 };
+
+sub _process_results {
+    my ($class, $soap_results, %opt) = @_;
+    # delegate to our underlying handler class
+    return $class->_response_handler->_process_results( $soap_results, %opt );
+}
 
 1;
