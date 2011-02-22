@@ -184,7 +184,7 @@ sub entity_name {
 
 # _alias, _get_aliases
 #
-#    MyApp::Entity::Meeting->_set_data_mapping(requiredSeats => 'seats');
+#    MyApp::Entity::Meeting->_alias(requiredSeats => 'seats');
 #
 # Return or set data mappings.
 #
@@ -194,7 +194,9 @@ sub entity_name {
 #
 
 sub _alias {
-    my ($entity_class, $from, $to, %opt) = @_;
+    my ($class, $from, $to, %opt) = @_;
+
+    my $entity_class = $opt{class} || $class;
 
     $from = lcfirst($from);
     $to = lcfirst($to);
@@ -204,7 +206,7 @@ sub _alias {
 		&& $from && !ref($from)
 		&& $to && !ref($to));
 
-    my $aliases = $entity_class->_get_aliases;
+    my $aliases = $class->_get_aliases;
 
     #
     # Set our entity name. Register it in our parent
@@ -461,7 +463,6 @@ sub property_doco {
     my $class = shift;
 
     my @atts = $class->_ordered_attributes;
-    use YAML; warn YAML::Dump({class => $class, atts => \@atts});
 
     return {
 	map {$_->name => $_->{documentation}} @atts

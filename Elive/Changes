@@ -1,5 +1,16 @@
 Revision history for Elive
 
+0.83_1  (under construction)
+        [Adding support for createSession and updateSession commands. More or
+         less an alternative to inserting meetings, participants, meeting
+         parameters and server parameters].
+        - Added entity class Elive::Entity::Sesssion
+        - Added entity class Elive::Entity::InvitedGuest
+        - Remvoed Elive::script::elive_meeting::ViewMeeting. This was
+          attempting to do what Elive::Entity::Session does - present a
+          composite view of meetings, parameters, and participants.
+        - Extended Elive::Entity::Participant to handle invited guests.
+
 0.82    10th February 2011
         [I hadn't run t/26-soap-user.t and t/27-soap-group updates against a
          live SOAP servive for a while :-| found some compatibility problems
@@ -17,7 +28,7 @@ Revision history for Elive
           -- Group name now passed to 'updateGroup' command
 
         - extended t/26-soap-user.t and t/27-soap-group. These may be enabled
-          by setting the following envoriment variables:
+          by setting the following enviroment variables:
             -- ELIVE_TEST_USER_UPDATES
             -- ELIVE_TEST_GROUP_UPDATES
 	  These tests can only be run on a non-LDAP server. See README for
