@@ -8,8 +8,7 @@ use Scalar::Util;
 
 use Carp;
 
-use Elive::Connection;
-use base qw{Elive::Connection};
+use parent qw{Elive::Connection};
 
 use Elive;
 use Elive::Util;
@@ -96,6 +95,7 @@ our %KnownCommands = (
 	isParticipant => 'r',
 
 	listGroups => 'r',
+	listInvitedGuests => 'r',
 	listMeetingPreloads => 'r',
 	listMeetings => 'r',
 	listParticipants => 'r',

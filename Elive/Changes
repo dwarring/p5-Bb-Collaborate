@@ -1,15 +1,17 @@
 Revision history for Elive
 
 0.83_1  (under construction)
-        [Adding support for createSession and updateSession commands. More or
-         less an alternative to inserting meetings, participants, meeting
-         parameters and server parameters].
-        - Added entity class Elive::Entity::Sesssion
+        [Adding support for adding groups and invited guests as meeting
+         participants. This was accomplished using the updateSession
+         command, which has this capability. As of ELM 3.3.5,
+         updateParticipant, doesn't.]
         - Added entity class Elive::Entity::InvitedGuest
-        - Remvoed Elive::script::elive_meeting::ViewMeeting. This was
-          attempting to do what Elive::Entity::Session does - present a
-          composite view of meetings, parameters, and participants.
-        - Extended Elive::Entity::Participant to handle invited guests.
+        - Extended Elive::Entity::ParticipantList to handle invited guests.
+        [Revamp of session view - overview of meetings, parameters and
+         participants. Principally for the benefit of elive_query]
+        - Removed Elive::script::elive_meeting::ViewMeeting. Replaced
+          with revamped Elive::View::Session.
+        - Cleaned up elive_query, removing special handling.
 
 0.82    10th February 2011
         [I hadn't run t/26-soap-user.t and t/27-soap-group updates against a

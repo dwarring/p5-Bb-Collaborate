@@ -13,8 +13,7 @@ Version 0.83_1
 
 our $VERSION = '0.83_1';
 
-use Class::Data::Inheritable;
-use base qw{Class::Data::Inheritable};
+use parent qw{Class::Data::Inheritable};
 use Scalar::Util;
 
 use YAML;

@@ -9,6 +9,9 @@ extends 'Elive::Entity';
 __PACKAGE__->entity_name('ServerParameters');
 __PACKAGE__->_isa('Meeting');
 
+coerce 'Elive::Entity::ServerParameters' => from 'HashRef'
+          => via {Elive::Entity::ServerParameters->new($_) };
+
 has 'meetingId' => (is => 'rw', isa => 'Int', required => 1,
     documentation => 'associated meeting');
 __PACKAGE__->primary_key('meetingId');

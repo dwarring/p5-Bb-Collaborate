@@ -10,8 +10,9 @@ use Scalar::Util;
 
 use Elive::Util;
 use Elive::Entity::User;
-use Elive::Entity::Role;
 use Elive::Entity::Group;
+use Elive::Entity::InvitedGuest;
+use Elive::Entity::Role;
 
 =head1 NAME
 
@@ -38,8 +39,10 @@ has 'user' => (is => 'rw', isa => 'Elive::Entity::User|Str',
 	       documentation => 'Group of attendees (type=1)',
 	       coerce => 1,
     );
+# for the benefit of createSession and updateSession commands
+__PACKAGE__->_alias(participant => 'user' );
 
-has 'guest' => (is => 'rw', isa => 'Elive::Entity::InvitedGuests|Str',
+has 'guest' => (is => 'rw', isa => 'Elive::Entity::InvitedGuest|Str',
 		documentation => 'Guest (type=2)',
 		coerce => 1,
     );
@@ -92,7 +95,6 @@ sub _parse {
 		type => 2,
 	    }
 	}
-
     }
 
     return $_ if Scalar::Util::reftype($_);
@@ -100,23 +102,27 @@ sub _parse {
     # Simple users:
     #     'bob=3' => user:bob, role:3, type: 0 (user)
     #     'alice' => user:bob, role:3 (defaulted), type: 0 (user)
-    # A leading '*' indicates an LDAP group:
+    # A leading '*' indicates a group:
     #     '*mygroup=2' => group:mygroup, role:2 type:1 (group)
-    # A leading '+' indicates invited guests ids
-    #     '+invitedGuestId=2' => guest:, role:2 type:1 (group)
+    # Invited guests are of the form: displayName(loginName)
+    #     'Robert(bob)' => guest:{loginName:bob, displayName:Robert}
     #
+    my %parse;
 
-    if (m{^ \s* ([\*\+]?) \s* (.*?) \s* (= (\d) \s*)? $}x) {
+    if (m{^ \s* (.*?) \s* \( ([^\)]+) \) \s* (= (\d) \s*)? $}x) {
 
-	my @types = qw{user group guest};
+	$parse{guest} = {displayName => $1, loginName => $2};
+	$parse{type} = 2;
+
+	return \%parse;
+    }
+    elsif (m{^ \s* (\*?) \s* (.*?) \s* (= (\d) \s*)? $}x) {
 
 	my $type = $1;
 
 	my $id = $2;
 	my $roleId = $4;
 	$roleId = 3 unless defined $roleId;
-
-	my %parse;
 
 	if (! $type ) {
 	    $parse{user} = {userId => $id};
@@ -125,10 +131,6 @@ sub _parse {
 	elsif ($type eq '*') {
 	    $parse{group} = {groupId => $id};
 	    $parse{type} = 1;
-	}
-	elsif ($type eq '+') {
-	    $parse{guest} = {invitedGuestId => $id};
-	    $parse{type} = 2;
 	}
 
 	$parse{role}{roleId} = $roleId;
@@ -139,7 +141,7 @@ sub _parse {
     #
     # slightly convoluted die on return to keep Perl::Critic happy
     #
-    return die "'$_' not in format: userId=[0-4] or *groupId=[0-4] or +invitedGuestId=[0-4]";
+    return die "'$_' not in format: userId=[0-4] or *groupId=[0-4] or guestName(guestLogin)";
 }
 
 coerce 'Elive::Entity::ParticipantList::Participant' => from 'Str'
@@ -184,7 +186,7 @@ sub stringify {
     }
     elsif ($data->{type} == 2) {
 	# guest
-	return '+' . Elive::Entity::InvitedGuests->stringify($data->{guest}).'='.Elive::Entity::Role->stringify($data->{role});
+	return Elive::Entity::InvitedGuest->stringify($data->{guest});
     }
     else {
 	# unknown

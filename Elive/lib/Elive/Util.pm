@@ -328,4 +328,37 @@ sub string {
     return YAML::Dump($obj);
 }
 
+=head2 next_quarter_hour
+
+    Quarter hour advancement for the Time Module impoverished.
+    my $start = Elive::Util::next_quarter_hour();
+    my $end = Elive::Util::next_quarter_hour($start);
+
+    Advance to the next quarter hour without the use of any supporting
+    time modules. We just simply increment in seconds until localtime
+    indicates that we're exactly on a quarter hour and ahead of the start
+    time.
+
+    We also add a small initial increment to ensure that the date remains
+    in the future, allowing for minor evils such as leap seconds, general
+    latency and smallish time drifts between the client and server.
+
+=cut
+
+sub next_quarter_hour {
+    my $time = shift || time();
+
+    $time += 30;
+
+    for (;;) {
+	my @t = localtime(++$time);
+	my $sec = $t[0];
+	my $min = $t[1];
+
+	last unless $min % 15 || $sec;
+    }
+
+    return $time;
+}
+
 1;

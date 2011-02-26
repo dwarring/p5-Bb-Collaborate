@@ -1,6 +1,6 @@
 #!perl
 use warnings; use strict;
-use Test::More tests => 31;
+use Test::More tests => 34;
 use Test::Exception;
 use Test::Builder;
 
@@ -8,11 +8,16 @@ use lib '.';
 use t::Elive;
 
 use Carp;
+$SIG{__DIE__} = \&Carp::confess;
+$SIG{__WARN__} = \&Carp::cluck;
 use version;
 
 use Elive;
-use Elive::Entity::Meeting;
 use Elive::Entity::ParticipantList;
+use Elive::Entity::Meeting;
+use Elive::Entity::User;
+use Elive::Entity::Group;
+use Elive::Util;
 
 our $t = Test::Builder->new;
 our $class = 'Elive::Entity::Meeting' ;
@@ -24,7 +29,7 @@ SKIP: {
     my %result = t::Elive->test_connection( only => 'real');
     my $auth = $result{auth};
 
-    skip ($result{reason} || 'skipping live tests', 31)
+    skip ($result{reason} || 'skipping live tests', 34)
 	unless $auth;
 
     my $connection_class = $result{class};
@@ -35,7 +40,8 @@ SKIP: {
     our $elm_3_3_4_or_better =  (version->declare( $connection->server_details->version )->numify
 				 > version->declare( '10.0.1' )->numify);
 
-
+##    my $meeting_start = Elive::Util::next_quarter_hour();
+##    my $meeting_end   = Elive::Util::next_quarter_hour( $meeting_start );
     my $meeting_start = time();
     my $meeting_end = $meeting_start + 900;
 
@@ -229,7 +235,7 @@ SKIP: {
 
 	#
 	# low level test that the setParticipantList adapter will accept
-	# a logn list. was a problem prior to elm 3.3.4
+	# a long list. was a problem prior to elm 3.3.4
 	#
 
 	lives_ok(sub{
@@ -263,6 +269,33 @@ SKIP: {
 	my @actual_users = sort map {$_->user->userId} @$participants;
 
 	is_deeply(\@actual_users, \@expected_users, "participant list as expected (no repeats or unknown users)");
+    }
+
+    my $group;
+    my @groups;
+    my $group_member;
+    #
+    # test groups of participants
+    #
+    lives_ok( sub {
+	@groups = @{ Elive::Entity::Group->list() } },
+	'list all groups - lives');
+
+    @groups = $groups[0..9] if @groups > 10;
+
+    #
+    # you've got to refetch the group to populate the list of recipients
+    ($group) = grep {$_->retrieve($_); @{ $_->members } } @groups;
+
+    if ($group) {
+	my $invited_guest = 'Robert(bob)';
+	diag "using group ".$group->name;
+	lives_ok(sub {$participant_list->update({ participants => [$group, $participant1, $invited_guest]})}, 'setting of participant groups - lives');
+	ok($meeting->is_participant( $participant1), 'is_participant(user) - as expected' );
+    }
+    else {
+	$t->skip('no candidates found for group tests')
+	    for (1 .. 2);
     }
 
     #

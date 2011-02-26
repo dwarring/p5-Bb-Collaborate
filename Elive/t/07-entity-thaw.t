@@ -1,6 +1,6 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 77;
+use Test::More tests => 78;
 use Test::Warn;
 
 use Elive::Connection;
@@ -56,6 +56,9 @@ my $user_data = {
 	    },
     },
 };
+
+my %entities = Elive::DAO::_find_entities( $user_data );
+is_deeply(\%entities, {User => 'UserAdapter'}, "Elive::DAO::find_entities() - gives expected result");
 
 my $user_thawed = Elive::Entity::User->_thaw($user_data);
 

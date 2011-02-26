@@ -4,8 +4,7 @@ use warnings; use strict;
 use Mouse;
 use Mouse::Util::TypeConstraints;
 
-use Elive;
-use base qw{Elive};
+use parent qw{Elive};
 
 use Scalar::Util;
 

@@ -11,9 +11,14 @@ use Carp;
 __PACKAGE__->entity_name('InvitedGuest');
 __PACKAGE__->collection_name('InvitedGuests');
 
-has 'invitedGuestId' => (is => 'rw', isa => 'Int', required => 1);
-has 'loginName' => (is => 'rw', isa => 'Str', required => 1);
+has 'invitedGuestId' => (is => 'rw', isa => 'Int');
+__PACKAGE__->_alias(id => 'invitedGuestId');
+has 'loginName' => (is => 'rw', isa => 'Str');
 has 'displayName' => (is => 'rw', isa => 'Str');
+
+coerce 'Elive::Entity::InvitedGuest' => from 'HashRef'
+          => via {Elive::Entity::InvitedGuest->construct($_,
+						 %Elive::_construct_opts) };
 
 =head1 NAME
 
@@ -28,6 +33,22 @@ This is the entity class for invited guests for a meeting.
 =head1 METHODS
 
 =cut
+
+=head2
+
+Serialize a guest as <displayName> (loginName): e.g. 'Robert (bob)'
+
+=cut
+
+sub stringify {
+    my $self = shift;
+    my $data = shift || $self;
+
+    return $data
+	unless Scalar::Util::refaddr($data);
+
+    return sprintf("%s (%s)", $data->{displayName}, $data->{loginName});
+}
 
 sub _retrieve_all {
     my ($class, $vals, %opt) = @_;

@@ -2,8 +2,7 @@ package Elive::Struct;
 use warnings; use strict;
 
 use Mouse;
-use Elive;
-use base qw{Elive};
+use parent qw{Elive};
 
 use Elive::Array;
 use Elive::Util;
@@ -194,9 +193,7 @@ sub entity_name {
 #
 
 sub _alias {
-    my ($class, $from, $to, %opt) = @_;
-
-    my $entity_class = $opt{class} || $class;
+    my ($entity_class, $from, $to, %opt) = @_;
 
     $from = lcfirst($from);
     $to = lcfirst($to);
@@ -206,7 +203,7 @@ sub _alias {
 		&& $from && !ref($from)
 		&& $to && !ref($to));
 
-    my $aliases = $class->_get_aliases;
+    my $aliases = $entity_class->_get_aliases;
 
     #
     # Set our entity name. Register it in our parent
@@ -215,10 +212,10 @@ sub _alias {
 	if $aliases->{$from};
 
     die "$entity_class: can't alias $from it's already a property!"
-	if $entity_class->meta->get_attribute($from);
+	if $entity_class->meta->find_attribute_by_name($from);
 
     die "$entity_class: attempt to alias $from to non-existant property $to - check spelling and declaration order"
-	unless $entity_class->meta->get_attribute($to);
+	unless $entity_class->meta->find_attribute_by_name($to);
 
     $opt{to} = $to;
     $aliases->{$from} = \%opt;
@@ -227,7 +224,6 @@ sub _alias {
 }
 
 sub _get_aliases {
-
     my $entity_class = shift;
 
     my $aliases = $entity_class->_aliases;
@@ -290,7 +286,7 @@ sub params {
 
 =head2 derivable
 
-    Setter/getter for derivable field(s) for this entity class
+Setter/getter for derivable field(s) for this entity class
 
 =cut
 
@@ -351,7 +347,7 @@ sub _ordered_attributes {
 
     my $meta = $class->meta;
 
-    return map {$meta->get_attribute($_)} ($class->_ordered_attribute_names);
+    return map {$meta->find_attribute_by_name($_)} ($class->_ordered_attribute_names);
 }
 
 sub _cmp_col {
@@ -446,7 +442,7 @@ sub property_types {
     my @atts = $meta->get_attribute_list;
 
     return {
-	map {$_ => $meta->get_attribute($_)->type_constraint} @atts
+	map {$_ => $meta->find_attribute_by_name($_)->type_constraint} @atts
     };
 }
 
@@ -513,7 +509,7 @@ sub set {
 	}
 
 	my $meta = $self->meta;
-	my $attribute =  $meta->get_attribute($_);
+	my $attribute =  $meta->find_attribute_by_name($_);
 	my $value = $data{$_};
 
 	if (defined $value) {

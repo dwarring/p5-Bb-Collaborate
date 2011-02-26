@@ -175,19 +175,25 @@ sub construct {
     return $self;
 }
 
+#
+# _freeze - construct name/value pairs for database inserts or updates
+#
+
 sub _freeze {
-    #
-    # _freeze - construct name/value pairs for database inserts or updates
-    #
     my $class = shift;
-    my $db_data = Storable::dclone(shift || {});
+    my $db_data = shift;
+    my %types = @_;
+
+    $db_data ||= $class if ref($class);
+    $db_data ||= {};
+    $db_data = Storable::dclone( $db_data );
 
     my $property_types = $class->property_types || {};
     my %param_types = $class->params;
 
     foreach (keys %$db_data) {
 
-	my $property = $property_types->{$_} || $param_types{$_};
+	my $property = $types{$_} || $property_types->{$_} || $param_types{$_};
 
 	unless ($property) {
 	    my @properties = $class->properties;
@@ -225,9 +231,18 @@ sub _freeze {
     return $db_data;
 }
 
+# _find_entities()
 #
-# _thaw - perform database to perl type conversions
+#    my %entities = Elive::DAO::find_entities( $db_data );
 #
+# A utility function to locate entities in SOAP response data. This should be
+# applied after unpacking and before thawing.
+
+sub _find_entities {
+    my $db_data = shift;
+
+    return map {m{^(.*)(Adapter|Response)$}? ($1 => $_): ()} (keys %$db_data);
+}
 
 sub __dereference_adapter {
     my $class = shift;
@@ -239,25 +254,26 @@ sub __dereference_adapter {
 
     if (Elive::Util::_reftype($db_data) eq 'HASH') {
 
-	my %adapters;
-	@adapters{ grep {m{(Adapter|Response)$}} keys %$db_data } = undef;
+	my %entities = _find_entities( $db_data );
 
-	my ($adapter) = grep {exists $adapters{$_}} ($class->entity_name.'Adapter',
-						      $class->entity_name.'Response');					
+	my $adapter = delete $entities{ $class->entity_name };
 
 	if ($adapter) {
-	    delete $adapters{ $adapter };
 	    $entity_data = $db_data->{$adapter};
 	    $$path .= $adapter;
 	}
 
-	my @unknown_adapters = sort keys %adapters;
-	die "unknown adapters in response:: @unknown_adapters"
-	    if @unknown_adapters;
+	my @unknown_entities = sort keys %entities;
+	die "unexpected entities in response:: @unknown_entities"
+	    if @unknown_entities;
     }
 
     return $entity_data || $db_data;
 }
+
+#
+# _thaw - perform database to perl type conversions
+#
 
 sub _thaw {
     my $class = shift;
@@ -278,12 +294,10 @@ sub _thaw {
     my $aliases = $class->_get_aliases;
 
     #
-    # Fix up a couple of inconsistancies with the fetched data versus
-    # the documented schema and the operation of the rest of the system
-    # (inserts, updates, querys):
+    # Normalise:
     # 1. Entity names returned capitalised: 'LoginName' => 'loginName
-    # 2. Primary key returned as Id, rather than <entity_name>Id
-    # 3. Aliases. Usually a result of name changes between versions
+    # 2. Primary key may be returned as Id, rather than <entity_name>Id
+    # 3. Apply aliases.
     #
     my %prop_key_map = map {ucfirst($_) => $_} @properties;
 
@@ -539,8 +553,8 @@ sub set {
 sub _readback {
     my ($class, $som, $sent_data, $connection, %opt) = @_;
     #
-    # Inserts and updates normally return a copy of the entity
-    # after an insert or update. Confirm that the output record contains
+    # Inserts and updates normally return a copy of the entity after
+    # an insert or update. Confirm that the output record contains
     # the updates and return it.
 
     my $results = $class->_get_results($som, $connection);
@@ -769,7 +783,7 @@ sub update {
     my $users = Elive::Entity::Users->list(
 		    filter => 'surname = smith',  # filter results (server side)
 		    command => $cmd,              # soap command to use
-		    connection => $conn,          # connection to use
+		    connection => $connection,    # connection to use
 		    raw => 1,                     # return unblessed data
                 );
 
@@ -869,7 +883,7 @@ sub retrieve {
     my ($class, $vals, %opt) = @_;
 
     $vals = [$vals]
-	if $vals && ! Elive::Util::_reftype($vals);
+	if $vals && Elive::Util::_reftype($vals) ne 'ARRAY';
 
     my @key_cols = $class->primary_key;
 

@@ -15,8 +15,6 @@ use Elive::Entity::Meeting;
 use Elive::Entity::InvitedGuest;
 use Elive::Util;
 
-use Scalar::Util;
-
 use Carp;
 
 __PACKAGE__->entity_name('ParticipantList');
@@ -68,8 +66,8 @@ Or an array of hashrefs:
 
 =head2 Groups of Participants
 
-Groups are applicable under LDAP. If you add groups to the participant list,
-then all members of the group may join the meeting, and are assigned the
+Groups of users may also be assigned to a meeting. All users that are member of
+that group are then able to participate in the meeting, and are assigned the
 given role.
 
 By convention, a leading '*' indicates a group:
@@ -95,6 +93,11 @@ As a list of hashrefs:
     ]);
     $participant_list->update;
 
+=head2 Command Selection
+
+By default this command uses the C<setParticipantList> SOAP command, which
+doesn't handle groups. If any groups are specified, it will switch to using
+the C<updateSessionCommand>, which does handle groups.
 
 =cut
 
@@ -157,31 +160,15 @@ sub update {
 	or die "meeting not found: ".$meeting_id;
 
 
-    my ($users, $groups) = $self->_collate_participants;
+    my ($users, $groups, $guests) = $self->_collate_participants;
+    # support for guests - tba
 
     #
     # make sure that the facilitator is included with a moderator role
     #
     $users->{ $meeting->facilitatorId } = 2;
 
-    foreach my $group_id (keys %$groups) {
-	#
-	# Current restriction with passing groups via setParticipantList
-	# etc adapters.
-	#
-	carp "client side expansion of group: $group_id";
-	my $role = $groups->{ $group_id };
-	my $group = Elive::Entity::Group->retrieve($group_id,
-						   connection => $self->connection,
-						   reuse => 1,
-	    );
-
-	foreach (@{ $group->members }) {
-            $users->{ $_ } ||= $role;
-        }
-    }
-
-    my $participants = $self->_set_participant_list( $users );
+    my $participants = $self->_set_participant_list( $users, $groups, $guests );
     #
     # do our readback
     #
@@ -248,6 +235,10 @@ sub _collate_participants {
 sub _set_participant_list {
     my $self = shift;
     my $users = shift;
+    my $groups = shift;
+    my $guests = shift;
+
+    my $som;
 
     my @participants;
 
@@ -255,12 +246,77 @@ sub _set_participant_list {
 	push(@participants, Elive::Entity::ParticipantList::Participant->new({user => $_, role => $users->{$_}, type => 0}) )
     }
 
-    my %params;
+    foreach (keys %$groups) {
+	push(@participants, Elive::Entity::ParticipantList::Participant->new({group => $_, role => $groups->{$_}, type => 1}) )
+    }
 
-    $params{meetingId} = $self;
-    $params{users} = \@participants;
+    foreach (keys %$guests) {
+	push(@participants, Elive::Entity::ParticipantList::Participant->new({guest => $_, role => $guests->{$_}, type => 2}) )
+    }
 
-    my $som = $self->connection->call('setParticipantList' => %{$self->_freeze(\%params)});
+    if (keys %$groups || keys %$guests) {
+	#
+	# switch to using the 'updateSession' command, which can handle groups
+	# and invited guests.
+	#
+	# We need to refetch and resupply meeting details.
+	#
+	my $meeting = Elive::Entity::Meeting->retrieve( $self, reuse => 1, connection => $self->connection );
+
+	my %meeting_frozen = %{ Elive::Entity::Meeting->_freeze( $meeting )};
+	delete $meeting_frozen{meetingId};
+	delete $meeting_frozen{deleted};
+
+	my @invited_moderators;
+	my @invited_participants;
+	my @invited_guests;
+
+	foreach (@participants) {
+	    if ($_->{guest}) { #guest
+		push (@invited_guests, Elive::Entity::InvitedGuest->stringify($_->{guest}))
+	    }
+	    else {
+		my $role = $_->{role};
+		my $spec = ($_->{group}
+			    ? '*' .Elive::Entity::Group->stringify($_->{group})
+			    : Elive::Entity::User->stringify($_->{user})
+			    );
+		if ($role >= 3) {
+		    push (@invited_participants, $spec)
+		}
+		else {
+		    push (@invited_moderators, $spec)
+		}
+	    }
+	}
+
+	my %session_param_types = (
+	    id => 'Int',
+	    invitedParticipantsList => 'Elive::Entity::Group::Members',
+	    invitedModerators => 'Elive::Entity::Group::Members',
+	    invitedGuests => 'Elive::Entity::Group::Members',
+	    );
+
+	my %session_data = (
+	    id => $meeting,
+	    invitedParticipantsList => \@invited_participants,
+	    invitedModerators => \@invited_moderators,
+	    invitedGuests => \@invited_guests,
+	    );
+
+	my %session_params = %{ $self->_freeze( \%session_data, %session_param_types ) };
+
+	$som = $self->connection->call('updateSession',
+				       %meeting_frozen,
+				       %session_params,
+	    );
+    }
+    else {
+	my %params;
+	$params{meetingId} = $self;
+	$params{participants} = \@participants;
+	$som = $self->connection->call('setParticipantList' => %{$self->_freeze(\%params)});
+    }
 
     $self->connection->_check_for_errors( $som );
 
@@ -348,11 +404,14 @@ sub _thaw {
 		    # peek at the the type property. 0 => user, 1 => group
 		    # a group record, rename to Group, otherwise treat
 		    #
-		    if ($p->{Type}) {
+		    if (! $p->{Type}) {
+			$p->{User} = delete $p->{Participant}
+		    }
+		    elsif ($p->{Type} == 1) {
 			$p->{Group} = delete $p->{Participant}
 		    }
-		    else {
-			$p->{User} = delete $p->{Participant}
+		    elsif ($p->{Type} == 2) {
+			$p->{Guest} = delete $p->{Participant}
 		    }
 		}
 	    }
@@ -361,13 +420,5 @@ sub _thaw {
 
     return $class->SUPER::_thaw($db_data, @args);
 }
-
-=head1 BUGS AND RESTRICTIONS
-
-Groups are currently being expanded on the client side, rather than being
-passed through for inclusion in the participant list. This is due to current
-restrictions in with the C<setParticipant> adapters etc..
-
-=cut
 
 1;

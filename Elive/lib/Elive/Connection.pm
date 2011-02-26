@@ -2,8 +2,6 @@ package Elive::Connection;
 use warnings; use strict;
 
 use Carp;
-use Class::Accessor;
-use Class::Data::Inheritable;
 use File::Spec::Unix;
 use HTML::Entities;
 use Scalar::Util;
@@ -11,7 +9,7 @@ require SOAP::Lite;
 use URI;
 use URI::Escape qw{};
 
-use base qw{Class::Accessor Class::Data::Inheritable};
+use parent qw{Class::Accessor Class::Data::Inheritable};
 
 use Elive;
 use Elive::Util;
