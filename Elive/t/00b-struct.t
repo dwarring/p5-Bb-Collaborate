@@ -9,7 +9,6 @@ use Elive::Entity::ParticipantList::Participants;
 
 use Carp; $SIG{__DIE__} = \&Carp::confess;
 
-my @type = Elive::Util::parse_type('Elive::Entity::ParticipantList::Participants');
 my $class = 'Elive::Struct';
 
 ok($class->_cmp_col('Int', 10, 20) < 0, '_cmp Int <');
