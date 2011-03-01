@@ -97,7 +97,7 @@ As a list of hashrefs:
 
 By default this command uses the C<setParticipantList> SOAP command, which
 doesn't handle groups. If any groups are specified, it will switch to using
-the C<updateSessionCommand>, which does handle groups.
+C<updateSession>, which does handle groups.
 
 =cut
 
@@ -156,9 +156,7 @@ sub update {
 	->retrieve([$meeting_id],
 		   reuse => 1,
 		   connection => $self->connection,
-	)
-	or die "meeting not found: ".$meeting_id;
-
+	) or die "meeting not found: ".$meeting_id;
 
     my ($users, $groups, $guests) = $self->_collate_participants;
     # support for guests - tba
@@ -263,10 +261,6 @@ sub _set_participant_list {
 	#
 	my $meeting = Elive::Entity::Meeting->retrieve( $self, reuse => 1, connection => $self->connection );
 
-	my %meeting_frozen = %{ Elive::Entity::Meeting->_freeze( $meeting )};
-	delete $meeting_frozen{meetingId};
-	delete $meeting_frozen{deleted};
-
 	my @invited_moderators;
 	my @invited_participants;
 	my @invited_guests;
@@ -290,35 +284,25 @@ sub _set_participant_list {
 	    }
 	}
 
-	my %session_param_types = (
-	    id => 'Int',
-	    invitedParticipantsList => 'Elive::Entity::Group::Members',
-	    invitedModerators => 'Elive::Entity::Group::Members',
-	    invitedGuests => 'Elive::Entity::Group::Members',
-	    );
-
-	my %session_data = (
+	my %session_params = (
 	    id => $meeting,
 	    invitedParticipantsList => \@invited_participants,
 	    invitedModerators => \@invited_moderators,
 	    invitedGuests => \@invited_guests,
 	    );
 
-	my %session_params = %{ $self->_freeze( \%session_data, %session_param_types ) };
 
-	$som = $self->connection->call('updateSession',
-				       %meeting_frozen,
-				       %session_params,
-	    );
+	$som = $meeting->update_session(%session_params);
+
     }
     else {
 	my %params;
 	$params{meetingId} = $self;
 	$params{participants} = \@participants;
 	$som = $self->connection->call('setParticipantList' => %{$self->_freeze(\%params)});
+	$self->connection->_check_for_errors( $som );
     }
 
-    $self->connection->_check_for_errors( $som );
 
     return \@participants;
 }
