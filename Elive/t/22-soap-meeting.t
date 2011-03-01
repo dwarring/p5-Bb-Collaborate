@@ -1,6 +1,6 @@
 #!perl
 use warnings; use strict;
-use Test::More tests => 32;
+use Test::More tests => 31;
 use Test::Exception;
 use Test::Builder;
 
@@ -93,19 +93,15 @@ SKIP: {
     # This is a far as we can currently go with a mock connection
     ########################################################################
 
-    skip ($result{reason} || 'skipping live tests', 15)
+    skip ($result{reason} || 'skipping live tests', 14)
 	if $connection_class->isa('t::Elive::MockConnection');
 
     my %meeting_server_data = (
 	boundaryMinutes => 15,
 	fullPermissions => 1,
 	supervised => 1,
+	seats => 2,
     );
-
-    #
-    # seats are updated via the updateMeeting command
-    #
-    ok($meeting->update({seats => 2}), 'can update number of seats in the meeting');
 
     my $server_params = Elive::Entity::ServerParameters->retrieve([$meeting->meetingId]);
 
@@ -116,8 +112,6 @@ SKIP: {
     foreach (keys %meeting_server_data) {
 	is($server_params->$_, $meeting_server_data{$_}, "server parameter $_ as expected");
     }
-
-    ok($server_params->seats == 2, 'server_param - expected number of seats');
 
     do {
 	#
