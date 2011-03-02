@@ -1,6 +1,6 @@
 #!perl
 use warnings; use strict;
-use Test::More tests => 34;
+use Test::More tests => 33;
 use Test::Exception;
 use Test::Builder;
 
@@ -27,7 +27,7 @@ SKIP: {
     my %result = t::Elive->test_connection( only => 'real');
     my $auth = $result{auth};
 
-    skip ($result{reason} || 'skipping live tests', 34)
+    skip ($result{reason} || 'skipping live tests', 33)
 	unless $auth;
 
     my $connection_class = $result{class};
@@ -287,7 +287,6 @@ SKIP: {
 	my $invited_guest = 'Robert(bob)';
 	diag "using group ".$group->name;
 	lives_ok(sub {$participant_list->update({ participants => [$group, $participant1, $invited_guest]})}, 'setting of participant groups - lives');
-	ok($meeting->is_participant( $participant1), 'is_participant(user) - as expected' );
     }
     else {
 	$t->skip('no candidates found for group tests')
