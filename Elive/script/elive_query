@@ -4,6 +4,7 @@ use warnings; use strict;
 use YAML;
 use Carp;
 $SIG{__DIE__} = \&Carp::confess;
+$SIG{__WARN__} = \&Carp::cluck;
 use Getopt::Long qw{};
 
 use Elive;
@@ -137,8 +138,8 @@ sub main {
 	eval "require $class";
 	die $@ if $@;
 
-	unless (eval{$class->isa('Elive::DAO')} && $class->entity_name) {
-	    warn "Omitting non DAO class: $class";
+	unless (eval{$class->entity_name}) {
+	    warn "Omitting non entity class: $class";
 	    next;
 	}
 
