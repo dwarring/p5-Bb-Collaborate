@@ -1,6 +1,6 @@
 #!perl
 use warnings; use strict;
-use Test::More tests => 31;
+use Test::More tests => 32;
 use Test::Exception;
 use Test::Builder;
 
@@ -93,7 +93,7 @@ SKIP: {
     # This is a far as we can currently go with a mock connection
     ########################################################################
 
-    skip ($result{reason} || 'skipping live tests', 14)
+    skip ($result{reason} || 'skipping live tests', 15)
 	if $connection_class->isa('t::Elive::MockConnection');
 
     my %meeting_server_data = (
@@ -133,12 +133,16 @@ SKIP: {
     # check that we can access our meeting by user and date range.
     #
 
-    my $user_meetings = Elive::Entity::Meeting->list_user_meetings_by_date(
-	[$meeting_data{facilitatorId},
-	 $meeting_data{start},
-	 $meeting_data{end},
-	 ]
-	);
+    my $user_meetings;
+    lives_ok( sub {
+	my $user_meetings
+	    = Elive::Entity::Meeting->list_user_meetings_by_date(
+								 [$meeting_data{facilitatorId},
+								  $meeting_data{start},
+								  $meeting_data{end},
+								  ]
+								 )
+	}, 'list_user_meetings_by_date(...) - lives');
 
     isa_ok($user_meetings, 'ARRAY', 'user_meetings');
 
