@@ -4,7 +4,7 @@ use warnings; use strict;
 use Mouse;
 use Mouse::Util::TypeConstraints;
 
-extends 'Elive::Entity';
+extends 'Elive::Struct';
 
 use Carp;
 
@@ -26,7 +26,8 @@ Elive::Entity::InvitedGuest - Invited Guest entity class
 
 =head1 DESCRIPTION
 
-This is the entity class for invited guests for a meeting.
+This is the structural class for an invited guest. It is associated with
+meetings via the L<Elive::Entity::ParticipantList::Participant> entity.
 
 =cut
 
@@ -34,7 +35,7 @@ This is the entity class for invited guests for a meeting.
 
 =cut
 
-=head2
+=head2 stringify
 
 Serialize a guest as <displayName> (loginName): e.g. 'Robert (bob)'
 
