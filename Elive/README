@@ -3,11 +3,11 @@ for meetings, demonstrations web conferences, seminars and IT deployment,
 training and support.
 
 Elive is a set of Perl bindings and entity definitions for the Elluminate Live!
-SDK. You can, for example, use it to query or add users, create sessions,
-assign users as class participants and change server settings.
+Entity Commands in the Command Toolkit. You can, for example, use it to query
+or add users, create sessions, assign participants and change server settings.
 
 Some manual configuration may be required on your Elluminate Live! server to
-enable access to SOAP services. Please see the server configurarion section.
+enable access to SOAP web services. Please see the server configurarion section.
 
 COMPATIBILITY
 

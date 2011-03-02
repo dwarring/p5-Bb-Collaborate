@@ -1,6 +1,7 @@
 .cvsignore
 .releaserc
 Changes
+emacs-X11.exe.stackdump
 inc/Module/Install.pm
 inc/Module/Install/Base.pm
 inc/Module/Install/Can.pm
@@ -20,6 +21,7 @@ lib/Elive/DAO/Singleton.pm
 lib/Elive/Entity.pm
 lib/Elive/Entity/Group.pm
 lib/Elive/Entity/Group/Members.pm
+lib/Elive/Entity/InvitedGuest.pm
 lib/Elive/Entity/Meeting.pm
 lib/Elive/Entity/MeetingParameters.pm
 lib/Elive/Entity/ParticipantList.pm
@@ -31,8 +33,8 @@ lib/Elive/Entity/Report.pm
 lib/Elive/Entity/Role.pm
 lib/Elive/Entity/ServerDetails.pm
 lib/Elive/Entity/ServerParameters.pm
+lib/Elive/Entity/Session.pm
 lib/Elive/Entity/User.pm
-lib/Elive/script/elive_query/ViewMeeting.pm
 lib/Elive/Struct.pm
 lib/Elive/Util.pm
 Makefile.PL
@@ -69,6 +71,7 @@ t/28-soap-report.t
 t/29-soap-multi-connect.t
 t/30-soap-errors.t
 t/31-soap-participant-list.t
+t/32-soap-session.t
 t/40-script-elive_query.t
 t/41-script-elive_raise_meeting.t
 t/42-script-elive_lint_config.t
@@ -79,3 +82,4 @@ t/Elive/MockSOM.pm
 t/kwalitee.t
 t/pod-coverage.t
 t/pod.t
+test.pl

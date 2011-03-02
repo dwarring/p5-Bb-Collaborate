@@ -3,7 +3,7 @@ use warnings; use strict;
 
 =head1 NAME
 
-Elive - Elluminate Live! (c) SDK bindings
+Elive - Elluminate Live! (c) Command Toolkit bindings
 
 =head1 VERSION
 
@@ -56,10 +56,10 @@ participants:
 =head1 DESCRIPTION
 
 Elive is a set of Perl bindings and entity definitions for the Elluminate
-I<Live!> SDK.
+I<Live!> Command Toolkit; nn particular, the entity commands.
 
-The Elluminate SDK runs as a SOAP service and can be used to automate the
-raising, management and connection to meetings; and other related entities,
+These commands are available as a SOAP web service and can be used to automate
+the raising, management and connection to meetings; and other related entities,
 including users, groups, preloads and recordings.
 
 =head1 BACKGROUND
@@ -69,16 +69,14 @@ Elluminate I<Live!> (c) is software for virtual online classrooms.
 It is suitable for meetings, demonstrations web conferences, seminars
 and IT deployment, training and support.
 
-Users, Meetings and other resources are stored in a management database.
-These can be accessed and manipulated via the Elluminate I<Live!> SDK.
-
 Most actions that can be performed via the web interface can also be
-achieved via the SOAP SDK. This is known as the I<Command Toolkit> and
+achieved via SOAP web services. This is known as the I<Command Toolkit> and
 is detailed in chapter 4 of the Elluminate I<Live!> Software Developers
-Kit.
+Kit (SDK).
 
-This module provides Perl object bindings to Elluminate Live! entities via
-the Command Toolkit (SDK).
+Users, Meetings and other resources are stored in a management database.
+These can be accessed and manipulated via the Entity Commands in the
+Command Toolkit.
 
 =cut
 
@@ -100,9 +98,10 @@ Connects to an Elluminate server instance. Dies if the connection could not
 be established. If, for example, the SOAP connection or user login failed.
 
 The login user must either be an Elluminate I<Live!> system administrator
-account, or a user that has been granted access to the SDK (see README file).
+account, or a user that has been configured to access the Command Toolkit
+via web services.
 
-See also L<Elive::Connection::SDK>.
+See also: The L<README> file; L<Elive::Connection::SDK>.
 
 =cut
 
@@ -272,8 +271,8 @@ for detecting and repairing missing adapters.
 =item   "User [<username>], not permitted to access the command {<command>]"
 
 Please ensure that the user is a sytem administrator account and/or the
-user has been configured for SDK access. See also the instruction in the
-README file.
+user has been configured to access commands via web services. See also the
+L<README> file.
 
 =back
 
@@ -290,11 +289,11 @@ script, and can be used to confirm basic operation of Elive.
 It server a secondary function of querying entity metadata. For example,
 to show the user entity:
 
-    $> elive_query
+    % elive_query
     Elive query 0.xx  - type 'help' for help
 
     elive> show
-    usage: show group|meeting|meetingParameters|participantList|preload|recording|serverDetails|serverParameters|use
+    usage: show group|meeting|meetingParameters|participantList|preload|recording|serverDetails|serverParameters|session|users
 
     elive> show meeting
     meeting: Elive::Entity::Meeting:
@@ -348,6 +347,8 @@ see the README file.
 
 =item L<Elive::Entity::ServerParameters>
 
+=item L<Elive::Entity::Session>
+
 =item L<Elive::Entity::User>
 
 =back
@@ -377,8 +378,9 @@ can be obtained from Elluminate.
 
 =item ELM2.5_SDK.pdf
 
-General Description of SDK's available for Elluminate I<Live!>. In particular
-see section 4 - the SOAP command toolkit.
+General Description of SDK developmenmt for Elluminate I<Live!>. In particular
+see section 4 - the SOAP Command Toolkit. This module concentrates on
+implementing the Entity Commands desribed in section 4.1.8.
 
 =item DatabaseSchema.pdf
 
@@ -402,16 +404,50 @@ Java/JDBC database.
 You might want to Consider using other databases, such as  SQL Server, Oracle
 or MySQL. These are supported by Elluminate and have JDBC bridges available.
 
-However, Elluminate Live! also bundles the JDBCQueryTool, which can be used
-for basic single user SQL access to McKoi databases.
+However, Elluminate Live! also bundles JDBCScriptTool and JDBCQueryTool.
+Both can be used for basic SQL access to McKoi databases.
 
-The site instance needs to be shutdown. Then, on the server:
+Both need to be run locally on the server:
 
     % cd /opt/ElluminateLive/manager/tomcat/webapps/<instance>/WEB-INF/
+
+=over 4
+
+=item B<1.> JDBCScript Tool can be used for text based queries
+
+    % echo 'describe Meetings'|/opt/ElluminateLive/jre/bin/java -cp lib/mckoidb.jar com.mckoi.tools.JDBCScriptTool -url "jdbc:mckoi:local://./resources/db.conf" -u admin -p admin
+    Using JDBC Driver: com.mckoi.JDBCDriver
+    Connection established to: jdbc:mckoi:local://./resources/db.conf
+
+    > describe Meetings
+    +-------------------+----------------+----------+--------------+---------+
+    | name              | type           | not_null | index        | default |
+    +-------------------+----------------+----------+--------------+---------+
+    | startDate         | BIGINT         | false    | InsertSearch | NULL    |
+    | allModerators     | BOOLEAN(0,0)   | false    | InsertSearch | NULL    |
+    | restrictedMeeting | BOOLEAN(0,0)   | false    | InsertSearch | NULL    |
+    | privateMeeting    | BOOLEAN(0,0)   | false    | InsertSearch | NULL    |
+    | name              | VARCHAR(256,0) | false    | InsertSearch | NULL    |
+    | creatorId         | VARCHAR(64,0)  | false    | InsertSearch | NULL    |
+    | meetingId         | BIGINT         | true     | InsertSearch | NULL    |
+    | endDate           | BIGINT         | false    | InsertSearch | NULL    |
+    | adapter           | VARCHAR(64,0)  | false    | InsertSearch | NULL    |
+    | password          | VARCHAR(16,0)  | false    | InsertSearch | NULL    |
+    | deleted           | BOOLEAN(0,0)   | false    | InsertSearch | NULL    |
+    +-------------------+----------------+----------+--------------+---------+
+
+     --- FINISHED    
+
+You will need write access to the database and log files for this to work.
+
+=item B<2.> JDBCScript Tool can be used for text based queries
+
     % /opt/ElluminateLive/jre/bin/java -cp lib/mckoidb.jar com.mckoi.tools.JDBCQueryTool -url "jdbc:mckoi:local://./resources/db.conf" -u admin -p admin
 
-This should give you an SQL window, providing you have write access to the
-database and log files, and you have a X display to the server.
+This should give you an SQL window, providing you have a X display to the
+server.
+
+=back
 
 The first command to try might be 'show tables'.
 

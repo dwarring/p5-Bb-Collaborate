@@ -27,7 +27,7 @@ Revision history for Elive
         - Elive::Entity::Group; update modifed to match change in SDK.
           -- The separator character for has changed from ';' to ','.
           -- Added new class Elive::Entity::Group::Members.
-          -- Group name now passed to 'updateGroup' command
+          -- Group name now passed to 'updateGroup' command.
 
         - extended t/26-soap-user.t and t/27-soap-group. These may be enabled
           by setting the following enviroment variables:
