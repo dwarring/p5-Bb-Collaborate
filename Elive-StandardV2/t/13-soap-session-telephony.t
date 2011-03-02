@@ -7,6 +7,7 @@ use version;
 
 use lib '.';
 use t::Elive::StandardV2;
+use Elive::Util;
 
 use Elive::StandardV2::Session;
 use Elive::StandardV2::SessionTelephony;
@@ -20,10 +21,6 @@ SKIP: {
 
     my $skippable = 11;
 
-    eval 'require DateTime';
-    skip('DateTime is required to run this test', $skippable)
-	if $@;
-
     my %result = t::Elive::StandardV2->test_connection();
     my $auth = $result{auth};
 
@@ -35,18 +32,8 @@ SKIP: {
     $connection = $connection_class->connect(@$auth);
     Elive::StandardV2->connection($connection);
 
-    my $dt = DateTime->now->truncate(to => 'minute');
-
-    do {
-	#
-	# generate a date that's on the quarter hour and slightly into
-	# the future (to allow for connection latency).
-	#
-	$dt->add(minutes => 1);
-    } until ($dt->minute % 15 == 0 && $dt->epoch > time() + 10);
-
-    my $session_start = $dt->epoch;
-    my $session_end = $session_start + 900;
+    my $session_start = Elive::Util::next_quarter_hour();
+    my $session_end = Elive::Util::next_quarter_hour( $session_start );
 
     $session_start .= '000';
     $session_end .= '000';

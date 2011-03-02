@@ -9,6 +9,7 @@ use lib '.';
 use t::Elive::StandardV2;
 
 use Elive::StandardV2::Session;
+use Elive::Util;
 
 our $t = Test::Builder->new;
 our $class = 'Elive::StandardV2::Session';
@@ -18,10 +19,6 @@ our $connection;
 SKIP: {
 
     my $skippable = 21;
-
-    eval 'require DateTime';
-    skip('DateTime is required to run this test', $skippable)
-	if $@;
 
     my %result = t::Elive::StandardV2->test_connection();
     my $auth = $result{auth};
@@ -35,18 +32,8 @@ SKIP: {
     $connection = $connection_class->connect(@$auth);
     Elive::StandardV2->connection($connection);
 
-    my $dt = DateTime->now->truncate(to => 'minute');
-
-    do {
-	#
-	# generate a date that's on the quarter hour and slightly into
-	# the future (to allow for connection latency).
-	#
-	$dt->add(minutes => 1);
-    } until ($dt->minute % 15 == 0 && $dt->epoch > time() + 60);
-
-    my $session_start = $dt->epoch;
-    my $session_end = $session_start + 900;
+    my $session_start = Elive::Util::next_quarter_hour();
+    my $session_end = Elive::Util::next_quarter_hour( $session_start );
 
     $session_start .= '000';
     $session_end .= '000';
@@ -104,7 +91,7 @@ SKIP: {
 
     dies_ok(sub {$attendances = $session->attendance('')}, 'session attendance sans date - dies');
 
-    my $today_hires = DateTime->today->epoch.'000';
+    my $today_hires = $session_start - 7200;
     lives_ok(sub {$attendances = $session->attendance($today_hires)}, 'session attendance with date - lives');
 
     lives_ok(sub {$session->delete},'session deletion - lives');
