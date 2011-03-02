@@ -12,7 +12,9 @@ Elive::Entity::Role - Elluminate Role entity class
 
 =head1 DESCRIPTION
 
-This is a structural class for Elive roles.
+This is a structural class for Elive roles. It is a component of the
+L<Elive::Entity::User> and L<Elive::Entity::Participants::Participant>
+entities.
 
 =cut
 
