@@ -222,7 +222,12 @@ sub _massage_participants {
 	    );
 
 	foreach (@{ $group->members }) {
-            $users->{ $_ } ||= $role;
+	    #
+	    # member names may be in the format <ldap-domain>:userId
+	    #
+	    my $member = $_;
+	    $member =~ s{^ [^:]* :}{}x;
+            $users->{ $member } ||= $role;
         }
     }
 }
