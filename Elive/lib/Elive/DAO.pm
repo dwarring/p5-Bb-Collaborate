@@ -182,7 +182,6 @@ sub construct {
 sub _freeze {
     my $class = shift;
     my $db_data = shift;
-    my %types = @_;
 
     $db_data ||= $class if ref($class);
     $db_data ||= {};
@@ -193,7 +192,7 @@ sub _freeze {
 
     foreach (keys %$db_data) {
 
-	my $property = $types{$_} || $property_types->{$_} || $param_types{$_};
+	my $property = $property_types->{$_} || $param_types{$_};
 
 	unless ($property) {
 	    my @properties = $class->properties;

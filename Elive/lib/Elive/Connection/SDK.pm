@@ -63,7 +63,6 @@ our %KnownCommands = (
 	createMeeting => 'c',
 	createPreload => 'c',
 	createRecording => 'c',
-	createSession => 'c',
 	createUser => 'c',
 
 	deleteGroup => 'd',
@@ -95,7 +94,6 @@ our %KnownCommands = (
 	isParticipant => 'r',
 
 	listGroups => 'r',
-	listInvitedGuests => 'r',
 	listMeetingPreloads => 'r',
 	listMeetings => 'r',
 	listParticipants => 'r',
@@ -119,7 +117,6 @@ our %KnownCommands = (
 	updateRecording => 'u',
 	updateReport => 'u',
 	updateServerParameters => 'u',
-	updateSession => 'u',
 	updateUser => 'u',
 
 	);

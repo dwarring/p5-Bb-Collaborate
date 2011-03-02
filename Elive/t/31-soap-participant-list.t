@@ -8,7 +8,6 @@ use lib '.';
 use t::Elive;
 
 use Carp;
-$SIG{__DIE__} = \&Carp::confess;
 use version;
 
 use Elive;
@@ -39,8 +38,6 @@ SKIP: {
     our $elm_3_3_4_or_better =  (version->declare( $connection->server_details->version )->numify
 				 > version->declare( '10.0.1' )->numify);
 
-##    my $meeting_start = Elive::Util::next_quarter_hour();
-##    my $meeting_end   = Elive::Util::next_quarter_hour( $meeting_start );
     my $meeting_start = time();
     my $meeting_end = $meeting_start + 900;
 

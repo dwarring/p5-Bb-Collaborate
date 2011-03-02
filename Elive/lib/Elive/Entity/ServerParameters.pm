@@ -112,9 +112,6 @@ sub list {return shift->_not_available}
 Updates the meeting boundary times, permissions and whether the meeting is
 supervised.
 
-Note: although maxTalkers (maximum number of simultaneous talkers) is
-retrieved via this entity, it must be updated via L<Elive::Entity::Meeting>.
-
 =cut
 
 sub update {

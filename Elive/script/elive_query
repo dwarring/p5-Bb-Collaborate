@@ -3,8 +3,6 @@ package Elive::script::elive_query;
 use warnings; use strict;
 use YAML;
 use Carp;
-$SIG{__DIE__} = \&Carp::confess;
-$SIG{__WARN__} = \&Carp::cluck;
 use Getopt::Long qw{};
 
 use Elive;

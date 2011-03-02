@@ -36,7 +36,103 @@ a session view for L<elive_query>.
 
 The C<list> method requires secondary fetches and is fairly slow.
 
-=back
+=cut
+
+=head1 METHODS
+
+=head2 adapter
+
+=head2 allModerators
+
+=head2 boundaryMinutes
+
+=head2 costCenter
+
+=head2 deleted
+
+=head2 derivable
+
+=head2 enableTelephony
+
+=head2 end
+
+=head2 facilitatorId
+
+=head2 followModerator
+
+=head2 fullPermissions
+
+=head2 inSessionInvitation
+
+=head2 list
+
+=head2 list_preloads
+
+=head2 list_recordings
+
+=head2 maxTalkers
+
+=head2 moderatorNotes
+
+=head2 moderatorTelephonyAddress
+
+=head2 moderatorTelephonyPIN
+
+=head2 name
+
+=head2 participantTelephonyAddress
+
+=head2 participantTelephonyPIN
+
+=head2 participants
+
+=head2 password
+
+=head2 preloads
+
+=head2 privateMeeting
+
+=head2 profile
+
+=head2 properties
+
+=head2 property_types
+
+=head2 raiseHandOnEnter
+
+=head2 recordingObfuscation
+
+=head2 recordingResolution
+
+=head2 recordingStatus
+
+=head2 recordings
+
+=head2 redirectURL
+
+=head2 restrictedMeeting
+
+=head2 retrieve
+
+=head2 seats
+
+=head2 serverTelephonyAddress
+
+=head2 serverTelephonyPIN
+
+=head2 start
+
+=head2 supervised
+
+=head2 telephonyType
+
+=head2 url
+
+=head2 userNotes
+
+=head2 videoWindow
+
+=head2 web_url
 
 =cut
 
