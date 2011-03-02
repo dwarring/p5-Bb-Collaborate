@@ -17,8 +17,7 @@ has 'loginName' => (is => 'rw', isa => 'Str');
 has 'displayName' => (is => 'rw', isa => 'Str');
 
 coerce 'Elive::Entity::InvitedGuest' => from 'HashRef'
-          => via {Elive::Entity::InvitedGuest->construct($_,
-						 %Elive::_construct_opts) };
+          => via {Elive::Entity::InvitedGuest->new($_)};
 
 =head1 NAME
 
