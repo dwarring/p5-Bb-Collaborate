@@ -159,8 +159,9 @@ sub update {
 	) or die "meeting not found: ".$meeting_id;
 
     my ($users, $groups, $guests) = $self->_collate_participants;
-    # support for guests - tba
+    # underlying adapter does not support groups or guests
 
+    $self->_massage_participants ($users, $groups, $guests);
     #
     # make sure that the facilitator is included with a moderator role
     #
@@ -174,7 +175,7 @@ sub update {
     my $class = ref($self);
     $self = $class->retrieve([$self->id], connection => $self->connection);
 
-    my ($added_users, $_added_groups) = $self->_collate_participants;
+    my ($added_users, $_added_groups, $_added_guests) = $self->_collate_participants;
     #
     # a common scenario is adding unknown users. Check for this specific
     # condition and raise a specific friendlier error.
@@ -193,6 +194,37 @@ sub update {
 			    [$self]);
 
     return $self;
+}
+
+sub _massage_participants {
+    my ($self, $users, $groups, $guests) = @_;
+    #
+    # the updateParticipantList has some current restrictions on handling
+    # groups and invited guests.
+    # I have also considered the updateSession command. This can handle both
+    # groups and guests, but introduces other restrictions.
+    #
+   if (keys %$guests) {
+	carp join(' ', "ignoring guests:", sort keys %$guests);
+	%$guests = ();
+    }
+
+    foreach my $group_id (keys %$groups) {
+	#
+	# Current restriction with passing groups via setParticipantList
+	# etc adapters.
+	#
+	carp "client side expansion of group: $group_id";
+	my $role = delete $groups->{ $group_id };
+	my $group = Elive::Entity::Group->retrieve($group_id,
+						   connection => $self->connection,
+						   reuse => 1,
+	    );
+
+	foreach (@{ $group->members }) {
+            $users->{ $_ } ||= $role;
+        }
+    }
 }
 
 sub _collate_participants {
@@ -252,57 +284,11 @@ sub _set_participant_list {
 	push(@participants, Elive::Entity::ParticipantList::Participant->new({guest => $_, role => $guests->{$_}, type => 2}) )
     }
 
-    if (keys %$groups || keys %$guests) {
-	#
-	# switch to using the 'updateSession' command, which can handle groups
-	# and invited guests.
-	#
-	# We need to refetch and resupply meeting details.
-	#
-	my $meeting = Elive::Entity::Meeting->retrieve( $self, reuse => 1, connection => $self->connection );
-
-	my @invited_moderators;
-	my @invited_participants;
-	my @invited_guests;
-
-	foreach (@participants) {
-	    if ($_->{guest}) { #guest
-		push (@invited_guests, Elive::Entity::InvitedGuest->stringify($_->{guest}))
-	    }
-	    else {
-		my $role = $_->{role};
-		my $spec = ($_->{group}
-			    ? '*' .Elive::Entity::Group->stringify($_->{group})
-			    : Elive::Entity::User->stringify($_->{user})
-			    );
-		if ($role >= 3) {
-		    push (@invited_participants, $spec)
-		}
-		else {
-		    push (@invited_moderators, $spec)
-		}
-	    }
-	}
-
-	my %session_params = (
-	    id => $meeting,
-	    invitedParticipantsList => \@invited_participants,
-	    invitedModerators => \@invited_moderators,
-	    invitedGuests => \@invited_guests,
-	    );
-
-
-	$som = $meeting->update_session(%session_params);
-
-    }
-    else {
-	my %params;
-	$params{meetingId} = $self;
-	$params{participants} = \@participants;
-	$som = $self->connection->call('setParticipantList' => %{$self->_freeze(\%params)});
-	$self->connection->_check_for_errors( $som );
-    }
-
+    my %params;
+    $params{meetingId} = $self;
+    $params{participants} = \@participants;
+    $som = $self->connection->call('setParticipantList' => %{$self->_freeze(\%params)});
+    $self->connection->_check_for_errors( $som );
 
     return \@participants;
 }
