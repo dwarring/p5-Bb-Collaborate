@@ -20,9 +20,9 @@ Elive::Entity::ParticipantList::Participant - A Single Meeting Participant
 
 =head1 DESCRIPTION
 
-This is a component of L<Elive::Entity::ParticipantList::Participants>. It contains details on a
-participating user, including their details and participation role (normally 2 for a moderator or 3
-for a regular participant).
+This is a component of L<Elive::Entity::ParticipantList::Participants>. It
+contains details on a participating user, including their details and
+participation role (normally 2 for a moderator or 3 for a regular participant).
 
 =head1 METHODS
 
@@ -30,12 +30,12 @@ for a regular participant).
 
 __PACKAGE__->entity_name('Participant');
 
-has 'group' => (is => 'rw', isa => 'Elive::Entity::Group|Str',
+has 'user' => (is => 'rw', isa => 'Elive::Entity::User|Str',
 		documentation => 'User (type=0)',
 		coerce => 1,
     );
 
-has 'user' => (is => 'rw', isa => 'Elive::Entity::User|Str',
+has 'group' => (is => 'rw', isa => 'Elive::Entity::Group|Str',
 	       documentation => 'Group of attendees (type=1)',
 	       coerce => 1,
     );
@@ -145,25 +145,28 @@ sub _parse {
 }
 
 coerce 'Elive::Entity::ParticipantList::Participant' => from 'Str'
-    => via { __PACKAGE__->new( __PACKAGE__->_parse_participant($_) ) };
+    => via { __PACKAGE__->new( __PACKAGE__->_parse($_) ) };
 
 =head2 participant
 
-Returns a participant. This can either be of type L<Elive::Entity::User> (type: 0), or
-L<Elive::Entity::Group> (type 1).
+Returns a participant. This can either be of type L<Elive::Entity::User> (type
+0), L<Elive::Entity::Group> (type 1) or L<Elive::Entity::InvitedGuest> (type 2).
 
 =cut
 
 sub participant {
     my ($self) = @_;
 
-    return $self->type? $self->group: $self->user;
+    return   (! $self->type)    ? $self->user
+           : ($self->type == 1) ? $self->group
+	   : $self->guest;
 }
 
 =head2 stringify
 
-Returns a string of the form userId=role. This value is used for
-comparisons, sql display, etc...
+Returns a string of the form 'userId=role' (users) '*groupId=role (groups),
+or displayName(loginName) (guests). This value is used for comparisons,
+display, etc...
 
 =cut
 
@@ -173,24 +176,21 @@ sub stringify {
 
     $data = $self->_parse($data)
 	unless Scalar::Util::refaddr($data);
-    #
-    # Stringify to the format used for updates: userId=role
-    #
     if (! $data->{type} ) {
-	# user
+	# user => 'userId'
 	return Elive::Entity::User->stringify($data->{user}).'='.Elive::Entity::Role->stringify($data->{role});
     }
     elsif ($data->{type} == 1) {
-	# group
+	# group => '*groupId'
 	return '*' . Elive::Entity::Group->stringify($data->{group}).'='.Elive::Entity::Role->stringify($data->{role});
     }
     elsif ($data->{type} == 2) {
-	# guest
+	# guest => 'displayName(loginName)'
 	return Elive::Entity::InvitedGuest->stringify($data->{guest});
     }
     else {
 	# unknown
-	die "unrecognised type: $data->{type}";
+	die "unrecognised participant type: $data->{type}";
     }
 }
 
