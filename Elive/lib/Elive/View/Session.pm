@@ -19,10 +19,35 @@ __PACKAGE__->primary_key('id');
 __PACKAGE__->_alias(meetingId => 'id');
 __PACKAGE__->_alias(sessionId => 'id');
 
-has 'meeting' => (is => 'rw', isa => 'Elive::Entity::Meeting', coerce => 1);
-has 'server_parameters' => (is => 'rw', isa => 'Elive::Entity::ServerParameters', coerce => 1);
-has 'meeting_parameters' => (is => 'rw', isa => 'Elive::Entity::MeetingParameters', coerce => 1);
-has 'participant_list' => (is => 'rw', isa => 'Elive::Entity::ParticipantList', coerce => 1);
+our %handled = (meetingId => 1);
+
+has 'meeting'
+    => (is => 'rw', isa => 'Elive::Entity::Meeting', coerce => 1,
+	handles => [grep {!$handled{$_}++} (Elive::Entity::Meeting->properties, Elive::Entity::Meeting->derivable)],
+	lazy => 1,
+	default => sub {Elive::Entity::Meeting->retrieve($_[0], copy => 1, connection => $_[0]->connection)},
+    );
+
+has 'server_parameters'
+    => (is => 'rw', isa => 'Elive::Entity::ServerParameters', coerce => 1,
+	handles => [grep {!$handled{$_}++} (Elive::Entity::ServerParameters->properties, Elive::Entity::ServerParameters->derivable)],
+	lazy => 1,
+	default => sub {Elive::Entity::ServerParameters->retrieve($_[0], copy => 1, connection => $_[0]->connection)},
+    );
+
+has 'meeting_parameters'
+    => (is => 'rw', isa => 'Elive::Entity::MeetingParameters', coerce => 1,
+	handles => [grep {!$handled{$_}++} (Elive::Entity::MeetingParameters->properties, Elive::Entity::MeetingParameters->derivable)],
+	lazy => 1,
+	default => sub {Elive::Entity::MeetingParameters->retrieve($_[0], copy => 1, connection => $_[0]->connection)},
+    );
+
+has 'participant_list'
+    => (is => 'rw', isa => 'Elive::Entity::ParticipantList', coerce => 1,
+	handles => [grep {!$handled{$_}++} (Elive::Entity::ParticipantList->properties, Elive::Entity::ParticipantList->derivable)],
+	lazy => 1,
+	default => sub {Elive::Entity::ParticipantList->retrieve($_[0], copy => 1, connection => $_[0]->connection)},
+    );
 
 =head1 NAME
 
@@ -31,108 +56,14 @@ Elive::View::Session - Session view class
 =head1 DESCRIPTION
 
 This class provides a view of a meeting as 'join' of meetings, meeting
-participants, server parameters and participants. This is primary to provide
+participants, server parameters and participants. This provides
 a session view for L<elive_query>. 
 
-The C<list> method requires secondary fetches and is fairly slow.
+=head2 RESTRICTIONS
 
-=cut
-
-=head1 METHODS
-
-=head2 adapter
-
-=head2 allModerators
-
-=head2 boundaryMinutes
-
-=head2 costCenter
-
-=head2 deleted
-
-=head2 derivable
-
-=head2 enableTelephony
-
-=head2 end
-
-=head2 facilitatorId
-
-=head2 followModerator
-
-=head2 fullPermissions
-
-=head2 inSessionInvitation
-
-=head2 list
-
-=head2 list_preloads
-
-=head2 list_recordings
-
-=head2 maxTalkers
-
-=head2 moderatorNotes
-
-=head2 moderatorTelephonyAddress
-
-=head2 moderatorTelephonyPIN
-
-=head2 name
-
-=head2 participantTelephonyAddress
-
-=head2 participantTelephonyPIN
-
-=head2 participants
-
-=head2 password
-
-=head2 preloads
-
-=head2 privateMeeting
-
-=head2 profile
-
-=head2 properties
-
-=head2 property_types
-
-=head2 raiseHandOnEnter
-
-=head2 recordingObfuscation
-
-=head2 recordingResolution
-
-=head2 recordingStatus
-
-=head2 recordings
-
-=head2 redirectURL
-
-=head2 restrictedMeeting
-
-=head2 retrieve
-
-=head2 seats
-
-=head2 serverTelephonyAddress
-
-=head2 serverTelephonyPIN
-
-=head2 start
-
-=head2 supervised
-
-=head2 telephonyType
-
-=head2 url
-
-=head2 userNotes
-
-=head2 videoWindow
-
-=head2 web_url
+A list C<list> method is provied for completness. However, the C<list> method
+performs secondary fetches on each record and is fairly slow. Also note that
+it only allows filtering on meeting properties.
 
 =cut
 
@@ -214,49 +145,5 @@ sub list {
 
     return \@sessions;
 }
-
-do {
-
-    #flatten out all the properties accessors
-
-    no strict 'refs';
-
-     my %delegates = (
-	 'Elive::Entity::Meeting' => 'meeting',
-	 'Elive::Entity::ServerParameters' => 'server_parameters',
-	 'Elive::Entity::MeetingParameters' => 'meeting_parameters',
-	 'Elive::Entity::ParticipantList' => 'participant_list',
-	);
-
-    foreach my $delegate_class (sort keys %delegates) {
-
-	my $cache_accessor = $delegates{ $delegate_class };
-
-	my %methods = ($delegate_class->derivable,
-		       map {$_ => $_} $delegate_class->properties);
-
-	foreach my $alias (keys %methods) {
-
-	    next if $alias eq 'meetingId';
-
-	    my $method = $methods{$alias};
-
-	    die "class $delegate_class can't $method"
-		unless $delegate_class->can($method);
-
-	    my $subref = sub {
-		my $self = shift;
-
-		$self->{$cache_accessor} ||=  $delegate_class->retrieve( $self->meetingId, reuse => 1, connection => $self->connection);
-	    
-		$self->{$cache_accessor}->$method(@_);
-	    };
-
-	    *{$alias} = $subref;
-	    *{$method} = $subref
-		unless $method eq $alias;
-	}
-    }
-};
 
 1;
