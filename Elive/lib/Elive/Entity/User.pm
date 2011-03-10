@@ -153,7 +153,7 @@ sub _safety_check {
 	my $connection = $opt{connection} || $self->connection
 	    or die "Not connected";
 
-	die "Cowardly refusing to update SDK user"
+	die "Cowardly refusing to update login user"
 	    if $self->userId eq $connection->login->userId;
 
 	die "Cowardly refusing to update system admin account for ".$self->loginName.": (pass force => 1 to override)"
@@ -163,7 +163,6 @@ sub _safety_check {
 
 sub update {
     my ($self, $data_href, %opt) = @_;
-    my %update_data = %{$data_href || {}};
 
     $self->_safety_check(%opt);
     return $self->SUPER::update( $data_href, %opt);
@@ -189,7 +188,7 @@ sub change_password {
     if (defined $new_password && $new_password ne '') {
 	$self->_safety_check(%opt);
 	$self->SUPER::update({loginPassword => $new_password},
-			     adapter => 'changePassword',
+			     command => 'changePassword',
 			     %opt,
 	    )
     }
