@@ -49,41 +49,47 @@ Elive::View::Session - Session view class
 
 =head1 DESCRIPTION
 
-A session is a composite view of meetings, meeting participants, server
+A session is a consolidated view of meetings, meeting participants, server
 parameters and participants.
+
+=head1 METHODS
 
 =cut
 
-sub _owned_by {
-    my $class = shift;
-    my $delegate_class = shift;
-    my @props = @_;
+=head2 insert
 
-    my $delegate_types = $delegate_class->property_types;
-    my $delegate_aliases = $delegate_class->_aliases;
+Creates a new session on an Elluminate server.
 
-    return grep {exists $delegate_types->{$_}
-		 or exists $delegate_aliases->{$_}} @props
-}
+    use Elive::View::Session;
 
-sub set {
-    my $self = shift;
-    my %data = @_;
+    my $session_start = time();
+    my $session_end = $session_start + 900;
 
-    foreach my $delegate (sort keys %delegates) {
+    $session_start .= '000';
+    $session_end .= '000';
 
-	my $delegate_class = $delegates{$delegate};
-	my @delegate_props = $self->_owned_by($delegate_class => sort keys %data);
-	my %delegate_data =  map {$_ => delete $data{$_}} @delegate_props;
+    my %session_data = (
+	name => 'An example session',
+	facilitatorId => Elive->login->userId,
+	password => 'example', # what else?
+	start =>  $session_start,
+	end => $session_end,
+	privateMeeting => 1,
+	costCenter => 'example',
+	recordingStatus => 'remote',
+	raiseHandOnEnter => 1,
+	maxTalkers => 2,
+	inSessionInvitation => 1,
+	boundaryMinutes => 15,
+	fullPermissions => 1,
+	supervised => 1,
+	seats => 2,
+        participants => [qw(alice bob)],
+    );
 
-	$delegate_class->set( %delegate_data );
-    }
+    my $session = Elive::View::Session->insert( \%session_data );
 
-    carp 'unknown session attributes '.join(' ', sort keys %data).'. expected: '.join(' ', sort $self->properties)
-	if keys %data;
-
-    return $self;
-}
+=cut
 
 sub insert {
     my $class = shift;
@@ -115,6 +121,19 @@ sub insert {
     return $self;
 }
 
+=head2 update
+
+Updates a previously created session.
+
+    $session->seats(5);
+    $session->update;
+
+...or equivalently...
+
+    $session->update({seats => 5});
+
+=cut
+
 sub update {
     my $self = shift;
     my %data = %{ shift() };
@@ -135,6 +154,78 @@ sub update {
     return $self;
 }
 
+=head2 retrieve
+
+Retrieves a session for the given session id.
+
+    Elive::View::Session->retrieve( $session_id );
+
+=cut
+
+sub retrieve {
+    my $class = shift;
+    my $id = shift;
+    my %opt = @_;
+    ($id) = @$id if ref($id);
+    my $self = bless {id => $id}, $class;
+
+    for ($opt{connection}) {
+	$self->connection($_) if $_;
+    }
+
+    return $self;
+}
+
+=head2 list
+
+List all sessions that match a given critera:
+
+    my $sessions = Elive::View::Session->list( filter => "(name like '*Sample*')" );
+
+Note:
+
+=over 4
+
+=item * core meeting properties are: name, start, end, password, deleted, faciltatorId, privateMeeting, allModerators, restrictedMeeting and adapter.
+
+=item * you can only select on core meeting properties
+
+=item * access to other properties requires a secondary fetch and may be slower.
+
+=back
+
+=cut
+
+sub list {
+    my $class = shift;
+    my %opt = @_;
+
+    my $connection = $opt{connection} || $class->connection
+	or die "not connected";
+    my $meetings = Elive::Entity::Meeting->list(%opt);
+
+    my @sessions = map {
+	my $meeting = $_;
+
+	my $self = bless {id => $meeting->meetingId}, $class;
+	$self->meeting($meeting);
+	$self->connection($connection);
+
+	$self;
+    } @$meetings;
+
+    return \@sessions;
+}
+
+=head2 delete
+
+Deletes an expired or unwanted session from the Elluminate server.
+
+    my $session = Elive::View::Session->retrieve( $session_id );
+    $session->delete;
+
+=cut
+
 sub delete {
     my $self = shift;
     my %opt = @_;
@@ -145,6 +236,37 @@ sub delete {
     }
 
     return 1;
+}
+
+sub _owned_by {
+    my $class = shift;
+    my $delegate_class = shift;
+    my @props = @_;
+
+    my $delegate_types = $delegate_class->property_types;
+    my $delegate_aliases = $delegate_class->_aliases;
+
+    return grep {exists $delegate_types->{$_}
+		 or exists $delegate_aliases->{$_}} @props
+}
+
+sub set {
+    my $self = shift;
+    my %data = @_;
+
+    foreach my $delegate (sort keys %delegates) {
+
+	my $delegate_class = $delegates{$delegate};
+	my @delegate_props = $self->_owned_by($delegate_class => sort keys %data);
+	my %delegate_data =  map {$_ => delete $data{$_}} @delegate_props;
+
+	$delegate_class->set( %delegate_data );
+    }
+
+    carp 'unknown session attributes '.join(' ', sort keys %data).'. expected: '.join(' ', sort $self->properties)
+	if keys %data;
+
+    return $self;
 }
 
 sub properties {
@@ -180,41 +302,6 @@ sub derivable {
     return (
 	map { $_->derivable } sort values %delegates,
 	);
-}
-
-sub retrieve {
-    my $class = shift;
-    my $id = shift;
-    my %opt = @_;
-    ($id) = @$id if ref($id);
-    my $self = bless {id => $id}, $class;
-
-    for ($opt{connection}) {
-	$self->connection($_) if $_;
-    }
-
-    return $self;
-}
-
-sub list {
-    my $class = shift;
-    my %opt = @_;
-
-    my $connection = $opt{connection} || $class->connection
-	or die "not connected";
-    my $meetings = Elive::Entity::Meeting->list(%opt);
-
-    my @sessions = map {
-	my $meeting = $_;
-
-	my $self = bless {id => $meeting->meetingId}, $class;
-	$self->meeting($meeting);
-	$self->connection($connection);
-
-	$self;
-    } @$meetings;
-
-    return \@sessions;
 }
 
 =head2 RESTRICTIONS
