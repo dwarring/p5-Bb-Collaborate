@@ -153,15 +153,12 @@ SKIP: {
     $participant_list->reset();
 
     if (@participants) {
-# see todo list in Elive::Entity::ParticipantList
-	my @missing;
-	my @to_add = ($participant1, $participant2, @participants);
-	my @rejected;
 	lives_ok( sub {$participant_list->update({participants => \@participants}),
 		  }, 'setting up a larger meeting - lives');
     }
     else {
-	$t->skip('insufficent users to run large meeting tests', 10);
+	$t->skip('insufficent users to run large meeting tests')
+	    for 1 .. 10;
     }
 
     ok($meeting->is_participant( Elive->login), 'is_participant($moderator)');
