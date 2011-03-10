@@ -90,11 +90,6 @@ SKIP: {
     lives_ok( sub {$session->update({inSessionInvitations => 0})}, "update inSessionInvitations (alias) - lives");
     ok( ! $session->inSessionInvitation, "update inSessionInvitation via alias - as expected" );
     
-    ########################################################################
-    # This is a far as we can currently go with a mock connection
-    ########################################################################
-
-
     do {
 	#
 	# some cursory checks on jnlp construction. Could be a lot

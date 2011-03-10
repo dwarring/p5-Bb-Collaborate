@@ -304,12 +304,6 @@ sub derivable {
 	);
 }
 
-=head2 RESTRICTIONS
-
-A list C<list> method is provied for completness. However, the C<list> method
-performs secondary fetches on each record and is fairly slow. Also note that
-it only allows filtering on meeting properties.
-
 =head2 SEE ALSO
 
 L<Elive::Entity::Meeting>
