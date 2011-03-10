@@ -517,15 +517,17 @@ sub is_changed {
 	return;
     }
 
-    foreach my $col ($self->properties) {
+    my @props = $self->properties;
 
-	my $new = $self->$col;
-	my $old = $db_data->$col;
+    foreach my $prop (@props) {
+
+	my $new = $self->$prop;
+	my $old = $db_data->$prop;
+
 	if (defined ($new) != defined ($old)
-	    || Elive::Util::_reftype($new) ne Elive::Util::_reftype($old)
-	    || $self->_cmp_col($self->property_types->{$col}, $new, $old)) {
+	    || $self->_cmp_col($self->property_types->{$prop}, $new, $old)) {
 
-	    push (@updated_properties, $col);
+	    push (@updated_properties, $prop);
 	}
     }
 
@@ -750,9 +752,9 @@ sub update {
 
     $self->connection->check_command($command => 'u');
 
-    my $data_params = $self->_freeze({%updates, %params});
+    my $data_frozen = $self->_freeze({%updates, %params});
 
-    my $som = $self->connection->call($command, %$data_params);
+    my $som = $self->connection->call($command, %$data_frozen);
 
     my $class = ref($self);
 
@@ -766,8 +768,7 @@ sub update {
     #
     # Save the db image
     #
-    my $db_data = $self->construct(Elive::Util::_clone($self),
-				   copy => 1);
+    my $db_data = $self->construct(Elive::Util::_clone($self), copy => 1);
     #
     # Make sure our db data doesn't have db data!
     #
