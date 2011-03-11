@@ -13,7 +13,7 @@ use Carp;
 use Elive;
 use Elive::Util;
 use Elive::Entity;
-use Elive::Entity::Meeting;
+use Elive::View::Session;
 use Elive::Entity::Preload;
 use Elive::Entity::User;
 
@@ -277,7 +277,6 @@ sub main {
 		  },
 		);
 	}
-
     }
 
     #
@@ -304,147 +303,118 @@ sub main {
 	    unless $existing_preload;
     }
 
-    my %meeting_data = (
-	    name => $meeting_name,
-	    facilitatorId => $facilitator,
-	    start => $start . '000',
-	    end => $end . '000',
+    my %session_data = (
+	name => $meeting_name,
+	facilitatorId => $facilitator,
+	start => $start . '000',
+	end => $end . '000',
+	recordingStatus => $recording,
 	);
 
-    $meeting_data{password} = $meeting_password
+    $session_data{password} = $meeting_password
 	if defined $meeting_password;
 
-    $meeting_data{seats} = $seats
+    $session_data{seats} = $seats
 	if defined $seats;
 
-    $meeting_data{privateMeeting} = $private
+    $session_data{privateMeeting} = $private
 	if defined $private;
+
+    $session_data{maxTalkers}  = $max_talkers
+	if defined $max_talkers;
+
+    $session_data{raiseHandOnEnter} = $raise_hands
+	if defined $raise_hands;
+
+    $session_data{inSessionInvitation}  = $invites
+		if defined $invites;
+
+    $session_data{fullPermissions} = $permissions
+	if defined $permissions;
+
+    $session_data{supervised} = $supervised
+	if defined $supervised;
+
+    $session_data{boundaryMinutes} = $boundary
+	if defined $boundary;
 
     if (defined $restricted) {
 	if ($server_version_num < '9999.007001') {
 	    warn "[-restricted option ignored: Not supported by Elluminate Live!]\n";
 	}
 	else {
-	    $meeting_data{restrictedMeeting} = $restricted;
+	    $session_data{restrictedMeeting} = $restricted;
 	}
     }
 
     if ($recurrence_count > 1) {
-	$meeting_data{recurrenceCount} = $recurrence_count;
-	$meeting_data{recurrenceDays} = $recurrence_days || 1;
+	$session_data{recurrenceCount} = $recurrence_count;
+	$session_data{recurrenceDays} = $recurrence_days || 1;
     }
 
-    my @meetings = Elive::Entity::Meeting->insert(\%meeting_data);
+    $session_data{participants} = [@participants, @groups];
 
-    foreach my $meeting (@meetings) {
-	print "created meeting: ".$meeting->name." with id ".$meeting->meetingId."\n";
-	$meeting->add_preload($existing_preload)
-	    if $existing_preload;
+    my $uploaded_preload;
+    if ($upload) {
+	my $upload_basename = File::Basename::basename($upload);
 
-	do {
-	
-	    my $meeting_parameters
-		= $meeting->parameters
-		or die "Unable to retrieve meeting parameters for this meeting\n";
+	$uploaded_preload = Elive::Entity::Preload->upload({
+	    name => $upload_basename,
+	    data => $upload_data,
+	    ownerId => $facilitator->stringify,
+							      });
 
-	    $meeting_parameters->maxTalkers($max_talkers)
-		if defined $max_talkers;
+	printf("uploaded '%s' preload: %s (%s)\n",
+	       $uploaded_preload->type, $uploaded_preload->name, $uploaded_preload->mimeType);
+    }
 
-	    $meeting_parameters->raiseHandOnEnter($raise_hands)
-		if defined $raise_hands;
+    my $imported_preload;
+    if ($import) {
 
-	    $meeting_parameters->inSessionInvitation($invites)
-		if defined $invites;
+	print "importing server-side preload: $import\n";
 
-	    $meeting_parameters->recordingStatus($recording);
+	$imported_preload = Elive::Entity::Preload->import_from_server({
+	    fileName => $import,
+	    ownerId => $facilitator,
+								      });
 
-	    $meeting_parameters->update;
-	};
+	printf("imported '%s' preload: %s (%s)\n",
+	       $imported_preload->type, $imported_preload->name, $imported_preload->mimeType);
+    }
 
-	do {
-	    my $server_parameters = $meeting->server_parameters;
+    my @sessions = Elive::View::Session->insert(\%session_data);
 
-	    $server_parameters->fullPermissions($permissions)
-		if defined $permissions;
-
-	    $server_parameters->supervised($supervised)
-		if defined $supervised;
-
-	    $server_parameters->boundaryMinutes($boundary)
-		if defined $boundary;
-
-	    $server_parameters->update;
-	};
+    foreach my $session (@sessions) {
+	print "created session: ".$session->name." with id ".$session->sessionId."\n";
 
 	if (@participants || @groups) {
 
-	    setup_participants($meeting, @participants, @groups);
+	    show_participants($session);
 
 	}
 	else {
 	    print "no participants\n";
 	}
 
-	#
-	# to do - allow multiple uploads
-	#
-	if ($upload) {
-	    
-	    my $upload_basename = File::Basename::basename($upload);
-
-	    my $preload = Elive::Entity::Preload->upload({
-		name => $upload_basename,
-		data => $upload_data,
-		ownerId => $facilitator->stringify,
-							 });
-
-	    printf("adding '%s' preload: %s (%s)\n",
-		   $preload->type, $preload->name, $preload->mimeType);
-
-	    $meeting->add_preload($preload);
+	foreach ($existing_preload, $imported_preload, $uploaded_preload) {
+	    $session->add_preload($_)
+	        if $_;
 	}
 
-	#
-	# to do - allow multiple imports
-	#
-	if ($import) {
-
-	    print "importing (from server): $import\n";
-
-	    my $preload = Elive::Entity::Preload->import_from_server({
-		fileName => $import,
-		ownerId => $facilitator,
-								     });
-
-	    printf("adding '%s' preload: %s (%s)\n",
-		   $preload->type, $preload->name, $preload->mimeType);
-
-	    $meeting->add_preload($preload);
-	}
-
-	print "meeting address: ".$meeting->web_url."\n";
+	print "session address: ".$session->web_url."\n";
     }
 
     Elive->disconnect;
 
-    return @meetings;
+    return @sessions;
 }
 
 ########################################################################
 
-sub setup_participants {
-    my ($meeting,@participants) = @_;
-    #
-    # Create participant list
-    #
-    my $participant_list = $meeting->participant_list;
+sub show_participants {
+    my ($session) = @_;
 
-    $participant_list
-	->update({meetingId => $meeting->meetingId,
-		  participants => \@participants,
-		 });
-
-    my $participant_objs = $participant_list->participants;
+    my $participant_objs = $session->participants;
 
     my @participants_display = map  {
 	if ($_->type) {
