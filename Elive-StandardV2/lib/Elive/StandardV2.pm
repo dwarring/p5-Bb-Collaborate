@@ -4,7 +4,7 @@ use warnings; use strict;
 use Mouse;
 use Mouse::Util::TypeConstraints;
 
-use Elive '0.83';
+use Elive '0.84';
 
 extends 'Elive::DAO';
 
