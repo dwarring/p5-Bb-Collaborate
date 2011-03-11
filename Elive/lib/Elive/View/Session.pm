@@ -105,20 +105,27 @@ sub insert {
 	$_ => delete $data{$_}
     } @meeting_props;
 
-    my $meeting = Elive::Entity::Meeting->insert(\%meeting_data, %opts);
-
-    my $self = bless {id => $meeting->meetingId,
-		      meeting => $meeting}, $class;
-
-    $self->connection( $meeting->connection );
     #
-    # from here on in, it's just a matter of updating attributes owned by
-    # the other entities
+    # recurrenceCount, and recurrenceDays may result in multiple meetings
     #
-    $self->update(\%data, %opts)
-	if keys %data;
+    my @meetings = Elive::Entity::Meeting->insert(\%meeting_data, %opts);
 
-    return $self;
+    my @objs = map {
+	my $meeting = $_;
+
+	my $self = bless {id => $meeting->meetingId,
+			  meeting => $meeting}, $class;
+	$self->connection( $meeting->connection );
+	#
+	# from here on in, it's just a matter of updating attributes owned by
+	# the other entities. We need to do this for each meeting instance
+	#
+	$self->update(\%data, %opts)
+	    if keys %data;
+
+    } @meetings;
+
+    return wantarray? @objs : $objs[0];
 }
 
 =head2 update
@@ -245,9 +252,12 @@ sub _owned_by {
 
     my $delegate_types = $delegate_class->property_types;
     my $delegate_aliases = $delegate_class->_aliases;
+    my %delegate_params = $delegate_class->params;
 
     return grep {exists $delegate_types->{$_}
-		 or exists $delegate_aliases->{$_}} @props
+		 || exists $delegate_aliases->{$_}
+		 || exists $delegate_params{$_};
+    } @props
 }
 
 sub set {
