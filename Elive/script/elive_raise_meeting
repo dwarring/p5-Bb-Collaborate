@@ -385,7 +385,7 @@ sub main {
     my @sessions = Elive::View::Session->insert(\%session_data);
 
     foreach my $session (@sessions) {
-	print "created session: ".$session->name." with id ".$session->sessionId."\n";
+	print "created meeting: ".$session->name." with id ".$session->sessionId."\n";
 
 	if (@participants || @groups) {
 

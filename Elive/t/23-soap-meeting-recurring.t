@@ -35,7 +35,7 @@ SKIP: {
     );
 
     my @meetings;
-    lives_ok (sub {@meetings = $class->insert(\%meeting_data, 'creation of recurring meeting - lives');
+    lives_ok (sub {@meetings = $class->insert(\%meeting_data)}, 'creation of recurring meeting - lives');
 
     ok(@meetings == 3, 'got three meeting occurences')
 	or die "meeting is not recurring - aborting";
