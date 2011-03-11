@@ -89,6 +89,17 @@ Creates a new session on an Elluminate server.
 
     my $session = Elive::View::Session->insert( \%session_data );
 
+A series of sesions can be created using the C<recurrenceCount> and
+C<recurrenceDays> parameters.
+
+    #
+    # create three weekly sessions
+    #
+    my @sessions = Elive::View::Session->insert({
+                            ...,
+                            recurrenceCount => 3,
+                            recurrenceDays  => 7,
+                        });
 =cut
 
 sub insert {
