@@ -1,5 +1,11 @@
 Revision history for Elive
 
+0.84    11th March 2011
+        - Elive::View::Session - added support for recurring meetings
+        - elive_query - converted from Elive::Entity::Meeting and friends to Elive::View::Meeting
+        - Elive::Struct reverted from Mouse find_attribute_by_name to get_attribute. Was misbehaving
+          under Perl 5.8.x when used in DEMOLISH during object destruction.
+
 0.83    3rd March 2011
         [This release introduces Elive::View::Session - a consolidation
          of Elive::Entity::Meeting, Elive::Entity::MeetingParameters,
