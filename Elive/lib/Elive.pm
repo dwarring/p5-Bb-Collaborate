@@ -392,84 +392,6 @@ Describes setting up multiple site instances.
 
 =back
 
-=head1 USAGE NOTES
-
-=over 4
-
-=item SQL Access
-
-Elluminate site instances by default use McKoi - a lightweight pure
-Java/JDBC database.
-
-You might want to Consider using other databases, such as  SQL Server, Oracle
-or MySQL. These are supported by Elluminate and have JDBC bridges available.
-
-However, Elluminate Live! also bundles JDBCScriptTool and JDBCQueryTool.
-Both can be used for basic SQL access to McKoi databases.
-
-Both need to be run locally on the server:
-
-    % cd /opt/ElluminateLive/manager/tomcat/webapps/<instance>/WEB-INF/
-
-=over 4
-
-=item B<1.> JDBCScript Tool can be used for text based queries
-
-    % echo 'describe Meetings'|/opt/ElluminateLive/jre/bin/java -cp lib/mckoidb.jar com.mckoi.tools.JDBCScriptTool -url "jdbc:mckoi:local://./resources/db.conf" -u admin -p admin
-    Using JDBC Driver: com.mckoi.JDBCDriver
-    Connection established to: jdbc:mckoi:local://./resources/db.conf
-
-    > describe Meetings
-    +-------------------+----------------+----------+--------------+---------+
-    | name              | type           | not_null | index        | default |
-    +-------------------+----------------+----------+--------------+---------+
-    | startDate         | BIGINT         | false    | InsertSearch | NULL    |
-    | allModerators     | BOOLEAN(0,0)   | false    | InsertSearch | NULL    |
-    | restrictedMeeting | BOOLEAN(0,0)   | false    | InsertSearch | NULL    |
-    | privateMeeting    | BOOLEAN(0,0)   | false    | InsertSearch | NULL    |
-    | name              | VARCHAR(256,0) | false    | InsertSearch | NULL    |
-    | creatorId         | VARCHAR(64,0)  | false    | InsertSearch | NULL    |
-    | meetingId         | BIGINT         | true     | InsertSearch | NULL    |
-    | endDate           | BIGINT         | false    | InsertSearch | NULL    |
-    | adapter           | VARCHAR(64,0)  | false    | InsertSearch | NULL    |
-    | password          | VARCHAR(16,0)  | false    | InsertSearch | NULL    |
-    | deleted           | BOOLEAN(0,0)   | false    | InsertSearch | NULL    |
-    +-------------------+----------------+----------+--------------+---------+
-
-     --- FINISHED    
-
-You will need write access to the database and log files for this to work.
-
-=item B<2.> JDBCScript Tool can be used for text based queries
-
-    % /opt/ElluminateLive/jre/bin/java -cp lib/mckoidb.jar com.mckoi.tools.JDBCQueryTool -url "jdbc:mckoi:local://./resources/db.conf" -u admin -p admin
-
-This should give you an SQL window, providing you have a X display to the
-server.
-
-=back
-
-The first command to try might be 'show tables'.
-
-As always, be careful running update and delete commands on a live production
-database!
-
-=item LDAP Authentication
-
-Elluminate I<Live!> can also be configured to use an LDAP repository for
-user authentication.  Users can still be retrieved or listed via the SDK.
-
-=over 4
-
-=item * You can map both of the user's I<userId> and I<loginName> to the
-LDAP I<uid> attribute.
-
-=item * Updates and deletes are not supported by the LDAP DAO adapter.
-
-=back
-
-=back
-
 =head1 AUTHOR
 
 David Warring, C<< <david.warring at gmail.com> >>
@@ -480,7 +402,7 @@ David Warring, C<< <david.warring at gmail.com> >>
 
 =item Elive is a newish module
 
-It has been used and tested against a number of sites running Elluminate 9.0
+It has been used and tested against a number of sites running Elluminate 9.5
 to 10.0.1.
 
 So far it does not implement all SOAP calls, but concentrates on entities
