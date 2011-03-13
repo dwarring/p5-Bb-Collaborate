@@ -6,11 +6,11 @@ use Mouse::Util::TypeConstraints;
 
 extends 'Elive::Struct';
 
-use Elive::DAO;
 use Elive::Entity::Meeting;
 use Elive::Entity::ServerParameters;
 use Elive::Entity::MeetingParameters;
 use Elive::Entity::ParticipantList;
+use Elive::Util;
 use Carp;
 
 __PACKAGE__->entity_name('Session');
@@ -20,8 +20,6 @@ __PACKAGE__->primary_key('id');
 __PACKAGE__->_alias(meetingId => 'id');
 __PACKAGE__->_alias(sessionId => 'id');
 
-our %handled = (meetingId => 1);
-
 our %delegates = (
     meeting => 'Elive::Entity::Meeting',
     meeting_parameters => 'Elive::Entity::MeetingParameters',
@@ -29,10 +27,12 @@ our %delegates = (
     participant_list => 'Elive::Entity::ParticipantList',
     );
 
+our %handled = (meetingId => 1);
+
 foreach my $prop (sort keys %delegates) {
     my $class = $delegates{$prop};
     my @delegates = grep {!$handled{$_}++} ($class->properties, $class->derivable);
-    push (@delegates, qw{buildJNLP add_preload remove_preload is_participanr us_moderator list_preloads list_recordings})
+    push (@delegates, qw{buildJNLP add_preload remove_preload is_participant us_moderator list_preloads list_recordings})
 	if $prop eq 'meeting';
 
     has $prop
@@ -134,6 +134,8 @@ sub insert {
 	$self->update(\%data, %opts)
 	    if keys %data;
 
+	$self;
+
     } @meetings;
 
     return wantarray? @objs : $objs[0];
@@ -185,7 +187,7 @@ sub retrieve {
     my $id = shift;
     my %opt = @_;
     ($id) = @$id if ref($id);
-    my $self = bless {id => $id}, $class;
+    my $self = bless {id => Elive::Util::_string($id)}, $class;
 
     for ($opt{connection}) {
 	$self->connection($_) if $_;
@@ -316,6 +318,14 @@ sub property_types {
     delete $property_types{meetingId};
 
     return \%property_types;
+}
+
+sub property_doco {
+    my $class = shift;
+
+    return {
+	map { %{$_->property_doco} } sort values %delegates,
+    };
 }
 
 sub derivable {
