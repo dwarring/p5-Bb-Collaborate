@@ -366,7 +366,7 @@ sub main {
 
     my @preloads = grep {$_} ($existing_preload, $uploaded_preload, $imported_preload);
 
-    $session_data{preload} = \@preloads if @preloads;
+    $session_data{add_preload} = \@preloads if @preloads;
 
     my @sessions = Elive::View::Session->insert(\%session_data);
 
