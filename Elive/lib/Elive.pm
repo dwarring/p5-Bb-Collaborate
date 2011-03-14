@@ -59,7 +59,7 @@ participants:
 =head1 DESCRIPTION
 
 Elive is a set of Perl bindings and entity definitions for the Elluminate
-I<Live!> Command Toolkit; nn particular, the entity commands.
+I<Live!> Command Toolkit; in particular, the entity commands.
 
 These commands are available as a SOAP web service and can be used to automate
 the raising, management and connection to meetings; and other related entities,
