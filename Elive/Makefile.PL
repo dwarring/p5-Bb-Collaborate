@@ -10,7 +10,7 @@ module_name    ('Elive');
 author         ('David Warring <david.warring@gmail.com>');
 version_from   ('lib/Elive.pm');
 license	       ('perl');
-abstract       ('Elluminate Live (c) SDK bindings');
+abstract       ('Elluminate Live (c) Command Toolkit bindings');
 install_script ('elive_query', 'elive_raise_meeting', 'elive_lint_config');
 
 requires(
@@ -45,6 +45,7 @@ recommends(
     );
 
 test_requires (
+    'File::Temp'                   => 0,
     'Test::Builder'                => 0,
     'Test::More'                   => 0,
     'Test::Warn'                   => 0,
