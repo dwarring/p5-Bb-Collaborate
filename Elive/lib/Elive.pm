@@ -7,11 +7,11 @@ Elive - Elluminate Live! (c) Command Toolkit bindings
 
 =head1 VERSION
 
-Version 0.83
+Version 0.85
 
 =cut
 
-our $VERSION = '0.83';
+our $VERSION = '0.85';
 
 use parent qw{Class::Data::Inheritable};
 use Scalar::Util;
@@ -27,7 +27,8 @@ participants:
 
     use Elive;
     use Elive::Entity::User;
-    use Elive::Entity::Meeting;
+    use Elive::Entity::Preload;
+    use Elive::View::Session;
 
     my $meeting_name = 'Meeting of the Smiths';
 
@@ -40,16 +41,18 @@ participants:
     my $start = time() + 15 * 60; # starts in 15 minutes
     my $end   = $start + 30 * 60; # runs for half an hour
 
-    my $meeting = Elive::Entity::Meeting->insert({
+    # upload whiteboard content
+    #
+    my $preload = Elive::Entity::Preload->upload('welcome.wbd');
+
+    my $meeting = Elive::View::Session->insert({
 	 name           => $meeting_name,
 	 facilitatorId  => Elive->login,
 	 start          => $start . '000',
 	 end            => $end   . '000',
+         participants   => $participants,
+         add_preload    => $preload,
 	 });
-
-    my $participant_list = $meeting->participant_list;
-    $participant_list->participants($participants);
-    $participant_list->update;
 
     Elive->disconnect;
 
@@ -265,8 +268,8 @@ Elluminate Services Errors:
 =item   "Unable to determine a command for the key : Xxxx"
 
 This may indicate that the particular command is is not available for your
-site instance. Please follow the instructions in the README file
-for detecting and repairing missing adapters.
+site instance. Please follow the instructions in the README file for
+detecting and repairing missing adapters.
 
 =item   "User [<username>], not permitted to access the command {<command>]"
 
@@ -329,11 +332,9 @@ see the README file.
 
 =item L<Elive::Connection::SDK> - Elluminate SOAP connection
 
+=item L<Elive::View::Session>
+
 =item L<Elive::Entity::Group>
-
-=item L<Elive::Entity::Meeting>
-
-=item L<Elive::Entity::MeetingParameters>
 
 =item L<Elive::Entity::ParticipantList>
 
@@ -342,12 +343,6 @@ see the README file.
 =item L<Elive::Entity::Recording>
 
 =item L<Elive::Entity::Report>
-
-=item L<Elive::Entity::ServerDetails>
-
-=item L<Elive::Entity::ServerParameters>
-
-=item L<Elive::Entity::Session>
 
 =item L<Elive::Entity::User>
 
@@ -361,7 +356,7 @@ see the README file.
 
 =item L<elive_raise_meeting> - sample script that create meetings via one-liners
 
-=item L<elive_lint_config> - sanity checker for  Elluminate site configurations
+=item L<elive_lint_config> - sanity checker for Elluminate server configurations
 
 =back
 

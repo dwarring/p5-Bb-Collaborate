@@ -32,7 +32,7 @@ our %handled = (meetingId => 1);
 foreach my $prop (sort keys %delegates) {
     my $class = $delegates{$prop};
     my @delegates = grep {!$handled{$_}++} ($class->properties, $class->derivable);
-    push (@delegates, qw{buildJNLP add_preload remove_preload is_participant us_moderator list_preloads list_recordings})
+    push (@delegates, qw{buildJNLP check_preload add_preload remove_preload is_participant us_moderator list_preloads list_recordings})
 	if $prop eq 'meeting';
 
     has $prop
@@ -159,6 +159,8 @@ sub update {
     my %data = %{ shift() };
     my %opts = @_;
 
+    my $preloads = delete $data{add_preload};
+
    foreach my $delegate (sort keys %delegates) {
 
 	my $delegate_class = $delegates{$delegate};
@@ -169,6 +171,15 @@ sub update {
 	my %delegate_data = map {$_ => delete $data{$_}} @delegate_props;
 
 	$self->$delegate->update( \%delegate_data, %opts );
+    }
+
+    if ($preloads) {
+	$preloads = [$preloads]
+	    unless Elive::Util::_reftype($preloads) eq 'ARRAY';
+
+	foreach my $preload (@$preloads) {
+	    $self->meeting->add_preload( $preload );
+	}
     }
 
     return $self;
@@ -204,15 +215,7 @@ List all sessions that match a given critera:
 
 Note:
 
-=over 4
-
-=item * core meeting properties are: name, start, end, password, deleted, faciltatorId, privateMeeting, allModerators, restrictedMeeting and adapter.
-
-=item * you can only select on core meeting properties
-
-=item * access to other properties requires a secondary fetch and may be slower.
-
-=back
+You can only select on core meeting properties (C<name>, C<start>, C<end>, C<password>, C<deleted>, C<faciltatorId>, C<privateMeeting>, C<allModerators>, C<restrictedMeeting> and C<adapter>).  Access to other properties requires a secondary fetch and may be slower.
 
 =cut
 

@@ -290,19 +290,6 @@ sub main {
     @participants = _get_users(@participants) if @participants;
     @groups = _get_groups(@groups) if @groups;
 
-    my $existing_preload;
-
-    if ($preload_opt) {
-
-	pod2usage("non numeric preload id")
-	    unless $preload_opt =~ m{^\d+$}x;
-
-	$existing_preload = Elive::Entity::Preload->retrieve([$preload_opt]);
-	
-	die "no existing preload: $preload_opt\n"
-	    unless $existing_preload;
-    }
-
     my %session_data = (
 	name => $meeting_name,
 	facilitatorId => $facilitator,
@@ -354,6 +341,19 @@ sub main {
 
     $session_data{participants} = [@participants, @groups];
 
+    my $existing_preload;
+
+    if ($preload_opt) {
+
+	pod2usage("non numeric preload id")
+	    unless $preload_opt =~ m{^\d+$}x;
+
+	$existing_preload = Elive::Entity::Preload->retrieve([$preload_opt]);
+	
+	die "no existing preload: $preload_opt\n"
+	    unless $existing_preload;
+    }
+
     my $uploaded_preload;
     if ($upload) {
 	my $upload_basename = File::Basename::basename($upload);
@@ -382,6 +382,10 @@ sub main {
 	       $imported_preload->type, $imported_preload->name, $imported_preload->mimeType);
     }
 
+    my @preloads = grep {$_} ($existing_preload, $uploaded_preload, $imported_preload);
+
+    $session_data{preload} = \@preloads if @preloads;
+
     my @sessions = Elive::View::Session->insert(\%session_data);
 
     foreach my $session (@sessions) {
@@ -394,11 +398,6 @@ sub main {
 	}
 	else {
 	    print "no participants\n";
-	}
-
-	foreach ($existing_preload, $imported_preload, $uploaded_preload) {
-	    $session->add_preload($_)
-	        if $_;
 	}
 
 	print "session address: ".$session->web_url."\n";

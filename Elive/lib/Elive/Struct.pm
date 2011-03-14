@@ -438,11 +438,10 @@ Return a hashref of attribute data types.
 sub property_types {
     my $class = shift;
 
-    my $meta = $class->meta;
-    my @atts = $meta->get_attribute_list;
+    my @atts = $class->_ordered_attributes;
 
     return {
-	map {$_ => $meta->get_attribute($_)->type_constraint} @atts
+	map {$_->name => $_->type_constraint} @atts
     };
 }
 

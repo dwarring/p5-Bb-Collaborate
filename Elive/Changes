@@ -1,5 +1,14 @@
 Revision history for Elive
 
+0.85    15th March 2001
+        [Completing Elive::View::Session functionality. Phasing it in as the
+         preferred high level class for meeting construction and setup.]
+        - Added preload option to Elive::View::Session. Utilised in elive_query.
+        - Elive pod doco. Changed introductory example to raise a meeting via
+          Elive::View::Session. Also added preload upload to example.
+        - Also took out 'see also' links to Elive::Entity::MeetingParameters,
+          Elive::Entity::Meeting, Elive::Entity::ServerParameters,
+
 0.84    11th March 2011
         - Elive::View::Session - added support for recurring meetings
         - elive_query - converted from Elive::Entity::Meeting and friends to Elive::View::Meeting

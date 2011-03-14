@@ -1,6 +1,6 @@
 #!perl
 use warnings; use strict;
-use Test::More tests => 49;
+use Test::More tests => 56;
 use Test::Exception;
 use Test::Builder;
 
@@ -9,7 +9,7 @@ use t::Elive;
 
 use Elive;
 use Elive::Entity::Preload;
-use Elive::Entity::Meeting;
+use Elive::View::Session;
 use Elive::Util;
 
 our $t = Test::Builder->new;
@@ -30,7 +30,7 @@ SKIP: {
     my %result = t::Elive->test_connection(only => 'real');
     my $auth = $result{auth};
 
-    skip ($result{reason} || 'skipping live tests', 47)
+    skip ($result{reason} || 'skipping live tests', 54)
 	unless $auth;
 
     my $connection_class = $result{class};
@@ -66,15 +66,6 @@ SKIP: {
     $preloads[0] = undef;
 
     ok($preloads[0] = Elive::Entity::Preload->retrieve([$preload_id]), 'preload retrieval');
-
-    ok(my $meeting = Elive::Entity::Meeting->insert({
-	name => 'created by t/24-soap-preload.t',
-	facilitatorId => Elive->login,
-	start => time() . '000',
-	end => (time()+900) . '000',
-	privateMeeting => 1,
-    }),
-	'inserted meeting');
 
     $preloads[1] = Elive::Entity::Preload->upload(
     {
@@ -121,22 +112,63 @@ SKIP: {
 
     my $check;
 
-    lives_ok(sub {$check = $meeting->check_preload($preloads[0])},
-	     'meeting->check_preloads - lives');
+    #
+    # use three mechanisims to associate meetings with preloads
+    #
+    # 1. session insert
+    # 2. session update
+    # 3. add_preload method on meeting
 
-    ok(!$check, 'check_meeting prior to add - returns false');
+    ok(my $session = Elive::View::Session->insert({
+	name => 'created by t/24-soap-preload.t',
+	facilitatorId => Elive->login,
+	start => time() . '000',
+	end => (time()+900) . '000',
+	privateMeeting => 1,
+	add_preload => [ $preloads[0], $preloads[1] ],
+    }),
+	'inserted session');
 
-    lives_ok(sub {$meeting->add_preload($_) for (@preloads)},
+    # preload 0,1 - added at session setup
+
+    lives_ok(sub {$check = $session->check_preload($preloads[0])},
+	     'session->check_preload - lives');
+
+    ok($check, 'check_preload following session creation');
+
+    # preload 2 - meeting level access
+
+    lives_ok(sub {$check = $session->meeting->check_preload($preloads[2])},
+	     'session->check_preloads - lives');
+
+    ok(!$check, 'check_preload prior to add - returns false');
+
+    lives_ok(sub {$session->meeting->add_preload($preloads[2])},
 	     'adding meeting preloads - lives');
 
-    lives_ok(sub {$check = $meeting->check_preload($preloads[0])},
+    lives_ok(sub {$check = $session->meeting->check_preload($preloads[2])},
+	     'meeting->check_preloads - lives');
+
+    ok($check, 'check_meeting after add - returns true');
+
+    # preload 3 - session level access
+
+    lives_ok(sub {$check = $session->check_preload($preloads[3])},
+	     'session->check_preloads - lives');
+
+    ok(!$check, 'check_preload prior to add - returns false');
+
+    lives_ok(sub {$session->update({add_preload => $preloads[3]})},
+	     'adding meeting preloads - lives');
+
+    lives_ok(sub {$check = $session->check_preload($preloads[3])},
 	     'meeting->check_preloads - lives');
 
     ok($check, 'check_meeting after add - returns true');
 
     my $preloads_list;
-    lives_ok(sub {$preloads_list = $meeting->list_preloads},
-	     'list_meeting_preloads - lives');
+    lives_ok(sub {$preloads_list = $session->list_preloads},
+	     'list_session_preloads - lives');
 
     isa_ok($preloads_list, 'ARRAY', 'preloads list');
 
@@ -158,7 +190,7 @@ SKIP: {
     #
     # verify that we can remove a preload
     #
-    lives_ok( sub {$meeting->remove_preload($preloads[1])},
+    lives_ok( sub {$session->remove_preload($preloads[1])},
 	      'meeting->remove_preload - lives');
 
     lives_ok(sub {$preloads[0]->delete}, 'preloads deletion - lives');
@@ -169,14 +201,14 @@ SKIP: {
     #
 
     my $preloads_list_2;
-    lives_ok(sub {$preloads_list_2 = $meeting->list_preloads},
+    lives_ok(sub {$preloads_list_2 = $session->list_preloads},
              'list_meeting_preloads - lives');
 
     isa_ok($preloads_list_2, 'ARRAY', 'preloads list');
 
-    ok(@$preloads_list_2 == scalar(@preloads)-2, 'meeting has expected number of preloads');
+    ok(@$preloads_list_2 == scalar(@preloads)-2, 'meeting still has expected number of preloads');
 
-    $meeting->delete;
+    $session->delete;
 
     dies_ok(sub {$preloads[0]->retrieve([$preload_id])}, 'attempted retrieval of deleted preload - dies');
 
