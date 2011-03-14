@@ -79,7 +79,16 @@ There are three possible types of preloads: media, plan and whiteboard.
 
 =head2 upload
 
-    my $preload = Elive::Entity::Preload->upload(
+    #
+    # upload from a file
+    #
+    my $preload1 = Elive::Entity::Preload->upload('mypreloads/intro.wbd');
+
+    #
+    # upload in-memory data
+    #
+
+    my $preload2 = Elive::Entity::Preload->upload(
              {
 		    type => 'whiteboard',
 		    name => 'introduction.wbd',
@@ -95,16 +104,48 @@ MIME::Types.
 =cut
 
 sub upload {
-    my ($class, $insert_data_ref, %opt) = @_;
-
-    croak 'usage: $class->upload( {name => $filename, data => $binary_data, ...} )'
-	unless Elive::Util::_reftype($insert_data_ref) eq 'HASH'
-	&& $insert_data_ref->{data} && $insert_data_ref->{name};
+    my ($class, $spec, %opt) = @_;
 
     my $connection = $opt{connection} || $class->connection
 	or die "not connected";
 
-    my %insert_data = %{ $insert_data_ref };
+    my %insert_data;
+
+    if ($spec && ! ref($spec) ) {
+	#
+	# Assume a single string arguments represents the local path of a file
+	# to be uploaded.
+	#
+	my $preload_path = $spec;
+
+	my $preload_basename = File::Basename::basename( $preload_path );
+	croak "unable to determine a basename for preload path: $preload_path"
+	    unless length $preload_basename;
+
+	open ( my $fh, '<', $preload_path)
+	    or die "unable to open preload file $preload_path";
+
+	$fh->binmode;
+	my $content = do {local $/; <$fh>};
+
+	close $fh;
+
+	die "upload file is empty: $preload_path"
+	    unless length $content;
+
+	%insert_data = {
+	    name => $preload_basename,
+	    data => $content,
+	};
+    }
+    else {
+
+	croak 'usage: $class->upload( filepath | {name => $filename, data => $binary_data, ...} )'
+	    unless Elive::Util::_reftype($spec) eq 'HASH'
+	    && $spec->{data} && $spec->{name};
+
+	%insert_data = %{ $spec };
+    }
 
     my $binary_data = delete $insert_data{data};
 
@@ -220,7 +261,7 @@ sub _freeze {
     $db_data = $class->SUPER::_freeze( $db_data, %opt);
 
     if (my $filename = $db_data->{fileName}) {
-	$db_data->{name} ||= File::Basename::basename($filename);
+	$db_data->{name} ||= File::Basename::basename( $filename );
     }
 
     if ($db_data->{name}) {
