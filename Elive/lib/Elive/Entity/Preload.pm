@@ -132,10 +132,10 @@ sub upload {
 	die "upload file is empty: $preload_path"
 	    unless length $content;
 
-	%insert_data = {
+	%insert_data = (
 	    name => $preload_basename,
 	    data => $content,
-	};
+	);
     }
     else {
 

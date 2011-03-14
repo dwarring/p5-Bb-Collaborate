@@ -1,6 +1,6 @@
 #!perl
 use warnings; use strict;
-use Test::More tests => 56;
+use Test::More tests => 59;
 use Test::Exception;
 use Test::Builder;
 
@@ -11,6 +11,9 @@ use Elive;
 use Elive::Entity::Preload;
 use Elive::View::Session;
 use Elive::Util;
+
+use File::Spec qw();
+use File::Temp qw();
 
 our $t = Test::Builder->new;
 my $class = 'Elive::Entity::Preload' ;
@@ -30,7 +33,7 @@ SKIP: {
     my %result = t::Elive->test_connection(only => 'real');
     my $auth = $result{auth};
 
-    skip ($result{reason} || 'skipping live tests', 54)
+    skip ($result{reason} || 'skipping live tests', 57)
 	unless $auth;
 
     my $connection_class = $result{class};
@@ -67,15 +70,28 @@ SKIP: {
 
     ok($preloads[0] = Elive::Entity::Preload->retrieve([$preload_id]), 'preload retrieval');
 
-    $preloads[1] = Elive::Entity::Preload->upload(
-    {
-	type => 'media',
-	name => 'test.wav',
-	# omit owner id.
-	data => $data[1],
-	# omit mime type
-    },
-    );
+    #
+    # try upload from a file
+    #
+
+    my ($fh, $filename)
+	= File::Temp::tempfile('elive-t-24-soap-preload-XXXXXXXX',
+			       SUFFIX => '.wav',
+			       DIR => File::Spec->tmpdir() );
+
+    $fh->binmode();
+    print $fh $data[1];
+    close $fh;
+
+    $preloads[1] = Elive::Entity::Preload->upload( $filename );
+    unlink( $filename );
+
+    $data_download = $preloads[1]->download;
+       
+    ok($data_download, 'got data download');
+    is($data_download, $data[1], 'download data matches file upload');
+
+    is($preloads[1]->type, 'media','expected value for mimeType (uploaded file)');
 
     is($preloads[1]->mimeType, 'audio/x-wav','expected value for mimeType (defaulted)');
     is($preloads[1]->ownerId, Elive->login->userId,'preload owner id defaults to login user');
