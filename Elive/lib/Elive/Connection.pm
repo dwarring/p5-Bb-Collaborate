@@ -178,11 +178,12 @@ sub _check_for_errors {
 	    #
 	
 	    my $reason = $result->{Reason}{Text};
+	    my @stack_trace;
 
-	    my $trace = $result->{Detail}{Stack}{Trace};
-	    my @stacktrace;
-	    if ($trace) {
-		@stacktrace = (Elive::Util::_reftype($trace) eq 'ARRAY'
+	    my $stack = $result->{Detail}{Stack};
+
+	    if ($stack && (my $trace = $stack->{Trace})) {
+		@stack_trace = (Elive::Util::_reftype($trace) eq 'ARRAY'
 			       ? @$trace
 			       : $trace);
 
@@ -190,7 +191,7 @@ sub _check_for_errors {
 
 	    my %seen;
 
-	    my @error = grep {defined($_) && !$seen{$_}++} ($code, $reason, @stacktrace);
+	    my @error = grep {defined($_) && !$seen{$_}++} ($code, $reason, @stack_trace);
 	    Carp::croak join(' ', @error) || YAML::Dump($result);
 	}
     }
