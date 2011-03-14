@@ -212,14 +212,6 @@ sub main {
 
     my $upload_data;
 
-    if ($upload) {
-	open(my $upload_fh, '<', $upload)
-	    or die "unable to open $upload: $!\n";
-
-	$upload_data = do { local $/ = undef;  <$upload_fh> };
-	close ($upload_fh);
-    }
-
     my $facilitator = $facilitator_id
 	? _get_user($facilitator_id)
 	: Elive->login;
@@ -341,6 +333,10 @@ sub main {
 
     $session_data{participants} = [@participants, @groups];
 
+    my $uploaded_preload;
+    $uploaded_preload = Elive::Entity::Preload->upload($upload)
+	if $upload;
+
     my $existing_preload;
 
     if ($preload_opt) {
@@ -352,20 +348,6 @@ sub main {
 	
 	die "no existing preload: $preload_opt\n"
 	    unless $existing_preload;
-    }
-
-    my $uploaded_preload;
-    if ($upload) {
-	my $upload_basename = File::Basename::basename($upload);
-
-	$uploaded_preload = Elive::Entity::Preload->upload({
-	    name => $upload_basename,
-	    data => $upload_data,
-	    ownerId => $facilitator->stringify,
-							      });
-
-	printf("uploaded '%s' preload: %s (%s)\n",
-	       $uploaded_preload->type, $uploaded_preload->name, $uploaded_preload->mimeType);
     }
 
     my $imported_preload;

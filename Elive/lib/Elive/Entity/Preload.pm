@@ -87,7 +87,6 @@ There are three possible types of preloads: media, plan and whiteboard.
     #
     # upload in-memory data
     #
-
     my $preload2 = Elive::Entity::Preload->upload(
              {
 		    type => 'whiteboard',
