@@ -73,7 +73,7 @@ t/29-soap-multi-connect.t
 t/30-soap-errors.t
 t/31-soap-participant-list.t
 t/32-soap-session.t
-t/34-soap-session-recurring.t
+t/33-soap-session-recurring.t
 t/40-script-elive_query.t
 t/41-script-elive_raise_meeting.t
 t/42-script-elive_lint_config.t
