@@ -32,7 +32,7 @@ our %handled = (meetingId => 1);
 foreach my $prop (sort keys %delegates) {
     my $class = $delegates{$prop};
     my @delegates = grep {!$handled{$_}++} ($class->properties, $class->derivable);
-    push (@delegates, qw{buildJNLP check_preload add_preload remove_preload is_participant us_moderator list_preloads list_recordings})
+    push (@delegates, qw{buildJNLP check_preload add_preload remove_preload is_participant is_moderator list_preloads list_recordings})
 	if $prop eq 'meeting';
 
     has $prop
@@ -49,8 +49,7 @@ Elive::View::Session - Session view class
 
 =head1 DESCRIPTION
 
-A session is a consolidated view of meetings, meeting participants, server
-parameters and participants.
+A session is a consolidated view of meetings, meeting parameters, server parameters and participants.
 
 =head1 METHODS
 
@@ -89,8 +88,7 @@ Creates a new session on an Elluminate server.
 
     my $session = Elive::View::Session->insert( \%session_data );
 
-A series of sesions can be created using the C<recurrenceCount> and
-C<recurrenceDays> parameters.
+A series of sesions can be created using the C<recurrenceCount> and C<recurrenceDays> parameters.
 
     #
     # create three weekly sessions
