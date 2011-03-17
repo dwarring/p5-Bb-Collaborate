@@ -183,62 +183,6 @@ TROUBLESHOOTING
 		    <command name="getUser" class="com.elluminate.adapter.command.GetUserCommand" />
                     <!-- -- ADD COMMANDS HERE -->
 
-DATABASE CONFIGURATON
-
-    Elluminate site instances by default use McKoi - a lightweight pure
-    Java/JDBC database.
-
-    You might want to Consider using other databases, such as  SQL Server,
-    Oracle or MySQL. These are supported by Elluminate and have JDBC bridges
-    available.
-
-    However, Elluminate Live! also bundles JDBCScriptTool and JDBCQueryTool.
-    Both can be used for basic SQL access to McKoi databases.
-
-    They need to be run locally on the server:
-
-    % cd /opt/ElluminateLive/manager/tomcat/webapps/<instance>/WEB-INF/
-
-
-    * JDBCScript Tool can be used for text based queries
-
-      % echo 'describe Meetings'|/opt/ElluminateLive/jre/bin/java -cp lib/mckoidb.jar com.mckoi.tools.JDBCScriptTool -url "jdbc:mckoi:local://./resources/db.conf" -u admin -p admin
-      Using JDBC Driver: com.mckoi.JDBCDriver
-      Connection established to: jdbc:mckoi:local://./resources/db.conf
-
-      > describe Meetings
-      +-------------------+----------------+----------+--------------+---------+
-      | name              | type           | not_null | index        | default |
-      +-------------------+----------------+----------+--------------+---------+
-      | startDate         | BIGINT         | false    | InsertSearch | NULL    |
-      | allModerators     | BOOLEAN(0,0)   | false    | InsertSearch | NULL    |
-      | restrictedMeeting | BOOLEAN(0,0)   | false    | InsertSearch | NULL    |
-      | privateMeeting    | BOOLEAN(0,0)   | false    | InsertSearch | NULL    |
-      | name              | VARCHAR(256,0) | false    | InsertSearch | NULL    |
-      | creatorId         | VARCHAR(64,0)  | false    | InsertSearch | NULL    |
-      | meetingId         | BIGINT         | true     | InsertSearch | NULL    |
-      | endDate           | BIGINT         | false    | InsertSearch | NULL    |
-      | adapter           | VARCHAR(64,0)  | false    | InsertSearch | NULL    |
-      | password          | VARCHAR(16,0)  | false    | InsertSearch | NULL    |
-      | deleted           | BOOLEAN(0,0)   | false    | InsertSearch | NULL    |
-      +-------------------+----------------+----------+--------------+---------+
-
-       --- FINISHED    
-
-    You will need write access to the database and log files for this to work.
-
-    * JDBCScript Tool can be used for text based queries
-
-      % /opt/ElluminateLive/jre/bin/java -cp lib/mckoidb.jar com.mckoi.tools.JDBCQueryTool -url "jdbc:mckoi:local://./resources/db.conf" -u admin -p admin
-
-      This should give you an SQL window, providing you have a X display to the
-      server.
-
-      The first command to try might be 'show tables'.
-
-    As always, be careful running update and delete commands on a live
-    production database!
-
 LDAP AUTHENTICATION
 
     Elluminate Live! can also be configured to use an LDAP repository for
