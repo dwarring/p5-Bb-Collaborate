@@ -7,11 +7,11 @@ Elive - Elluminate Live! (c) Command Toolkit bindings
 
 =head1 VERSION
 
-Version 0.85
+Version 0.86
 
 =cut
 
-our $VERSION = '0.85';
+our $VERSION = '0.86';
 
 use parent qw{Class::Data::Inheritable};
 use Scalar::Util;

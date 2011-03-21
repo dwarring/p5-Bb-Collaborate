@@ -1,7 +1,7 @@
 Revision history for Elive
 
 0.86    15th March 2011
-        - $preload = Elive::Entity::Preload->update( 'filename' ) - now works
+        - $preload = Elive::Entity::Preload->upload( 'filename' ) - now works
           as documented in Elive introductory example.
 
 0.85    15th March 2011
@@ -16,9 +16,11 @@ Revision history for Elive
 
 0.84    11th March 2011
         - Elive::View::Session - added support for recurring meetings
-        - elive_query - converted from Elive::Entity::Meeting and friends to Elive::View::Meeting
-        - Elive::Struct reverted from Mouse find_attribute_by_name to get_attribute. Was misbehaving
-          under Perl 5.8.x when used in DEMOLISH during object destruction.
+        - elive_query - converted from Elive::Entity::Meeting and friends to
+          Elive::View::Meeting
+        - Elive::Struct reverted from Mouse find_attribute_by_name to
+          get_attribute. Was misbehaving under Perl 5.8.x when invoked via
+          DEMOLISH during object destruction.
 
 0.83    3rd March 2011
         [This release introduces Elive::View::Session - a consolidation
