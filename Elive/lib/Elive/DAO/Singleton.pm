@@ -7,11 +7,13 @@ use Carp;
 
 Elive::DAO::Singleton - Singleton mixin class
 
-=cut
+=head1 DESCRIPTION
 
-=head2 get
+This mixin class provides a C<get> method for fetching the singleton
+object. It also overrides the L<Elive::DAO> list method, to return just
+the singleton object in a one element array.
 
-For example:
+Typical usage is:
 
     package Elive::Entity::SomeEntity;
     use warnings; use strict;
@@ -20,34 +22,17 @@ For example:
 
     extends 'Elive::DAO::Singleton', 'Elive::Entity';
 
-    #...
-
-Then
-
-    my $server = Elive::Entity::SomeEntity->get(connection => $connection);
-
-Get the singleton object.
-
 =cut
 
+=head1 METHODS
 
-=head2 list
+=head2 get
 
-    my $server_list = Elive::Entity::SomeEntity->list();
-    my $server_obj = $server_list->[0];
+    my $server = Elive::Entity::ServerDetails->get(connection => $connection);
 
-Override the list method to fetch the single element.
+Gets the singleton object.
 
 =cut
-
-sub list {
-    my ($class, %opt) = @_;
-
-    croak "filter not applicable to singleton class: $class"
-	if ($opt{filter});
-
-    return $class->_fetch({}, %opt);
-}
 
 sub get {
     my ($class, %opt) = @_;
@@ -59,6 +44,24 @@ sub get {
 		&& $object_list->[0]);
 
     return $object_list->[0];
+}
+
+=head2 list
+
+    my $server_list = Elive::Entity::SomeEntity->list();
+    my $server_obj = $server_list->[0];
+
+Returns the singleton object in a one element array .
+
+=cut
+
+sub list {
+    my ($class, %opt) = @_;
+
+    croak "filter not applicable to singleton class: $class"
+	if ($opt{filter});
+
+    return $class->_fetch({}, %opt);
 }
 
 1;
