@@ -11,7 +11,7 @@ extends 'Elive::DAO';
 
 =head1 DESCRIPTION
 
-This class implements the default Elluminate live SDK.
+This is the base class for bindings to the default Elluminate live API.
 
 =cut
 
