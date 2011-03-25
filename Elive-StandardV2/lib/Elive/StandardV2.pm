@@ -16,13 +16,13 @@ Elive::StandardV2 - Perl bindings for the Elluminate Live Standard Bridge (V2)
 
 =head1 VERSION
 
-Version 0.00_4
+Version 0.00_5
 
 ** DEVELOPER RELEASE - UNDER CONSTRUCTION **
 
 =cut
 
-our $VERSION = '0.00_4';
+our $VERSION = '0.00_5';
 
 =head1 SYNOPSIS
 

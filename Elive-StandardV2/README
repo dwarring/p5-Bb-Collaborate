@@ -1,4 +1,4 @@
-Perl bindings for the Elluminate Live Standard Bridge V2 API.
+Perl bindings for the Elluminate Live Standard Bridge v2 API.
 
 ** DEVELOPER RELEASE - UNDER CONSTRUCTION **
 
@@ -6,15 +6,11 @@ Elluminate Live! (c) is software for virtual online classrooms. It is suitable
 for meetings, demonstrations web conferences, seminars and IT deployment,
 training and support.
 
-Elive is a set of Perl bindings and entity definitions for the Elluminate Live!
-SDK. You can, for example, use it to query or add users, create sessions,
-assign users as class participants and change server settings.
+Elive-StandardV2 is a set of Perl bindings and entity definitions for the
+Elluminate Standard Bridge V2 SOAP services. 
 
-Elive-StandardV2 is a set of Perl bindings specifically for the Elluminate
-Standard Bridge v2 SOAP services.
-
-This complements the Elive module, which binds to the default SDK, available
-with sites running the Elluminate Live Manager (ELM).
+This is a newer lightweight alternative to Elive which binds to the
+Command Toolkit default SOAP services.
 
 INSTALLATION
 ============
@@ -34,7 +30,7 @@ Please ensure that your the standard bridge (v2) is enabled. To do this,
 login to http://your_server.com/elmcontrol with an appropriate adminstrator
 account.
 
-Edit/create the appropriate server instance and Select 'Elluminate Standard
+Edit/create the appropriate server instance and tick 'Elluminate Standard
 Bridge v2 ...' in the 'Bridge Selection' section.
 
 You will then be asked to enter the SDK username and password. 
