@@ -9,6 +9,7 @@ use SOAP::Lite;
 use MIME::Base64;
 
 use Carp;
+use YAML;
 
 use Elive::Connection;
 use base qw{Elive::Connection};
@@ -258,4 +259,37 @@ sub version {
     return (my $self = shift)->server_versions->versionName;
 }
 
+sub _check_for_errors {
+    my $class = shift;
+    my $som = shift;
+
+    croak "No response from server"
+	unless $som;
+
+    $class->SUPER::_check_for_errors( $som );
+
+    my $body = $som->body;
+
+    if ( Elive::Util::_reftype( $body ) eq 'HASH'
+	 && (my $error_resp = $body->{DefaultAdapterErrorResponse}))  {
+
+	unless (Elive::Util::_reftype( $error_resp ) eq 'HASH') {
+	    Carp::cluck ("Unexpected response: ". YAML::Dump($body));
+	    croak "error parsing DefaultAdapterErrorResponse";
+	}
+
+	my $command = $error_resp->{command};
+	my $message = $error_resp->{message};
+	my $success = $error_resp->{success};
+
+	my $msg = join(': ', grep {$_} ($command, $message));
+
+	if ($success) {
+	    Carp::carp $msg
+	}
+	else {
+	    Carp::croak $msg
+	}
+    }
+}
 1;
