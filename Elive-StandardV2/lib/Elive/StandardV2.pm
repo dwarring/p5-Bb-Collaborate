@@ -20,7 +20,6 @@ Version 0.00_4
 
 ** DEVELOPER RELEASE - UNDER CONSTRUCTION **
 
-
 =cut
 
 our $VERSION = '0.00_4';
@@ -75,10 +74,15 @@ sub _get_results {
 
 =head2 connect
 
-     my $e1 = Elive::StandardV2->connect('http://myServer.com/test1', 'user1', 'pass1');
+     use Elive::StandardV2;
+     use Elive::StandardV2::Connection;
 
-     Elive::StandardV2->connect('http://user2:pass2@myServer.com/test2');
-     my $e2 = Elive::StandardV2->connection;
+     Elive::StandardV2->connect('http://myServer.com/test1', 'user1', 'pass1');
+     my $c1 = Elive::StandardV2->connection;
+     #
+     # A secondary connection
+     #
+     my $c2 = Elive::StandardV2::Connection->connect('http://user2:pass2@myServer.com/test2');
 
 Connects to an Elluminate server instance. Dies if the connection could not
 be established. If, for example, the SOAP connection or authentication failed.
@@ -122,7 +126,7 @@ __PACKAGE__->mk_classdata('connection');
 
 =head2 update
 
-Inherited method to commit outstanding object updates to the server.
+Abstract method to commit outstanding object updates to the server.
 
     $obj->{foo} = 'Foo';  # change foo attribute directly
     $foo->update;         # save
@@ -169,7 +173,7 @@ sub _fetch {
 
 =head2 insert
 
-Inherited method to create new entity instances on the server:
+Abstract method to create new entity instances on the server:
 
     my $multimedia = Elive::StandardV2::Multimedia->insert(
              {
@@ -191,7 +195,7 @@ sub insert {
 
 =head2 list
 
-Inerited selection method. Most commands allow a ranging expression to narrow
+Abstract selection method. Most commands allow a ranging expression to narrow
 the selection. This is passed in using the C<filter> option. For example:
 
     my $bobs_sessions = Elive::StandardV2::Session->list(filter => {userId => 'bob'});
@@ -231,7 +235,7 @@ sub _parse_filter {
 
 =head2 delete
 
-Inherited method to delete entities from the server:
+Abstract method to delete entities:
 
     $multimedia->delete;
 
@@ -276,8 +280,6 @@ Please report any bugs or feature requests to C<bug-elive-standardv2 at rt.cpan.
 the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Elive-StandardV2>.  I will be notified, and then you'll
 automatically be notified of progress on your bug as I make changes.
 
-
-
 =head1 SUPPORT
 
 You can find documentation for this module with the perldoc command.
@@ -313,7 +315,7 @@ L<http://search.cpan.org/dist/Elive-StandardV2/>
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright 2010 David Warring.
+Copyright 2010-2011 David Warring.
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of either: the GNU General Public License as published

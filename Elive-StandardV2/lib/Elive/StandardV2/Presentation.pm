@@ -64,7 +64,7 @@ sub _freeze {
 ##	$db_data->{size} ||= Elive::Util::_freeze( length($_), 'Int');
 
 	#
-	# (a bit of layer bleed here...). Do we need a seperate daat type
+	# (a bit of layer bleed here...). Do we need a seperate data type
 	# for base 64 encoded data?
 	#
 	eval {require SOAP::Lite}; die $@ if $@;
@@ -90,7 +90,7 @@ sub insert {
 =head2 list
 
     my $session_presentations = Elive::StandardV2::Presentation->list(
-                                   filter => {sessionId => $my_session->id}
+                                   filter => {sessionId => $my_session}
                                 );
 
 Lists sessions. You will need to provide a filter that contains at least one

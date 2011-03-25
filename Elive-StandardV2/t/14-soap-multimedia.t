@@ -35,6 +35,7 @@ SKIP: {
 	      {
 		filename => 'elive-standardv2-test-14-multimedia-t.mpeg',
 		content => $data,
+                description => 'created by t/14-soap-multimedia.t',
 		creatorId => 'elive-standardv2-tester',
 	      })
 	       },

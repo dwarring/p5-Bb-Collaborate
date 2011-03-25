@@ -105,7 +105,7 @@ has 'openChair' => (is => 'rw', isa => 'Bool',
     );
 
 has 'permissionsOn' => (is => 'rw', isa => 'Bool',
-		    documentation => 'Whether all non chair participcants are granted all permissions',
+		    documentation => 'Whether all non chair participants are granted all permissions',
     );
 
 has 'raiseHandOnEnter' => (is => 'rw', isa => 'Bool',
@@ -168,8 +168,8 @@ sub attendance {
         chairPIN   => '6342',
      });
 
-Returns an L<Elive::StandardV2::SessionTelephony> object for the given session. This
-can then be used to get or set the session's telephony characterisitics.
+Returns an L<Elive::StandardV2::SessionTelephony> object for the given session.
+This can then be used to get or set the session's telephony characterisitics.
 
 =cut
 
