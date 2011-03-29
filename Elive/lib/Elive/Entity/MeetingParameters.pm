@@ -36,10 +36,13 @@ has 'inSessionInvitation'  => (is => 'rw', isa => 'Bool');
 __PACKAGE__->_alias('inSessionInvitations' => 'inSessionInvitation');
 
 has 'followModerator'  => (is => 'rw', isa => 'Bool');
-has 'videoWindow'  => (is => 'rw', isa => 'Bool');
+has 'videoWindow'  => (is => 'rw', isa => 'Int',
+		       documentation => 'Max simultaneous cameras');
 has 'recordingObfuscation'  => (is => 'rw', isa => 'Bool');
-has 'recordingResolution'  => (is => 'rw', isa => 'Str');
-has 'profile'  => (is => 'rw', isa => 'Str');
+has 'recordingResolution'  => (is => 'rw', isa => 'Str',
+    documentation => 'CG:course gray, CC:course color, MG:medium gray, MC:medium color, FG:fine gray, FC:fine color');
+has 'profile'  => (is => 'rw', isa => 'Str',
+		   documentation => "Which user profiles are displayed: 'none', 'mod' or 'all'");
 
 =head1 NAME
 
@@ -119,7 +122,8 @@ sub _thaw {
 
 =head1 See Also
 
-Elive::Entity::Meeting
+L<Elive::Entity::Meeting>
+L<Elive::View::Session>
 
 =cut
 
