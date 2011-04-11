@@ -1,4 +1,5 @@
 .cvsignore
+.depend
 .releaserc
 Changes
 inc/Module/Install.pm
@@ -33,6 +34,7 @@ lib/Elive/Entity/Role.pm
 lib/Elive/Entity/ServerDetails.pm
 lib/Elive/Entity/ServerParameters.pm
 lib/Elive/Entity/User.pm
+lib/Elive/Notes.pod
 lib/Elive/script/elive_query/ViewMeeting.pm
 lib/Elive/Struct.pm
 lib/Elive/Util.pm

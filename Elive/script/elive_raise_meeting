@@ -60,6 +60,10 @@ elive_raise_meeting
     -[no]raise_hands             # automatically raise hands on entry
     -[no]supervised              # moderator can see private messages
 
+    -user_notes      'blurb1'
+    -moderator_notes 'blurb2'
+    -cost_center     'code'
+
   Preloads
 
     -upload              local_file     # upload a file from the client
@@ -106,6 +110,9 @@ my $seats;
 my $permissions;
 my $supervised;
 my $invites;
+my $moderator_notes;
+my $user_notes;
+my $cost_center;
 my %occurs;
 my $version;
 
@@ -140,6 +147,9 @@ sub main {
 	'invites|invitations!' => \$invites,
         'occurs=i%' => \%occurs,
 	'v|version' => \$version,
+	'user_notes=s' => \$user_notes,
+	'moderator_notes=s' => \$moderator_notes,
+	'cost_center|cost_centre=s' => \$cost_center,
     )
 	or die pod2usage(1);
 
@@ -316,6 +326,15 @@ sub main {
 
     $session_data{boundaryMinutes} = $boundary
 	if defined $boundary;
+
+    $session_data{user_notes} = $user_notes
+	if defined $user_notes;
+
+    $session_data{moderator_notes} = $moderator_notes
+	if defined $moderator_notes;
+
+    $session_data{cost_center} = $cost_center
+	if defined $cost_center;
 
     if (defined $restricted) {
 	if ($server_version_num < '9999.007001') {

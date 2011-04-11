@@ -10,7 +10,7 @@ use lib '.';
 use t::Elive;
 
 use Elive;
-use Elive::Entity::Meeting;
+use Elive::View::Session;
 
 if ( not $ENV{TEST_AUTHOR} ) {
     my $msg = 'Author test.  Set $ENV{TEST_AUTHOR} to a true value to run.';
@@ -24,7 +24,7 @@ if ( $EVAL_ERROR ) {
     plan( skip_all => $msg );
 }
 
-plan(tests => 74);
+plan(tests => 83);
 
 local ($ENV{TERM}) = 'dumb';
 
@@ -95,7 +95,7 @@ SKIP: {
 	is($ret_meeting_name, $meeting_name, 'echoed meeting name as expected');
 
 	my $meeting;
-	ok($meeting = Elive::Entity::Meeting->retrieve([$ret_meeting_id], connection => $connection), 'retrieve');
+	ok($meeting = Elive::View::Session->retrieve([$ret_meeting_id], connection => $connection), 'retrieve');
 
 	unless ($meeting) {
 	    die "unable to retrieve meeting: $ret_meeting_id - aborting";
@@ -127,6 +127,9 @@ SKIP: {
 	my $end_time = $start_time + 1800;
 	my @start = localtime($start_time);
 	my @end   = localtime($end_time);
+	my $cost_center = 'test-cost-center';
+	my $user_notes = 'test-user-notes';
+	my $moderator_notes = 'test-moderator-notes';
 
 	my $start_str = sprintf("%04d-%02d-%02d %02d:%02d", $start[5]+1900, $start[4]+1, $start[3], $start[2], $start[1]);
 	my $end_str = sprintf("%04d-%02d-%02d %02d:%02d", $end[5]+1900, $end[4]+1, $end[3], $end[2], $end[1]);
@@ -137,6 +140,9 @@ SKIP: {
 	    -start => $start_str,
 	    -end   => $end_str,
 	    -meeting_pass => $meeting_pass,
+	    -cost_center  => $cost_center,
+	    -user_notes   => $user_notes,
+	    -moderator_notes  => $moderator_notes,
 	    );
 
 	my ( $result, $stdout, $stderr ) = run_script($script_name,
@@ -168,7 +174,7 @@ SKIP: {
 	    is($ret_meeting_name, $meeting_name, "week $week: echoed meeting name as expected");
 
 	    my $meeting;
-	    ok($meeting = Elive::Entity::Meeting->retrieve([$ret_meeting_id], connection => $connection), "week $week: retrieve");
+	    ok($meeting = Elive::View::Session->retrieve([$ret_meeting_id], connection => $connection), "week $week: retrieve");
 
 	    unless ($meeting) {
 		die "unable to retrieve meeting: $ret_meeting_id - aborting";
@@ -181,6 +187,10 @@ SKIP: {
 		ok(abs($actual_start_time - $start_time) <= 120, "week $week: actual start time as expected");	
 		ok(abs($actual_end_time - $end_time) <= 120, "week $week: actual end time as expected");	
 	    }
+
+	    is($meeting->cost_center, $cost_center, "week $week: cost_center as expected");
+	    is($meeting->user_notes, $user_notes, "week $week: user_notes as expected");
+	    is($meeting->moderator_notes, $moderator_notes, "week $week: moderator_notes as expected");
 
 	    is($meeting->name, $meeting_name, "week $week: retrieved meeting name as expected");
 	    ok(do {grep {$_->meetingId eq $ret_meeting_id} @$meetings_with_this_password}, "week $week: meeting password as expected");
@@ -221,14 +231,14 @@ SKIP: {
 
 	my ($ret_meeting_name, $ret_meeting_id) = ($stdout =~ $meeting_response_re);
 	my $meeting;
-	ok($meeting = Elive::Entity::Meeting->retrieve([$ret_meeting_id], connection => $connection), "meeting retrieve");
+	ok($meeting = Elive::View::Session->retrieve([$ret_meeting_id], connection => $connection), "meeting retrieve");
 
 	unless ($meeting) {
 	    die "unable to retrieve meeting: $ret_meeting_id - aborting";
 	}
 
 	foreach my $flag (@flags) {
-	    my $result = _lookup_opt($meeting, $flag);
+	    my $result = $meeting->$flag;
 
 	    ok($result, "meeting -${flag} as expected");
 	}
@@ -254,14 +264,14 @@ SKIP: {
 
 	my ($ret_meeting_name, $ret_meeting_id) = ($stdout =~ $meeting_response_re);
 	my $meeting;
-	ok($meeting = Elive::Entity::Meeting->retrieve([$ret_meeting_id], connection => $connection), "meeting retrieve");
+	ok($meeting = Elive::View::Session->retrieve([$ret_meeting_id], connection => $connection), "meeting retrieve");
 
 	unless ($meeting) {
 	    die "unable to retrieve meeting: $ret_meeting_id - aborting";
 	}
 
 	foreach my $flag (@flags) {
-	    my $result = _lookup_opt($meeting, $flag);
+	    my $result = $meeting->$flag;
 
 	    ok(!$result, "meeting -no${flag} as expected");
 	}
@@ -297,7 +307,7 @@ SKIP: {
 
 	    my ($ret_meeting_name, $ret_meeting_id) = ($stdout =~ $meeting_response_re);
 	    my $meeting;
-	    ok($meeting = Elive::Entity::Meeting->retrieve([$ret_meeting_id], connection => $connection), "meeting retrieve");
+	    ok($meeting = Elive::View::Session->retrieve([$ret_meeting_id], connection => $connection), "meeting retrieve");
 
 	    unless ($meeting) {
 		die "unable to retrieve meeting: $ret_meeting_id - aborting";
@@ -306,7 +316,7 @@ SKIP: {
 	    foreach my $option (sort keys %option_values) {
 
 		my $expected_value =  $option_values{$option}[$run];
-		my $result = _lookup_opt($meeting, $option);
+		my $result = $meeting->$option;
 		
 		is($result, $expected_value, "meeting run $run: -${option}, $expected_value");
 	    }
@@ -316,33 +326,3 @@ SKIP: {
 	}
     }
 };
-
-########################################################################
-
-sub _lookup_opt {
-    my $meeting = shift;
-    my $flag = shift;
-
-    return $meeting->server_parameters->boundaryMinutes
-	if $flag eq 'boundary';
-
-    return $meeting->parameters->inSessionInvitation
-	if $flag eq 'invites';
-
-    return $meeting->server_parameters->fullPermissions
-	if $flag eq 'permissions';
-
-    return $meeting->parameters->maxTalkers
-	if $flag eq 'max_talkers';
-
-    return $meeting->parameters->raiseHandOnEnter
-	if $flag eq 'raise_hands';
-
-    return $meeting->parameters->recordingStatus
-	if $flag eq 'recording';
-
-    return $meeting->server_parameters->supervised
-	if $flag eq 'supervised';
-
-    return $meeting->$flag;
-}

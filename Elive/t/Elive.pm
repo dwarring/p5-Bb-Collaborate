@@ -63,7 +63,7 @@ sub test_connection {
 	    }
 	}
 	else {
-	    $result{reason} = 'skipping live tests (set $ELIVE_TEST_{USER|PASS|URL}'.$suffix.' to enable)';
+	    $result{reason} = 'skipping live tests (set $ELIVE_TEST_URL'.$suffix.' to enable)';
 	}
     }
 

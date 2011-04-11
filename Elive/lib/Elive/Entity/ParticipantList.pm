@@ -344,20 +344,6 @@ to retrieve on a meeting id.
 
 sub list {return shift->_not_available}
 
-=head1 SEE ALSO
-
-=over 4
-
-=item Elive::Entity::Meeting
-
-=item Elive::Entity::ParticipantList::Participants
-
-=item Elive::Entity::ParticipantList::Participant
-
-=back
-
-=cut
-
 sub _thaw {
     my ($class, $db_data, @args) = @_;
 
@@ -395,5 +381,17 @@ sub _thaw {
 
     return $class->SUPER::_thaw($db_data, @args);
 }
+
+=head1 SEE ALSO
+
+L<Elive::Entity::Meeting>
+
+L<Elive::View::Session>
+
+L<Elive::Entity::ParticipantList::Participants>
+
+L<Elive::Entity::ParticipantList::Participant>
+
+=cut
 
 1;

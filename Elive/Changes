@@ -1,5 +1,11 @@
 Revision history for Elive
 
+0.87    11th April 2011
+        - Elive::Entity::MeetingParameters - corrected datatype for
+          'videoWindow' to 'Int' (was 'Bool').
+        - elive_raise_meeting - added options: -cost_center -user_notes
+          -moderator_notes
+
 0.86    15th March 2011
         - $preload = Elive::Entity::Preload->upload( 'filename' ) - now works
           as documented in Elive introductory example.

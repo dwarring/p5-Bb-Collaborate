@@ -1,6 +1,6 @@
 Elluminate Live! (c) is software for virtual online classrooms. It is suitable
-for meetings, demonstrations web conferences, seminars and IT deployment,
-training and support.
+for meetings, demonstrations web conferences, seminars, general training and
+support.
 
 Elive is a set of Perl bindings and entity definitions for the Elluminate Live!
 Entity Commands in the Command Toolkit. You can, for example, use it to query

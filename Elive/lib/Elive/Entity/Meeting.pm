@@ -647,19 +647,17 @@ from Preferences E<gt>E<gt> Session Defaults E<gt>E<gt> Restrict Meetings.
 
 =head1 SEE ALSO
 
-=over 4
+L<Elive::View::Session>
 
-=item Elive::Entity::Preload
+L<Elive::Entity::Preload>
 
-=item Elive::Entity::Recording
+L<Elive::Entity::Recording>
 
-=item Elive::Entity::MeetingParameters 
+L<Elive::Entity::MeetingParameters>
 
-=item Elive::Entity::ServerParameters
+L<Elive::Entity::ServerParameters>
 
-=item Elive::Entity::ParticipantList
-
-=back
+L<Elive::Entity::ParticipantList>
 
 =cut
 

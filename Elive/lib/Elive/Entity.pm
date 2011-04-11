@@ -11,7 +11,8 @@ extends 'Elive::DAO';
 
 =head1 DESCRIPTION
 
-This is the base class for bindings to the default Elluminate live API.
+This is the base class for bindings to the command adapter, the default
+Elluminate live API.
 
 =cut
 

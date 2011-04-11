@@ -196,7 +196,12 @@ sub stringify {
 
 =head1 SEE ALSO
 
-L<Elive::Entity::ParticipantList> L<Elive::Entity::ParticipantList::Participants>
+L<Elive::Entity::ParticipantList>
+L<Elive::Entity::ParticipantList::Participants>
+L<Elive::Entity::User>
+L<Elive::Entity::Group>
+L<Elive::Entity::InvitedGues>;
+L<Elive::Entity::Role>
 
 =cut
 

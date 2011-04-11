@@ -15,18 +15,28 @@ __PACKAGE__->primary_key('meetingId');
 
 has 'costCenter' => (is => 'rw', isa => 'Str',
     documentation => 'user defined cost center');
+__PACKAGE__->_alias('cost_center' => 'costCenter');
+
 has 'moderatorNotes' => (is => 'rw', isa => 'Str',
     documentation => 'meeting instructions for moderator(s)');
+__PACKAGE__->_alias('moderator_notes' => 'moderatorNotes');
+
 has 'userNotes' => (is => 'rw', isa => 'Str',
     documentation => 'meeting instructions for all participants');
+__PACKAGE__->_alias('user_notes' => 'userNotes');
 
 enum enumRecordingStates => '', qw(on off remote);
 has 'recordingStatus' => (is => 'rw', isa => 'enumRecordingStates',
     documentation => 'recording status; on, off or remote (start/stopped by moderator)');
+__PACKAGE__->_alias('recording' => 'recordingStatus');
+
 has 'raiseHandOnEnter' => (is => 'rw', isa => 'Bool',
     documentation => 'raise hands automatically when users join');
+__PACKAGE__->_alias('raise_hands' => 'raiseHandOnEnter');
+
 has 'maxTalkers' => (is => 'rw', isa => 'Int',
     documentation => 'maximum number of simultaneous talkers');
+__PACKAGE__->_alias('max_talkers' => 'maxTalkers');
 #
 # inSessionInvitation - required by ElluminateLive 8.0 - 9.10?
 # took a walk in 9.1, but back in 9.5 as inSessionInvitations
@@ -34,10 +44,12 @@ has 'maxTalkers' => (is => 'rw', isa => 'Int',
 has 'inSessionInvitation'  => (is => 'rw', isa => 'Bool');
 # v9.5
 __PACKAGE__->_alias('inSessionInvitations' => 'inSessionInvitation');
+__PACKAGE__->_alias('invites' => 'inSessionInvitation');
 
 has 'followModerator'  => (is => 'rw', isa => 'Bool');
 has 'videoWindow'  => (is => 'rw', isa => 'Int',
 		       documentation => 'Max simultaneous cameras');
+
 has 'recordingObfuscation'  => (is => 'rw', isa => 'Bool');
 has 'recordingResolution'  => (is => 'rw', isa => 'Str',
     documentation => 'CG:course gray, CC:course color, MG:medium gray, MC:medium color, FG:fine gray, FC:fine color');

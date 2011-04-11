@@ -28,6 +28,7 @@ __PACKAGE__->_alias(boundaryTime => 'boundaryMinutes'); # v 9.5.0 +
 has 'fullPermissions' => (is => 'rw', isa => 'Bool', required => 1,
     documentation => 'whether participants can perform activities (e.g. use whiteboard) before the supervisor arrives');
 __PACKAGE__->_alias(permissionsOn => 'fullPermissions', freeze => 1);
+__PACKAGE__->_alias(permissions => 'fullPermissions');
 
 has 'supervised' => (is => 'rw', isa => 'Bool',
     documentation => 'whether the moderator can see private messages');

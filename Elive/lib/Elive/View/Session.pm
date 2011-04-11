@@ -31,7 +31,8 @@ our %handled = (meetingId => 1);
 
 foreach my $prop (sort keys %delegates) {
     my $class = $delegates{$prop};
-    my @delegates = grep {!$handled{$_}++} ($class->properties, $class->derivable);
+    my $aliases = $class->_get_aliases;
+    my @delegates = grep {!$handled{$_}++} ($class->properties, $class->derivable, sort keys %$aliases);
     push (@delegates, qw{buildJNLP check_preload add_preload remove_preload is_participant is_moderator list_preloads list_recordings})
 	if $prop eq 'meeting';
 
@@ -196,7 +197,7 @@ sub retrieve {
     my $id = shift;
     my %opt = @_;
     ($id) = @$id if ref($id);
-    my $self = bless {id => Elive::Util::_string($id)}, $class;
+    my $self = bless {id => Elive::Util::string($id)}, $class;
 
     for ($opt{connection}) {
 	$self->connection($_) if $_;
