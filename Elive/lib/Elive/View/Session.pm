@@ -299,7 +299,7 @@ sub properties {
 
     my %seen = (meetingId => 1);
 
-    my @all_properties = grep {! $seen{$_}++} (
+    my @all_properties = sort grep {! $seen{$_}++} (
 	'id',
 	map {$_->properties} sort values %delegates,
     );
@@ -337,7 +337,7 @@ sub derivable {
 	);
 }
 
-=head2 SEE ALSO
+=head1 SEE ALSO
 
 L<Elive::Entity::Meeting>
 L<Elive::Entity::MeetingParameters>
