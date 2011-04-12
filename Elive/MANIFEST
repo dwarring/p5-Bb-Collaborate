@@ -1,5 +1,4 @@
 .cvsignore
-.depend
 .releaserc
 Changes
 inc/Module/Install.pm

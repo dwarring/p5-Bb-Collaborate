@@ -50,11 +50,10 @@ Elive::Entity::ServerParameters - Meeting server parameters entity class
 
 =head1 SYNOPSIS
 
-    my $meeting = Elive::Entity::Meeting->retrieve([$meeting_id]);
-    my $meeting_params
-        = Elive::Entity::ServerParameters->retrieve([$meeting->meetingId]);
+    my $meeting = Elive::Entity::Meeting->insert( \%meeting_data );
+    my $params $meeting->server_parameters;
 
-    $meeting_params->update({
+    $params->update({
            boundaryMinutes => 15,
            fullPermissions => 0,
            supervised      => 1,
@@ -64,7 +63,7 @@ Elive::Entity::ServerParameters - Meeting server parameters entity class
 
 =head1 DESCRIPTION
 
-More meeting options.
+The server parameters entity contains additional meeting options.
 
 =cut
 
@@ -74,8 +73,8 @@ More meeting options.
 
 =head2 insert
 
-The insert method is not applicable. The meeting server parameters table
-is automatically created when you create a table.
+The insert method is not applicable. The meeting server parameters entity
+is automatically created when you create a meeting.
 
 =cut
 
@@ -159,8 +158,8 @@ sub update {
 
 =head1 See Also
 
-Elive::Entity::Meeting
-Elive::Entity::MeetingParameters
+L<Elive::Entity::Meeting>
+L<Elive::Entity::MeetingParameters>
 
 =cut
 

@@ -1,5 +1,8 @@
 Revision history for Elive
 
+0.87.1  14th April 2011
+        - Removed stray .depend file from distribution.
+
 0.87    11th April 2011
         - Elive::Entity::MeetingParameters - corrected datatype for
           'videoWindow' to 'Int' (was 'Bool').

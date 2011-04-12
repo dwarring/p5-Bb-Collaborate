@@ -1,3 +1,9 @@
+=pod
+
+=head1 NAME
+
+Elive::Notes - General Development Notes
+
 =head1 DATABASE USAGE
 
 Elluminate site instances by default use McKoi - a lightweight pure

@@ -3,6 +3,7 @@
 \.mine$
 \.r[0-9]+$
 \.edited$
+\.depend$
 # Makemaker generated files and dirs.
 ^MANIFEST\.
 ^Makefile$
