@@ -35,11 +35,11 @@ __PACKAGE__->params(
     recurrenceCount => 'Int',
     recurrenceDays => 'Int',
     timeZone => 'Str',
-    userId => 'Str',
     startDate => 'HiResDate',
     endDate => 'HiResDate',
     version => 'Str',
     displayName => 'Str',
+    userId => 'Str',
     userName => 'Str',
     );
 
@@ -418,14 +418,18 @@ sub remove_preload {
     my $cgi = CGI->new;
 
     #
-    # [authentication etc goes here] ...
+    # authentication, calls to Elive->connect,  etc goes here...
     #
+    my $meeting_id = $cgi->param('meeting_id');
+    my $meeting = Elive::Entity::Meeting->retrieve($meeting_id);
 
-    my $jnlp = $meeting_entity->buildJNLP(version => $version,
-					  user => $userId||$userName,
-					  pass => $password,
-                                          displayName => $displayName,
-                                         );
+    my $login_name = $cgi->param('user');
+    my $user = Elive::Entity::User->get_by_loginName($login_name);
+
+    my $jnlp = $meeting->buildJNLP(version => $version,
+                                   user => $user,
+                                   displayName => join(' ', $user->firstName, $user->lastName),
+                                  );
     #
     # join this user to the meeting
     #
@@ -467,14 +471,20 @@ sub buildJNLP {
 	    if defined $val;
     }
 
-    for (delete $opt{user} || $connection->login->userId) {
+    my $user = delete $opt{user} || $connection->login;
 
-	$soap_params{m{^\d+$}x? 'userId' : 'userName'} = $_;
+    if (ref($user) || $user =~ m{^\d+$}x) {
+	$soap_params{userId} = $user;
+    }
+    elsif ($user) {
+	$soap_params{userName} = $user;
+    }
+    else {
+	die "unable to determine jnlp user"; # shouldn't get here
     }
 
-    my $som = $connection->call('buildMeetingJNLP',
-				%{$self->_freeze(\%soap_params)}
-				),;
+    my %params_frozen = %{$self->_freeze(\%soap_params)};
+    my $som = $connection->call('buildMeetingJNLP' => %params_frozen);
 
     my $results = $self->_get_results($som, $connection);
 
