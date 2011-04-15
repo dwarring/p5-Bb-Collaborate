@@ -170,6 +170,8 @@ sub main {
     my $keyw;
     my $args;
 
+    binmode STDOUT, ":utf8";
+
     while (($keyw||'') ne 'quit') {
 
 	if ($has_command_opts) {
