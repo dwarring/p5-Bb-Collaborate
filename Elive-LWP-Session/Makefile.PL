@@ -1,7 +1,7 @@
 use inc::Module::Install;
 
-name     'Elive-View-LWP';
-all_from 'lib/Elive/View/LWP.pm';
+name     'Elive-LWP-Session';
+all_from 'lib/Elive/LWP/Session.pm';
 author   q{David Warring <david.warring@gmail.com>};
 license  'perl';
 

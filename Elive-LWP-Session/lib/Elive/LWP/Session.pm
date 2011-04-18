@@ -1,11 +1,11 @@
-package Elive::View::LWP;
+package Elive::LWP::Session;
 
 use warnings;
 use strict;
 
 =head1 NAME
 
-Elive::View::LWP - The great new Elive::View::LWP!
+Elive::LWP::Session - The great new Elive::LWP::Session!
 
 =head1 VERSION
 
@@ -22,9 +22,9 @@ Quick summary of what the module does.
 
 Perhaps a little code snippet.
 
-    use Elive::View::LWP;
+    use Elive::LWP::Session;
 
-    my $foo = Elive::View::LWP->new();
+    my $foo = Elive::LWP::Session->new();
     ...
 
 =head1 EXPORT
@@ -54,8 +54,8 @@ David Warring, C<< <david.warring at gmail.com> >>
 
 =head1 BUGS
 
-Please report any bugs or feature requests to C<bug-elive-view-lwp at rt.cpan.org>, or through
-the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Elive-View-LWP>.  I will be notified, and then you'll
+Please report any bugs or feature requests to C<bug-elive-lwp-session at rt.cpan.org>, or through
+the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Elive-LWP-Session>.  I will be notified, and then you'll
 automatically be notified of progress on your bug as I make changes.
 
 
@@ -65,7 +65,7 @@ automatically be notified of progress on your bug as I make changes.
 
 You can find documentation for this module with the perldoc command.
 
-    perldoc Elive::View::LWP
+    perldoc Elive::LWP::Session
 
 
 You can also look for information at:
@@ -74,19 +74,19 @@ You can also look for information at:
 
 =item * RT: CPAN's request tracker
 
-L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=Elive-View-LWP>
+L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=Elive-LWP-Session>
 
 =item * AnnoCPAN: Annotated CPAN documentation
 
-L<http://annocpan.org/dist/Elive-View-LWP>
+L<http://annocpan.org/dist/Elive-LWP-Session>
 
 =item * CPAN Ratings
 
-L<http://cpanratings.perl.org/d/Elive-View-LWP>
+L<http://cpanratings.perl.org/d/Elive-LWP-Session>
 
 =item * Search CPAN
 
-L<http://search.cpan.org/dist/Elive-View-LWP/>
+L<http://search.cpan.org/dist/Elive-LWP-Session/>
 
 =back
 
@@ -107,4 +107,4 @@ See http://dev.perl.org/licenses/ for more information.
 
 =cut
 
-1; # End of Elive::View::LWP
+1; # End of Elive::LWP::Session

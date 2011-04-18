@@ -48,7 +48,7 @@ TODO: {
     "placeholder date/time"       => qr(Date/time)
   );
 
-  module_boilerplate_ok('lib/Elive/View/LWP.pm');
+  module_boilerplate_ok('lib/Elive/LWP/Session.pm');
 
 
 }

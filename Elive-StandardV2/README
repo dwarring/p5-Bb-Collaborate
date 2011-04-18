@@ -27,7 +27,7 @@ SERVER CONFIGURATION
 Elluminate Live Manager
 -----------------------
 Please ensure that your the standard bridge (v2) is enabled. To do this,
-login to http://your_server.com/elmcontrol with an appropriate adminstrator
+login to http://your_server.com/elmcontrol with an appropriate administrator
 account.
 
 Edit/create the appropriate server instance and tick 'Elluminate Standard
