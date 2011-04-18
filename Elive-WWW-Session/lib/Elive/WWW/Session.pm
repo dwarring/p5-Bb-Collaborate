@@ -1,11 +1,11 @@
-package Elive::LWP::Session;
+package Elive::WWW::Session;
 
 use warnings;
 use strict;
 
 =head1 NAME
 
-Elive::LWP::Session - The great new Elive::LWP::Session!
+Elive::WWW::Session - The great new Elive::WWW::Session!
 
 =head1 VERSION
 
@@ -22,9 +22,9 @@ Quick summary of what the module does.
 
 Perhaps a little code snippet.
 
-    use Elive::LWP::Session;
+    use Elive::WWW::Session;
 
-    my $foo = Elive::LWP::Session->new();
+    my $foo = Elive::WWW::Session->new();
     ...
 
 =head1 EXPORT
@@ -54,8 +54,8 @@ David Warring, C<< <david.warring at gmail.com> >>
 
 =head1 BUGS
 
-Please report any bugs or feature requests to C<bug-elive-lwp-session at rt.cpan.org>, or through
-the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Elive-LWP-Session>.  I will be notified, and then you'll
+Please report any bugs or feature requests to C<bug-elive-www-session at rt.cpan.org>, or through
+the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Elive-WWW-Session>.  I will be notified, and then you'll
 automatically be notified of progress on your bug as I make changes.
 
 
@@ -65,7 +65,7 @@ automatically be notified of progress on your bug as I make changes.
 
 You can find documentation for this module with the perldoc command.
 
-    perldoc Elive::LWP::Session
+    perldoc Elive::WWW::Session
 
 
 You can also look for information at:
@@ -74,19 +74,19 @@ You can also look for information at:
 
 =item * RT: CPAN's request tracker
 
-L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=Elive-LWP-Session>
+L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=Elive-WWW-Session>
 
 =item * AnnoCPAN: Annotated CPAN documentation
 
-L<http://annocpan.org/dist/Elive-LWP-Session>
+L<http://annocpan.org/dist/Elive-WWW-Session>
 
 =item * CPAN Ratings
 
-L<http://cpanratings.perl.org/d/Elive-LWP-Session>
+L<http://cpanratings.perl.org/d/Elive-WWW-Session>
 
 =item * Search CPAN
 
-L<http://search.cpan.org/dist/Elive-LWP-Session/>
+L<http://search.cpan.org/dist/Elive-WWW-Session/>
 
 =back
 
@@ -107,4 +107,4 @@ See http://dev.perl.org/licenses/ for more information.
 
 =cut
 
-1; # End of Elive::LWP::Session
+1; # End of Elive::WWW::Session
