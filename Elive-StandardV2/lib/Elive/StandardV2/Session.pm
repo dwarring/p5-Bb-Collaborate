@@ -260,7 +260,7 @@ sub set_multimedia {
 			      
 =head2 session_url
 
-    my $session_url = $session->session_url(user_id => 'bob');
+    my $session_url = $session->session_url(userId => 'bob');
 
 Returns a URL for the session. This provides authenthicated access for
 the given user.
@@ -275,22 +275,22 @@ sub session_url {
 
     my %params;
 
-    my $session_id = $opt{session_id} || $opt{sessionId};
+    my $session_id = $opt{sessionId};
 
     $session_id ||= $class->sessionId
 	if ref($class);
 
-    croak "unable to determine session_id"
+    croak "unable to determine sessionId"
 	unless $session_id;
 
     $params{sessionId} = $session_id;
 
-    my $user_id = $opt{user_id} || $opt{userId}
+    my $user_id = $opt{userId}
 	or croak "missing required field: user_id";
 
     $params{userId} = $user_id,;
 
-    my $display_name = $opt{display_name} || $opt{displayName}
+    my $display_name = $opt{displayName}
 	or croak "missing required field: display_name";
 
     $params{displayName} = $display_name;

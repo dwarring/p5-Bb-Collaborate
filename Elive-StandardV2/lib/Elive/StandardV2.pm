@@ -16,17 +16,37 @@ Elive::StandardV2 - Perl bindings for the Elluminate Live Standard Bridge (V2)
 
 =head1 VERSION
 
-Version 0.00_5
+Version 0.00_6
 
 ** DEVELOPER RELEASE - UNDER CONSTRUCTION **
 
 =cut
 
-our $VERSION = '0.00_5';
+our $VERSION = '0.00_6';
 
 =head1 SYNOPSIS
 
-** DEVELOPER RELEASE - UNDER CONSTRUCTION **
+    use Elive::StandardV2;
+    use Elive::StandardV2::Session;
+
+    Elive::StandardV2->connect( 'http://myserver/mysite',
+                                'some_user' => 'some_pass' );
+
+    my %session_data = (
+	sessionName => 'My Demo Session',
+	creatorId => $connection->user,
+	startTime =>  $session_start . '000',
+	endTime => $session_end . '000',
+	openChair => 1,
+	mustBeSupervised => 0,
+	permissionsOn => 1,
+	groupingList => [qw(mechanics sewing)],
+    );
+
+    my $session = $class->insert(\%session_data);
+
+    my $url = $session->url( userId => 'bob');
+    print "bob's session link is: $url\n";
 
 =head1 DESCRIPTION
 
@@ -77,11 +97,12 @@ sub _get_results {
      use Elive::StandardV2;
      use Elive::StandardV2::Connection;
 
+     #
+     # Setup the default connection
      Elive::StandardV2->connect('http://myServer.com/test1', 'user1', 'pass1');
      my $c1 = Elive::StandardV2->connection;
      #
-     # A secondary connection
-     #
+     # Setup a secondary connection
      my $c2 = Elive::StandardV2::Connection->connect('http://user2:pass2@myServer.com/test2');
 
 Connects to an Elluminate server instance. Dies if the connection could not
