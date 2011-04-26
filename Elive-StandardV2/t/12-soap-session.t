@@ -18,7 +18,7 @@ our $connection;
 
 SKIP: {
 
-    my $skippable = 21;
+    my $skippable = 22;
 
     my %result = t::Elive::StandardV2->test_connection();
     my $auth = $result{auth};
