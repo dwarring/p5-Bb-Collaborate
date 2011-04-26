@@ -1,4 +1,4 @@
-Perl bindings for the Elluminate Live Standard Bridge v2 API.
+Perl bindings for the Elluminate Live Standard Bridge V2 API.
 
 ** DEVELOPER RELEASE - UNDER CONSTRUCTION **
 
@@ -7,10 +7,13 @@ for meetings, demonstrations web conferences, seminars and IT deployment,
 training and support.
 
 Elive-StandardV2 is a set of Perl bindings and entity definitions for the
-Elluminate Standard Bridge V2 SOAP services. 
+Elluminate Standard Bridge V2 SOAP services (standardv2 adapter).
 
-This is a newer lightweight alternative to Elive which binds to the
-Command Toolkit default SOAP services.
+This is a newer alternative to the Command Toolkit, as supported by the
+Elive::Entity classess ('default' adapter).
+
+At this stage, both the Standard Bridge API V2 and the Perl bindings are
+under construction.
 
 INSTALLATION
 ============
@@ -35,6 +38,42 @@ Bridge v2 ...' in the 'Bridge Selection' section.
 
 You will then be asked to enter the SDK username and password. 
 
+TESTING
+
+    There are additional live tests in t/1?-soap-*.t. By default, these
+    either skipped or run offline.
+
+    These may be run against a live server by setting up the environment
+    variables, an running tests, as shown below:
+
+        perl Makefile.PL
+        make
+        export ELIVE_TEST_URL=http://sdk_user@some_server.com/some_test_instance
+        export ELIVE_TEST_PASS=some_password
+        make test
+
+    WARNING: These tests will both create and delete various entities
+    instances. For this reason you should by wary of running the live
+    tests on production sites.
+
+    Consider restricting live testing to designated development and test
+    sites, or newly created site instances!
+
+POST INSTALLATION
+
+    The elive_query script can be used to check basic operation of Elive
+    and access to your Elluminate server(s).
+
+        % elive_query --adapter=standardv2 --user sdk_user http://myserver/mysite
+    You can then try a simple query:
+
+        elive> select * from serverVersions                                     
+                      
+        versionId|versionMaxFilmersLimit|versionMaxTalkersLimit|versionName
+        ---------|----------------------|----------------------|-----------
+        1001     |6                     |6                     |10.0.1     
+
+
 SUPPORT AND DOCUMENTATION
 =========================
 After installing, you can find documentation for this module with the
@@ -55,7 +94,6 @@ You can also look for information at:
 
     Search CPAN
         http://search.cpan.org/dist/Elive-StandardV2/
-
 
 LICENSE AND COPYRIGHT
 

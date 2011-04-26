@@ -16,34 +16,40 @@ Elive::StandardV2 - Perl bindings for the Elluminate Live Standard Bridge (V2)
 
 =head1 VERSION
 
-Version 0.00_6
+Version 0.00_7
 
 ** DEVELOPER RELEASE - UNDER CONSTRUCTION **
 
 =cut
 
-our $VERSION = '0.00_6';
+our $VERSION = '0.00_7';
 
 =head1 SYNOPSIS
 
     use Elive::StandardV2;
     use Elive::StandardV2::Session;
+    use Elive::Util;
 
-    Elive::StandardV2->connect( 'http://myserver/mysite',
+    my $session_start = Elive::Util::next_quarter_hour();
+    my $session_end = Elive::Util::next_quarter_hour( $session_start );
+
+    my $connection = Elive::StandardV2->connect(
+                                'http://myserver/mysite',
                                 'some_user' => 'some_pass' );
 
     my %session_data = (
-	sessionName => 'My Demo Session',
-	creatorId => $connection->user,
-	startTime =>  $session_start . '000',
-	endTime => $session_end . '000',
-	openChair => 1,
+	sessionName   => 'My Demo Session',
+	creatorId     => $connection->user,
+	startTime     =>  $session_start . '000',
+	endTime       => $session_end . '000',
+	openChair     => 1,
 	mustBeSupervised => 0,
 	permissionsOn => 1,
-	groupingList => [qw(mechanics sewing)],
+        nonChairList  => [qw(alice bob)],
+	groupingList  => [qw(mechanics sewing)],
     );
 
-    my $session = $class->insert(\%session_data);
+    my $session = Elive::StandardV2::Session->insert(\%session_data);
 
     my $url = $session->url( userId => 'bob');
     print "bob's session link is: $url\n";
@@ -291,6 +297,20 @@ sub delete {
     carp "deletion failed(?) with 'false' status";
 }
 
+
+=head1 SEE ALSO
+
+L<Elive::StandardV2::Connection>
+L<Elive::StandardV2::Multimedia>
+L<Elive::StandardV2::Session>
+L<Elive::StandardV2::SessionAttendance>
+L<Elive::StandardV2::SessionTelephony>
+L<Elive::StandardV2::Presentation>
+L<Elive::StandardV2::SchedulingManager>
+L<Elive::StandardV2::ServerConfiguration>
+L<Elive::StandardV2::ServerVersions>
+L<Elive::StandardV2::Recording>
+
 =head1 AUTHOR
 
 David Warring, C<< <david.warring at gmail.com> >>
@@ -329,7 +349,6 @@ L<http://cpanratings.perl.org/d/Elive-StandardV2>
 L<http://search.cpan.org/dist/Elive-StandardV2/>
 
 =back
-
 
 =head1 ACKNOWLEDGEMENTS
 
