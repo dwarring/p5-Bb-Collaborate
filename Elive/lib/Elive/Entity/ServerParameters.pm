@@ -121,7 +121,7 @@ sub update {
 	if (keys %$update_data);
     #
     # Command Toolkit seems to require a setting for fullPermissions (aka
-    # permissionOns); trap it as an error on our side.
+    # permissionsOn); always pass it through.
     #
     my @required = qw/boundaryMinutes fullPermissions supervised/;
     my %changed;
