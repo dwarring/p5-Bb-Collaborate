@@ -50,7 +50,7 @@ __PACKAGE__->_alias(attendeeResponseCollection => 'attendees');
     my $yesterday = DateTime->today->subtract(days => 1);
 
     my $attendance = Elive::StandardV2::SessionAttendance->list(
-                                    sessionId => $session,
+                                    sessionId => $session_id,
                                     startTime => $yesterday->epoch.'000');
 
 Gets a session attendance report. It returns a reference to an array of Elive::StandardV2::SessionAttendance objects.

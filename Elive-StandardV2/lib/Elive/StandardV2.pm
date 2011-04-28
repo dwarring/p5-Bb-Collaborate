@@ -30,12 +30,12 @@ our $VERSION = '0.00_7';
     use Elive::StandardV2::Session;
     use Elive::Util;
 
-    my $session_start = Elive::Util::next_quarter_hour();
-    my $session_end = Elive::Util::next_quarter_hour( $session_start );
-
     my $connection = Elive::StandardV2->connect(
                                 'http://myserver/mysite',
                                 'some_user' => 'some_pass' );
+
+    my $session_start = Elive::Util::next_quarter_hour();
+    my $session_end = Elive::Util::next_quarter_hour( $session_start );
 
     my %session_data = (
 	sessionName   => 'My Demo Session',
@@ -179,10 +179,6 @@ sub update {
 
     return $class->SUPER::update($data, %opt);
 }
-
-=head2 fetch
-
-=cut
 
 sub _fetch {
     my ($class, $key, %opt) = @_;

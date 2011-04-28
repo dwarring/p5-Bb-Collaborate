@@ -65,7 +65,7 @@ sub _freeze {
 	$db_data->{size} ||= Elive::Util::_freeze( length($_), 'Int');
 
 	#
-	# (a bit of layer bleed here...). Do we need a seperate daat type
+	# (a bit of layer bleed here...). Do we need a separate data type
 	# for base 64 encoded data?
 	#
 	eval {require SOAP::Lite}; die $@ if $@;

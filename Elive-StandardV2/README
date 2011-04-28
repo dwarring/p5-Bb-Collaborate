@@ -7,7 +7,7 @@ for meetings, demonstrations web conferences, seminars and IT deployment,
 training and support.
 
 Elive-StandardV2 is a set of Perl bindings and entity definitions for the
-Elluminate Standard Bridge V2 SOAP services (standardv2 adapter).
+Elluminate Standard Bridge V2 SOAP services ('standardv2' adapter).
 
 This is a newer alternative to the Command Toolkit, as supported by the
 Elive::Entity classess ('default' adapter).
@@ -29,12 +29,12 @@ SERVER CONFIGURATION
 
 Elluminate Live Manager
 -----------------------
-Please ensure that your the standard bridge (v2) is enabled. To do this,
+Please ensure that your the standard bridge (V2) is enabled. To do this,
 login to http://your_server.com/elmcontrol with an appropriate administrator
 account.
 
 Edit/create the appropriate server instance and tick 'Elluminate Standard
-Bridge v2 ...' in the 'Bridge Selection' section.
+Bridge V2 ...' in the 'Bridge Selection' section.
 
 You will then be asked to enter the SDK username and password. 
 
@@ -65,6 +65,8 @@ POST INSTALLATION
     and access to your Elluminate server(s).
 
         % elive_query --adapter=standardv2 --user sdk_user http://myserver/mysite
+        Password: ******
+
     You can then try a simple query:
 
         elive> select * from serverVersions                                     

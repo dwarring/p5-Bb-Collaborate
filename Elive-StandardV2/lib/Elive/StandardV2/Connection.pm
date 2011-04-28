@@ -251,7 +251,7 @@ sub _preamble {
 
 =head2 version
 
-Equivalent to C<$self-<gt>server_versions-<gt>versionName>.
+Equivalent to C<$self-E<gt>server_versions-E<gt>versionName>.
 
 =cut
 
