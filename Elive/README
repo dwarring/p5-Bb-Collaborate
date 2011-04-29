@@ -81,7 +81,7 @@ TESTING
     either skipped or run offline.
 
     These may be run against a live server by setting up the environment
-    variables, an running tests, as shown below:
+    variables, and running tests, as shown below:
 
         perl Makefile.PL
         make
@@ -106,7 +106,7 @@ TESTING
     configured for LDAP.
 
     WARNING: These tests will both create and delete various entities
-    instances. For this reason you should by wary of running the live
+    instances. For this reason you should be wary of running the live
     tests on production sites.
 
     Consider restricting live testing to designated development and test
