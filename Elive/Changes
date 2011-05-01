@@ -1,12 +1,15 @@
 Revision history for Elive
 
-0.87.2  15th April 2011
+0.88    27th April 2001
+        - elive_query: set STDOUT encoding to utf-8 (ELM default encoding).
+
+0.87_2  15th April 2011
         - Elive::Entity::Meeting->buildJNLP - Now understands user objects
           when passed as parameters. See updated pod example.
         - Really removed Elive::script::elive_meeting::ViewMeeting this time
           (see release 0.83)
 
-0.87.1  14th April 2011
+0.87_1  14th April 2011
         - Removed stray .depend file from distribution.
 
 0.87    11th April 2011
