@@ -390,55 +390,6 @@ sub _thaw {
     return \%data;
 }
 
-sub _unpack_as_list {
-    my $class = shift;
-    my $result = shift;
-
-    $result = $class->_unpack_results($result);
-
-    my $reftype = Elive::Util::_reftype($result);
-
-    my $results_list;
-
-    if ($reftype eq 'HASH') {
-
-	$results_list = [ $result ];
-
-    }
-    elsif ($reftype eq 'ARRAY') {
-
-	$results_list = $result;
-
-    }
-    elsif ($reftype) {
-	Carp::croak "unknown type in result set: $reftype";
-    }
-    else {
-
-	$results_list = defined($result) && $result ne ''
-	    ? [ $result ]
-	    : [];
-
-    }
-
-    warn "$class result: ".YAML::Dump($result)
-	if ($class->debug >= 2);
-
-    return $results_list;
-}
-
-sub _get_results {
-    my $class = shift;
-    my $som = shift;
-    my $connection = shift;
-
-    $connection->_check_for_errors($som);
-
-    my $results_list = $class->_unpack_as_list($som->result);
-
-    return $results_list;
-}
-
 sub _process_results {
     my ($class, $soap_results, %opt) = @_;
 

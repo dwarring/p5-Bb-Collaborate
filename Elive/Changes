@@ -1,5 +1,12 @@
 Revision history for Elive
 
+0.89    TBA
+        [Just a little refactoring].
+        - Moved _get_results() and _unpack_as_list() from Elive::DAO to
+          Elive::Entity. These are a Command Toolkit specific kludge that
+          aren't required by StandardV2 and shouldn't be required for
+          any future adapters.
+
 0.88    27th April 2001
         - elive_query: set STDOUT encoding to utf-8 (ELM default encoding).
 
