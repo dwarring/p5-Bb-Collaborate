@@ -214,7 +214,7 @@ List all sessions that match a given critera:
 
 Note:
 
-You can only select on core meeting properties (C<name>, C<start>, C<end>, C<password>, C<deleted>, C<faciltatorId>, C<privateMeeting>, C<allModerators>, C<restrictedMeeting> and C<adapter>).  Access to other properties requires a secondary fetch and may be slower.
+You can only filter on core meeting properties (C<name>, C<start>, C<end>, C<password>, C<deleted>, C<faciltatorId>, C<privateMeeting>, C<allModerators>, C<restrictedMeeting> and C<adapter>).  Access to other properties requires a secondary fetch and may be slower.
 
 =cut
 
