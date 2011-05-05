@@ -212,10 +212,6 @@ List all sessions that match a given critera:
 
     my $sessions = Elive::View::Session->list( filter => "(name like '*Sample*')" );
 
-Note:
-
-You can only filter on core meeting properties (C<name>, C<start>, C<end>, C<password>, C<deleted>, C<faciltatorId>, C<privateMeeting>, C<allModerators>, C<restrictedMeeting> and C<adapter>).  Access to other properties requires a secondary fetch and may be slower.
-
 =cut
 
 sub list {
@@ -336,6 +332,23 @@ sub derivable {
 	map { $_->derivable } sort values %delegates,
 	);
 }
+
+=head1 BUGS AND LIMITATIONS
+
+Maintaining the L<Elive::View::Session> abstraction may involve fetches from
+several entities. This is mostly transparent, but does have some implications
+for the C<list> method:
+
+=over 4
+
+=item * You can only filter on core meeting properties (C<name>, C<start>, C<end>, C<password>, C<deleted>, C<faciltatorId>, C<privateMeeting>, C<allModerators>, C<restrictedMeeting> and C<adapter>).
+
+=item * Access to other properties requires a secondary fetch. This is done
+lazily on a per record basis and may be considerably slower. This includes
+access to attributes of meeting parameters, server parameter and  participant
+list.
+
+=back
 
 =head1 SEE ALSO
 
