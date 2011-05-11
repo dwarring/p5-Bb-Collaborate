@@ -22,8 +22,9 @@ Elive::Entity::Meeting - Elluminate Meeting instance class
 
 This is the main entity class for meetings.
 
-Note that there are additional meeting settings contained in both
-Elive::Entity::MeetingParameters and Elive::Entity::ServerParameters.
+Note: L<Elive::View::Session> is an alternate convenience class that combines
+L<Elive::Entity::Meeting>, L<Elive::Entity::MeetingParameters>,
+L<Elive::Entity::ServerParameters> and L<Elive::Entity::ParticipantList>.
 
 =cut
 
@@ -235,10 +236,6 @@ sub list_user_meetings_by_date {
 
 Associates a preload with a meeting. This preload must pre-exist in the
 database.
-
-=head3 See also
-
-Elive::Entity::Preload
 
 =cut
 
