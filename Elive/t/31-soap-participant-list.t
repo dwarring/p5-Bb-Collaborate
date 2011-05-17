@@ -109,7 +109,7 @@ SKIP: {
     #
     # only want a handful
     #
-    @participants = @participants[0 .. 9]
+    splice(@participants, 10)
 	if (@participants > 10);
 
     if ($participant2) {
@@ -274,7 +274,7 @@ SKIP: {
 	@groups = @{ Elive::Entity::Group->list() } },
 	'list all groups - lives');
 
-    @groups = $groups[0..9] if @groups > 10;
+    splice(@groups, 10) if @groups > 10;
 
     #
     # you've got to refetch the group to populate the list of recipients
