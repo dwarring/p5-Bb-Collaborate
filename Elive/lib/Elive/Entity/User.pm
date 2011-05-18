@@ -126,25 +126,6 @@ Insert a new user
 
 =cut
 
-=head2 update
-
-    my $user_obj = Elive::Entity::user->retrieve([$user_id]);
-
-    $user_obj->update({fld => new_val,...}, force => 1);
-
-    $user_obj->update(role => {roleId => 1}); # make the user an app admin
-    $user_obj->lastName('Smith');
-    $user_obj->update(undef, force => 1);
-
-Update an Elluminate user. Everything can be changed, other than userId.
-This includes the loginName. However loginNames must all remain unique.
-
-As a safeguard, you'll need to pass C<force =E<gt> 1> to update:
-    (a) users with a Role Id of 0, i.e. system administrator accounts, or
-    (b) the login user
-
-=cut
-
 sub _safety_check {
     my ($self, %opt) = @_;
 
@@ -157,9 +138,26 @@ sub _safety_check {
 	    if $self->userId eq $connection->login->userId;
 
 	die "Cowardly refusing to update system admin account for ".$self->loginName.": (pass force => 1 to override)"
-	    if ($self->role->stringify <= 0);
+	    if ($self->_db_data->role->stringify <= 0);
     }
 }
+
+=head2 update
+
+    my $user_obj = Elive::Entity::user->retrieve([$user_id]);
+
+    $user_obj->update(role => 0); # make the user an app admin
+    $user_obj->lastName('Smith');
+    $user_obj->update(undef, force => 1);
+
+Update an Elluminate user. Everything can be changed, other than userId.
+This includes the loginName. However loginNames must all remain unique.
+
+As a safeguard, you'll need to pass C<force =E<gt> 1> to update:
+    (a) users with a Role Id of 0, i.e. system administrator accounts, or
+    (b) the login user
+
+=cut
 
 sub update {
     my ($self, $data_href, %opt) = @_;
