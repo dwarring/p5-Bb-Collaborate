@@ -40,10 +40,10 @@ __PACKAGE__->mk_accessors( qw{url user pass _soap debug type} );
 
     my $url1 = $sdk_c1->url;   #  'http://someserver.com/test'
 
-    my $sdk_c2 =  Elive::Connection->connect('http://user2:pass2@someserver.com/test', undef, undef);
+    my $sdk_c2 =  Elive::Connection->connect('http://user2:pass2@someserver.com/test');
     my $url2 = $sdk_c2->url;   #  'http://someserver.com/test'
 
-Establishes a SOAP connection.
+Establishes a logical SOAP connection.
 
 =cut
 

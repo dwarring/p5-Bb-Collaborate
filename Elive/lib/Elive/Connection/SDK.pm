@@ -148,7 +148,8 @@ sub connect {
     # retrieve it as a way of authenticating the user and
     # checking basic connectivity.
     #
-    $self->login;
+    $self->login
+	or croak "not logged in";
 
     return $self;
 }
@@ -271,7 +272,7 @@ sub login {
     unless ($login_entity) {
 
 	my $username = $self->user
-	    or return;
+	    or return undef;
 
 	$login_entity = Elive::Entity::User->get_by_loginName($username,
 	    connection => $self)
