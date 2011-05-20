@@ -8,6 +8,11 @@ use Elive::Entity::User;
 use Elive::Entity::ParticipantList;
 use Elive::Util;
 
+use lib '.';
+use t::Elive::MockConnection;
+
+Elive->connection( t::Elive::MockConnection->connect() );
+
 is(Elive::Util::_thaw('123456', 'Int'), 123456, 'simple Int');
 is(Elive::Util::_thaw('+123456', 'Int'), 123456, 'Int with plus sign');
 is(Elive::Util::_thaw('00123456', 'Int'), 123456, 'Int with leading zeros');
@@ -36,8 +41,6 @@ is_deeply(Elive::Util::_thaw($some_href, 'Ref'), $some_href,
 my $some_aref = [10, $some_href, 'xyz'];
 is_deeply(Elive::Util::_thaw($some_aref, 'Ref'), $some_aref,
 	  'Ref array - passed through');
-
-Elive->connection(Elive::Connection->connect('http://test.org'));
 
 my $user_data = {
     UserAdapter

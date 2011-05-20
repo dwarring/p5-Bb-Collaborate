@@ -11,7 +11,10 @@ use Elive::Entity::Group;
 use Elive::Entity::Meeting;
 use Elive::Entity::User;
 
-Elive->connection(Elive::Connection->connect('http://test.org'));
+use lib '.';
+use t::Elive::MockConnection;
+
+Elive->connection( t::Elive::MockConnection->connect() );
 
 my $participant_list = Elive::Entity::ParticipantList->construct(
     {

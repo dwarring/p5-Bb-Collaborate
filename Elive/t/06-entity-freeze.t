@@ -10,6 +10,11 @@ use Elive::Entity::ParticipantList;
 use Elive::Entity::ServerParameters;
 use Elive::Util;
 
+use lib '.';
+use t::Elive::MockConnection;
+
+Elive->connection( t::Elive::MockConnection->connect() );
+
 is(Elive::Util::_freeze('123456', 'Int'), '123456', 'simple Int');
 is(Elive::Util::_freeze('+123456', 'Int'), '123456', 'Int with plus sign');
 is(Elive::Util::_freeze('00123456', 'Int'), '123456', 'Int with leading zeros');
@@ -46,8 +51,6 @@ my $user_data =  {
 	firstName => ' Timmee, the ',
 	lastName => 'Tester',
     };
-
-Elive->connection(Elive::Connection->connect('http://test.org'));
 
 my $user_obj = Elive::Entity::User->construct($user_data);
 

@@ -14,10 +14,15 @@ use Elive::Entity::User;
 
 use Scalar::Util;
 
+use lib '.';
+use t::Elive::MockConnection;
+
 my $URL1 = 'http://test1.org';
 
+my $USER = 'test_user';
+
 my $K1 = 123456123456;
-my $C1 = Elive::Connection->connect($URL1);
+my $C1 = t::Elive::MockConnection->connect($URL1, $USER);
 
 Elive->connection($C1);
 

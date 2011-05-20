@@ -11,7 +11,10 @@ use Elive::Entity::User;
 use Elive::Entity::Meeting;
 use Elive::Entity::Recording;
 
-Elive->connection(Elive::Connection->connect('http://test.org'));
+use lib '.';
+use t::Elive::MockConnection;
+
+Elive->connection( t::Elive::MockConnection->connect() );
 
 my %user_props = (map {$_ => 1} Elive::Entity::User->properties);
 

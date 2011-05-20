@@ -3,15 +3,16 @@ use warnings; use strict;
 use Test::More tests => 4;
 use Test::Warn;
 
-package main;
-
 use Elive::Connection;
 use Elive::Entity::Group;
 use Elive::Entity::ParticipantList;
 
 use Scalar::Util;
 
-Elive->connection(Elive::Connection->connect('http://test.org'));
+use lib '.';
+use t::Elive::MockConnection;
+
+Elive->connection( t::Elive::MockConnection->connect() );
 
 my $group = Elive::Entity::Group->construct(
     {

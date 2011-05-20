@@ -11,7 +11,10 @@ use Elive::Entity::Meeting;
 use Elive::Entity::Preload;
 use Elive::Entity::Recording;
 
-Elive->connection(Elive::Connection->connect('http://test.org'));
+use lib '.';
+use t::Elive::MockConnection;
+
+Elive->connection( t::Elive::MockConnection->connect() );
 
 my $meeting;
 

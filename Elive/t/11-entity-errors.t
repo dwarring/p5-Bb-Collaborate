@@ -12,7 +12,10 @@ use Elive::Entity::Preload;
 use Elive::Entity::Meeting;
 use Elive::Entity::MeetingParameters;
 
-Elive->connection(Elive::Connection->connect('http://test.org'));
+use lib '.';
+use t::Elive::MockConnection;
+
+Elive->connection( t::Elive::MockConnection->connect() );
 
 dies_ok(
     sub {

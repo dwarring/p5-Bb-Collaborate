@@ -7,7 +7,10 @@ use Elive::Connection;
 use Elive::Entity::User;
 use Elive::Entity::Group;
 
-Elive->connection(Elive::Connection->connect('http://test.org'));
+use lib '.';
+use t::Elive::MockConnection;
+
+Elive->connection( t::Elive::MockConnection->connect() );
 
 my @base_members = (100, 101, 102);
 
