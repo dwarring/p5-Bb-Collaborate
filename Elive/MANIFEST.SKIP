@@ -21,6 +21,10 @@ Makefile.old
 \.bak$
 ^preload\.txt$
 #
+# Module::Release
+#
+^\.releaserc
+#
 # Devel::Cover junk
 #
 ^cover_db/
