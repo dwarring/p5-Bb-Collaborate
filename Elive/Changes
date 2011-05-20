@@ -1,6 +1,6 @@
 Revision history for Elive
 
-0.89    TBA
+0.89    20th May 2010
         [minor bug fixes and refactoring].
         - Moved _get_results() and _unpack_as_list() from Elive::DAO to
           Elive::Entity. These are a Command Toolkit specific kludge that
@@ -10,7 +10,7 @@ Revision history for Elive
         - bug fix to safety check on admin user update/delete. Check was being
           bypassed when role was updated
 
-0.88    27th April 2001
+0.88    27th April 2011
         - elive_query: set STDOUT encoding to utf-8 (ELM default encoding).
 
 0.87_2  15th April 2011
