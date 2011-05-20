@@ -6,6 +6,7 @@ Revision history for Elive
           Elive::Entity. These are a Command Toolkit specific kludge that
           aren't required by StandardV2 and shouldn't be required for
           any future adapters.
+        - Elive::Connection::SDK - now dies outright unless given a login username.
         - bug fix to safety check on admin user update/delete. Check was being
           bypassed when role was updated
 
