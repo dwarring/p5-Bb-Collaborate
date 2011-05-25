@@ -1,5 +1,12 @@
 Revision history for Elive
 
+0.90    Tba
+        [more minor bug fixes]
+        - Elive::Entity::ServerParameters - telephonyType was returning
+          a reference: {Name: 'PHONE', Ordinal: 1, TelephonyType: 1}
+          when the underlying value is 'PHONE'. This is now dereferenced
+          and returned as the simple string 'PHONE'.
+
 0.89    20th May 2010
         [minor bug fixes and refactoring].
         - Moved _get_results() and _unpack_as_list() from Elive::DAO to

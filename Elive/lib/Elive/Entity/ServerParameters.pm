@@ -34,7 +34,7 @@ has 'supervised' => (is => 'rw', isa => 'Bool',
     documentation => 'whether the moderator can see private messages');
 
 has 'enableTelephony' => (is => 'rw', isa => 'Bool');
-has 'telephonyType' => (is => 'rw', isa => 'Ref');
+has 'telephonyType' => (is => 'rw', isa => 'Ref|Str');
 has 'moderatorTelephonyAddress' => (is => 'rw', isa => 'Str');
 has 'moderatorTelephonyPIN' => (is => 'rw', isa => 'Str');
 has 'participantTelephonyAddress' => (is => 'rw', isa => 'Str');
@@ -154,6 +154,25 @@ sub update {
     # changed or not.
     #
     return $self->SUPER::update(undef, %opt, changed => [sort keys %changed]);
+}
+
+#
+# elm 3.x may throw back a complex type for telephonyType, something like:
+# {Name: 'PHONE', Ordinal: 1, TelephonyType: 1}. Dereference this, when it
+# happens, to obtain the underlying database value 'PHONE'.
+#
+
+sub _thaw {
+    my ($class, $db_data, @args) = @_;
+    my $thawed = $class->SUPER::_thaw($db_data, @args);
+
+    my $telephonyType = $thawed->{telephonyType};
+    if (Elive::Util::_reftype($telephonyType) eq 'HASH'
+	&& (my $name = $telephonyType->{Name})) {
+	$thawed->{telephonyType} = $name;
+    }
+
+    return $thawed;
 }
 
 =head1 See Also
