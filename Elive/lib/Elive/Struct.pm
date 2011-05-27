@@ -102,11 +102,8 @@ sub BUILDARGS {
 		    # a simpler type. For example we may have been passed an
 		    # object, rather than just its primary key.
 		    #
-		    my (undef, $is_array, $is_struct, $is_ref)
-			= Elive::Util::parse_type($type);
-
 		    $value = Elive::Util::string($value, $type)
-			unless $is_array || $is_struct || $is_ref;
+			unless  Elive::Util::inspect_type($type)->is_ref;
 		}		    
 	    }
 	    else {
@@ -360,12 +357,11 @@ sub _cmp_col {
     return
 	unless (defined $v1 && defined $v2);
 
-    my ($type, $array_type, $is_struct) = Elive::Util::parse_type($data_type);
+    my $type_info = Elive::Util::inspect_type($data_type);
+    my $array_type = $type_info->array_type;
+    my $type = $type_info->elemental_type;
 
-    if (!defined $v2 || !defined $v2) {
-	return;
-    }
-    elsif ($array_type || $is_struct) {
+    if ($array_type || $type_info->is_struct) {
 	#
 	# Note shallow comparision of entities and arrays.
 	#
@@ -427,9 +423,7 @@ sub properties {
 =head2 property_types
 
    my $user_types = MyApp::Entity::User->property_types;
-   my ($type,
-       $is_array,
-       $is_struct) = Elive::Util::parse_type($user_types->{role})
+   my $type_info = Elive::Util::inspect_type($user_types->{role})
 
 Return a hashref of attribute data types.
 
@@ -519,11 +513,8 @@ sub set {
 		# a simpler type. For example we may have been passed an
 		# object, rather than just its primary key.
 		#
-		my (undef, $is_array, $is_struct, $is_ref)
-		    = Elive::Util::parse_type($type);
-		
 		$value = Elive::Util::string($value, $type)
-		    unless $is_array || $is_struct || $is_ref;
+		    unless  Elive::Util::inspect_type($type)->is_ref;
 	    }
 
 	    $self->$_($value);

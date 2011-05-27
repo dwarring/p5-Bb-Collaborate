@@ -1,6 +1,6 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 78;
+use Test::More tests => 81;
 use Test::Warn;
 
 use Elive::Connection;
@@ -41,6 +41,18 @@ is_deeply(Elive::Util::_thaw($some_href, 'Ref'), $some_href,
 my $some_aref = [10, $some_href, 'xyz'];
 is_deeply(Elive::Util::_thaw($some_aref, 'Ref'), $some_aref,
 	  'Ref array - passed through');
+
+do {
+    # just to define the behavious of oddball cases
+    like(Elive::Util::_thaw($some_href, 'Str'), qr{^HASH\(.+\)},
+	 'Hash ref as Str gives HASH(...)');
+
+    is_deeply(Elive::Util::_thaw($some_href, 'Int'), undef,
+	      'Hash ref as Int gives undef');
+
+    is_deeply(Elive::Util::_thaw('blah', 'Ref'), 'blah',
+	      'Scalar as Ref - passed through');
+};
 
 my $user_data = {
     UserAdapter

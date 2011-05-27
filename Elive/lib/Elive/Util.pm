@@ -6,8 +6,9 @@ use Term::ReadLine;
 use IO::Interactive;
 use Scalar::Util;
 use Storable;
-require UNIVERSAL;
 use YAML;
+
+use Elive::Util::Type;
 
 =head1 NAME
 
@@ -19,47 +20,23 @@ Elive::Util - Utility functions for Elive
 
 =cut
 
-=head2 parse_type
+=head2 inspect_type
 
-   my $att = $my_class->meta->get_attribute->(foo);
+       $type = Elive::Util::inspect_type($att->type_constraint)
+       @coerce_types = Elive::Util::inspect_type($att->type_constraint, $data)
 
-   my ($primary_type,
-       $is_array,
-       $is_entity) = Elive::Util::parse_type($att->type_constraint)
-
-Parses an entity property type. Determines whether it is an array and/or
-sub-structure.
+Parses an entity property type and returns an elemental coercement type.
 
 =cut
 
-sub parse_type {
-    my $type = shift;
+sub inspect_type {
+    my $raw_type = shift;
 
-    ($type) = split(/[ \| \] ]/x, $type);
+    return Elive::Util::Type->new($raw_type)
+	unless wantarray;
 
-    my $array_type;
-    my $is_struct;
-    my $elemental_type = $type;
-
-    if ($type =~ m{^Elive::}) {
-
-	if ($type->can('element_class')) {
-	    $elemental_type = $type->element_class || 'Str';
-	    $array_type = $type;
-	}
-
-	$is_struct = ($elemental_type  =~ m{^Elive::})
-	    && $elemental_type->isa('Elive::Struct');
-    }
-
-    my $is_ref = $array_type || $is_struct || $elemental_type =~ m{^Ref}x;
-
-    return ($elemental_type, $array_type, $is_struct, $is_ref, $type);
+    return map {Elive::Util::Type->new($_)} split(/\|/, $raw_type);
 }
-
-#
-# freezing of elementry datatypes
-#
 
 sub _freeze {
     my ($val, $type) = @_;
@@ -115,7 +92,6 @@ sub _thaw {
     return unless defined $val;
 
     for ($val) {
-
 	if ($type =~ m{^Bool}i) {
 	    #
 	    # Perlise boolean flags..
@@ -127,7 +103,7 @@ sub _thaw {
 	    # l-r trim
 	    #
 	    s{^ \s* (.*?) \s* $}{$1}x;
-	    $_ = lc if $type =~ m{^enum};
+	    $_ = lc if $type =~ m{^enum}i;
 	}
 	elsif ($type =~ m{^Int|HiResDate}i) {
 

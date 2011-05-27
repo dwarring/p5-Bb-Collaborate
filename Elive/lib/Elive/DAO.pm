@@ -8,7 +8,6 @@ extends 'Elive::Struct';
 
 use YAML;
 use Scalar::Util qw{weaken};
-require UNIVERSAL;
 use Storable qw{dclone};
 use Carp;
 
@@ -200,7 +199,9 @@ sub _freeze {
 	    Carp::croak "$class: unknown property/parameter: $_: expected: ",join(',', @properties, @param_names);
 	}
 
-	my ($type, $is_array, $_is_struct) = Elive::Util::parse_type($property);
+	my $type_info = Elive::Util::inspect_type($property);
+	my $type = $type_info->elemental_type;
+	my $is_array = $type_info->is_array;
 
 	for ($db_data->{$_}) {
 
@@ -321,10 +322,13 @@ sub _thaw {
 	$data{$prop_key} = $val;
     }
 
-
     foreach my $col (grep {defined $data{$_}} @properties) {
 
-	my ($type, $expect_array, $is_struct) = Elive::Util::parse_type($property_types->{$col});
+	my $property_type = $property_types->{$col};
+	my $type_info = Elive::Util::inspect_type($property_type);
+	my $type = $type_info->elemental_type;
+	my $is_array = $type_info->is_array;
+	my $is_struct = $type_info->is_struct;
 
 	next unless $col && defined $data{$col};
 
@@ -332,7 +336,7 @@ sub _thaw {
 
 	    my $i = 0;
 
-	    if ($expect_array) {
+	    if ($is_array) {
 
 		my $val_type = Elive::Util::_reftype($val) || 'Scalar';
 
@@ -347,11 +351,11 @@ sub _thaw {
 		}
 	    }
 
-	    foreach ($expect_array? @$val: $val) {
+	    foreach ($is_array? @$val: $val) {
 
 		next unless defined;
 
-		my $idx = $expect_array? '['.$i.']': '';
+		my $idx = $is_array? '['.$i.']': '';
 
 		if ($is_struct) {
 
@@ -363,7 +367,7 @@ sub _thaw {
 		}
 	    }
 
-	    if ($expect_array) {
+	    if ($is_array) {
 		@$val = grep {defined $_} @$val;
 	    }
 

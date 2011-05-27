@@ -23,8 +23,6 @@ coerce 'Elive::Array' => from 'ArrayRef'
 	      bless (\@a, __PACKAGE__);
           };
 
-require UNIVERSAL;
-
 =head1 NAME
 
 Elive::Array - Base class for arrays
