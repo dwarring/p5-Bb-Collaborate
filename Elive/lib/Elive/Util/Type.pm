@@ -10,7 +10,6 @@ Elive::Util::Type - Type introspection class
 
 =cut
 
-has 'raw_type' => (is => 'rw', isa => 'Any', required => 1);
 has 'type' => (is => 'rw', isa => 'Str', required => 1);
 has 'array_type' => (is => 'rw', isa => 'Str');
 has 'elemental_type' => (is => 'rw', isa => 'Str', required => 1);
@@ -21,16 +20,13 @@ has 'elemental_type' => (is => 'rw', isa => 'Str', required => 1);
 # 
 
 sub BUILDARGS {
-    my ($class, $raw) = @_;
+    my ($class, $type) = @_;
 
-    my $raw_type = $raw;
+    my %info;
 
-    die "missing 'type' argument" unless $raw_type;
-
-    my %cooked;
-    $cooked{type} = $raw_type;
-
-    (my $type) = split(/[ \| \] ]/x, $raw_type);
+    #
+    # Bit of a hack, only works on Elive specific types and type unions.
+    #
 
     my $array_type;
     my $elemental_type = $type;
@@ -43,12 +39,11 @@ sub BUILDARGS {
 	}
     }
 
-    $cooked{raw_type} = $raw_type;
-    $cooked{type} = $type;
-    $cooked{array_type} = $array_type if defined $array_type;
-    $cooked{elemental_type} = $elemental_type;
+    $info{type} = $type;
+    $info{array_type} = $array_type if defined $array_type;
+    $info{elemental_type} = $elemental_type;
 
-    return \%cooked;
+    return \%info;
 }
 
 =head1 METHODS

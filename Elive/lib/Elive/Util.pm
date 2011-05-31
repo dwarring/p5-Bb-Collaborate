@@ -30,12 +30,11 @@ Parses an entity property type and returns an elemental coercement type.
 =cut
 
 sub inspect_type {
-    my $raw_type = shift;
+    my $type_union = shift;
 
-    return Elive::Util::Type->new($raw_type)
-	unless wantarray;
+    my @types = split(/\|/, $type_union);
 
-    return map {Elive::Util::Type->new($_)} split(/\|/, $raw_type);
+    return Elive::Util::Type->new($types[0])
 }
 
 sub _freeze {
@@ -89,6 +88,8 @@ sub _freeze {
 sub _thaw {
     my ($val, $type) = @_;
 
+    return $val if $type =~ m{Ref}i;
+
     return unless defined $val;
 
     for ($val) {
@@ -109,8 +110,6 @@ sub _thaw {
 
 	    $_ = _tidy_decimal($_);
 
-	}
-	elsif ($type =~ m{^Ref}i) {
 	}
 	else {
 	    die "unknown type: $type";
