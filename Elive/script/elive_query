@@ -385,7 +385,6 @@ sub _show {
 	print "\n";
 
 	if ($type->is_struct) {
-	    warn "$property_types->{$property} is a struct of type $type";
 	    _show($entities, $property, $nesting + 1, $elemental_type);
 	}
     }
