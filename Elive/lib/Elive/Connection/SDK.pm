@@ -272,7 +272,7 @@ sub login {
     unless ($login_entity) {
 
 	my $username = $self->user
-	    or return undef;
+	    or return;
 
 	$login_entity = Elive::Entity::User->get_by_loginName($username,
 	    connection => $self)
