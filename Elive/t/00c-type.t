@@ -4,7 +4,6 @@ use Test::More tests => 20;
 use Test::Warn;
 
 use Elive::Util;
-use Elive::Struct;
 use Elive::Array;
 use Elive::Entity::Role;
 use Elive::Entity::ParticipantList::Participants;

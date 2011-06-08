@@ -50,7 +50,7 @@ sub BUILDARGS {
 
 =head2 is_struct
 
-    Return true, if the type is an ancestor of Elive::Struct
+    Return true, if the type is an ancestor of Elive::DAO
 
 =cut
 
@@ -59,7 +59,7 @@ sub is_struct {
 
     my $elemental_type = $self->elemental_type;
     return ($elemental_type  =~ m{^Elive::}
-	    && $elemental_type->isa('Elive::Struct'));
+	    && $elemental_type->isa('Elive::DAO'));
 }
 
 =head2 is_ref

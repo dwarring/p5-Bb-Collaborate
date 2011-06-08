@@ -159,7 +159,8 @@ sub update {
 	) or die "meeting not found: ".$meeting_id;
 
     my ($users, $groups, $guests) = $self->_collate_participants;
-    # underlying adapter does not support groups or guests
+    # underlying adapter does not yet support groups or guests as
+    # participants.
 
     $self->_massage_participants ($users, $groups, $guests);
     #

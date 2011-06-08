@@ -173,7 +173,6 @@ sub _unpack_results {
 =head1 SEE ALSO
 
  Elive::DAO
- Elive::Struct
  Mouse
 
 =cut

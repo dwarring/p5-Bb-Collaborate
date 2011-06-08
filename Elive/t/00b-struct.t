@@ -3,13 +3,13 @@ use warnings; use strict;
 use Test::More tests => 54;
 use Test::Warn;
 
-use Elive::Struct;
+use Elive::DAO;
 use Elive::Entity::Role;
 use Elive::Entity::ParticipantList::Participants;
 
 use Carp; $SIG{__DIE__} = \&Carp::confess;
 
-my $class = 'Elive::Struct';
+my $class = 'Elive::DAO';
 
 ok($class->_cmp_col('Int', 10, 20) < 0, '_cmp Int <');
 ok($class->_cmp_col('Int', 20, 20) == 0, '_cmp Int ==');
