@@ -18,7 +18,6 @@ lib/Elive/DAO.pm
 lib/Elive/DAO/Singleton.pm
 lib/Elive/Entity.pm
 lib/Elive/Entity/Group.pm
-lib/Elive/Entity/Group/Member.pm
 lib/Elive/Entity/Group/Members.pm
 lib/Elive/Entity/InvitedGuest.pm
 lib/Elive/Entity/Meeting.pm
@@ -36,7 +35,6 @@ lib/Elive/Entity/User.pm
 lib/Elive/Notes.pod
 lib/Elive/Util.pm
 lib/Elive/Util/Type.pm
-lib/Elive/Util/TypeConstraints.pm
 lib/Elive/View/Session.pm
 Makefile.PL
 MANIFEST			This list of files
