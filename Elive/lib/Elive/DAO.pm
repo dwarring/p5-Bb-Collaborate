@@ -788,7 +788,7 @@ sub _thaw {
 
 		if ($is_struct) {
 
-		    $_ = _thaw($type, $_, $path . $idx);
+		    $_ = $type->_thaw($_, $path . $idx);
 
 		}
 		else {
