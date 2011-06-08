@@ -2,12 +2,14 @@ Revision history for Elive
 
 0.90    9th June 2011
         [refactoring]
+        - Added new object class Elive::Util::Type. Replacement for the
+          Elive::Util::parse_type() function.
         - Elive::Struct is no more. Merged with Elive::DAO.
-        [more minor bug fixes]
-        - Elive::Entity::ServerParameters - telephonyType was returning
-          a reference: {Name: 'PHONE', Ordinal: 1, TelephonyType: 1}
-          when the underlying value is 'PHONE'. This is now dereferenced
-          and returned as the simple string 'PHONE'.
+        [minor work-arounds]
+        - Elive::Entity::ServerParameters - telephonyType SOAP response
+          is being returned as a reference: {Name: 'PHONE', Ordinal: 1,
+          TelephonyType: 1}, but the database simply contains the string
+          'PHONE'. This is now dereferencedto return a string ('PHONE').
 
 0.89    20th May 2011
         [minor bug fixes and refactoring].

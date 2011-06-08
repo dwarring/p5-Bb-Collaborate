@@ -1,5 +1,7 @@
 # Subversion
 \B\.svn\b
+# Git (proposed)
+\B\.git\b
 \.mine$
 \.r[0-9]+$
 \.edited$
@@ -42,3 +44,7 @@ Makefile.old
 # Anything that's gzipped
 #
 \.gz$
+#
+# cygwin
+#
+\.stackdump$
