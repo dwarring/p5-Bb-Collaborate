@@ -9,7 +9,7 @@ Revision history for Elive
         - Elive::Entity::ServerParameters - telephonyType SOAP response
           is being returned as a reference: {Name: 'PHONE', Ordinal: 1,
           TelephonyType: 1}, but the database simply contains the string
-          'PHONE'. This is now dereferencedto return a string ('PHONE').
+          'PHONE'. This is now dereferenced to return a string ('PHONE').
 
 0.89    20th May 2011
         [minor bug fixes and refactoring].
