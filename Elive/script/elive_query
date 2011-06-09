@@ -4,7 +4,7 @@ use warnings; use strict;
 use YAML;
 use Carp;
 use Getopt::Long qw{};
-$SIG{__DIE__} = \&Carp::confess;
+
 use Elive;
 use Elive::Util;
 
