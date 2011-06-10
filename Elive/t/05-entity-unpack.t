@@ -131,12 +131,13 @@ my $group_collection = {
 		    {
 			GroupAdapter => {
 			    Id => 444,
-			    # irregular here, there's no intermediate
+			    # irregularity occurs here, there's no intermediate
 			    # Members property
 			    Collection => {
 				Entry => [
-				    '3131',
-				    '3232',
+				    '4141',
+				    '4242',
+				    '3333', # deliberate duplicate
 				    ],
 			    }
 			}
@@ -160,8 +161,9 @@ do {
 		    'GroupAdapter' => {
 			'Id' => 444,
 			'Entry' => [
-			    '3131',
-			    '3232'
+			    '4141',
+			    '4242',
+			    '3333', # deliberate duplicate
 			    ]
 		    }
 		}

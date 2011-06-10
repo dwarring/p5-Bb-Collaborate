@@ -1,6 +1,6 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 40;
+use Test::More tests => 47;
 use Test::Warn;
 
 use Carp; $SIG{__DIE__} = \&Carp::confess;
@@ -167,3 +167,38 @@ my $participant_list_4 = Elive::Entity::ParticipantList->construct(
 
 is($participant_list_4->meetingId , $meeting->meetingId, "object => id cast on construct (primary key)");
 is($participant_list_4->participants->stringify, '1122=3;2233=2', "participants stringification");
+
+do {
+
+    ## tests on nested group construction
+
+    my $group =  Elive::Entity::Group->construct( {
+	name => 'Top level group',
+	groupId => '1111',
+	members => [
+	    2222,
+	    3333,
+	    {
+		name => 'sub group',
+		groupId => 444,
+		members => [
+		    '4141',
+		    '4242',
+		    '3333', # deliberate duplicate
+		    ],
+	    }
+	]
+     });
+
+    is($group->name, 'Top level group', 'nested group - top level name');
+    is($group->groupId, '1111', 'nested group - top level id');
+
+    my $members = $group->members;
+    isa_ok($members,'ARRAY', 'group members');
+    is(scalar @$members, 3, 'group members - cardinality');
+    is($members->[0], '2222', 'group member - simple element');
+    isa_ok($members->[2], 'Elive::Entity::Group', 'group member - subgroup');
+
+    my @all_members = $group->all_members;
+    is_deeply(\@all_members, [2222, 3333, 4141, 4242], 'group - all_members()');
+};

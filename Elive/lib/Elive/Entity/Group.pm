@@ -121,8 +121,13 @@ sub update {
 
 =head2 all_members
 
-This is a utility method that recusively expands subgroups and returns
-all unique members.
+    #
+    # Get a list of unique members, including those in sub-groups
+    #
+    my @members = $group_obj->all_members();
+
+This is a utility method that includes members, but recusively expands
+then discards subgroups. It returns an array containing all unique members.
 
 =cut
 
