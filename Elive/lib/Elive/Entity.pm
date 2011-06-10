@@ -118,6 +118,16 @@ sub _unpack_results {
 		if (Elive::Util::_reftype($value) eq 'HASH'
 		    && exists ($value->{Entry})) {
 		    $value = $value->{Entry};
+
+		    my %parent = %$results;
+		    delete $parent{Collection};
+		    if (keys %parent) {
+			#
+			# merge in with the parent
+			#
+			$parent{Entry} = $value;
+			$value = \%parent;
+		    }
 		}
 		else {
 		    $value = [];

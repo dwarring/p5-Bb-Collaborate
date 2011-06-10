@@ -23,7 +23,7 @@ sub _pack_data {
 	return $adapter => {$pkey->[0] => $data};
     }
 
-    die "can't handle packing of arrays yet"
+    die "can't handle packing of arrays for class $class"
 	if ref($data) eq 'ARRAY';
 
     my %db_data = %$data;
@@ -61,7 +61,7 @@ sub _pack_data {
 	    $_ = [split($type->separator, $_)]
 		if ($type_info->is_array && !ref);
 
-	    if ($type_info->is_struct) {
+	    if ($type_info->is_struct && $type_info->elemental_type ne 'Elive::Entity::Group') {
 		my ($adapter, $packed_data) = _pack_data($type_info->elemental_type, $_);
 		$_ = {$adapter => $packed_data};
 	    }

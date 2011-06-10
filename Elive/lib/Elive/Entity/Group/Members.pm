@@ -9,9 +9,13 @@ Elive::Entity::Group::Members - Group Members entity class
 
 use Mouse;
 use Mouse::Util::TypeConstraints;
+use Scalar::Util;
+
+use Elive::Entity::Group;
 
 extends 'Elive::Array';
 __PACKAGE__->separator(',');
+__PACKAGE__->element_class('Elive::Entity::Group');
 
 coerce 'Elive::Entity::Group::Members' => from 'Str'
           => via {
@@ -21,7 +25,9 @@ coerce 'Elive::Entity::Group::Members' => from 'Str'
 
 coerce 'Elive::Entity::Group::Members' => from 'ArrayRef'
           => via {
-	      my @a = map {Elive::Util::string($_)} @$_;
+	      my @a = map {ref($_) && ! Scalar::Util::blessed($_)
+			       ? Elive::Entity::Group->new($_)
+			       : Elive::Util::string($_)} @$_;
 	      bless (\@a, __PACKAGE__);
           };
 

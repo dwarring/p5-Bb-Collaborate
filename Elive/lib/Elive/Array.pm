@@ -83,7 +83,7 @@ sub add {
     if (my $element_class = $self->element_class) {
 	foreach (@elems) {
 	    $_ = $element_class->new($_)
-		unless Scalar::Util::blessed($_);
+		if ref && ! Scalar::Util::blessed($_);
 	}
     }
 

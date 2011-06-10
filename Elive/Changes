@@ -1,5 +1,15 @@
 Revision history for Elive
 
+0.90_1
+        [Changes to handle recursive groups]
+        - Added tests and comments to 07-soap-entity-thaw.t
+        - Changes in Elive::DAO to handle packing format
+        - Changes in Elive::Group to handling thaw and coercement of sub-groups
+        - Added utility method members_expanded
+
+Changes in Elive::DAO unpacking and Elive::Entity::Group to correctly
+          parse and construct sub-groups in responses. I.e
+
 0.90    9th June 2011
         [refactoring]
         - Added new object class Elive::Util::Type. Replacement for the

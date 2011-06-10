@@ -13,7 +13,7 @@ use t::Elive;
 my $class = 'Elive::Entity::Group';
 
 use Carp;
-
+$SIG{__DIE__} = \&Carp::confess;
 #
 # restrict our user tests to mock connections. Live updates
 # are just to dangerous. There is also the possibility that the
@@ -98,12 +98,12 @@ is_deeply(\@actual_members2, \@member_ids, 'update alias (groupMembers aliased t
 #
 # try some variations
 #
-my @member_ids2 = sort ($user_ids{alice}, $user_ids{bob}, $user_ids{trev});
-$group2->members(\@member_ids2);
+my @members2 = sort ($user_ids{alice}, $user_ids{bob}, $user_ids{trev});
+$group2->members(\@members2);
 $group2->update;
 
-@actual_members2 = sort @{ $group2->{members} };
-is_deeply(\@actual_members2, \@member_ids2, 'update alias#2 (groupMembers aliased to members)');
+@actual_members2 = sort $group2->all_members;
+is_deeply(\@actual_members2, \@members2, 'update alias#2 (groupMembers aliased to members)');
 
 lives_ok(sub {$group->delete; $group2->delete}, 'group delete - lives');
 
