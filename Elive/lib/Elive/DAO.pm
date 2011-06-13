@@ -330,7 +330,7 @@ sub _ordered_attributes {
 
     my $meta = $class->meta;
 
-    return map {$meta->get_attribute($_)} ($class->_ordered_attribute_names);
+    return map {$meta->get_attribute($_) || die "$class: unknown attribute $_"} ($class->_ordered_attribute_names);
 }
 
 sub _cmp_col {
@@ -499,11 +499,9 @@ sub _url {
     my $connection = shift || $class->connection;
     my $path = shift;
 
-    return ($connection->url
-	    . '/'
-	    . $class->entity_name
-	    .'/'.
-	    $path);
+    return join('/', $connection->url,
+		$class->entity_name,
+		$path);
 }
 
 =head2 url
@@ -642,6 +640,14 @@ sub _freeze {
     #
     # apply any freeze alias mappings
     #
+    $class->__apply_freeze_aliases( $db_data );
+
+    return $db_data;
+}
+
+sub __apply_freeze_aliases {
+    my $class = shift;
+    my $db_data = shift;
 
     my $aliases = $class->_get_aliases;
 
@@ -711,12 +717,12 @@ sub _thaw {
 
     $path .= '/';
 
-    my $entity_data = __dereference_adapter( $class, $db_data, \$path)
-	or return;
+    my $entity_data = __dereference_adapter( $class, $db_data, \$path);
+    return unless defined $entity_data;
 
-    my $data_type = Elive::Util::_reftype($entity_data) || 'Scalar';
-    die "thawing $class. expected $path to contain HASH data. found: $data_type"
-	unless ($data_type eq 'HASH');
+    my $ref_type = Elive::Util::_reftype($entity_data);
+    die "thawing $class. expected $path to contain HASH data. found: $ref_type"
+	unless $ref_type eq 'HASH';
 
     my %data;
     my @properties = $class->properties;
