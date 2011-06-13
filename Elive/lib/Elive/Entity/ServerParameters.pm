@@ -33,16 +33,44 @@ __PACKAGE__->_alias(permissions => 'fullPermissions');
 has 'supervised' => (is => 'rw', isa => 'Bool',
     documentation => 'whether the moderator can see private messages');
 
-has 'enableTelephony' => (is => 'rw', isa => 'Bool');
-has 'telephonyType' => (is => 'rw', isa => 'Ref|Str');
-has 'moderatorTelephonyAddress' => (is => 'rw', isa => 'Str');
-has 'moderatorTelephonyPIN' => (is => 'rw', isa => 'Str');
-has 'participantTelephonyAddress' => (is => 'rw', isa => 'Str');
-has 'participantTelephonyPIN' => (is => 'rw', isa => 'Str');
-has 'serverTelephonyAddress' => (is => 'rw', isa => 'Str');
-has 'serverTelephonyPIN' => (is => 'rw', isa => 'Str');
-has 'serverTelephonyAddress' => (is => 'rw', isa => 'Str');
-has 'redirectURL' => (is => 'rw', isa => 'Str');
+has 'enableTelephony'
+    => (is => 'rw', isa => 'Bool',
+	documentation => 'Enable Telephony');
+
+has 'telephonyType'
+    => (is => 'rw', isa => 'Str',
+			documentation => 'Can be either SIP/PHONE.' );
+
+has 'moderatorTelephonyAddress'
+    => (is => 'rw', isa => 'Str',
+	documentation => 'Either a PHONE number or SIP address for the moderator for telephone');
+
+has 'moderatorTelephonyPIN'
+    => (is => 'rw', isa => 'Str',
+	documentation => 'PIN for moderator telephony');
+
+has 'participantTelephonyAddress'
+    => (is => 'rw', isa => 'Str',
+	documentation => 'Either a PHONE number or SIP address for the participants for telephone');
+
+has 'participantTelephonyPIN'
+    => (is => 'rw', isa => 'Str',
+	documentation => 'PIN for participants telephony');
+
+has 'serverTelephonyAddress'
+    => (is => 'rw', isa => 'Str',
+	documentation => 'Either a PHONE number or SIP address for the server');
+
+has 'serverTelephonyPIN'
+    => (is => 'rw', isa => 'Str',
+	documentation => 'PIN for the server');
+
+has 'serverTelephonyAddress'
+    => (is => 'rw', isa => 'Str',
+	documentation => 'Either a PHONE number or SIP address for the server');
+
+has 'redirectURL' => (is => 'rw', isa => 'Str',
+		      documentation => 'URL to redirect users to after the online session is over.');
 
 =head1 NAME
 

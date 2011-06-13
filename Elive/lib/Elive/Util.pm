@@ -88,7 +88,8 @@ sub _freeze {
 sub _thaw {
     my ($val, $type) = @_;
 
-    return $val if $type =~ m{Ref}i;
+    return $val if $type =~ m{Ref}i
+	|| ref( $val);
 
     return unless defined $val;
 

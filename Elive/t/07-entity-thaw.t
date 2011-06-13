@@ -44,11 +44,11 @@ is_deeply(Elive::Util::_thaw($some_aref, 'Ref'), $some_aref,
 
 do {
     # just to define the behavious of oddball cases
-    like(Elive::Util::_thaw($some_href, 'Str'), qr{^HASH\(.+\)},
-	 'Hash ref as Str gives HASH(...)');
+    is_deeply(Elive::Util::_thaw($some_href, 'Str'), $some_href,
+	 'Hash ref as Str - passed through');
 
-    is_deeply(Elive::Util::_thaw($some_href, 'Int'), undef,
-	      'Hash ref as Int gives undef');
+    is_deeply(Elive::Util::_thaw($some_href, 'Int'), $some_href,
+	      'Hash ref as Int - passed through');
 
     is_deeply(Elive::Util::_thaw('blah', 'Ref'), 'blah',
 	      'Scalar as Ref - passed through');
