@@ -350,7 +350,7 @@ sub main {
 
 sub _show {
 
-    my ($entities, $entity_name, $nesting, $entity_class) = @_;
+    my ($entities, $entity_name, $nesting, $entity_class, %seen) = @_;
 
     $nesting ||= 0;
     my $sp = ' ' x ($nesting * 2);
@@ -360,6 +360,8 @@ sub _show {
 	    print STDERR "${sp}Unknown entity: $entity_name\n";
 	    return;
 	};
+
+    return if $seen{$entity_class}++;
 
     my $property_types = $entity_class->property_types;
     my $property_doco = $entity_class->property_doco;
@@ -385,7 +387,7 @@ sub _show {
 	print "\n";
 
 	if ($type->is_struct) {
-	    _show($entities, $property, $nesting + 1, $elemental_type);
+	    _show($entities, $property, $nesting + 1, $elemental_type, %seen);
 	}
     }
 
