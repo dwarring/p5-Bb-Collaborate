@@ -48,3 +48,7 @@ Makefile.old
 # cygwin
 #
 \.stackdump$
+#
+# elm3 under construction
+_ELM3.pm
+.*session-elm3.t

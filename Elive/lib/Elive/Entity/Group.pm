@@ -20,7 +20,7 @@ __PACKAGE__->_alias(groupName => 'name', freeze => 1);
 
 has 'members' => (is => 'rw', isa => 'Elive::Entity::Group::Members',
 		  coerce => 1,
-		  documentation => "ids of users in the group");
+		  documentation => "ids of users or sub-groups");
 __PACKAGE__->_alias(groupMembers => 'members', freeze => 1);
 __PACKAGE__->_alias(entry => 'members');
 
@@ -119,19 +119,17 @@ sub update {
     return $self->SUPER::update( undef, %opt, changed => \@changed);
 }
 
-=head2 all_members
+=head2 expand_members
 
-    #
-    # Get a list of unique members, including those in sub-groups
-    #
-    my @members = $group_obj->all_members();
+This is a utility method that includes the sum total of all members in
+the group, including those in recursively nested sub-groups. The list
+is further reduced to only include unique members.
 
-This is a utility method that includes members, but recusively expands
-then discards subgroups. It returns an array containing all unique members.
+    my @all_members = $group_obj->expand_members();
 
 =cut
 
-sub all_members {
+sub expand_members {
     my $self = shift;
 
     my %seen;
@@ -140,9 +138,9 @@ sub all_members {
     foreach (@{ $self->members || []}) {
 	my @elements;
 
-	if (Scalar::Util::blessed($_) && $_->can('all_members')) {
+	if (Scalar::Util::blessed($_) && $_->can('expand_members')) {
 	    # recursive expansion
-	    @elements = $_->all_members;
+	    @elements = $_->expand_members;
 	}
 	else {
 	    @elements = Elive::Util::string($_);

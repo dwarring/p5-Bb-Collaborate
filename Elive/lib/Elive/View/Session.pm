@@ -41,7 +41,6 @@ sub _delegate {
 	my @delegates = grep {!$handled{$_}++} ($class->properties, $class->derivable, sort keys %$aliases);
 	push (@delegates, qw{buildJNLP check_preload add_preload remove_preload is_participant is_moderator list_preloads list_recordings})
 	    if $prop eq 'meeting';
-
 	has $prop
 	    => (is => 'rw', isa => $class, coerce => 1,
 		handles => \@delegates,
@@ -60,6 +59,8 @@ Elive::View::Session - Session view class
 =head1 DESCRIPTION
 
 A session is a consolidated view of meetings, meeting parameters, server parameters and participants.
+
+=cut
 
 =head1 METHODS
 
@@ -268,6 +269,16 @@ sub delete {
     return 1;
 }
 
+=head2 buildJNLP check_preload add_preload remove_preload is_participant is_moderator list_preloads list_recordings
+
+These methods are available from L<Elive::Entity::Meeting>.
+
+=head2 adapter allModerators boundaryMinutes costCenter deleted enableTelephony end facilitatorId followModerator fullPermissions id inSessionInvitation maxTalkers moderatorNotes moderatorTelephonyAddress moderatorTelephonyPIN name participantTelephonyAddress participantTelephonyPIN participants password privateMeeting profile raiseHandOnEnter recordingObfuscation recordingResolution recordingStatus redirectURL restrictedMeeting seats serverTelephonyAddress serverTelephonyPIN start supervised telephonyType userNotes videoWindow 
+
+These attributes are available from: L<Elive::Entity::Meeting>, L<Elive::Entity::MeetingParamaters>, L<Elive::Entity::ServerParameters>, L<Elive::Entity::ParticipantList>.
+
+=cut
+
 sub _data_owned_by {
     my $class = shift;
     my $delegate_class = shift;
@@ -367,13 +378,6 @@ access to attributes of meeting parameters, server parameter and  participant
 list.
 
 =back
-
-=head1 SEE ALSO
-
-L<Elive::Entity::Meeting>
-L<Elive::Entity::MeetingParameters>
-L<Elive::Entity::ServerParameters>
-L<Elive::Entity::ParticipantList>
 
 =cut
 

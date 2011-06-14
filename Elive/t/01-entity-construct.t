@@ -199,6 +199,6 @@ do {
     is($members->[0], '2222', 'group member - simple element');
     isa_ok($members->[2], 'Elive::Entity::Group', 'group member - subgroup');
 
-    my @all_members = $group->all_members;
+    my @all_members = $group->expand_members;
     is_deeply(\@all_members, [2222, 3333, 4141, 4242], 'group - all_members()');
 };

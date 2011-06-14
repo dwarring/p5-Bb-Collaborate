@@ -37,16 +37,15 @@ __PACKAGE__->_alias('raise_hands' => 'raiseHandOnEnter');
 has 'maxTalkers' => (is => 'rw', isa => 'Int',
     documentation => 'maximum number of simultaneous talkers');
 __PACKAGE__->_alias('max_talkers' => 'maxTalkers');
-#
-# inSessionInvitation - required by ElluminateLive 8.0 - 9.10?
-# took a walk in 9.1, but back in 9.5 as inSessionInvitations
-#
-has 'inSessionInvitation'  => (is => 'rw', isa => 'Bool');
+
+has 'inSessionInvitation'  => (is => 'rw', isa => 'Bool',
+			       documentation => 'Can moderators invite other individuals from within the online session');
 # v9.5
 __PACKAGE__->_alias('inSessionInvitations' => 'inSessionInvitation');
 __PACKAGE__->_alias('invites' => 'inSessionInvitation');
 
-has 'followModerator'  => (is => 'rw', isa => 'Bool');
+has 'followModerator'  => (is => 'rw', isa => 'Bool',
+			   documentation => 'Whiteboard slides are locked to moderator view');
 has 'videoWindow'  => (is => 'rw', isa => 'Int',
 		       documentation => 'Max simultaneous cameras');
 

@@ -1,14 +1,11 @@
 Revision history for Elive
 
-0.90_1
-        [Changes to handle recursive groups]
-        - Added tests and comments to 07-soap-entity-thaw.t
-        - Changes in Elive::DAO to handle packing format
-        - Changes in Elive::Group to handling thaw and coercement of sub-groups
-        - Added utility method members_expanded
-
-Changes in Elive::DAO unpacking and Elive::Entity::Group to correctly
-          parse and construct sub-groups in responses. I.e
+0.91    15th June 2011
+        Elive::View::Session - documented delegate attributes and methods.
+        Elive::Entity::Group - handle recursive sub groups. Added new
+         method expand_members().
+        Elive::DAO modifications for up-and-coming ELM3 support. New method
+         __apply_freeze_aliases()
 
 0.90    9th June 2011
         [refactoring]

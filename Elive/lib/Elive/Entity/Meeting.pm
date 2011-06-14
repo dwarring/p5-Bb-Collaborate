@@ -58,15 +58,16 @@ has 'name' => (is => 'rw', isa => 'Str', required => 1,
     );
 
 has 'start' => (is => 'rw', isa => 'HiResDate', required => 1,
-		documentation => 'meeting start time');
+		documentation => 'meeting start date and time');
 
 has 'end' => (is => 'rw', isa => 'HiResDate', required => 1,
-	      documentation => 'meeting end time');
+	      documentation => 'meeting end date and time');
 
 has 'password' => (is => 'rw', isa => 'Str',
 		   documentation => 'meeting password');
 
-has 'deleted' => (is => 'rw', isa => 'Bool');
+has 'deleted' => (is => 'rw', isa => 'Bool',
+                  documentation => 'whether meeting has been deleted');
 
 has 'facilitatorId' => (is => 'rw', isa => 'Str',
 			documentation => 'userId of facilitator');

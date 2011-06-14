@@ -21,7 +21,7 @@ has 'seats' => (is => 'rw', isa => 'Int',
 __PACKAGE__->_alias(requiredSeats => 'seats');
 
 has 'boundaryMinutes' => (is => 'rw', isa => 'Int',
-    documentation => 'meeting boundary time');
+    documentation => 'meeting boundary time (minutes)');
 __PACKAGE__->_alias(boundary => 'boundaryMinutes', freeze => 1);
 __PACKAGE__->_alias(boundaryTime => 'boundaryMinutes'); # v 9.5.0 +
 
@@ -79,9 +79,9 @@ Elive::Entity::ServerParameters - Meeting server parameters entity class
 =head1 SYNOPSIS
 
     my $meeting = Elive::Entity::Meeting->insert( \%meeting_data );
-    my $params $meeting->server_parameters;
+    my $server_params $meeting->server_parameters;
 
-    $params->update({
+    $server_params->update({
            boundaryMinutes => 15,
            fullPermissions => 0,
            supervised      => 1,

@@ -608,6 +608,7 @@ sub construct {
 sub _freeze {
     my $class = shift;
     my $db_data = shift;
+    my %opt = @_;
 
     $db_data ||= $class if ref($class);
     $db_data ||= {};
@@ -640,7 +641,8 @@ sub _freeze {
     #
     # apply any freeze alias mappings
     #
-    $class->__apply_freeze_aliases( $db_data );
+    $class->__apply_freeze_aliases( $db_data )
+	unless $opt{canonical};
 
     return $db_data;
 }
