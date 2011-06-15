@@ -4,54 +4,8 @@ use warnings; use strict;
 use Mouse;
 use Mouse::Util::TypeConstraints;
 
-extends 'Elive::DAO';
+extends 'Elive::Entity::Session';
 
-use Elive::Entity::Meeting;
-use Elive::Entity::ServerParameters;
-use Elive::Entity::MeetingParameters;
-use Elive::Entity::ParticipantList;
-use Elive::Util;
-use Carp;
-
-__PACKAGE__->mk_classdata('_delegates');
-
-__PACKAGE__->entity_name('Session');
-__PACKAGE__->collection_name('Sessions');
-has 'id' => (is => 'rw', isa => 'Int', required => 1);
-__PACKAGE__->primary_key('id');
-__PACKAGE__->_alias(meetingId => 'id');
-__PACKAGE__->_alias(sessionId => 'id');
-
-__PACKAGE__->_delegates({
-    meeting => 'Elive::Entity::Meeting',
-    meeting_parameters => 'Elive::Entity::MeetingParameters',
-    server_parameters => 'Elive::Entity::ServerParameters',
-    participant_list => 'Elive::Entity::ParticipantList',
-    });
-
-sub _delegate {
-    my $pkg = shift;
-
-    our %handled = (meetingId => 1);
-    my $delegates = $pkg->_delegates;
-
-    foreach my $prop (sort keys %$delegates) {
-	my $class = $delegates->{$prop};
-	my $aliases = $class->_get_aliases;
-	my @delegates = grep {!$handled{$_}++} ($class->properties, $class->derivable, sort keys %$aliases);
-	push (@delegates, qw{buildJNLP check_preload add_preload remove_preload is_participant is_moderator list_preloads list_recordings})
-	    if $prop eq 'meeting';
-	has $prop
-	    => (is => 'rw', isa => $class, coerce => 1,
-		handles => \@delegates,
-		lazy => 1,
-		default => sub {$class->retrieve($_[0]->id, copy => 1, connection => $_[0]->connection)},
-	    );
-    }
-}
-
-__PACKAGE__->_delegate;
-    
 =head1 NAME
 
 Elive::View::Session - Session view class
@@ -195,80 +149,6 @@ sub update {
     return $self;
 }
 
-=head2 retrieve
-
-Retrieves a session for the given session id.
-
-    Elive::View::Session->retrieve( $session_id );
-
-=cut
-
-sub retrieve {
-    my $class = shift;
-    my $id = shift;
-    my %opt = @_;
-    ($id) = @$id if ref($id);
-    my $self = bless {id => Elive::Util::string($id)}, $class;
-
-    for ($opt{connection}) {
-	$self->connection($_) if $_;
-    }
-
-    return $self;
-}
-
-=head2 list
-
-List all sessions that match a given critera:
-
-    my $sessions = Elive::View::Session->list( filter => "(name like '*Sample*')" );
-
-=cut
-
-sub list {
-    my $class = shift;
-    my %opt = @_;
-
-    my $connection = $opt{connection} || $class->connection
-	or die "not connected";
-    my $meetings = Elive::Entity::Meeting->list(%opt);
-
-    my @sessions = map {
-	my $meeting = $_;
-
-	my $self = bless {id => $meeting->meetingId}, $class;
-	$self->meeting($meeting);
-	$self->connection($connection);
-
-	$self;
-    } @$meetings;
-
-    return \@sessions;
-}
-
-=head2 delete
-
-Deletes an expired or unwanted session from the Elluminate server.
-
-    my $session = Elive::View::Session->retrieve( $session_id );
-    $session->delete;
-
-=cut
-
-sub delete {
-    my $self = shift;
-    my %opt = @_;
-
-    $self->meeting->delete;
-    my $delegates = $self->_delegates;
-
-    foreach my $delegate (sort keys %$delegates) {
-	$self->$delegate->_deleted(1) if $self->{$delegate};
-    }
-
-    return 1;
-}
-
 =head2 buildJNLP check_preload add_preload remove_preload is_participant is_moderator list_preloads list_recordings
 
 These methods are available from L<Elive::Entity::Meeting>.
@@ -278,39 +158,6 @@ These methods are available from L<Elive::Entity::Meeting>.
 These attributes are available from: L<Elive::Entity::Meeting>, L<Elive::Entity::MeetingParamaters>, L<Elive::Entity::ServerParameters>, L<Elive::Entity::ParticipantList>.
 
 =cut
-
-sub _data_owned_by {
-    my $class = shift;
-    my $delegate_class = shift;
-    my @props = @_;
-
-    my %owns = (%{ $delegate_class->property_types },
-		%{ $delegate_class->_aliases },
-		$delegate_class->params);
-
-    return grep { exists $owns{$_} } @props;
-}
-
-sub set {
-    my $self = shift;
-    my %data = @_;
-
-    my $delegates = $self->_delegates;
-
-    foreach my $delegate (sort keys %$delegates) {
-
-	my $delegate_class = $delegates->{$delegate};
-	my @delegate_props = $self->_data_owned_by($delegate_class => sort keys %data);
-	my %delegate_data =  map {$_ => delete $data{$_}} @delegate_props;
-
-	$delegate_class->set( %delegate_data );
-    }
-
-    carp 'unknown session attributes '.join(' ', sort keys %data).'. expected: '.join(' ', sort $self->properties)
-	if keys %data;
-
-    return $self;
-}
 
 sub properties {
     my $class = shift;

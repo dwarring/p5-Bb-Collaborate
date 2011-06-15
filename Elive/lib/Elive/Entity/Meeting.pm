@@ -2,6 +2,7 @@ package Elive::Entity::Meeting;
 use warnings; use strict;
 
 use Mouse;
+use Mouse::Util::TypeConstraints;
 
 extends 'Elive::Entity';
 
@@ -43,6 +44,9 @@ __PACKAGE__->params(
     userId => 'Str',
     userName => 'Str',
     );
+
+coerce 'Elive::Entity::Meeting' => from 'HashRef'
+          => via {Elive::Entity::Meeting->new($_) };
 
 # help out elive_query; expansion of 'select ** from meeting...'
 __PACKAGE__->derivable(

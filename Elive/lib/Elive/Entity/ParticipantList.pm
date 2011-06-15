@@ -19,6 +19,9 @@ use Carp;
 
 __PACKAGE__->entity_name('ParticipantList');
 
+coerce 'Elive::Entity::ParticipantList' => from 'HashRef'
+          => via {Elive::Entity::ParticipantList->new($_) };
+
 has 'meetingId' => (is => 'rw', isa => 'Int', required => 1);
 __PACKAGE__->primary_key('meetingId');
 __PACKAGE__->params(users => 'Str');

@@ -4,23 +4,18 @@ use Test::More tests => 3;
 use Test::Exception;
 use Test::Builder;
 
-# early tests for Elive::View::Session::_ELM3 - under construction
+# early tests for Elive::Entity::Session - under construction
 
 use lib '.';
 use t::Elive;
 
-BEGIN {
-    use Carp;
-    $SIG{__DIE__} = \&Carp::confess;
-};
-
 use Elive;
-use Elive::View::Session::_ELM3;
+use Elive::Entity::Session;
 
 use XML::Simple;
 
 our $t = Test::Builder->new;
-our $class = 'Elive::View::Session' ;
+our $class = 'Elive::Entity::Session' ;
 
 our $connection;
 
@@ -65,9 +60,7 @@ SKIP: {
 
     my ($session) = $class->insert(\%session_data);
 
-    use Elive::View::Session::_ELM3;
-    use Carp; $SIG{__DIE__} = \&Carp::confess;
-    my $elm3_params = Elive::View::Session::_ELM3->_freeze( $session );
+    my $elm3_params = $class->_freeze( $session );
     use YAML; diag YAML::Dump($elm3_params);
     # just a couple of spot checks for now
     is($elm3_params->{start}, $session_start, 'frozen start');

@@ -85,7 +85,7 @@ sub BUILDARGS {
 		    # object, rather than just its primary key.
 		    #
 		    $value = Elive::Util::string($value, $type)
-			unless  Elive::Util::inspect_type($type)->is_ref;
+			unless Elive::Util::inspect_type($type)->is_ref;
 		}		    
 	    }
 	    else {
