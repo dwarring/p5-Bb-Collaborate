@@ -70,11 +70,12 @@ sub _freeze {
 		
 	    }
 	    elsif ($type =~ m{^Ref}ix) {
-		die "freezing of datatype $type: not implemented\n";
+		$val = undef;
 	    }
-
-	    die "unable to convert $raw_val to $type\n"
-		unless defined;
+	    else {
+		die "unable to convert $raw_val to $type\n"
+		    unless defined;
+	    }
 	}
     }
 

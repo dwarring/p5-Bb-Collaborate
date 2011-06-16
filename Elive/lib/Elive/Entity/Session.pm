@@ -73,11 +73,6 @@ sub _delegate {
 
 __PACKAGE__->_delegate;
 
-##has 'meeting' => (is => 'rw', isa => 'Elive::Entity::Meeting', required => 1);
-##has 'meetingParameters' => (is => 'rw', isa => 'Elive::Entity::MeetingParameters');
-##has 'serverParameters' => (is => 'rw', isa => 'Elive::Entity::ServerParameters');
-##has 'participantList' => (is => 'rw', isa => 'Elive::Entity::ParticipantList');
-
 __PACKAGE__->_alias(reservedSeatCount => 'seats', freeze => 1);
 __PACKAGE__->_alias(restrictParticipants => 'restrictedMeeting', freeze => 1);
 
@@ -119,6 +114,8 @@ __PACKAGE__->_alias(allPermissionsMeeting => 'fullPermissions', freeze => 1);
 __PACKAGE__->_alias(sessionServerTeleconferenceType => 'telephonyType', freeze => 1);
 
 __PACKAGE__->_alias(enableTeleconferencing => 'enableTelephony', freeze => 1);
+
+__PACKAGE__->_alias(facilitator => 'facilitatorId', freeze => 1);
 
 __PACKAGE__->_alias(moderatorTeleconferenceAddress => 'moderatorTelephonyAddress', freeze => 1);
 
@@ -202,16 +199,16 @@ sub set {
 # freezing also involves flattening the list. 
 
 sub _freeze {
-    my $self = shift;
+    my $class = shift;
     my %data = %{ shift() };
     my %opts = @_;
 
-    my $delegates = $self->_delegates;
+    my $delegates = $class->_delegates;
 
     my %frozen = map {
 	my $delegate = $_;
 	my $delegate_class = $delegates->{$delegate};
-	my @delegate_props = $self->_data_owned_by($delegate_class => sort keys %data);
+	my @delegate_props = $class->_data_owned_by($delegate_class => sort keys %data);
 
 	#
 	# accept flattened or unflattened data: eg $data{meeting}{start} or $data{start}
@@ -228,11 +225,7 @@ sub _freeze {
 	$frozen{id} = Elive::Util::_freeze( $id, 'Int' );
     }
 
-    # this is probably wrong. need to map username to userid
-    warn "doing dodgy facilitator conversion";
-    $frozen{facilitator} = delete $frozen{facilitatorId};
-
-    $self->__apply_freeze_aliases( \%frozen )
+    $class->__apply_freeze_aliases( \%frozen )
 	unless $opts{canonical};
 
     # todo lots more tidying and construction

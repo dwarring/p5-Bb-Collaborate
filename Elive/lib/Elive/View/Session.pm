@@ -5,6 +5,8 @@ use Mouse;
 use Mouse::Util::TypeConstraints;
 
 extends 'Elive::Entity::Session';
+has 'id' => (is => 'rw', isa => 'Int', required => 1);
+__PACKAGE__->primary_key('id');
 
 =head1 NAME
 

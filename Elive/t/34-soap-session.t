@@ -1,6 +1,6 @@
 #!perl
 use warnings; use strict;
-use Test::More tests => 3;
+use Test::More tests => 5;
 use Test::Exception;
 use Test::Builder;
 
@@ -25,7 +25,7 @@ SKIP: {
     my $auth = $result{auth};
 
     my $connection_class = $result{class};
-    skip ($result{reason} || 'skipping live tests', 3)
+    skip ($result{reason} || 'skipping live tests', 5)
 	if $connection_class->isa('t::Elive::MockConnection');
 
     $connection = $connection_class->connect(@$auth);
@@ -55,17 +55,18 @@ SKIP: {
 	fullPermissions => 1,
 	supervised => 1,
 	seats => 2,
-##	restrictedMeeting => 1,
+	restrictedMeeting => 1,
     );
 
-    my ($session) = $class->insert(\%session_data);
-
-    my $elm3_params = $class->_freeze( $session );
+    my $elm3_params = $class->_freeze( \%session_data );
     use YAML; diag YAML::Dump($elm3_params);
     # just a couple of spot checks for now
     is($elm3_params->{start}, $session_start, 'frozen start');
     is($elm3_params->{boundaryTime}, 15, 'frozen boundaryTime');
+    is($elm3_params->{facilitator}, Elive->login->userId, 'frozen facilitator');
     is($elm3_params->{reservedSeatCount}, 2, 'frozen seat count');
+    is($elm3_params->{restrictParticipants}, 'true', 'frozen restrictParticipants');
+    my ($session) = $class->insert(\%session_data);
 
     $session->delete;
 }

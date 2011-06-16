@@ -617,6 +617,11 @@ sub _freeze {
     my $property_types = $class->property_types || {};
     my %param_types = $class->params;
 
+    #
+    # apply any aliases
+    #
+    $class->__resolve_property_aliases( $db_data );
+
     foreach (keys %$db_data) {
 
 	my $property = $property_types->{$_} || $param_types{$_};
@@ -645,6 +650,20 @@ sub _freeze {
 	unless $opt{canonical};
 
     return $db_data;
+}
+
+sub __resolve_property_aliases {
+    my $class = shift;
+    my $data = shift;
+
+    my %aliases = $class->_to_aliases;
+
+    for (grep {exists $data->{$_}} (keys %aliases)) {
+	my $att = $aliases{$_};
+	$data->{$att} = delete $data->{$_};
+    }
+
+    return $data;
 }
 
 sub __apply_freeze_aliases {
@@ -852,31 +871,30 @@ sub _process_results {
 }
 
 sub _readback_check {
-    my ($class, $updates, $rows, %opt) = @_;
+    my ($class, $updates_raw, $rows, %opt) = @_;
 
-    #
-    # Create and update responses generally return a copy of the
-    # record, after performing the update. This routine may be
-    # run to check that the expected updates have been applied
-    #
-    croak "Didn't receive a response".($opt{command}? ' for '.$opt{command}: '').' on '.$class->entity_name
-	unless @$rows;
+    my $updates = $class->_freeze( $updates_raw, canonical => 1);
 
-    foreach my $row (@$rows) {
+    warn YAML::Dump({updates_raw => $updates_raw, updates => $updates})
+	if ($class->debug >= 5);
 
-	my $property_types = $class->property_types;
+    foreach my $row_raw (@$rows) {
+
+	my $row = $class->_freeze( $row_raw, canonical => 1);
+
+	warn YAML::Dump({row_raw => $row_raw, row => $row})
+	    if ($class->debug >= 5);
 
 	foreach ($class->properties) {
-
 	    if (exists $updates->{$_} && exists $row->{$_}) {
 		my $write_val = $updates->{$_};
 		my $read_val = $row->{$_};
-		my $property_type = $class->property_types->{$_};
 
-		if ($class->_cmp_col($property_type,
-				     $write_val,  $read_val, %opt)) {
+		if ($write_val ne $read_val) {
 
-		    warn YAML::Dump({read => $read_val, sent => $write_val})
+		    my $property_type = $class->property_types->{$_};
+
+		    warn YAML::Dump({read => $read_val, sent => $write_val, type => $property_type})
 			if ($class->debug >= 2);
 
 		    croak "${class}: Update consistancy check failed on $_ (${property_type}), sent:".Elive::Util::string($write_val, $property_type).", read-back:".Elive::Util::string($read_val, $property_type);
@@ -944,11 +962,7 @@ sub set {
     my %entity_column = map {$_ => 1} ($self->properties);
     my %primary_key = map {$_ => 1} ($self->primary_key);
 
-    my %aliases = $self->_to_aliases;
-    for (grep {exists $data{$_}} (keys %aliases)) {
-	my $att = $aliases{$_};
-	$data{$att} = delete $data{$_};
-    }
+    $self->__resolve_property_aliases( \%data );
  
     foreach (keys %data) {
 
@@ -1064,15 +1078,6 @@ sub insert {
     my %insert_data = %$insert_data;
     my %params = %{delete $opt{param} || {}};
 
-    #
-    # resolve any aliasas
-    #
-    my %aliases = $class->_to_aliases;
-    for (grep {exists $insert_data{$_}} (keys %aliases)) {
-	my $att = $aliases{$_};
-	$insert_data{$att} = delete $insert_data{$_};
-    }
-
     my $data_params = $class->_freeze({%insert_data, %params});
 
     my $command = $opt{command} || 'create'.$class->entity_name;
@@ -1142,32 +1147,32 @@ to the object.
 =cut
 
 sub update {
-    my ($self, $_update_params, %opt) = @_;
+    my ($self, $_update_data, %opt) = @_;
 
     die "attempted to update deleted record"
 	if ($self->_deleted);
 
     my %params = %{ $opt{param} || {} };
-    my %update_params;
+    my %update_data;
 
-    if ($_update_params) {
+    if ($_update_data) {
 
 	croak 'usage: $obj->update( \%data )'
-	    unless (Elive::Util::_reftype($_update_params) eq 'HASH');
+	    unless (Elive::Util::_reftype($_update_data) eq 'HASH');
 
-	%update_params = %{ $_update_params };
+	%update_data = %{ $_update_data };
 	#
 	# sift out things which are included in the data payload, but should
 	# be parameters.
 	#
 	my %param_names = $self->params;
-	foreach (grep {exists $update_params{$_}} %param_names) {
-	    my $val = delete $update_params{$_};
+	foreach (grep {exists $update_data{$_}} %param_names) {
+	    my $val = delete $update_data{$_};
 	    $params{$_} = $val unless exists $params{$_};
 	}
 
-	$self->set( %update_params)
-	    if (keys %update_params);
+	$self->set( %update_data)
+	    if (keys %update_data);
     }
 
     #
