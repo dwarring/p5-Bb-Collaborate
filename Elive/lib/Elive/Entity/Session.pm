@@ -108,6 +108,7 @@ sub invitedGuests {
 __PACKAGE__->_alias(boundaryTime => 'boundaryMinutes', freeze => 1);
 
 __PACKAGE__->_alias(supervisedMeeting => 'supervised', freeze => 1);
+__PACKAGE__->_alias(private => 'privateMeeting', freeze => 1);
 
 __PACKAGE__->_alias(allPermissionsMeeting => 'fullPermissions', freeze => 1);
 
@@ -320,10 +321,9 @@ sub update {
 	# Early ELM 3.x has a habit of wiping defaults we're better off to
 	# rewrite the whole record
 	#
-	my %changed = map {$_->properties => 1} values %{$self->_delegates};
-	delete $changed{meetingId};
+	my @all_props =  map {$_->properties} values %{$self->_delegates};
 		       
-	$changed = [ sort keys %changed ];
+	$changed = [ grep {$_ ne 'meetingId'} @all_props ];
     }
 
     $self->SUPER::update( $update_data, %opt, changed => $changed );

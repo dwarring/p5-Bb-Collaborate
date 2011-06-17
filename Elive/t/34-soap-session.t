@@ -1,6 +1,6 @@
 #!perl
 use warnings; use strict;
-use Test::More tests => 41;
+use Test::More tests => 40;
 use Test::Exception;
 use Test::Builder;
 
@@ -27,7 +27,7 @@ SKIP: {
     my $auth = $result{auth};
 
     my $connection_class = $result{class};
-    skip ($result{reason} || 'skipping live tests', 41)
+    skip ($result{reason} || 'skipping live tests', 40)
 	if $connection_class->isa('t::Elive::MockConnection');
 
     $connection = $connection_class->connect(@$auth);
@@ -45,8 +45,6 @@ SKIP: {
 	password => 'test', # what else?
 	start =>  $session_start,
 	end => $session_end,
-#
-# private meeting? not dying in readback?
 	privateMeeting => 1,
 	costCenter => 'testing',
 	moderatorNotes => 'test moderator notes. Here are some entities: & > <',
@@ -65,19 +63,22 @@ SKIP: {
     my $elm3_params = $class->_freeze( \%insert_data );
     use YAML; diag YAML::Dump($elm3_params);
     # some spot checks on freezing
-    is($elm3_params->{start}, $session_start, 'frozen start');
-    is($elm3_params->{boundaryTime}, 15, 'frozen boundaryTime');
+    is($elm3_params->{start}, $session_start, 'frozen "start"');
+    is($elm3_params->{boundaryTime}, 15, 'frozen "boundaryTime"');
+    is($elm3_params->{private}, 'true', 'frozen "privateMeeting"');
     is($elm3_params->{facilitator}, Elive->login->userId, 'frozen facilitator');
-    is($elm3_params->{reservedSeatCount}, 2, 'frozen seat count');
-    is($elm3_params->{restrictParticipants}, 'true', 'frozen restrictParticipants');
+    is($elm3_params->{reservedSeatCount}, 2, 'frozen "seats"');
+    is($elm3_params->{restrictParticipants}, 'true', 'frozen "restrictedMeeting"');
     my $session = $class->insert(\%insert_data);
 
     foreach (sort keys %insert_data) {
+	next if $_ eq 'password'; # password is not saved
 	is( $session->$_, $insert_data{$_}, "insert: $_ saved");
     }
 
     my %update_data = (
-	password => 'test again',
+	costCenter => 'testing again',
+	boundaryMinutes => 30,
 	);
 
     $session->update( \%update_data );
@@ -86,6 +87,7 @@ SKIP: {
     @all{ keys %insert_data, keys %update_data } = undef;
 
     foreach (sort keys %all) {
+	next if $_ eq 'password'; # password is not saved
 
 	my $expected_value = (exists $update_data{$_}
 			      ? $update_data{$_}
