@@ -915,9 +915,10 @@ entity was last retrieved or saved.
 
 sub is_changed {
     my $self = shift;
+    my %opt = @_;
 
     my @updated_properties;
-    my $db_data = $self->_db_data;
+    my $db_data = $opt{db_data} || $self->_db_data;
 
     unless ($db_data) {
 	#

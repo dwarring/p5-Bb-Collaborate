@@ -186,7 +186,7 @@ sub set {
 	my @delegate_props = $self->_data_owned_by($delegate_class => sort keys %data);
 	my %delegate_data =  map {$_ => delete $data{$_}} @delegate_props;
 
-	$delegate_class->set( %delegate_data );
+	$self->$delegate->set( %delegate_data );
     }
 
     carp 'unknown session attributes '.join(' ', sort keys %data).'. expected: '.join(' ', sort $self->properties)
@@ -276,25 +276,57 @@ sub insert {
 	if $data->{recurrenceCount} || $data->{recurrenceDays};
 
     return $class->SUPER::insert( $data, command => 'createSession', %opt );
+}
 
-=for disposal
+=head2 is_changed
 
-    my $frozen_data = $class->_freeze( $data );
-
-    use YAML; warn YAML::Dump {raw => $data, frozen => $frozen_data};
-
-    my $som = $connection->call(createSession => %$frozen_data);
-    $connection->_check_for_errors( $som );
-
-    warn YAML::Dump {results => \%results};
-    my $results_processed = $class->_process_results(  );
-
-    # not able to construct or an object yet - just dump
-    use YAML;
-    warn YAML::Dump {processed => $results_processed};
-    die "tba working elm3 insert";
+Returns a list of properties that have been changed since the Session
+was last retrieved or saved.
 
 =cut
+
+sub is_changed {
+    my $self = shift;
+
+    my $delegates = $self->_delegates;
+
+    return map {$self->{$_}
+		    ? $self->$_->is_changed( db_data =>  $self->_db_data->{$_} )
+		    : ()} (sort keys %$delegates)
+}
+
+=head2 update
+
+    $session->update({ boundaryTime => 15});
+
+    # ...or...
+
+    $session->boundaryTime(15);
+    $session->update;
+
+Updates session properties
+
+=cut
+
+sub update {
+    my $self = shift;
+    my $update_data = shift;
+    my %opt = @_;
+
+    my $changed = $opt{changed} || [$ self->is_changed];
+
+    if (@$changed || keys %{$update_data || {}}) {
+	#
+	# Early ELM 3.x has a habit of wiping defaults we're better off to
+	# rewrite the whole record
+	#
+	my %changed = map {$_->properties => 1} values %{$self->_delegates};
+	delete $changed{meetingId};
+		       
+	$changed = [ sort keys %changed ];
+    }
+
+    $self->SUPER::update( $update_data, %opt, changed => $changed );
 }
 
 =head2 retrieve
