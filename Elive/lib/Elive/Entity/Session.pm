@@ -40,6 +40,11 @@ has 'id' => (is => 'rw', isa => 'Int', required => 1);
 __PACKAGE__->primary_key('id');
 __PACKAGE__->_alias(meetingId => 'id');
 __PACKAGE__->_alias(sessionId => 'id');
+__PACKAGE__->params(
+    invitedParticipantsList => 'Str',
+    invitedModerators => 'Str',
+    invitedGuests => 'Str',
+    );
 
 __PACKAGE__->mk_classdata('_delegates');
 
@@ -81,29 +86,6 @@ __PACKAGE__->_alias(restrictParticipants => 'restrictedMeeting', freeze => 1);
 =head2 invitedParticipantsList
 
 =cut
-
-sub invitedParticipantsList {
-    my $self = shift;
-    die 'tba - invitedParticipantsList';
-}
-
-=head2 invitedModerators
-
-=cut
-
-sub invitedModerators {
-    my $self = shift;
-    die 'tba - invitedModerators';
-}
-
-=head2 invitedGuests
-
-=cut
-
-sub invitedGuests {
-    my $self = shift;
-    die 'tba - invitedGuests';
-}
 
 __PACKAGE__->_alias(boundaryTime => 'boundaryMinutes', freeze => 1);
 
@@ -196,6 +178,27 @@ sub set {
     return $self;
 }
 
+sub _readback_check {
+    my ($class, $_updates_ref, $rows, @args) = @_;
+    my %updates = %$_updates_ref;
+
+    my $delegates = $class->_delegates;
+
+    foreach my $delegate (sort keys %$delegates) {
+	my $delegate_class = $delegates->{$delegate};
+	my $delegate_data = delete $updates{$delegate};
+
+	next unless $delegate_data;
+
+	foreach my $row (@$rows) {
+	    $delegate_class
+		->_readback_check($delegate_data, [$row->{$delegate}], @args);
+	}
+    }
+
+    return $class->SUPER::_readback_check(\%updates, $rows, @args);
+}
+
 # The createSession and updateSession accept a flatten list, hence
 # freezing also involves flattening the list. 
 
@@ -226,6 +229,53 @@ sub _freeze {
 	$frozen{id} = Elive::Util::_freeze( $id, 'Int' );
     }
 
+    do {
+	#
+	# collate invited guests, moderators and regular participants
+	#
+	my @guest_list;
+	my @moderator_list;
+	my @participant_list;
+
+	if (my $participants_str = delete $frozen{participants}) {
+	    my $participants = Elive::Entity::ParticipantList::Participants->new( $participants_str );
+	    my ($users, $groups, $guests) = $participants->_collate;
+
+	    foreach my $guest (sort keys %$guests) {
+		push (@guest_list, $guest);
+	    }
+	    $frozen{invitedGuests} = join(',', @guest_list);
+
+	    foreach my $user_id (sort keys %$users) {
+
+		my $role = $users->{$user_id};
+		my $spec = $user_id;
+
+		if ($role && $role >= 3) {
+		    push( @participant_list, $spec);
+		}
+		else {
+		    push( @moderator_list, $spec);
+		}
+	    }
+
+	    foreach my $group_id (sort keys %$groups) {
+
+		my $role = $groups->{$group_id};
+		my $spec = '*' . $group_id;
+
+		if ($role && $role >= 3) {
+		    push( @participant_list, $spec);
+		}
+		else {
+		    push( @moderator_list, $spec);
+		}
+	    }
+	    $frozen{invitedModerators} = join(',', @moderator_list);
+	    $frozen{invitedParticipantsList} = join(',', @participant_list);
+	}
+    };
+
     $class->__apply_freeze_aliases( \%frozen )
 	unless $opts{canonical};
 
@@ -252,8 +302,6 @@ sub _unpack_as_list {
     @results{qw{meeting serverParameters meetingParameters participantList}} = @$results_list;
 
     $results{Id} = $results{meeting}{MeetingAdapter}{Id};
-
-##    die YAML::Dump {results => \%results};
 
     # todo: recurring meetings
     return [\%results]

@@ -359,8 +359,8 @@ sub is_moderator {
 }
 
 sub _readback_check {
-    my ($class, $updates_href, $rows, @args) = @_;
-    my %updates = %$updates_href;
+    my ($class, $updates_ref, $rows, @args) = @_;
+    my %updates = %$updates_ref;
 
     #
     # password not included in readback record - skip it

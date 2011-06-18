@@ -1,6 +1,6 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 33;
+use Test::More tests => 34;
 use Test::Warn;
 use Scalar::Util;
 
@@ -8,6 +8,7 @@ use Elive::Connection;
 use Elive::Entity::User;
 use Elive::Entity::ParticipantList;
 use Elive::Entity::ServerParameters;
+use Elive::Entity::Session;
 use Elive::Util;
 
 use lib '.';
@@ -175,4 +176,15 @@ is_deeply( $server_parameter_frozen, {
     boundary => 42,
     permissionsOn => 'true'},
     'server parameter freeze from data');
+
+my $session_frozen = Elive::Entity::Session->_freeze(
+    {id => 12345, participants => 'alice=2;bob=3;*chair=2;*pleb=3;some_guest (john.doe@acme.org)'});
+
+is_deeply($session_frozen,
+	  { id => 12345,
+	   invitedGuests => 'some_guest (john.doe@acme.org)',
+	  invitedModerators => 'alice,*chair',
+	  invitedParticipantsList => 'bob,*pleb'
+	  },
+	  'Frozen session participants');
 

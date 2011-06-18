@@ -1,6 +1,6 @@
 #!perl
 use warnings; use strict;
-use Test::More tests => 40;
+use Test::More tests => 44;
 use Test::Exception;
 use Test::Builder;
 
@@ -20,6 +20,32 @@ our $t = Test::Builder->new;
 our $class = 'Elive::Entity::Session' ;
 
 our $connection;
+
+lives_ok(sub {
+    $class->_readback_check(
+	{id => 12345, meeting => {name => 'as expected'}},
+	[{id => 12345, meeting => {name => 'as expected'}}]
+	)}, 'readback on valid data -lives');
+#
+# meeting password is not echoed in response
+#
+lives_ok(sub {
+    $class->_readback_check(
+	{id => 12345, meeting => {name => 'as expected', password=>'ssshhh!'}},
+	[{id => 12345, meeting => {name => 'as expected', password => ''}}]
+	)}, 'readback ignores blank password');
+
+dies_ok(sub {
+    $class->_readback_check(
+	{id => 12345, meeting => {name => 'as expected'}},
+	[{id => 12345, meeting => {name => 'whoops!'}}]
+	)}, 'readback on invalid sub-record data - dies');
+
+dies_ok(sub {
+    $class->_readback_check(
+	{id => 12345, meeting => {name => 'as expected'}},
+	[{id => 99999, meeting => {name => 'as expected'}}]
+	)}, 'readback on valid primary key - dies');
 
 SKIP: {
 
@@ -64,7 +90,7 @@ SKIP: {
     use YAML; diag YAML::Dump($elm3_params);
     # some spot checks on freezing
     is($elm3_params->{start}, $session_start, 'frozen "start"');
-    is($elm3_params->{boundaryTime}, 15, 'frozen "boundaryTime"');
+    is($elm3_params->{boundaryTime}, 15, 'frozen "boundaryMinutes"');
     is($elm3_params->{private}, 'true', 'frozen "privateMeeting"');
     is($elm3_params->{facilitator}, Elive->login->userId, 'frozen facilitator');
     is($elm3_params->{reservedSeatCount}, 2, 'frozen "seats"');
@@ -72,7 +98,7 @@ SKIP: {
     my $session = $class->insert(\%insert_data);
 
     foreach (sort keys %insert_data) {
-	next if $_ eq 'password'; # password is not saved
+	next if $_ eq 'password'; # password is not echoed
 	is( $session->$_, $insert_data{$_}, "insert: $_ saved");
     }
 
@@ -87,7 +113,7 @@ SKIP: {
     @all{ keys %insert_data, keys %update_data } = undef;
 
     foreach (sort keys %all) {
-	next if $_ eq 'password'; # password is not saved
+	next if $_ eq 'password'; # password is not echoed
 
 	my $expected_value = (exists $update_data{$_}
 			      ? $update_data{$_}

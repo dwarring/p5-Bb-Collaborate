@@ -26,8 +26,7 @@ has 'meetingId' => (is => 'rw', isa => 'Int', required => 1);
 __PACKAGE__->primary_key('meetingId');
 __PACKAGE__->params(users => 'Str');
 
-has 'participants' => (is => 'rw', isa => 'Elive::Entity::ParticipantList::Participants',
-    coerce => 1);
+has 'participants' => (is => 'rw', isa => 'Elive::Entity::ParticipantList::Participants', coerce => 1);
 #
 # NOTE: thawed data may be returned as the 'participants' property.
 # but for frozen data the parameter name is 'users'.
@@ -161,7 +160,7 @@ sub update {
 		   connection => $self->connection,
 	) or die "meeting not found: ".$meeting_id;
 
-    my ($users, $groups, $guests) = $self->_collate_participants;
+    my ($users, $groups, $guests) = $self->participants->_collate;
     # underlying adapter does not yet support groups or guests as
     # participants.
 
@@ -179,7 +178,7 @@ sub update {
     my $class = ref($self);
     $self = $class->retrieve([$self->id], connection => $self->connection);
 
-    my ($added_users, $_added_groups, $_added_guests) = $self->_collate_participants;
+    my ($added_users, $_added_groups, $_added_guests) = $self->participants->_collate;
     #
     # a common scenario is adding unknown users. Check for this specific
     # condition and raise a specific friendlier error.
@@ -234,41 +233,6 @@ sub _massage_participants {
             $users->{ $member } ||= $role;
         }
     }
-}
-
-sub _collate_participants {
-    my $self = shift;
-
-    my @raw_participants = @{ $self->participants || [] };
-
-    my %users;
-    my %groups;
-    my %guests;
-
-    foreach (@raw_participants) {
-	my $participant = Elive::Entity::ParticipantList::Participant->_parse($_);
-	my $id;
-	my $roleId = Elive::Entity::Role->stringify( $participant->{role} )
-	    || 3;
-
-	if (! $participant->{type} ) {
-	    $id = Elive::Entity::User->stringify( $participant->{user} );
-	    $users{ $id } = $roleId;
-	}
-	elsif ($participant->{type} == 1) {
-	    $id = Elive::Entity::Group->stringify( $participant->{group} );
-	    $groups{ $id } = $roleId;
-	}
-	elsif ($participant->{type} == 2) {
-	    $id = Elive::Entity::InvitedGuest->stringify( $participant->{guest} );
-	    $guests{ $id } = $roleId;
-	}
-	else {
-	    carp("unknown type: $participant->{type} in participant list: ".$self->id);
-	}
-    }
-
-    return (\%users, \%groups, \%guests);
 }
 
 sub _set_participant_list {

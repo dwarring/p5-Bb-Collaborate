@@ -57,7 +57,7 @@ has 'type' => (is => 'rw', isa => 'Int',
 	       documentation => 'type of participant; 0:user, 1:group, 2:guest'
     );
 
-sub _parse {
+sub BUILDARGS {
     my $class = shift;
     local ($_) = shift;
 
@@ -145,7 +145,7 @@ sub _parse {
 }
 
 coerce 'Elive::Entity::ParticipantList::Participant' => from 'Str'
-    => via { __PACKAGE__->new( __PACKAGE__->_parse($_) ) };
+    => via { __PACKAGE__->new( $_) };
 
 =head2 participant
 
@@ -174,7 +174,7 @@ sub stringify {
     my $self = shift;
     my $data = shift || $self;
 
-    $data = $self->_parse($data)
+    $data = $self->BUILDARGS($data)
 	unless Scalar::Util::refaddr($data);
     if (! $data->{type} ) {
 	# user => 'userId'

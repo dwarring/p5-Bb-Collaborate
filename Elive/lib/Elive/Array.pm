@@ -7,21 +7,10 @@ use Mouse::Util::TypeConstraints;
 use parent qw{Elive};
 
 use Scalar::Util;
+use Elive::Util;
 
 __PACKAGE__->mk_classdata('element_class');
 __PACKAGE__->mk_classdata('separator' => ';');
-
-coerce 'Elive::Array' => from 'Str'
-          => via {
-	      my $a = [ split(__PACKAGE__->separator) ];
-	      bless ($a, __PACKAGE__);
-          };
-
-coerce 'Elive::Array' => from 'ArrayRef'
-          => via {
-	      my @a = map {Elive::Util::string($_)} @$_;
-	      bless (\@a, __PACKAGE__);
-          };
 
 =head1 NAME
 
@@ -37,6 +26,30 @@ Elive::Entity::participantList.
 =head1 METHODS
 
 =cut
+
+sub _build_array {
+    my $class = shift;
+    my $spec = shift;
+
+    my $type = Elive::Util::_reftype( $spec );
+
+    my @args;
+
+    if ($type eq 'ARRAY') {
+	@args = map {Elive::Util::string($_)} @$spec;
+    }
+    else {
+	@args = split($class->separator, Elive::Util::string($spec));
+    }
+
+    return \@args;
+}
+
+our $class = __PACKAGE__;
+coerce $class => from 'ArrayRef|Str'
+          => via {
+	      $class->new( $_ );
+          };
 
 =head2 stringify
 
@@ -62,8 +75,9 @@ sub stringify {
 =cut
 
 sub new {
-    my ($class,$ref) = @_;
-    return bless($ref || [], $class);
+    my ($class, $spec) = @_;
+    my $array = $class->_build_array( $spec );
+    return bless($array || [], $class);
 }
 
 =head2 add 
@@ -77,7 +91,7 @@ Add elements to an array.
 sub add {
     my ($self, @elems) =  @_;
 
-    @elems = (map {Scalar::Util::reftype($_)? $_: split($self->separator)} 
+    @elems = (map { @{$self->_build_array($_)} }
 	      grep {defined} @elems);
 
     if (my $element_class = $self->element_class) {
