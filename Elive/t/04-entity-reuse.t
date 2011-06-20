@@ -1,11 +1,12 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 4;
+use Test::More tests => 8;
 use Test::Warn;
 
 use Elive::Connection;
 use Elive::Entity::Group;
 use Elive::Entity::ParticipantList;
+use Elive::DAO;
 
 use Scalar::Util;
 
@@ -14,79 +15,91 @@ use t::Elive::MockConnection;
 
 Elive->connection( t::Elive::MockConnection->connect() );
 
-my $group = Elive::Entity::Group->construct(
-    {
-	groupId => 111111,
-	name => 'test group',
-	members => [
-	    123456, 112233
-	    ]
-    },
-    );
+our $cache = Elive::DAO->live_entities;
 
-isa_ok($group, 'Elive::Entity::Group', 'group');
-is($group->members->[1], 112233, 'can access group members');
+do {
+    my $group = Elive::Entity::Group->construct(
+	{
+	    groupId => 111111,
+	    name => 'test group',
+	    members => [
+		123456, 112233
+		]
+	},
+	);
 
-my $user1 =  Elive::Entity::User->construct(
-    {userId => 11111,
-     loginName => 'pete'},
-    );
+    isa_ok($group, 'Elive::Entity::Group', 'group');
+    is($group->members->[1], 112233, 'can access group members');
 
-my $user1_again = Elive::Entity::User->retrieve([11111],
-    reuse => 1);
+    my $user1 =  Elive::Entity::User->construct(
+	{userId => 11111,
+	 loginName => 'pete'},
+	);
 
-ok(_same_ref($user1, $user1_again), 'basic entity reuse');
+    my $user1_again = Elive::Entity::User->retrieve([11111],
+						    reuse => 1);
 
-my $user2 =  Elive::Entity::User->construct(
-    {userId => 22222,
-     loginName => 'pete'},
-    );
+    is(_ref($user1), _ref($user1_again), 'basic entity reuse');
 
-my $participant_list = Elive::Entity::ParticipantList->construct(
-    {
-	meetingId => 9999,
-	participants => [
-	    {
-		user => {userId => 22222,
-			 loginName => 'repeat',
+    my $user2 =  Elive::Entity::User->construct(
+	{userId => 22222,
+	 loginName => 'pete'},
+	);
+
+    my $participant_list = Elive::Entity::ParticipantList->construct(
+	{
+	    meetingId => 9999,
+	    participants => [
+		{
+		    user => {userId => 22222,
+			     loginName => 'refetched',
+		    },
+		    role => {roleId => 2},
 		},
-		role => {roleId => 2},
-	    },
-	    {
-		user => {userId => 33333,
-			 loginName => 'test_user3',
-		},
-		role => {roleId => 3},
-	    }
-	    
-	    ],
-    },
+		{
+		    user => {userId => 33333,
+			     loginName => 'test_user3',
+		    },
+		    role => {roleId => 3},
+		}
+		],
+	},
     );
 
-_dump_objs();
+    my $user2_again = $participant_list->participants->[0]{user};
 
-my $user2_again = $participant_list->participants->[0]{user};
+    is(_ref($user2), _ref($user2_again), 'object references unified');
+    is( $user2_again->loginName, 'refetched', 'object accessor 1');
+    is( $user2->loginName, 'refetched', 'object accessor 2');
 
-ok(_same_ref($user2, $user2_again), 'nested reuse');
+    ok( (grep {$_} values %$cache), 'cache populated when objects are in scope');
+};
+
+#
+# everything is now out of scope, their should be nothing left in the cache
+
+ok(! (grep {$_} values %$cache), 'cached cleared when objects destroyed');
+_dump_objs(); # should do nothing
 
 ########################################################################
 
 sub _dump_objs {
     my $live_objects = Elive::Entity->live_entities;
 
-    diag "Elive Objects:\n";
+    my $first;
+
     foreach (keys %$live_objects) {
 	my $o = $live_objects->{$_};
-	diag "\t$_ = ".Scalar::Util::refaddr($o)
-	    if ($o);
+	if ($o) {
+	    diag "Elive Objects:\n" if $first++;
+	    
+	    diag "\t$_ = ".Scalar::Util::refaddr($o)
+	}
     }
     print "\n";
 }
 
-sub _same_ref {
-    my $a1 = Scalar::Util::refaddr(shift);
-    my $a2 = Scalar::Util::refaddr(shift);
-
-    return $a1 && $a1 eq $a2
+sub _ref {
+    return Scalar::Util::refaddr(shift);
 }
 

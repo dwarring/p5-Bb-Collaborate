@@ -46,6 +46,8 @@ sub _connect {
     $self->pass($pass);
     $self->pass('test_pass') unless $self->pass;
 
+    $self->debug($opt{debug});
+
     $self->mockdb({});
 
     Elive::Entity::User->insert(
@@ -123,6 +125,9 @@ sub call {
 
 	    $params{$primary_key[0]} ||= $self->server_details_id
 		if $entity_name eq 'serverDetails';
+
+	    warn YAML::Dump {cmd => $cmd, params => \%params}
+	    if ($self->debug||0) >= 3;
 
 	    if ($crud eq 'c') {
 		foreach my $fld (@primary_key) {

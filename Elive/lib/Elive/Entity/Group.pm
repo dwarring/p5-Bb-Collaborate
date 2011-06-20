@@ -27,17 +27,25 @@ __PACKAGE__->_alias(entry => 'members');
 has 'dn' => (is => 'rw', isa => 'Str',
 	       documentation => 'LDAP Domain (where applicable)');
 
-coerce 'Elive::Entity::Group' => from 'HashRef'
-          => via {Elive::Entity::Group->construct($_,
-						 %Elive::_construct_opts) };
+sub BUILDARGS {
+    my $class = shift;
+    my $spec = shift;
 
-coerce 'Elive::Entity::Group' => from 'Str'
-          => via {
-	      my $group_id = $_;
-	      $group_id =~ s{^ \s* \* \s*}{}x;  # just in case leading '*' leaks through
+    my $args;
+    if ($spec && ! ref $spec) {
+	my $group_id = $_;
+	$group_id =~ s{^ \s* \* \s*}{}x;  # just in case leading '*' leaks
+	$args = {groupId => $group_id};
+    }
+    else {
+	$args = $spec;
+    }
 
-	      Elive::Entity::Group->construct({groupId => $group_id}, 
-					      %Elive::_construct_opts) };
+    return $args;
+}
+
+coerce 'Elive::Entity::Group' => from 'HashRef|Str'
+          => via {Elive::Entity::Group->new($_) };
 
 =head1 NAME
 

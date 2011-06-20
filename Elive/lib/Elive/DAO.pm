@@ -544,19 +544,20 @@ sub construct {
     croak "usage: ${class}->construct( \\%data )"
 	unless (Elive::Util::_reftype($data) eq 'HASH');
 
-    #
-    # Ugly use of package globals!
-    #
-
-    local (%Elive::_construct_opts) = %opt;
-
-    my %known_properties;
-    @known_properties{$class->properties} = undef;
+    do {
+	my %unknown_properties;
+	@unknown_properties{keys %$data} = undef;
+	delete $unknown_properties{$_} for ($class->properties);
+	my @unknown = sort keys %unknown_properties;
+	carp "$class - unknown properties: @unknown" if @unknown;
+    };
 
     warn YAML::Dump({construct => $data})
 	if (Elive->debug > 1);
 
-    my $self = Scalar::Util::blessed($data)
+    my $self;
+
+    $self = Scalar::Util::blessed($data)
 	? $data
 	: $class->new($data);
 
@@ -568,8 +569,6 @@ sub construct {
     die "can't construct objects without a connection"
 	unless $connection;
 
-    $self->connection($connection);
-
     my %primary_key_data = map {$_ => $data->{ $_ }} ($class->primary_key);
 
     foreach (keys %primary_key_data) {
@@ -578,27 +577,81 @@ sub construct {
 	}
     }
 
-    my $obj_url = $self->url;
-
-    if (my $cached = $Stored_Objects{ $obj_url }) {
-	#
-	# Overwrite the cached object, then reuse it.
-	#
-	die "attempted overwrite of object with unsaved changes ($obj_url)"
-	    if !$opt{overwrite} && $cached->is_changed;
-
-	%{$cached} = %{$self};
-	$self = $cached;
-    }
-    else {
-	weaken ($Stored_Objects{$obj_url} = $self);
-    }
-
     my $data_copy = Elive::Util::_clone($self);
-    $data_copy->_db_data(undef);
-    $self->_db_data( $data_copy );
+    return $self->__set_db_data($data_copy,
+				connection => $connection,
+				copy => $opt{copy},
+				overwrite => $opt{overwrite},
+	);
+}
 
-    return $self;
+sub __set_db_data {
+    my $struct = shift;
+    my $cloned_data = shift;
+    my %opt = @_;
+
+    my $connection = $opt{connection};
+
+    my $type = Elive::Util::_reftype( $struct );
+
+    if ($type) {
+
+	if (Scalar::Util::blessed $struct) {
+	    if ($connection && $struct->can('connection')) {
+		$struct->connection( $connection );
+
+		if (!$opt{copy} && $struct->can('url')) {
+		    my $obj_url = $struct->url;
+
+		    if (my $cached = $Stored_Objects{ $obj_url }) {
+			#
+			# Overwrite the cached object, then reuse it.
+			#
+			die "attempted overwrite of object with unsaved changes ($obj_url)"
+			    if !$opt{overwrite} && $cached->is_changed;
+
+			%{$cached} = %{$struct};
+			$struct = $cached;
+		    }
+		    else {
+			weaken ($Stored_Objects{$obj_url} = $struct);
+		    }
+		}
+	    }
+	}
+
+	if (Scalar::Util::blessed($struct)) {
+
+	    if ($struct->can('_db_data')) {
+		#
+		# save before image from databse
+		#
+		$cloned_data->_db_data(undef)
+		    if Scalar::Util::blessed($cloned_data)
+		    && $cloned_data->can('_db_data');
+		$struct->_db_data($cloned_data);
+	    }
+	}
+
+	# recurse
+	if ($type eq 'ARRAY') {
+	    foreach (0 .. scalar(@$struct)) {
+		$struct->[$_] = __set_db_data($struct->[$_], $cloned_data->[$_], %opt)
+		    if ref $struct->[$_];
+	    }
+	}
+	elsif ($type eq 'HASH') {
+	    foreach (sort keys %$struct) {
+		$struct->{$_} = __set_db_data($struct->{$_}, $cloned_data->{$_}, %opt)
+		    if ref $struct->{$_};
+	    }
+	}
+	else {
+	    warn "don't know how to set db data for sub-type $type";
+	}
+    }
+
+    return $struct;
 }
 
 #
@@ -915,10 +968,9 @@ entity was last retrieved or saved.
 
 sub is_changed {
     my $self = shift;
-    my %opt = @_;
 
     my @updated_properties;
-    my $db_data = $opt{db_data} || $self->_db_data;
+    my $db_data = $self->_db_data;
 
     unless ($db_data) {
 	#
@@ -1103,7 +1155,7 @@ sub insert {
     my $user_ref
       = Elive::Entity->live_entity('http://test.org/User/1234567890');
 
-Returns a reference to an object in the Elive::Entity in-memory cache. 
+Returns a reference to an object in the Elive::Entity cache. 
 
 =cut
 
@@ -1120,7 +1172,7 @@ sub live_entity {
 
     my $user_ref = $live_entities->{'http://test.org/User/1234567890'};
 
-Returns a reference to the Elive::Entity in-memory cache. 
+Returns a reference to an object in the Elive::Entity cache. 
 
 =cut
 
@@ -1128,6 +1180,7 @@ sub live_entities {
     my $class = shift;
     return \%Stored_Objects;
 }
+
 
 =head2 update
 
@@ -1214,21 +1267,16 @@ sub update {
     my $class = ref($self);
 
     my @rows = $class->_readback($som, \%updates, $self->connection, %opt);
-    #
-    # refresh the object from the database read-back
-    #
-    $class->construct($rows[0], overwrite => 1, connection => $self->connection)
-	if (@rows && Elive::Util::_reftype($rows[0]) eq 'HASH');
 
-    #
-    # Save the db image
-    #
-    my $db_data = $self->construct(Elive::Util::_clone($self), copy => 1);
-    #
-    # Make sure our db data doesn't have db data!
-    #
-    $db_data->_db_data(undef);
-    $self->_db_data($db_data);
+    if (@rows && Elive::Util::_reftype($rows[0]) eq 'HASH') {
+	#
+	# refresh the object from the database read-back
+	#
+	my $obj = $self->construct($rows[0], connection => $self->connection, overwrite => 1);
+
+	$self->__set_db_data( Elive::Util::_clone($rows[0]), connection => $self->connection, copy => 1)
+	    unless (_refaddr($obj) eq _refaddr($self));
+    }
 
     return $self;
 }
@@ -1558,10 +1606,11 @@ sub DEMOLISH {
     my $class = ref($self);
 
     if (my $db_data = $self->_db_data) {
-	if (my @changed = $self->is_changed) {
+	if ((my @changed = $self->is_changed) && ! $self->_deleted) {
 	    my $self_string = Elive::Util::string($self);
 	    Carp::carp("$class $self_string destroyed without saving or reverting changes to: "
 		 . join(', ', @changed));
+
 	}
 	#
 	# Destroy this objects data
@@ -1572,12 +1621,14 @@ sub DEMOLISH {
 
 =head1 ADVANCED
 
-=head2 Object Reuse
+=head2 Object Management
 
-An in-memory object cache is used to maintain a single unique copy of
-each object for each entity instance. All references to an entity instance
-are unified. Hence, if you re-retrieve or re-construct the object, any other
-references to the object will see the updates.
+L<Elive::DAO> keeps a reference table to all current database objects. This
+is primaryly used to detect errors, such as destroying or overwriting objects
+with unsaved changes.
+
+You can also reuse objects from this cache by passing C<reuse => 1> to the
+C<fetch> method. 
 
     my $user = Elive::Entity::User->retrieve([11223344]);
     #
@@ -1594,9 +1645,8 @@ methods.
 
 =head2 Entity Manipulation
 
-Through the magic of inside-out objects, all objects are simply blessed
-structures that contain data and nothing else. You may choose to use the
-accessors, or work directly with the object data.
+All objects are simply blessed structures that contain data and nothing else.
+You may choose to use the accessors, or work directly with the object data.
 
 The following are all equivalent, and are all ok:
 

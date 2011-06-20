@@ -1,6 +1,6 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 38;
+use Test::More tests => 46;
 use Test::Warn;
 use Test::Exception;
 
@@ -31,7 +31,7 @@ my $user1 = Elive::Entity::User->construct({
 	userId => $USER_ID,
 	loginName => $LOGIN_NAME,
 	loginPassword => $LOGIN_PASS,
-	role => {roleId => 0},
+	role => {roleId => 1},
      },
     );
 
@@ -43,10 +43,26 @@ ok($user1->_db_data, 'user1 has db data');
 
 ok(!$user1->is_changed, 'is_changed returns false before change');
 
-$user1->set(loginName => $user1->loginName . '_1');
+do {
+    # some tests on sub record changes - pick on user/role/roleId
+    ok($user1->role->_db_data, 'user role has db data');
 
-is($user1->loginName,  $LOGIN_NAME .'_1', 'non-key update');
-ok($user1->is_changed, 'is_changed returns true after change');
+    ok( !$user1->role->is_changed, 'sub record (role) before change');
+    ok($user1->role->{roleId}++, 'found an incremented role');
+
+    ok($user1->role->is_changed,  'sub record (role) after change');
+
+    ok($user1->is_changed, 'sub record primary key change - detected in main record');
+
+    lives_ok( sub {$user1->role->revert}, 'sub record revert - lives');
+    is( $user1->role->{roleId}, 1, 'sub record (role) value after revert');
+    ok( !$user1->role->is_changed, 'sub record (role) is_changed() after revert');
+
+    $user1->set(loginName => $user1->loginName . '_1');
+
+    is($user1->loginName,  $LOGIN_NAME .'_1', 'non-key update');
+    ok($user1->is_changed, 'is_changed returns true after change');
+};
 
 $user1->set(email => 'user@test.org');
 

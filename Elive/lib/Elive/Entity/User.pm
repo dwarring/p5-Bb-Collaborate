@@ -48,13 +48,23 @@ has 'groups' => (is => 'rw', isa => 'Str',
 has 'domain' => (is => 'rw', isa => 'Str',
 		 documentation => 'ldap domain?');
 
-coerce 'Elive::Entity::User' => from 'HashRef'
-          => via {Elive::Entity::User->construct($_,
-						 %Elive::_construct_opts) };
+sub BUILDARGS {
+    my $class = shift;
+    my $spec = shift;
 
-coerce 'Elive::Entity::User' => from 'Str'
-          => via {Elive::Entity::User->construct({userId => $_}, 
-						 %Elive::_construct_opts) };
+    my $args;
+    if ($spec && ! ref $spec) {
+	$args = {userId => $_};
+    }
+    else {
+	$args = $spec;
+    }
+
+    return $spec;
+}
+
+coerce 'Elive::Entity::User' => from 'HashRef|Str'
+    => via {Elive::Entity::User->new($_)};
 
 =head1 NAME
 

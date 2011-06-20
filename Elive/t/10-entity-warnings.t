@@ -32,7 +32,7 @@ my $user_1;
 
 warnings_like(
     sub {$user_1 = construct_unknown_property()},
-    qr{unknown property},
+    qr{unknown propert(y|ies)},
     'constructing unknown property gives warning',
     );
 
