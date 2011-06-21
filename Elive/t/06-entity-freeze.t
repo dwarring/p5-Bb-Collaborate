@@ -178,13 +178,15 @@ is_deeply( $server_parameter_frozen, {
     'server parameter freeze from data');
 
 my $session_frozen = Elive::Entity::Session->_freeze(
-    {id => 12345, participants => 'alice=2;bob=3;*chair=2;*pleb=3;some_guest (john.doe@acme.org)'});
+    {id => 12345, participants => 'alice=2;bob=3;*chair=2;*pleb=3;some_guest (john.doe@acme.org)', repeatEvery => 3, sundaySessionIndicator => 1});
 
 is_deeply($session_frozen,
 	  { id => 12345,
-	   invitedGuests => 'some_guest (john.doe@acme.org)',
-	  invitedModerators => 'alice,*chair',
-	  invitedParticipantsList => 'bob,*pleb'
+	    invitedGuests => 'some_guest (john.doe@acme.org)',
+	    invitedModerators => 'alice,*chair',
+	    invitedParticipantsList => 'bob,*pleb',
+	    repeatEvery => 3,
+	    sundaySessionIndicator => 'true'
 	  },
 	  'Frozen session participants');
 

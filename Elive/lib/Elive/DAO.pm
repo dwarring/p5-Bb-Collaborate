@@ -123,7 +123,6 @@ sub stringify {
 						     $types->{$_})}
 		      $class->primary_key);
 
-
     return $string;
 }
 
@@ -516,7 +515,8 @@ is used internally to uniquely identify and cache objects across repositories.
 
 sub url {
     my $self = shift;
-    return $self->_url($self->connection, $self->stringify);
+    my $connection = shift || $self->connection;
+    return $self->_url($connection, $self->stringify);
 }
 
 =head2 construct
@@ -552,7 +552,7 @@ sub construct {
 	carp "$class - unknown properties: @unknown" if @unknown;
     };
 
-    warn YAML::Dump({construct => $data})
+    warn YAML::Dump({class => $class, construct => $data})
 	if (Elive->debug > 1);
 
     my $self;
@@ -587,7 +587,7 @@ sub construct {
 
 sub __set_db_data {
     my $struct = shift;
-    my $cloned_data = shift;
+    my $data_copy = shift;
     my %opt = @_;
 
     my $connection = $opt{connection};
@@ -598,12 +598,15 @@ sub __set_db_data {
 
 	if (Scalar::Util::blessed $struct) {
 	    if ($connection && $struct->can('connection')) {
-		$struct->connection( $connection );
 
 		if (!$opt{copy} && $struct->can('url')) {
-		    my $obj_url = $struct->url;
+
+		    my $obj_url = $struct->url($connection);
+
+		    my $cache_access;
 
 		    if (my $cached = $Stored_Objects{ $obj_url }) {
+			$cache_access = 'reuse';
 			#
 			# Overwrite the cached object, then reuse it.
 			#
@@ -614,35 +617,40 @@ sub __set_db_data {
 			$struct = $cached;
 		    }
 		    else {
+			$cache_access = 'init';
 			weaken ($Stored_Objects{$obj_url} = $struct);
 		    }
-		}
-	    }
-	}
 
-	if (Scalar::Util::blessed($struct)) {
+		    if ($struct->debug >= 5) {
+			warn YAML::Dump({opt => \%opt, struct => $struct, class => ref($struct), url => $obj_url, cache => $cache_access});
+		    }
+		}
+
+		$struct->connection( $connection );
+	    }
 
 	    if ($struct->can('_db_data')) {
 		#
 		# save before image from databse
 		#
-		$cloned_data->_db_data(undef)
-		    if Scalar::Util::blessed($cloned_data)
-		    && $cloned_data->can('_db_data');
-		$struct->_db_data($cloned_data);
+		$data_copy->_db_data(undef)
+		    if Scalar::Util::blessed($data_copy)
+		    && $data_copy->can('_db_data');
+
+		$struct->_db_data($data_copy);
 	    }
 	}
 
 	# recurse
 	if ($type eq 'ARRAY') {
 	    foreach (0 .. scalar(@$struct)) {
-		$struct->[$_] = __set_db_data($struct->[$_], $cloned_data->[$_], %opt)
+		$struct->[$_] = __set_db_data($struct->[$_], $data_copy->[$_], %opt)
 		    if ref $struct->[$_];
 	    }
 	}
 	elsif ($type eq 'HASH') {
 	    foreach (sort keys %$struct) {
-		$struct->{$_} = __set_db_data($struct->{$_}, $cloned_data->{$_}, %opt)
+		$struct->{$_} = __set_db_data($struct->{$_}, $data_copy->{$_}, %opt)
 		    if ref $struct->{$_};
 	    }
 	}

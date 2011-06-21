@@ -15,50 +15,63 @@ use Elive::Entity::ParticipantList;
 
 =head1 NAME
 
-Elive::Entity::Session - ELM 3.x Session insert/update support (EXPERIMENTAL)
+Elive::Entity::Session - ELM 3.x Session insert/update support (TRIAL)
 
 =head1 DESCRIPTION
 
 ** EXPERIMENTAL ** and ** UNDER CONSTRUCTION **
 
-This support class assists with the freezing and thawing of parameters for
-the C<createSession> and C<updateSession> commands.
+This support class implements the C<createSession> and C<updateSession>
+commands, introduced with Elluminate 3.0.
 
-These commands were introduced with Elluminate 3.0, they more-or-less replace
-a series of meeting setup commands including: C<createMeeting> C<updateMeeting>,
-C<updateMeetingParameters>, C<updateServerParameters>, C<setParticipantList> and
-others.
+They more-or-less replace a series of meeting setup commands including:
+C<createMeeting> C<updateMeeting>, C<updateMeetingParameters>,
+C<updateServerParameters>, C<setParticipantList> and others.
 
-Some of the newer features and more advanced session setup can only be acheived
-via these newer commands.
+Some of the newer features and more advanced session setup can only be
+acheived via these newer commands.
 
 =cut
 
 __PACKAGE__->entity_name('Session');
 __PACKAGE__->collection_name('Sessions');
+
 has 'id' => (is => 'rw', isa => 'Int', required => 1);
 __PACKAGE__->primary_key('id');
 __PACKAGE__->_alias(meetingId => 'id');
 __PACKAGE__->_alias(sessionId => 'id');
+
 __PACKAGE__->params(
     invitedParticipantsList => 'Str',
     invitedModerators => 'Str',
     invitedGuests => 'Str',
+
+    until                        => 'HiResDate',
+    repeatEvery                  => 'Int',
+    repeatSessionInterval        => 'Int',
+    repeatSessionMonthlyInterval => 'Int',
+    repeatSessionMonthlyDay      => 'Int',
+
+    sundaySessionIndicator    => 'Bool',
+    mondaySessionIndicator    => 'Bool',
+    tuesdaySessionIndicator   => 'Bool',
+    wednesdaySessionIndicator => 'Bool',
+    thursdaySessionIndicator  => 'Bool',
+    fridaySessionIndicator    => 'Bool',
+    saturdaySessionIndicator  => 'Bool',
     );
 
-__PACKAGE__->mk_classdata('_delegates');
-
-__PACKAGE__->_delegates({
+__PACKAGE__->mk_classdata(_delegates => {
     meeting => 'Elive::Entity::Meeting',
     meetingParameters => 'Elive::Entity::MeetingParameters',
     serverParameters => 'Elive::Entity::ServerParameters',
     participantList => 'Elive::Entity::ParticipantList',
-    });
+});
 
 sub _delegate {
     my $pkg = shift;
 
-    our %handled = (meetingId => 1);
+    our %handled = (meetingId => 1, url => 1);
     my $delegates = $pkg->_delegates;
 
     foreach my $prop (sort keys %$delegates) {
@@ -71,21 +84,18 @@ sub _delegate {
 	    => (is => 'rw', isa => $class, coerce => 1,
 		handles => \@delegates,
 		lazy => 1,
-		default => sub {$class->retrieve($_[0]->id, copy => 1, connection => $_[0]->connection)},
+		default => sub {$class->retrieve($_[0]->id, reuse => 1, connection => $_[0]->connection)},
 	    );
     }
 }
 
 __PACKAGE__->_delegate;
 
-__PACKAGE__->_alias(reservedSeatCount => 'seats', freeze => 1);
-__PACKAGE__->_alias(restrictParticipants => 'restrictedMeeting', freeze => 1);
-
 ## ELM 3.x mappings follow
 
-=head2 invitedParticipantsList
+__PACKAGE__->_alias(reservedSeatCount => 'seats', freeze => 1);
 
-=cut
+__PACKAGE__->_alias(restrictParticipants => 'restrictedMeeting', freeze => 1);
 
 __PACKAGE__->_alias(boundaryTime => 'boundaryMinutes', freeze => 1);
 
@@ -225,10 +235,6 @@ sub _freeze {
 	%{ $delegate_class->_freeze (\%delegate_data, canonical => 1) };
     } (sort keys %$delegates);
 
-    if (my $id = delete $data{id}) {
-	$frozen{id} = Elive::Util::_freeze( $id, 'Int' );
-    }
-
     do {
 	#
 	# collate invited guests, moderators and regular participants
@@ -275,6 +281,14 @@ sub _freeze {
 	    $frozen{invitedParticipantsList} = join(',', @participant_list);
 	}
     };
+
+    #
+    # pass any left-overs to superclass for resulution. This might include
+    # any declared commands.
+    my $params_etc = $class->SUPER::_freeze(\%data);
+    foreach (sort keys %$params_etc) {
+	$frozen{$_} = $params_etc->{$_} unless defined $frozen{$_};
+    }
 
     $class->__apply_freeze_aliases( \%frozen )
 	unless $opts{canonical};
@@ -339,9 +353,25 @@ sub is_changed {
 
     my $delegates = $self->_delegates;
 
-    return map {$self->{$_}
-		    ? $self->$_->is_changed( db_data =>  $self->_db_data->{$_} )
-		    : ()} (sort keys %$delegates)
+    return map {$self->{$_}? $self->$_->is_changed: ()} (sort keys %$delegates)
+}
+
+=head2 revert
+
+Reverts any unsaved updates.
+
+=cut
+
+sub revert {
+    my $self = shift;
+
+    my $delegates = $self->_delegates;
+
+    for (sort keys %$delegates) {
+	$self->$_->revert if $self->{$_};
+    }
+
+    return $self;
 }
 
 =head2 update

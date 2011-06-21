@@ -1,6 +1,6 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 46;
+use Test::More tests => 49;
 use Test::Warn;
 use Test::Exception;
 
@@ -10,6 +10,7 @@ use Elive::Entity;
 use Elive::Entity::User;
 use Elive::Entity::Meeting;
 use Elive::Entity::Recording;
+use Elive::Entity::Session;
 
 use lib '.';
 use t::Elive::MockConnection;
@@ -166,3 +167,32 @@ lives_ok(sub{$recording->revert}, 'recording revert - lives');
 
 is($recording->meetingId, $meetingId1,'recording meetingId after revert');
 ok(!$recording->is_changed, 'recording - is_changed is false after revert');
+
+#
+# let's roll out big bertha
+#
+
+my $session;
+lives_ok( sub {
+    $session = Elive::Entity::Session->construct({
+	id => 12345,
+	meeting => {
+	    meetingId => 12345,
+	    start => '1234567890123',
+	    end => '1231231230123',
+	    name => 'test session'
+	  },
+	  meetingParameters => {
+	    meetingId => 12345,
+	    userNotes => 'testing',
+	  }
+     })
+  },'session construct - lives');
+
+$session->name( $session->name.'X' );
+$session->userNotes( $session->userNotes.'X' );
+
+is_deeply( [$session->is_changed], [qw(name userNotes)], 'session->is_changed() - sane');
+
+$session->revert;
+is_deeply( [$session->is_changed], [], 'session->is_changed() after revert');
