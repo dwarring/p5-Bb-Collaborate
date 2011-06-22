@@ -12,7 +12,6 @@ use Storable qw{dclone};
 use Carp;
 
 use Elive::Util;
-use Elive::Array;
 
 BEGIN {
     __PACKAGE__->mk_classdata('_entities' => {});

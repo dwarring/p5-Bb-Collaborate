@@ -86,6 +86,7 @@ has  'allModerators' => (is => 'rw', isa => 'Bool',
 
 has  'restrictedMeeting' => (is => 'rw', isa => 'Bool',
 			     documentation => "Restricted meeting");
+__PACKAGE__->_alias(restricted => 'restrictedMeeting');
 
 has 'adapter' => (is => 'rw', isa => 'Str',
 		  documentation => 'adapter used to create the meeting/session. E.g.: "default", "standardv2"');

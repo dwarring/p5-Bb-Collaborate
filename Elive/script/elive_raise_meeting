@@ -61,6 +61,7 @@ elive_raise_meeting
     -user_notes      'some text'
     -moderator_notes 'some text'
     -cost_center     'code'
+    -exit_url=http://somesite.com  # URL to visit on meeting exit (elm3)
 
   Preloads
 
@@ -119,6 +120,8 @@ my $invites;
 my $moderator_notes;
 my $user_notes;
 my $cost_center;
+my $exit_url;
+
 my %occurs;
 my $version;
 
@@ -156,7 +159,9 @@ sub main {
 	'user_notes=s' => \$user_notes,
 	'moderator_notes=s' => \$moderator_notes,
 	'cost_center|cost_centre=s' => \$cost_center,
+	# elm 3.x
 	'use=s' => \$class,
+	'exit_url=s' => \$exit_url,
     )
 	or die pod2usage(1);
 
@@ -354,6 +359,9 @@ sub main {
 
     $session_data{restrictedMeeting} = $restricted
 	if defined $restricted;
+
+    $session_data{redirectURL} = $exit_url
+	if $exit_url;
 
     if ($recurrence_count > 1) {
 	$session_data{recurrenceCount} = $recurrence_count;
