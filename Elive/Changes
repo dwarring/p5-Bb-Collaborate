@@ -1,5 +1,9 @@
 Revision history for Elive
 
+0.92    tba
+        Introduced Elive::Entity::Session; ELM 3.0 compatible meeting/session
+        creation and management (via createSession and updateSession commands).
+
 0.91    15th June 2011
         Elive::View::Session - documented delegate attributes and methods.
         Elive::Entity::Group - handle recursive sub groups. Added new

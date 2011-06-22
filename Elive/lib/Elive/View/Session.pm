@@ -167,12 +167,12 @@ sub properties {
     my %seen = (meetingId => 1);
     my $delegates = $class->_delegates;
 
-    my @all_properties = sort grep {! $seen{$_}++} (
+    my @delegate_properties = sort grep {! $seen{$_}++} (
 	'id',
 	map {$_->properties} sort values %$delegates,
     );
 
-    return @all_properties;
+    return @delegate_properties;
 }
 
 sub property_types {

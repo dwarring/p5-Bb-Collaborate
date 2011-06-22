@@ -12,8 +12,6 @@ use Carp;
 
 use Elive;
 use Elive::Util;
-use Elive::Entity;
-use Elive::View::Session;
 use Elive::Entity::Preload;
 use Elive::Entity::User;
 
@@ -41,7 +39,7 @@ elive_raise_meeting
     -meeting_pass otherpass      # meeting password
     -start  '[YYYY-MM-DD ]HH:MM' # start time
     -end    '[YYYY-MM-DD ]HH:MM' # end time
-    -occurs {days|weeks}=n       # repeat the meeting over n days/weeks
+    -occurs {days|weeks}=n       # repeat the meeting over n days/weeks (elm2)
 
   Meeting Settings
 
@@ -55,13 +53,13 @@ elive_raise_meeting
     -seats        count          # number of seats to reserve on server
     -[no]invites                 # allow in-session invitations
     -[no]private                 # hide from public schedule
-    -[no]restricted              # only allow entry to registered users
+    -[no]restricted              # only allow entry to registered users (elm3)
     -[no]permissions             # let participants perform activities
     -[no]raise_hands             # automatically raise hands on entry
     -[no]supervised              # moderator can see private messages
 
-    -user_notes      'blurb1'
-    -moderator_notes 'blurb2'
+    -user_notes      'some text'
+    -moderator_notes 'some text'
     -cost_center     'code'
 
   Preloads
@@ -69,6 +67,12 @@ elive_raise_meeting
     -upload              local_file     # upload a file from the client
     -import_from_server  remote_file    # import a server side file
     -use_preload         preload_id     # reuse a preload from the database
+
+  Compatibility
+
+     -use elm2                  # ELM 2.x compat (via Elive::View::Session)
+     -use elm3                  # ELM 3.x compat (via Elive::Entity::Session)
+     -use Some::Custom::Class   # create session via a custom class
 
   Information
 
@@ -86,6 +90,8 @@ Creates a meeting on an Elluminate I<Live!> server
     http://search.cpan.org/dist/Elive
 
 =cut
+
+my $class = 'Elive::Entity::Session';
 
 my $username;
 my $password;
@@ -150,6 +156,7 @@ sub main {
 	'user_notes=s' => \$user_notes,
 	'moderator_notes=s' => \$moderator_notes,
 	'cost_center|cost_centre=s' => \$cost_center,
+	'use=s' => \$class,
     )
 	or die pod2usage(1);
 
@@ -164,6 +171,15 @@ sub main {
 	or pod2usage("missing url argument");
 
     $recording = lc($recording);
+
+    $class = {elm2 => 'Elive::View::Session',
+	      elm3 => 'Elive::Entity::Session'}->{$class} || $class;
+
+    my $can_insert = eval "use $class";
+    die "unable to load class $class: $@" if $@;
+
+    die "class $class: does not implement the 'insert' method"
+	unless eval{ $class->can('insert') };
     #
     # accept some of the other symonymns for the various modes as
     # seen in documentation and elluminate's web interface.
@@ -336,14 +352,8 @@ sub main {
     $session_data{cost_center} = $cost_center
 	if defined $cost_center;
 
-    if (defined $restricted) {
-	if ($server_version_num < '9999.007001') {
-	    warn "[-restricted option ignored: Not supported by Elluminate Live!]\n";
-	}
-	else {
-	    $session_data{restrictedMeeting} = $restricted;
-	}
-    }
+    $session_data{restrictedMeeting} = $restricted
+	if defined $restricted;
 
     if ($recurrence_count > 1) {
 	$session_data{recurrenceCount} = $recurrence_count;
@@ -387,7 +397,7 @@ sub main {
 
     $session_data{add_preload} = \@preloads if @preloads;
 
-    my @sessions = Elive::View::Session->insert(\%session_data);
+    my @sessions = $class->insert(\%session_data);
 
     foreach my $session (@sessions) {
 	print "created meeting: ".$session->name." with id ".$session->sessionId."\n";

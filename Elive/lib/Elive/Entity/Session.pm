@@ -19,9 +19,7 @@ Elive::Entity::Session - ELM 3.x Session insert/update support (TRIAL)
 
 =head1 DESCRIPTION
 
-** EXPERIMENTAL ** and ** UNDER CONSTRUCTION **
-
-This support class implements the C<createSession> and C<updateSession>
+Elive::Entity::Session implements the C<createSession> and C<updateSession>
 commands, introduced with Elluminate 3.0.
 
 They more-or-less replace a series of meeting setup commands including:
@@ -192,17 +190,24 @@ sub _readback_check {
     my ($class, $_updates_ref, $rows, @args) = @_;
     my %updates = %$_updates_ref;
 
+    $class->_canonicalize_properties( \%updates );
+    my $id = $updates{id};
+
     my $delegates = $class->_delegates;
 
     foreach my $delegate (sort keys %$delegates) {
 	my $delegate_class = $delegates->{$delegate};
-	my $delegate_data = delete $updates{$delegate};
 
-	next unless $delegate_data;
+	my %delegated_updates;
+	foreach( $class->_data_owned_by($delegate_class => %updates) ){
+	    $delegated_updates{$_} = delete $updates{$_};
+	}
+
+	$delegated_updates{meetingId} = $id if $id;
 
 	foreach my $row (@$rows) {
 	    $delegate_class
-		->_readback_check($delegate_data, [$row->{$delegate}], @args);
+		->_readback_check(\%delegated_updates, [$row->{$delegate}], @args);
 	}
     }
 
@@ -283,7 +288,7 @@ sub _freeze {
     };
 
     #
-    # pass any left-overs to superclass for resulution. This might include
+    # pass any left-overs to superclass for resolution. This might include
     # any declared commands.
     my $params_etc = $class->SUPER::_freeze(\%data);
     foreach (sort keys %$params_etc) {
@@ -334,8 +339,7 @@ sub insert {
     # lots to be done!
 
     die "don't yet support preloads" if $preloads;
-    die "don't yet support participants" if $data->{participants};
-    die "don't yet support recurring meetings"
+    die "recurring meetings not supported"
 	if $data->{recurrenceCount} || $data->{recurrenceDays};
 
     return $class->SUPER::insert( $data, command => 'createSession', %opt );
@@ -472,6 +476,8 @@ sub delete {
     my %opt = @_;
 
     $self->meeting->delete;
+    $self->_deleted(1);
+
     my $delegates = $self->_delegates;
 
     foreach my $delegate (sort keys %$delegates) {

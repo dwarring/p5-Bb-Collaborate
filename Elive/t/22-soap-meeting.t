@@ -46,7 +46,7 @@ SKIP: {
     );
 
     if (1) {
-	$t->skip("can't modify restrictedMeeting property (known problem)");
+	$t->skip("can't modify restrictedMeeting property (known elm2.x problem)");
     }
     else {
 	$meeting_data{restrictedMeeting} = 1;
@@ -126,7 +126,7 @@ SKIP: {
 		'$meeting->buildJNLP - lives');
 
 	ok($meetingJNLP && !ref($meetingJNLP), 'got meeting JNLP');
-	lives_ok(sub {XMLin($meetingJNLP)}, 'JNLP is valid XML (XHTML)');
+	lives_ok(sub {XMLin($meetingJNLP)}, 'meeting JNLP is valid XML (XHTML)');
     };
 
     my $meeting_id = $meeting->meetingId;

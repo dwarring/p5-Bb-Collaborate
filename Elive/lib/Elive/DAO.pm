@@ -596,6 +596,23 @@ sub __set_db_data {
 
     if ($type) {
 
+	# recurse
+	if ($type eq 'ARRAY') {
+	    foreach (0 .. scalar(@$struct)) {
+		$struct->[$_] = __set_db_data($struct->[$_], $data_copy->[$_], %opt)
+		    if ref $struct->[$_];
+	    }
+	}
+	elsif ($type eq 'HASH') {
+	    foreach (sort keys %$struct) {
+		$struct->{$_} = __set_db_data($struct->{$_}, $data_copy->{$_}, %opt)
+		    if ref $struct->{$_};
+	    }
+	}
+	else {
+	    warn "don't know how to set db data for sub-type $type";
+	}
+
 	if (Scalar::Util::blessed $struct) {
 	    if ($connection && $struct->can('connection')) {
 
@@ -640,23 +657,6 @@ sub __set_db_data {
 		$struct->_db_data($data_copy);
 	    }
 	}
-
-	# recurse
-	if ($type eq 'ARRAY') {
-	    foreach (0 .. scalar(@$struct)) {
-		$struct->[$_] = __set_db_data($struct->[$_], $data_copy->[$_], %opt)
-		    if ref $struct->[$_];
-	    }
-	}
-	elsif ($type eq 'HASH') {
-	    foreach (sort keys %$struct) {
-		$struct->{$_} = __set_db_data($struct->{$_}, $data_copy->{$_}, %opt)
-		    if ref $struct->{$_};
-	    }
-	}
-	else {
-	    warn "don't know how to set db data for sub-type $type";
-	}
     }
 
     return $struct;
@@ -681,7 +681,7 @@ sub _freeze {
     #
     # apply any aliases
     #
-    $class->__resolve_property_aliases( $db_data );
+    $class->_canonicalize_properties( $db_data );
 
     foreach (keys %$db_data) {
 
@@ -713,7 +713,7 @@ sub _freeze {
     return $db_data;
 }
 
-sub __resolve_property_aliases {
+sub _canonicalize_properties {
     my $class = shift;
     my $data = shift;
 
@@ -1023,7 +1023,7 @@ sub set {
     my %entity_column = map {$_ => 1} ($self->properties);
     my %primary_key = map {$_ => 1} ($self->primary_key);
 
-    $self->__resolve_property_aliases( \%data );
+    $self->_canonicalize_properties( \%data );
  
     foreach (keys %data) {
 

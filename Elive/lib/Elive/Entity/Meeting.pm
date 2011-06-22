@@ -187,6 +187,19 @@ or filter them out when listing meetings:
 
 =cut
 
+sub delete {
+    my $self = shift;
+
+    $self->SUPER::delete(@_);
+
+    # update the object as well
+    if (my $db_data = $self->_db_data) {
+	$db_data->{deleted} = 1;
+    }
+
+    return $self->deleted(1);
+}
+
 =head2 list_user_meetings_by_date
 
 Lists all meetings for which this user is a participant, over a given
