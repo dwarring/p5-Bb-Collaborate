@@ -1,6 +1,6 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 37;
+use Test::More tests => 39;
 use Test::Warn;
 use Scalar::Util;
 
@@ -226,4 +226,37 @@ is_deeply($session_frozen,
 	    invitedParticipantsList => 'bob',
 	    invitedGuests => '',
 	  },
-	  'Frozen session (faciliator included)');
+	  'Frozen session (facilitator included)');
+
+my $preload_obj = Elive::Entity::Preload->new({
+    preloadId => 1111,
+    name => 'test.wbd',
+    ownerId => 'bob',
+    data => 'junk',
+});
+
+my $preload_frozen = $preload_obj->_freeze;
+is_deeply($preload_frozen,
+	  {
+	      data => 'junk',
+	      mimeType => 'application/octet-stream',
+	      name =>  'test.wbd',
+	      ownerId => 'bob',
+	      preloadId => 1111,
+	      size => 4,
+	      type => 'whiteboard',
+	  }, 'preload frozen');
+
+
+$session_frozen = Elive::Entity::Session->_freeze(
+    {id => 12345, facilitatorId => 'bob', preloadIds => [$preload_obj, 2222]});
+
+is_deeply($session_frozen,
+	  { id => 12345,
+	    preloadIds => '1111,2222',
+	    facilitator => 'bob',
+	    invitedModerators => 'bob',
+	    invitedParticipantsList => '',
+	    invitedGuests => '',
+	  },
+	  'Frozen session (preloads)');
