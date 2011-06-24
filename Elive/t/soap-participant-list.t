@@ -1,6 +1,6 @@
 #!perl
 use warnings; use strict;
-use Test::More tests => 33;
+use Test::More tests => 34;
 use Test::Exception;
 use Test::Builder;
 
@@ -27,7 +27,7 @@ SKIP: {
     my %result = t::Elive->test_connection( only => 'real');
     my $auth = $result{auth};
 
-    skip ($result{reason} || 'skipping live tests', 33)
+    skip ($result{reason} || 'skipping live tests', 34)
 	unless $auth;
 
     my $connection_class = $result{class};
@@ -71,7 +71,7 @@ SKIP: {
 
     my $participant_list = Elive::Entity::ParticipantList->retrieve([$meeting->meetingId]);
 
-    isa_ok($participant_list, 'Elive::Entity::ParticipantList', 'server_params');
+    isa_ok($participant_list, 'Elive::Entity::ParticipantList', 'participant_list');
     is($participant_list->participants->stringify, Elive->login->userId.'=2',
        'participant deep list - set correctly');
 

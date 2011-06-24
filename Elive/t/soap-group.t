@@ -1,6 +1,6 @@
 #!perl
 use warnings; use strict;
-use Test::More tests => 7;
+use Test::More tests => 15;
 use Test::Exception;
 
 use Elive;
@@ -68,6 +68,14 @@ my $group = $class->insert(
      members => \@users
     });
 
+my $group_spec = '*' . $group->groupId;
+
+is ($group->stringify, $group_spec, "blessed group stringification");
+is ($group->stringify( \%$group ), $group_spec, "unblessed group stringification");
+is ($group->stringify($users[0]), $users[0]->userId, "blessed user stringification");
+is ($group->stringify( \%{$users[0]} ), $users[0]->userId, "unblessed user stringification");
+is ($group->stringify($users[0]->userId), $users[0]->userId, "string stringification");
+
 isa_ok($group, $class, 'inserted group');
 my @expected_members = sort map {$_->userId} @users;
 my @actual_members = sort @{$group->members};
@@ -86,8 +94,6 @@ my $group2 = $class->insert({
 
 is($group2->{name}, $group_name.'#2', 'insert alias (groupName aliased to name)');
 
-use Carp; $SIG{__DIE__} = \&Carp::confess;
-use Carp; $SIG{__WARN__} = \&Carp::cluck;
 my @member_ids = sort ($user_ids{alice}, $user_ids{bob});
 $group2->update({name => $group_name.'#3', groupMembers => \@member_ids});
 
@@ -104,6 +110,25 @@ $group2->update;
 
 @actual_members2 = sort @{ $group2->{members} };
 is_deeply(\@actual_members2, \@members2, 'update alias#2 (groupMembers aliased to members)');
+
+do {
+    #
+    # nested groups can be read, but not saved.
+    #
+    $group2->members->add( $group );
+    @actual_members2 = sort @{ $group2->{members} };
+    is_deeply(\@actual_members2, [sort (@members2, $group)], 'sub groups');
+
+    is($group2->members->stringify, join(',', sort ('*'.$group->groupId, @members2)), "members stringification");
+
+    #
+    # someone will do this sooner or later
+    #
+    $group2->members->add( $group2 );
+    my @expanded_members = $group2->expand_members;
+    is_deeply(\@expanded_members, [sort values %user_ids], 'expanded membership');
+    $group2->revert;
+};
 
 lives_ok(sub {$group->delete; $group2->delete}, 'group delete - lives');
 

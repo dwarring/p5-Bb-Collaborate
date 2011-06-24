@@ -1,11 +1,12 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 34;
+use Test::More tests => 37;
 use Test::Warn;
 use Scalar::Util;
 
 use Elive::Connection;
 use Elive::Entity::User;
+use Elive::Entity::Group;
 use Elive::Entity::ParticipantList;
 use Elive::Entity::ServerParameters;
 use Elive::Entity::Session;
@@ -177,17 +178,52 @@ is_deeply( $server_parameter_frozen, {
     permissionsOn => 'true'},
     'server parameter freeze from data');
 
+my $participants_frozen = Elive::Entity::ParticipantList->_freeze({
+    meetingId => 12345,
+    participants => [Elive::Entity::User->new({userId=>'bob', loginName => 'bob',role=>2}),
+		    'alice=2',
+		     Elive::Entity::Group->new({groupId=>'testgroup1', name=>'testgroup1'}),
+		     '*testgroup2=2']
+});
+
+is_deeply($participants_frozen, {
+    meetingId => 12345,
+    users => '*testgroup1=3;*testgroup2=2;alice=2;bob=3'
+ }, 'participant list freezing');
+
 my $session_frozen = Elive::Entity::Session->_freeze(
     {id => 12345, participants => 'alice=2;bob=3;*chair=2;*pleb=3;some_guest (john.doe@acme.org)', repeatEvery => 3, sundaySessionIndicator => 1, enableTelephony => 1});
 
 is_deeply($session_frozen,
 	  { id => 12345,
 	    invitedGuests => 'some_guest (john.doe@acme.org)',
-	    invitedModerators => 'alice,*chair',
-	    invitedParticipantsList => 'bob,*pleb',
+	    invitedModerators => '*chair,alice',
+	    invitedParticipantsList => '*pleb,bob',
 	    repeatEvery => 3,
             enableTeleconferencing => 'true',
-	    sundaySessionIndicator => 'true'
+	    sundaySessionIndicator => 'true',
 	  },
-	  'Frozen session');
+	  'Frozen session (participant string)');
 
+$session_frozen = Elive::Entity::Session->_freeze(
+    {id => 12345, participants => [qw(alice=2 bob=3)]});
+
+is_deeply($session_frozen,
+	  { id => 12345,
+	    invitedModerators => 'alice',
+	    invitedParticipantsList => 'bob',
+	    invitedGuests => '',
+	  },
+	  'Frozen session (participant array)');
+
+$session_frozen = Elive::Entity::Session->_freeze(
+    {id => 12345, facilitatorId => 'trev', participants => [qw(alice=2 bob=3)]});
+
+is_deeply($session_frozen,
+	  { id => 12345,
+	    facilitator => 'trev',
+	    invitedModerators => 'alice,trev',
+	    invitedParticipantsList => 'bob',
+	    invitedGuests => '',
+	  },
+	  'Frozen session (faciliator included)');

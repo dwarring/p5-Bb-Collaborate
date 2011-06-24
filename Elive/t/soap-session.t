@@ -1,7 +1,8 @@
 #!perl
 use warnings; use strict;
-use Test::More tests => 50;
+use Test::More tests => 56;
 use Test::Exception;
+use Test::Warn;
 use Test::Builder;
 
 # early tests for Elive::Entity::Session - under construction
@@ -54,6 +55,31 @@ dies_ok(sub {
 	[{id => 12345, meeting => {meetingId => 9999, name => 'as expected'}}]
 	)}, 'readback on valid sub-record primary key - dies');
 
+lives_ok( sub {
+    $class->_readback_check(
+	{id => 12345, participants => 'alice=2;bob=3'},
+	[{id => 12345, participantList => {meetingId => 12345, participants => 'alice=2;bob=3'}}]
+	)}, 'participant list - readback sanity');
+
+lives_ok( sub {
+    $class->_readback_check(
+	{id => 12345, participants => 'bob=3;alice=2'},
+	[{id => 12345, participantList => {meetingId => 12345, participants => 'alice=2;bob=3'}}]
+	)}, 'participant list - readback is order independant');
+
+dies_ok( sub {
+    $class->_readback_check(
+	{id => 12345, participants => 'bob=3;alice=2'},
+	[{id => 12345, participantList => {meetingId => 12345, participants => 'alice=2'}}]
+	)},
+	 'participant list - missing participants - dies');
+
+dies_ok( sub {
+    $class->_readback_check(
+	{id => 12345, participants => 'bob=3;alice=2'},
+	[{id => 12345, participantList => {meetingId => 12345, participants => 'alice=2;bob=3;gatecrasher=3'}}]
+	)}, 'participant list - readback dies on extraneous users');
+
 my $session_start = time();
 my $session_end = $session_start + 900;
 
@@ -82,7 +108,6 @@ my %insert_data = (
 );
 
 my $elm3_params = $class->_freeze( \%insert_data );
-use YAML; diag YAML::Dump($elm3_params);
 # some spot checks on freezing
 is($elm3_params->{start}, $session_start, 'frozen "start"');
 is($elm3_params->{boundaryTime}, 15, 'frozen "boundaryMinutes"');
@@ -97,7 +122,7 @@ SKIP: {
     my $auth = $result{auth};
 
     my $connection_class = $result{class};
-    skip ($result{reason} || 'skipping live tests', 39)
+    skip ($result{reason} || 'skipping live tests', 41)
 	if $connection_class->isa('t::Elive::MockConnection');
 
     $connection = $connection_class->connect(@$auth);
@@ -119,7 +144,7 @@ SKIP: {
 	boundaryMinutes => 30,
 	);
 
-    $session->update( \%update_data );
+    lives_ok( sub{$session->update( \%update_data )}, 'session update - lives' );
 
     my %props;
     @props{ keys %insert_data, keys %update_data } = undef;
@@ -147,6 +172,8 @@ SKIP: {
     };
 
     ok($session->web_url, 'got session web_url()');
+
+    lives_ok( sub{$session->update()}, 'ineffective session update - lives' );
 
     $session->delete;
 }

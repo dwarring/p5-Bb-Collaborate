@@ -1,6 +1,6 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 54;
+use Test::More tests => 57;
 use Test::Warn;
 
 use Elive::DAO;
@@ -74,6 +74,18 @@ ok(! $class->_cmp_col('Elive::Entity::ParticipantList::Participants',
 ok( $class->_cmp_col('Elive::Entity::ParticipantList::Participants',
 		      'a;b;c', 'x;b;a'),
    '_cmp entity array != (stringified)');
+
+ok(! $class->_cmp_col('Elive::Entity::ParticipantList::Participants',
+		      'a=3;b;c=3', 'c;b=3;a'),
+   '_cmp entity array != (defaulted roles)');
+
+ok(! $class->_cmp_col('Elive::Entity::ParticipantList::Participants',
+		      'a=2;b;c', 'c;b;a=2'),
+   '_cmp entity array == (similar roles)');
+
+ok( $class->_cmp_col('Elive::Entity::ParticipantList::Participants',
+		      'a=2;b;c', 'c;b;a=3'),
+   '_cmp entity array != (differing roles)');
 
 ########################################################################
 

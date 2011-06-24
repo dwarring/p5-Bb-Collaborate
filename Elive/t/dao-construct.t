@@ -1,6 +1,6 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 47;
+use Test::More tests => 50;
 use Test::Warn;
 
 use Carp; $SIG{__DIE__} = \&Carp::confess;
@@ -111,12 +111,26 @@ is($participants_3->[0]->role->roleId , 3, 'participant list role (defaulted)');
 is($participants_3->[1]->user->userId , 2233, 'participant list user');
 is($participants_3->[1]->role->roleId , 2, 'participant list role (explicit)');
 
-my $member_list_1 = Elive::Entity::Group->construct(
-								   {
-        groupId => 54321,
-	name => 'group_1',
-        members => '212121,222222,fred'
-	});
+is_deeply(
+    Elive::Entity::ParticipantList->construct(
+	{meetingId => 234568, participants => ''}
+    ), {meetingId => 234568, participants => []}, 'empty participant string construction');
+
+is_deeply(
+    Elive::Entity::ParticipantList->construct(
+	{meetingId => 234569, participants => []}
+    ), {meetingId => 234569, participants => []}, 'empty participant array construction');
+
+is_deeply(
+    Elive::Entity::ParticipantList->construct(
+	{meetingId => 234570,}
+    ), {meetingId => 234570}, 'missing participants construction');
+
+my $member_list_1 = Elive::Entity::Group->construct(    
+    {        groupId => 54321,
+	     name => 'group_1',
+	     members => '212121,222222,fred'
+    });
 
 my $members_1 = $member_list_1->members;
 is($members_1->[0], 212121, 'member list user[0]');
