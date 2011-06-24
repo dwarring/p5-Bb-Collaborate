@@ -12,6 +12,8 @@ use Elive::Entity::Meeting;
 use Elive::Entity::MeetingParameters;
 use Elive::Entity::ServerParameters;
 use Elive::Entity::ParticipantList;
+use Elive::Entity::ParticipantList::Participants;
+use Elive::Array;
 
 =head1 NAME
 
@@ -40,9 +42,9 @@ __PACKAGE__->_alias(meetingId => 'id');
 __PACKAGE__->_alias(sessionId => 'id');
 
 __PACKAGE__->params(
-    invitedParticipantsList => 'Str',
-    invitedModerators => 'Str',
-    invitedGuests => 'Str',
+    invitedParticipantsList => 'Elive::Array',
+    invitedModerators => 'Elive::Array',
+    invitedGuests => 'Elive::Array',
 
     until                        => 'HiResDate',
     repeatEvery                  => 'Int',
@@ -214,9 +216,6 @@ sub _readback_check {
     return $class->SUPER::_readback_check(\%updates, $rows, @args);
 }
 
-# The createSession and updateSession accept a flatten list, hence
-# freezing also involves flattening the list. 
-
 sub _freeze {
     my $class = shift;
     my %data = %{ shift() };
@@ -240,56 +239,10 @@ sub _freeze {
 	%{ $delegate_class->_freeze (\%delegate_data, canonical => 1) };
     } (sort keys %$delegates);
 
-    do {
-	#
-	# collate invited guests, moderators and regular participants
-	#
-	my @guest_list;
-	my @moderator_list;
-	my @participant_list;
-
-	if (my $participants_str = delete $frozen{participants}) {
-	    my $participants = Elive::Entity::ParticipantList::Participants->new( $participants_str );
-	    my ($users, $groups, $guests) = $participants->_collate;
-
-	    foreach my $guest (sort keys %$guests) {
-		push (@guest_list, $guest);
-	    }
-	    $frozen{invitedGuests} = join(',', @guest_list);
-
-	    foreach my $user_id (sort keys %$users) {
-
-		my $role = $users->{$user_id};
-		my $spec = $user_id;
-
-		if ($role && $role >= 3) {
-		    push( @participant_list, $spec);
-		}
-		else {
-		    push( @moderator_list, $spec);
-		}
-	    }
-
-	    foreach my $group_id (sort keys %$groups) {
-
-		my $role = $groups->{$group_id};
-		my $spec = '*' . $group_id;
-
-		if ($role && $role >= 3) {
-		    push( @participant_list, $spec);
-		}
-		else {
-		    push( @moderator_list, $spec);
-		}
-	    }
-	    $frozen{invitedModerators} = join(',', @moderator_list);
-	    $frozen{invitedParticipantsList} = join(',', @participant_list);
-	}
-    };
-
+    $class->_freeze_participants( \%frozen );
     #
-    # pass any left-overs to superclass for resolution. This might include
-    # any declared commands.
+    # pass any left-overs to superclass for resolution.
+    #
     my $params_etc = $class->SUPER::_freeze(\%data);
     foreach (sort keys %$params_etc) {
 	$frozen{$_} = $params_etc->{$_} unless defined $frozen{$_};
@@ -303,46 +256,65 @@ sub _freeze {
     return \%frozen;
 }
 
+sub _freeze_participants {
+    my $class = shift;
+    my $data = shift || {};
+    #
+    # collate invited guests, moderators and regular participants
+    #
+    my $raw = delete $data->{participants};
+    my $participants = Elive::Entity::ParticipantList::Participants->new( $raw );
+
+    ($data->{invitedGuests},
+     $data->{invitedModerators},
+     $data->{invitedParticipantsList})
+	= $participants->tidied(facilitatorId => $data->{facilitatorId});
+
+    return $data
+}
+
 =head2 insert
 
 Create a new session using the C<createSession> command
 
 =cut
 
-# this is a real jumble at the moment, lots of refactoring required
-
 sub _unpack_as_list {
     my $class = shift;
     my $data = shift;
 
     my $results_list = $class->SUPER::_unpack_as_list($data);
-    # a bit iffy
+
     my %results ;
     @results{qw{meeting serverParameters meetingParameters participantList}} = @$results_list;
 
     $results{Id} = $results{meeting}{MeetingAdapter}{Id};
 
-    # todo: recurring meetings
+    # todo: more checking, recurring meetings
     return [\%results]
 }
 
 sub insert {
     my $class = shift;
-    my $data = shift;
+    my %data = %{ shift() };
     my %opt = @_;
 
     my $connection = $opt{connection} || $class->connection
 	or die "not connected";
 
-    my $preloads = delete $data->{add_preload};
+    my $preloads = delete $data{add_preload};
+
+    my $facilitatorId = $data{facilitatorId} || $connection->login->userId;
+    my $participants = Elive::Entity::ParticipantList::Participants->new( $data{participants} );
+    $data{participants} = $participants->tidied(facilitatorId => $facilitatorId);
 
     # lots to be done!
 
     die "don't yet support preloads" if $preloads;
     die "recurring meetings not supported"
-	if $data->{recurrenceCount} || $data->{recurrenceDays};
+	if $data{recurrenceCount} || $data{recurrenceDays};
 
-    return $class->SUPER::insert( $data, command => 'createSession', %opt );
+    return $class->SUPER::insert( \%data, command => 'createSession', %opt );
 }
 
 =head2 is_changed
@@ -393,12 +365,12 @@ Updates session properties
 
 sub update {
     my $self = shift;
-    my $update_data = shift;
+    my %update_data = %{ shift() || {} };
     my %opt = @_;
 
     my $changed = $opt{changed} || [$ self->is_changed];
 
-    if (@$changed || keys %{$update_data || {}}) {
+    if (@$changed || keys %update_data) {
 	#
 	# Early ELM 3.x has a habit of wiping defaults we're better off to
 	# rewrite the whole record
@@ -406,9 +378,23 @@ sub update {
 	my @all_props =  map {$_->properties} values %{$self->_delegates};
 		       
 	$changed = [ grep {$_ ne 'meetingId'} @all_props ];
+
+	my $connection = $opt{connection} || $self->connection;
+
+	my $facilitatorId = $update_data{facilitatorId}
+	|| $self->facilitatorId
+	|| $connection->login->userId;
+
+	my $participants_data = $update_data{participants}
+	|| $self->participants;
+
+	my $participants = Elive::Entity::ParticipantList::Participants->new( $participants_data );
+	$update_data{participants} = $participants->tidied(facilitatorId => $facilitatorId);
+
+	return $self->SUPER::update( \%update_data, %opt, changed => $changed );
     }
 
-    $self->SUPER::update( $update_data, %opt, changed => $changed );
+    return $self; # nothing to update
 }
 
 =head2 retrieve

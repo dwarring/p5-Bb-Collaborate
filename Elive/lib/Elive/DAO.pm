@@ -108,13 +108,11 @@ sub stringify {
     my $class = shift;
     my $data = shift;
 
-    $data ||= $class
-	if ref($class);
+    $data = $class
+	if !defined $data && ref$class;
 
     return $data
-	unless Elive::Util::_reftype($data);
-
-    return unless $data;
+	unless $data && Elive::Util::_reftype($data);
 
     my $types = $class->property_types;
 
@@ -344,18 +342,16 @@ sub _cmp_col {
     my $type_info = Elive::Util::inspect_type($data_type);
     my $array_type = $type_info->array_type;
     my $type = $type_info->elemental_type;
+    my $cmp;
 
     if ($array_type || $type_info->is_struct) {
 	#
 	# Note shallow comparision of entities and arrays.
 	#
 	my $t = $array_type || $type;
-	return $t->stringify($v1) cmp $t->stringify($v2);
+	$cmp = $t->stringify($v1) cmp $t->stringify($v2);
     }
-
-    my $cmp;
-
-    if ($type =~ m{^Ref}ix) {
+    elsif ($type =~ m{^Ref}ix) {
 	$cmp = YAML::Dump($v1) cmp YAML::Dump($v2);
     }
     else {
@@ -387,6 +383,14 @@ sub _cmp_col {
 	    Carp::croak "class $class: unknown type: $type\n";
 	}
     }
+
+    warn YAML::Dump {cmp => {result =>$cmp,
+			     class => $class,
+			     data_type => "$data_type",
+			     v1 => $v1,
+			     v2 => $v2
+		     }}
+    if ($class->debug||0) >= 5;
 
     return $cmp;
 }
@@ -677,9 +681,6 @@ sub _freeze {
     my $property_types = $class->property_types || {};
     my %param_types = $class->params;
 
-    #
-    # apply any aliases
-    #
     $class->_canonicalize_properties( $db_data );
 
     foreach (keys %$db_data) {
@@ -935,7 +936,7 @@ sub _readback_check {
 
     my $updates = $class->_freeze( $updates_raw, canonical => 1);
 
-    warn YAML::Dump({updates_raw => $updates_raw, updates => $updates})
+    warn YAML::Dump({class => $class, updates_raw => $updates_raw, updates => $updates})
 	if ($class->debug >= 5);
 
     foreach my $row_raw (@$rows) {
@@ -954,7 +955,7 @@ sub _readback_check {
 
 		    my $property_type = $class->property_types->{$_};
 
-		    warn YAML::Dump({read => $read_val, sent => $write_val, type => $property_type})
+		    warn YAML::Dump({read => $read_val, sent => $write_val, type => "$property_type"})
 			if ($class->debug >= 2);
 
 		    croak "${class}: Update consistancy check failed on $_ (${property_type}), sent:".Elive::Util::string($write_val, $property_type).", read-back:".Elive::Util::string($read_val, $property_type);

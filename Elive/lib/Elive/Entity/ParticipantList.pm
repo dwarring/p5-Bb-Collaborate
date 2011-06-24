@@ -160,11 +160,11 @@ sub update {
 		   connection => $self->connection,
 	) or die "meeting not found: ".$meeting_id;
 
-    my ($users, $groups, $guests) = $self->participants->_collate;
+    my ($users, $groups, $guests) = $self->participants->_group_by_type;
     # underlying adapter does not yet support groups or guests as
     # participants.
 
-    $self->_massage_participants ($users, $groups, $guests);
+    $self->_build_elm2x_participants ($users, $groups, $guests);
     #
     # make sure that the facilitator is included with a moderator role
     #
@@ -178,7 +178,7 @@ sub update {
     my $class = ref($self);
     $self = $class->retrieve([$self->id], connection => $self->connection);
 
-    my ($added_users, $_added_groups, $_added_guests) = $self->participants->_collate;
+    my ($added_users, $_added_groups, $_added_guests) = $self->participants->_group_by_type;
     #
     # a common scenario is adding unknown users. Check for this specific
     # condition and raise a specific friendlier error.
@@ -192,39 +192,46 @@ sub update {
     Carp::croak "unable to add $rejected_user_count of $requested_user_count participants; rejected users: @rejected_users"
 	if $rejected_user_count;
 
-    $class->_readback_check({meetingId => $self->meetingId,
-			     participants => $participants},
-			    [$self]);
+    #
+    # todo currently bypassing our own readback check!
+    $class->SUPER::_readback_check({meetingId => $self->meetingId,
+				    participants => $participants},
+				   [$self]);
 
     return $self;
 }
 
-sub _massage_participants {
+sub _build_elm2x_participants {
     my ($self, $users, $groups, $guests) = @_;
     #
-    # the updateParticipantList has some current restrictions on handling
-    # groups and invited guests.
-    # I have also considered the updateSession command. This can handle both
-    # groups and guests, but introduces other restrictions.
+    # Take our best short at passing participants via the elm 2.x
+    # setParticipantList and updateParticipantList commands. These have
+    # some restrictions on the handling of groups and invited guests.
+    #
     #
    if (keys %$guests) {
+       # no can do invited guests
 	carp join(' ', "ignoring guests:", sort keys %$guests);
 	%$guests = ();
     }
 
-    foreach my $group_id (keys %$groups) {
+    foreach my $group_spec (keys %$groups) {
 	#
 	# Current restriction with passing groups via setParticipantList
 	# etc adapters.
 	#
-	carp "client side expansion of group: $group_id";
-	my $role = delete $groups->{ $group_id };
+	carp "client side expansion of group: $group_spec";
+	my $role = delete $groups->{ $group_spec };
+	(my $group_id = $group_spec) =~ s{^\*}{};
+
 	my $group = Elive::Entity::Group->retrieve($group_id,
 						   connection => $self->connection,
 						   reuse => 1,
 	    );
 
-	foreach (@{ $group->members }) {
+	my @members = $group->expand_members;
+
+	foreach (@members) {
 	    #
 	    # member names may be in the format <ldap-domain>:userId
 	    #

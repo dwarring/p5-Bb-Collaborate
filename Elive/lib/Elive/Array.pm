@@ -10,7 +10,7 @@ use Scalar::Util;
 use Elive::Util;
 
 __PACKAGE__->mk_classdata('element_class');
-__PACKAGE__->mk_classdata('separator' => ';');
+__PACKAGE__->mk_classdata('separator' => ',');
 
 =head1 NAME
 
@@ -53,19 +53,22 @@ coerce $class => from 'ArrayRef|Str'
 
 =head2 stringify
 
-Serialises array members by joining their string values with ';'.
+Serialises array members by joining individual elements.
 
 =cut
 
 sub stringify {
-    my $self = shift;
-    my $arr  = shift || $self;
-    my $type = shift || $self->element_class;
+    my $class = shift;
+    my $arr  = shift;
+    $arr = $class
+	if !defined $arr && ref $class;
 
-    $arr = [split($self->separator, $arr)]
+    my $type = shift || $class->element_class;
+
+    $arr = [split($class->separator, $arr)]
 	if defined $arr && !Scalar::Util::reftype($arr);
 
-    return join($self->separator, sort map {Elive::Util::string($_, $type)} @$arr)
+    return join($class->separator, sort map {Elive::Util::string($_, $type)} @$arr)
 }
 
 =head2 new
@@ -90,9 +93,6 @@ Add elements to an array.
 
 sub add {
     my ($self, @elems) =  @_;
-
-    @elems = (map { @{$self->_build_array($_)} }
-	      grep {defined} @elems);
 
     if (my $element_class = $self->element_class) {
 	foreach (@elems) {

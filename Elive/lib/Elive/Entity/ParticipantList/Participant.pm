@@ -141,7 +141,7 @@ sub BUILDARGS {
     #
     # slightly convoluted die on return to keep Perl::Critic happy
     #
-    return die "'$_' not in format: userId=[0-4] or *groupId=[0-4] or guestName(guestLogin)";
+    return die "'$_' not in format: userId=[0-3] or *groupId=[0-3] or guestName(guestLogin)";
 }
 
 coerce 'Elive::Entity::ParticipantList::Participant' => from 'Str'
@@ -174,15 +174,15 @@ sub stringify {
     my $self = shift;
     my $data = shift || $self;
 
-    $data = $self->BUILDARGS($data)
-	unless Scalar::Util::refaddr($data);
+    $data = $self->BUILDARGS($data);
+
     if (! $data->{type} ) {
 	# user => 'userId'
 	return Elive::Entity::User->stringify($data->{user}).'='.Elive::Entity::Role->stringify($data->{role});
     }
     elsif ($data->{type} == 1) {
 	# group => '*groupId'
-	return '*' . Elive::Entity::Group->stringify($data->{group}).'='.Elive::Entity::Role->stringify($data->{role});
+	return Elive::Entity::Group->stringify($data->{group}).'='.Elive::Entity::Role->stringify($data->{role});
     }
     elsif ($data->{type} == 2) {
 	# guest => 'displayName(loginName)'

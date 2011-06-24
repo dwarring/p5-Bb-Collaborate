@@ -47,6 +47,26 @@ sub BUILDARGS {
 coerce 'Elive::Entity::Group' => from 'HashRef|Str'
           => via {Elive::Entity::Group->new($_) };
 
+sub stringify {
+    my $class = shift;
+    my $data = shift;
+    $data ||= $class if (ref $class);
+
+    my $prefix = '';
+
+    if (Elive::Util::_reftype($data) eq 'HASH') {
+	if (exists $data->{userId}) {
+	    $data = $data->{userId}
+	}
+	elsif (exists $data->{groupId}) {
+	    $prefix = '*';
+	}
+    }
+
+    return $prefix . $class->SUPER::stringify($data, @_);
+
+}
+
 =head1 NAME
 
 Elive::Entity::Group - Elluminate Group entity instance class
@@ -139,26 +159,30 @@ is further reduced to only include unique members.
 
 sub expand_members {
     my $self = shift;
+    my %seen = @_;
 
-    my %seen;
     my @members;
 
     foreach (@{ $self->members || []}) {
 	my @elements;
 
-	if (Scalar::Util::blessed($_) && $_->can('expand_members')) {
+	if (Scalar::Util::blessed($_)
+	    && $_->can('groupId')
+	    && $_->can('expand_members')) {
 	    # recursive expansion
-	    @elements = $_->expand_members;
+	    @elements = $_->expand_members(%seen)
+		unless $seen{g => $_->groupId}++;
 	}
 	else {
-	    @elements = Elive::Util::string($_);
+	    @elements = (Elive::Util::string($_));
 	}
 
 	foreach (@elements) {
-	    push(@members, $_) unless $seen{$_}++;
+	    push(@members, $_) unless $seen{u => $_}++;
 	}
     }
 
+    @members = sort @members;
     return @members;
 }
 

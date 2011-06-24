@@ -279,6 +279,13 @@ sub string {
 
     for ($obj) {
 
+	if ($data_type) {
+	    my ($dt) = ($data_type =~ m{(.*)});
+
+	    return $dt->stringify($_)
+		if eval{$dt->can('stringify')};
+	}
+
 	my $reftype =  _reftype($_);
 
 	return $_
@@ -287,15 +294,8 @@ sub string {
 	return $_->stringify
 	    if (Scalar::Util::blessed($_) && $_->can('stringify'));
 
-	if ($data_type) {
-	    my ($dt) = ($data_type =~ m{(.*)});
-
-	    return $dt->stringify($_)
-		if eval{$dt->can('stringify')};
-	}
-
 	if ($reftype eq 'ARRAY') {
-	    return join(';', map {string($_ => $data_type)} @$_)
+	    return join(',', map {string($_ => $data_type)} @$_)
 	}
     }
 

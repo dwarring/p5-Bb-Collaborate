@@ -435,26 +435,41 @@ sub show_participants {
     my $participant_objs = $session->participants;
 
     my @participants_display = map  {
-	if ($_->type) {
-	    my $group_obj = $_->group;
-	    my $id = $group_obj->groupid;
-	    my $name = $group_obj->name;
+	my $type = $_->type;
+	my $str;
 
-	    my $participant_str = '*'.$id;
-	    $participant_str .= ' <group:'.$name.'>'
-		if $name;
-	}
-	else {
+	if (! $type)  {
 	    my $user_obj = $_->user;
 	    my $loginName = $user_obj->loginName;
 	    my $email = $user_obj->email;
 
-	    my $participant_str = ($loginName || $user_obj->userId);
-	    $participant_str .= ' <'.$email.'>'
+	    $str = ($loginName || $user_obj->userId);
+	    $str .= ' <'.$email.'>'
 		if $email;
-
-	    $participant_str;
 	}
+	elsif ($type == 1) {
+	    my $group_obj = $_->group;
+	    my $id = $group_obj->groupid;
+	    my $name = $group_obj->name;
+
+	    $str = '*'.$id;
+	    $str .= ' <group:'.$name.'>'
+		if $name;
+	}
+	elsif ($type == 2) {
+	    my $guest_obj = $_->guest;
+	    my $loginName = $guest_obj->loginName;
+	    my $displayName = $guest_obj->displayName;
+
+	    $str = $displayName;
+	    $str .= ' ('.$loginName.')'
+		if $loginName;
+	}
+	else {
+	    warn "unknown participant type $type: ignored";
+	    $str = ''
+	}
+	$str;
     } @$participant_objs;
 
     print "participants: ".join(', ', @participants_display)."\n";

@@ -10,6 +10,7 @@ use Elive::Entity::ParticipantList::Participant;
 use Elive::Util;
 
 __PACKAGE__->element_class('Elive::Entity::ParticipantList::Participant');
+__PACKAGE__->mk_classdata('separator' => ';');
 
 =head1 NAME
 
@@ -32,7 +33,7 @@ sub _build_array {
     if ($type eq 'ARRAY') {
 	@participants = @$spec;
     }
-    else {
+    elsif (defined $spec) {
 	@participants = split(__PACKAGE__->separator, Elive::Util::string($spec));
     }
 
@@ -46,7 +47,7 @@ sub _build_array {
 
 =head2 add 
 
-    $participants->add('111111', '222222');
+    $participants->add('alice=2', 'bob');
 
 Add additional participants
 
@@ -64,7 +65,7 @@ our $class = __PACKAGE__;
 coerce $class => from 'ArrayRef|Str'
           => via {$class->new($_);};
 
-sub _collate {
+sub _group_by_type {
     my $self = shift;
 
     my @raw_participants = @{ $self || [] };
@@ -99,5 +100,66 @@ sub _collate {
     return (\%users, \%groups, \%guests);
 }
 
+=head2 tidied
+
+    my $untidy = 'trev;bob=3;bob=2'
+    my $participants = Elive::Entity::Participants->new($untidy);
+    # outputs: alice=2;bob=3;trev=3
+    print $participants->tidy(facilitatorId => 'alice');
+
+Produces a tidied list of participants. These are sorted with duplicates
+removed (highest role is retained).
+
+The C<facilitatorId> option can be used to ensure that the meeting facilitator
+is included and has a moderator role.
+     
+=cut
+
+sub tidied {
+    my $self = shift;
+    my %opt = @_;
+
+    my ($_users, $_groups, $_guests) = $self->_group_by_type;
+
+    # weed out duplicates as we go
+    my %roles = (%$_users, %$_groups, %$_guests);
+
+    # any facilitators should be included
+    $roles{ $opt{facilitatorId} } = 2
+	if $opt{facilitatorId};
+
+    if (wantarray) {
+
+	# elm3.x compat
+
+	my %guests;
+	my %moderators;
+	my %participants;
+
+	foreach (sort keys %roles) {
+
+	    my $role = $roles{$_};
+
+	    if (exists $_guests->{$_} ) {
+		$guests{$_} = $role;
+	    }
+	    elsif ($role <= 2) {
+		$moderators{$_} = $role;
+	    }
+	    else {
+		$participants{$_} = $role;
+	    }
+	}
+
+	return (Elive::Array->stringify([ keys %guests]),
+		Elive::Array->stringify([ keys %moderators]),
+		Elive::Array->stringify([ keys %participants])
+	    )
+    }
+    else {
+	# elm2.x compat
+       return $self->stringify([ map { $_.'='.$roles{$_} } sort keys %roles ]);
+    }
+}
 
 1;

@@ -27,15 +27,36 @@ sub _build_array {
     my @members;
 
     if ($type eq 'ARRAY') {
-	@members = map {ref($_) && ! Scalar::Util::blessed($_)
-			    ? Elive::Entity::Group->new($_)
-			    : Elive::Util::string($_)} @$spec;
+	@members = map {$class->__build_elem($_)} @$spec;
     }
     else {
 	@members = split($class->separator, Elive::Util::string( $spec ));
     }
 
     return \@members;
+}
+
+sub __build_elem {
+    my $class = shift;
+    my $elem = shift;
+
+    my $reftype = Elive::Util::_reftype($elem);
+
+    if ($reftype eq 'HASH') {
+	# blessed or unblessed user struct
+	if (exists $elem->{userId}) {
+	    return $elem->{userId};
+	}
+	elsif (exists $elem->{groupId}) {
+
+	    $elem = Elive::Entity::Group->new($elem)
+		unless Scalar::Util::blessed($elem);
+
+	    return $elem;
+	}
+    }
+
+    return Elive::Util::string($elem);
 }
 
 our $class = 'Elive::Entity::Group::Members';
