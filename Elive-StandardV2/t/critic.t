@@ -22,7 +22,7 @@ my $SEVERITY = $ENV{ELIVE_TEST_CRITICAL_LEVEL} || 4;
 Test::Perl::Critic->import(
     -severity => $SEVERITY,
     -verbose => 8,
-    -exclude => ['ProhibitNoStrict']
+    -exclude => ['Subroutines::ProhibitBuiltinHomonyms']
     );
 
 all_critic_ok();
