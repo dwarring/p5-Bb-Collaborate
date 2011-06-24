@@ -288,7 +288,7 @@ sub session_url {
     my $user_id = $opt{userId}
 	or croak "missing required field: user_id";
 
-    $params{userId} = $user_id,;
+    $params{userId} = $user_id;
 
     my $display_name = $opt{displayName}
 	or croak "missing required field: display_name";

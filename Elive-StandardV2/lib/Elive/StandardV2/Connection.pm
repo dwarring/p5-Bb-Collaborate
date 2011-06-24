@@ -291,5 +291,8 @@ sub _check_for_errors {
 	    Carp::croak $msg
 	}
     }
+
+    return;
 }
+
 1;

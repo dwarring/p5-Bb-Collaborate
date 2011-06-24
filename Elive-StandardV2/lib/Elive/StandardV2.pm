@@ -16,13 +16,13 @@ Elive::StandardV2 - Perl bindings for the Elluminate Live Standard Bridge (V2)
 
 =head1 VERSION
 
-Version 0.00_7
+Version 0.00_8
 
 ** DEVELOPER RELEASE - UNDER CONSTRUCTION **
 
 =cut
 
-our $VERSION = '0.00_7';
+our $VERSION = '0.00_8';
 
 =head1 SYNOPSIS
 
@@ -287,10 +287,12 @@ sub delete {
 	);
 
     my $success = @$results && $results->[0];
+
     return $self->_deleted(1)
 	if $success;
 
     carp "deletion failed(?) with 'false' status";
+    return;
 }
 
 
