@@ -163,14 +163,14 @@ sub upload {
 	or die "not connected";
 
     my $insert_data = $class->BUILDARGS( $spec );
-    delete $insert_data->{data};
+    my $content = delete $insert_data->{data};
+    $insert_data->{ownerId} ||= $connection->login->userId;
     #
     # 1. create initial record
     #
     my $self = $class->insert($insert_data, %opt);
-    $self->{ownerId} ||= $connection->login;
 
-    if ($self->size && $self->data) {
+    if ($self->size && $content) {
 	#
 	# 2. Now upload data to it
 	#
@@ -179,7 +179,7 @@ sub upload {
 				    length => $self->size,
 				    stream => (SOAP::Data
 					       ->type('hexBinary')
-					       ->value($self->data)),
+					       ->value($content)),
 	    );
 
 	$connection->_check_for_errors($som);
