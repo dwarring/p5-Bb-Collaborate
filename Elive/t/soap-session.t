@@ -1,6 +1,6 @@
 #!perl
 use warnings; use strict;
-use Test::More tests => 56;
+use Test::More tests => 58;
 use Test::Exception;
 use Test::Warn;
 use Test::Builder;
@@ -28,6 +28,7 @@ lives_ok(sub {
 	{id => 12345, name => 'as expected'},
 	[{id => 12345, meeting => {meetingId => 12345, name => 'as expected'}}]
 	)}, 'readback on valid data -lives');
+
 #
 # meeting password is not echoed in response
 #
@@ -57,28 +58,28 @@ dies_ok(sub {
 
 lives_ok( sub {
     $class->_readback_check(
-	{id => 12345, participants => 'alice=2;bob=3'},
+	{id => 12345, participants => 'bob=3;alice=2'},
 	[{id => 12345, participantList => {meetingId => 12345, participants => 'alice=2;bob=3'}}]
-	)}, 'participant list - readback sanity');
+	)}, 'readback is order independant');
 
 lives_ok( sub {
     $class->_readback_check(
-	{id => 12345, participants => 'bob=3;alice=2'},
+	{id => 12345, participants => 'alice=2;bob=3'},
 	[{id => 12345, participantList => {meetingId => 12345, participants => 'alice=2;bob=3'}}]
-	)}, 'participant list - readback is order independant');
+	)}, 'readback with expected recipients - lives');
 
 dies_ok( sub {
     $class->_readback_check(
 	{id => 12345, participants => 'bob=3;alice=2'},
 	[{id => 12345, participantList => {meetingId => 12345, participants => 'alice=2'}}]
 	)},
-	 'participant list - missing participants - dies');
+	 'readback with missing participants - dies');
 
 dies_ok( sub {
     $class->_readback_check(
 	{id => 12345, participants => 'bob=3;alice=2'},
 	[{id => 12345, participantList => {meetingId => 12345, participants => 'alice=2;bob=3;gatecrasher=3'}}]
-	)}, 'participant list - readback dies on extraneous users');
+	)}, 'readback with extraneous users - dies');
 
 my $session_start = time();
 my $session_end = $session_start + 900;
@@ -122,7 +123,7 @@ SKIP: {
     my $auth = $result{auth};
 
     my $connection_class = $result{class};
-    skip ($result{reason} || 'skipping live tests', 41)
+    skip ($result{reason} || 'skipping live tests', 43)
 	if $connection_class->isa('t::Elive::MockConnection');
 
     $connection = $connection_class->connect(@$auth);
@@ -130,14 +131,26 @@ SKIP: {
 
     $insert_data{facilitatorId} = Elive->login->userId,
 
+    my $preload = Elive::Entity::Preload->upload({
+	type => 'whiteboard',
+	name => 'test.wbd',
+	ownerId => Elive->login,
+	data => 'junk dsadksadkl a dfflkdsfnmsdfsd xddsfhsfsdfxssl sd',
+    });
+
+    $insert_data{preloadIds} = [$preload];
+
     my $session = $class->insert(\%insert_data);
 
     isa_ok($session, $class, 'session');
 
     foreach (sort keys %insert_data) {
-	next if $_ eq 'password'; # password is not echoed
+	next if $_ =~ m{preload|password};
 	is( $session->$_, $insert_data{$_}, "insert: $_ saved");
     }
+
+    my $preloads = $session->list_preloads;
+    is_deeply($preloads, [$preload], 'preloads after insert');
 
     my %update_data = (
 	costCenter => 'testing again',
@@ -146,11 +159,15 @@ SKIP: {
 
     lives_ok( sub{$session->update( \%update_data )}, 'session update - lives' );
 
+    $preloads = undef;
+    $preloads = $session->list_preloads;
+    is_deeply($preloads, [$preload], 'preloads after update');
+
     my %props;
     @props{ keys %insert_data, keys %update_data } = undef;
 
     foreach (sort keys %props) {
-	next if $_ eq 'password'; # password is not echoed
+	next if $_ =~ m{preload|password};
 
 	my $expected_value = (exists $update_data{$_}
 			      ? $update_data{$_}

@@ -42,6 +42,7 @@ __PACKAGE__->_alias(meetingId => 'id');
 __PACKAGE__->_alias(sessionId => 'id');
 
 __PACKAGE__->params(
+    preloadIds => 'Elive::Entity::Preloads',
     invitedParticipantsList => 'Elive::Array',
     invitedModerators => 'Elive::Array',
     invitedGuests => 'Elive::Array',
@@ -100,6 +101,7 @@ __PACKAGE__->_alias(restrictParticipants => 'restrictedMeeting', freeze => 1);
 __PACKAGE__->_alias(boundaryTime => 'boundaryMinutes', freeze => 1);
 
 __PACKAGE__->_alias(supervisedMeeting => 'supervised', freeze => 1);
+
 __PACKAGE__->_alias(private => 'privateMeeting', freeze => 1);
 
 __PACKAGE__->_alias(allPermissionsMeeting => 'fullPermissions', freeze => 1);
@@ -302,15 +304,12 @@ sub insert {
     my $connection = $opt{connection} || $class->connection
 	or die "not connected";
 
-    my $preloads = delete $data{add_preload};
-
     my $facilitatorId = $data{facilitatorId} || $connection->login->userId;
     my $participants = Elive::Entity::ParticipantList::Participants->new( $data{participants} );
     $data{participants} = $participants->tidied(facilitatorId => $facilitatorId);
 
-    # lots to be done!
+    # todo
 
-    die "don't yet support preloads" if $preloads;
     die "recurring meetings not supported"
 	if $data{recurrenceCount} || $data{recurrenceDays};
 

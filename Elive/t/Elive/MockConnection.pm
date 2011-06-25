@@ -207,16 +207,25 @@ sub call {
 		return $som;
 	    }
 	    elsif ($op eq 'list') {
+		my $data = $self->mockdb->{$entity_name} || [];
+
+		if (%params) {
+		    my $properties = $entity_class->property_types;
+
+		    foreach my $property (%params) {
+			my $value = $params{$property};
+			next unless defined $value;
+
+			die "$entity_class: don't know how to list propertiy: $property"
+			    unless exists $properties->{$property};
+			$data = [grep {defined $_->{$property} && $_->{$property} eq $value} @$data];
+		    }
+		}
 		#
-		# most common parameter is filter => <expr>. This would take
+		# other possible parameter is filter => <expr>. This would take
 		# some work to implement!
 		#
-		die 'mock list with params - not implemented'
-		    if %params || 1;
-		#
-		# dump the entire table
-		#
-		my $data = $self->mockdb->{$entity_name} || [];
+
 		return t::Elive::MockSOM->make_result($entity_class, @$data);
 	    }
 	    elsif ($crud eq 'r') {

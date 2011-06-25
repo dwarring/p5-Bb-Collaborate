@@ -17,6 +17,8 @@ COMPATIBILITY
     - works best with ELM (Elluminate Live Manager) version 3.0 - 3.3.5 and
       Elluminate Live! version 9.5 - 10.0.2
 
+    - Elive::Entity::Session requires ELM 10.0.2 or better.
+
     - does not support access to externally hosted servers deployed with SAS
       (Session Administration System).
 
@@ -76,10 +78,10 @@ SERVER CONFIGURATION
 		    </permissions>
 		    ...
 
-TESTING
+ADDITIONAL TESTING
 
-    There are additional live tests in t/*-soap-*.t. By default, these
-    either skipped or run offline.
+    There are additional live tests in t/soap-*.t and t/script-*t. By default,
+    these are either skipped or run offline.
 
     These may be run against a live server by setting up the environment
     variables, and running tests, as shown below:
@@ -90,18 +92,18 @@ TESTING
         export ELIVE_TEST_PASS=some_password
         make test
 
-    In addition, the following envirnoment variable may be set to further
-    extend the range of tests:
+    There's also some additional envirnoment variables that may be set
+    to further  extend the range of tests:
 
     ELIVE_TEST_PRELOAD_SERVER_PATH - absolute path of an existing preload
                file on the server. Set this to enable testing of the
                Elive::Entity::Preload::import_from_server() method.
 
     ELIVE_TEST_USER_UPDATES - set this to true to enable insert and update
-               of user accounts on a live server (t/26-soap-user.t). 
+               of user accounts on a live site (t/soap-user.t). 
 
     ELIVE_TEST_GROUP_UPDATES - set this to true to enable insert and update
-               of groups on a live server (t/27-soap-group.t).
+               of groups on a live site (t/soap-group.t).
 
     The User and Group update tests can only be run on sites that have not been
     configured for LDAP.

@@ -8,6 +8,7 @@ extends 'Elive::Entity';
 
 use Elive::Util;
 use Elive::Entity::Preload;
+use Elive::Entity::Preloads;
 use Elive::Entity::Recording;
 use Elive::Entity::MeetingParameters;
 use Elive::Entity::ServerParameters;
