@@ -84,6 +84,16 @@ Group access becomes read-only. The affected methods are: C<insert>, C<update>,
 and C<delete>.
 =cut
 
+sub _freeze {
+    my $class = shift;
+    my $app_data = shift;
+
+    $app_data = $class->SUPER::_freeze($app_data, @_);
+    $app_data->{groupId} =~ s{^\*}{} if $app_data->{groupId};
+
+    return $app_data;
+}
+
 sub _thaw {
     my $class = shift;
     my $db_data = shift;
