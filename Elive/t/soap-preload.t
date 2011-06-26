@@ -136,7 +136,7 @@ SKIP: {
     # 3. add_preload method on meeting
 
     ok(my $session = Elive::View::Session->insert({
-	name => 'created by t/24-soap-preload.t',
+	name => 'created by t/soap-preload.t',
 	facilitatorId => Elive->login,
 	start => time() . '000',
 	end => (time()+900) . '000',

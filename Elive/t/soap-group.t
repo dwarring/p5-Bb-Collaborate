@@ -61,7 +61,7 @@ foreach my $username (@usernames) {
     $user_ids{$username} = $user->userId;
 }
 
-my $group_name = '27-soap-group.t - basic '.t::Elive::generate_id();
+my $group_name = 'soap-group.t - basic '.t::Elive::generate_id();
 
 my $group = $class->insert(
     {name => $group_name,
