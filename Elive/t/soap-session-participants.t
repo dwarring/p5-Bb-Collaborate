@@ -1,6 +1,6 @@
 #!perl
 use warnings; use strict;
-use Test::More tests => 30;
+use Test::More tests => 29;
 use Test::Exception;
 use Test::Builder;
 
@@ -27,7 +27,7 @@ SKIP: {
     my %result = t::Elive->test_connection( only => 'real');
     my $auth = $result{auth};
 
-    skip ($result{reason} || 'skipping live tests', 30)
+    skip ($result{reason} || 'skipping live tests', 29)
 	unless $auth;
 
     my $connection_class = $result{class};
@@ -129,7 +129,7 @@ SKIP: {
     }
     else {
 	$t->skip('unable to find any other users to act as participants(?)',)
-	    for (1..7);
+	    for (1..9);
     }
 
     $session->revert();
