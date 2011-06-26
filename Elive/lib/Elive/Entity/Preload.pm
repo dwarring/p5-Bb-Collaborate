@@ -238,14 +238,14 @@ extension using MIME::Types.
 =cut
 
 sub import_from_server {
-    my ($class, $insert_data, %opt) = @_;
+    my ($class, $spec, %opt) = @_;
 
-    my $params = $opt{param} || {};
+    my $insert_data = $class->BUILDARGS($spec);
 
     die "missing required parameter: fileName"
-	unless $insert_data->{fileName} || $params->{fileName};
+	unless $insert_data->{fileName};
 
-    $opt{command} ||= 'importPreload',;
+    $opt{command} ||= 'importPreload';
 
     return $class->insert($insert_data, %opt);
 }
