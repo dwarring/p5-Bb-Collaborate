@@ -1,6 +1,6 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 38;
+use Test::More tests => 39;
 use Test::Warn;
 use Scalar::Util;
 
@@ -170,6 +170,16 @@ is_deeply($aliases->{boundary}, {
     to => 'boundaryMinutes',
     freeze => 1},
     'server_parameter alias for boundaryMinutes - as expected');
+
+my $sub_group = Elive::Entity::Group->new({groupId=>'subgroup', name=>'Test sub-group', members => ['trev', 'sally']});
+my $main_group = Elive::Entity::Group->new({groupId=>'*maingroup', name=>'Test main group', members => ['alice', 'bob', $sub_group]});
+my $main_group_frozen = Elive::Entity::Group->_freeze($main_group);
+
+is_deeply( $main_group_frozen, {
+    groupId => 'maingroup',
+    groupMembers => '*subgroup,alice,bob',
+    groupName => 'Test main group'},
+	   'group freeze');
 
 my $server_parameter_frozen = Elive::Entity::ServerParameters->_freeze($server_parameter_data);
 is_deeply( $server_parameter_frozen, {
