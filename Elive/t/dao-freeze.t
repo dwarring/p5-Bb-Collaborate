@@ -1,6 +1,6 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 39;
+use Test::More tests => 38;
 use Test::Warn;
 use Scalar::Util;
 
@@ -216,18 +216,6 @@ is_deeply($session_frozen,
 	  },
 	  'Frozen session (participant array)');
 
-$session_frozen = Elive::Entity::Session->_freeze(
-    {id => 12345, facilitatorId => 'trev', participants => [qw(alice=2 bob=3)]});
-
-is_deeply($session_frozen,
-	  { id => 12345,
-	    facilitator => 'trev',
-	    invitedModerators => 'alice,trev',
-	    invitedParticipantsList => 'bob',
-	    invitedGuests => '',
-	  },
-	  'Frozen session (facilitator included)');
-
 my $preload_obj = Elive::Entity::Preload->new({
     preloadId => 1111,
     name => 'test.wbd',
@@ -249,12 +237,11 @@ is_deeply($preload_frozen,
 
 
 $session_frozen = Elive::Entity::Session->_freeze(
-    {id => 12345, facilitatorId => 'bob', preloadIds => [$preload_obj, 2222]});
+    {id => 12345, participants => 'bob=2', preloadIds => [$preload_obj, 2222]});
 
 is_deeply($session_frozen,
 	  { id => 12345,
 	    preloadIds => '1111,2222',
-	    facilitator => 'bob',
 	    invitedModerators => 'bob',
 	    invitedParticipantsList => '',
 	    invitedGuests => '',

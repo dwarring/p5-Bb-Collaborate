@@ -1,6 +1,6 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 50;
+use Test::More tests => 52;
 use Test::Warn;
 
 use Carp; $SIG{__DIE__} = \&Carp::confess;
@@ -45,7 +45,7 @@ my $participant_list = Elive::Entity::ParticipantList->construct(
     );
 
 isa_ok($participant_list, 'Elive::Entity::ParticipantList', 'participant');
-is($participant_list->stringify, "123456", 'participant list stringified');
+is($participant_list->stringify, "123456", 'participant list stringifies to meeting id');
 
 can_ok($participant_list, 'meetingId');
 can_ok($participant_list, 'participants');
@@ -55,6 +55,10 @@ isa_ok($participants, 'Elive::Entity::ParticipantList::Participants');
 
 ok(@$participants == 3, 'all participants constructed');
 isa_ok($participants->[0], 'Elive::Entity::ParticipantList::Participant');
+is(Elive::Entity::ParticipantList::Participants->stringify( [$participants->[0]] ),
+   '112233=2', 'one element array stringification');
+is(Elive::Entity::ParticipantList::Participants->stringify( $participants->[0] ),
+   '112233=2', 'one element scalar stringification');
 
 $participants->add({
     user => {userId => 'late_comer',

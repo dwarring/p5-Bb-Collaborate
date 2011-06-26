@@ -14,6 +14,7 @@ use Elive;
 use Elive::Util;
 use Elive::Entity::Preload;
 use Elive::Entity::User;
+use Elive::Entity::ParticipantList::Participant;
 
 use URI;
 use URI::Escape;
@@ -67,7 +68,7 @@ elive_raise_meeting
 
     -upload              local_file     # upload a file from the client
     -import_from_server  remote_file    # import a server side file
-    -use_preload         preload_id     # reuse a preload from the database
+    -add_preload         preload_id,... # add existing preloads
 
   Compatibility
 
@@ -149,7 +150,7 @@ sub main {
 	'help|?' => \$help,
 	'upload=s' => \$upload,
 	'import_from_server=s' => \$import,
-	'use_preload=i' => \$preload_opt,
+	'add_preload|use_preload=i' => \$preload_opt,
 	'recording=s' => \$recording,
 	'boundary=i' => \$boundary,
 	'seats=i' => \$seats,
@@ -247,70 +248,52 @@ sub main {
 	? _get_user($facilitator_id)
 	: Elive->login;
 
-    my @participants;
+    my @users;
     my @groups;
+    my @guests;
 
     foreach my $spec (map {split(';',$_)} @ARGV) {
 
-	#
-	# parse participant specs: user[=roleId]
-	#
-	my $user_spec;
-	my $role;
+	my $participant = eval {
+	    Elive::Entity::ParticipantList::Participant->new($spec)
+	};
 
-	my $is_group = ($spec =~ s{^ \s* \*}{}gx);
-
-	if (($user_spec, $role) = ($spec =~ m{^\s*([^=]*)=([^=]+)$}x)) {
-	    die "non-numeric role: $spec\n"
-		unless $role =~ m{^\d+$}x;
+	if ($@) {
+	    warn "$@\n";
+	    next;
 	}
-	else {
-	    $user_spec = $spec;
-	}
-
-	$role = 3 unless defined $role;
-
-	die "role ($role) not in range 0-3: $spec\n"
-	    unless ($role >= 0 && $role <= 3);
-
-	die "null username: $spec\n"
-	    if ($user_spec eq '');
-
 	#
 	# Ignore the facilitator. we're going to add them later
 	#
-	next if ($user_spec eq $facilitator->userId
-		 || $user_spec eq $facilitator->loginName);
+	my $type = $participant->type;
 
-	if ($is_group) {
-	    push (@groups, 
-		  {
-		      group => $user_spec,
-		      role => $role,
-		      type => 1,
-		  },
-		);
+	if (! $type ) {
+	    push (@users, $participant)
+		unless ($participant->user eq $facilitator->userId
+		     || $participant->user eq $facilitator->loginName);
+	}
+	elsif ($type == 1) {
+
+	    push (@groups, $participant);
+
+	}
+	elsif ($type == 2) {
+	    push (@guests, $participant); 
 	}
 	else {
-	    push (@participants, 
-		  {
-		      user => $user_spec,
-		      role => $role,
-		      type => 0,
-		  },
-		);
+	    warn "don't know how to handle $spec (type $type)";
 	}
     }
 
     #
     # Include the facilitator as a moderator/participant.
     #
-    push (@participants, {user => $facilitator->userId, role => 2});
+    push (@users, Elive::Entity::ParticipantList::Participant->new({user => $facilitator->userId, role => 2}));
 
     #
     # Vet participants
     #
-    @participants = _get_users(@participants) if @participants;
+    @users = _get_users(@users) if @users;
     @groups = _get_groups(@groups) if @groups;
 
     my %session_data = (
@@ -368,7 +351,7 @@ sub main {
 	$session_data{recurrenceDays} = $recurrence_days || 1;
     }
 
-    $session_data{participants} = [@participants, @groups];
+    $session_data{participants} = [@users, @groups, @guests];
 
     my $uploaded_preload;
     $uploaded_preload = Elive::Entity::Preload->upload($upload)
@@ -404,13 +387,14 @@ sub main {
     my @preloads = grep {$_} ($existing_preload, $uploaded_preload, $imported_preload);
 
     $session_data{add_preload} = \@preloads if @preloads;
+    my $ptmp = Elive::Entity::ParticipantList::Participants->new($session_data{participants});
 
     my @sessions = $class->insert(\%session_data);
 
     foreach my $session (@sessions) {
 	print "created meeting: ".$session->name." with id ".$session->sessionId."\n";
 
-	if (@participants || @groups) {
+	if (@users || @groups || @guests) {
 
 	    show_participants($session);
 
@@ -449,7 +433,7 @@ sub show_participants {
 	}
 	elsif ($type == 1) {
 	    my $group_obj = $_->group;
-	    my $id = $group_obj->groupid;
+	    my $id = $group_obj->groupId;
 	    my $name = $group_obj->name;
 
 	    $str = '*'.$id;
@@ -479,50 +463,47 @@ sub show_participants {
 ########################################################################
 
 sub _get_users {
-    my @participants_in = @_;
+    my @users_in = @_;
 
-    my %user_roles;
+    my %users;
 
-    foreach (@participants_in) {
-
-	my $user = $_->{user};
-	my $role = $_->{role};
+    foreach (@users_in) {
+	my $user = Elive::Entity::User->stringify($_->user);
 	
 	die "bad username: $user\n"
 	    if $user =~ m{'}x;
 
-	$user_roles{$user} = $role || 3;
+	$users{$user} = $_;
     }
 
     my $filter = join(' OR ',
 		      map {sprintf("loginName='%s' OR userId='%s'",
 				   $_, $_)}
-		      (keys %user_roles)
+		      (keys %users)
 	);
 
-    my $users = Elive::Entity::User->list(filter => $filter);
+    my $db_users = Elive::Entity::User->list(filter => $filter);
+    my @users_out;
 
-    my @participants_out;
+    foreach my $user (@$db_users) {
 
-    foreach my $user (@$users) {
+	my $obj1 = delete $users{$user->loginName};
+	my $obj2 =  delete $users{$user->userId};
+	my $obj = $obj1 || $obj2;
 
-	my $role = delete($user_roles{$user->loginName})
-	    || delete($user_roles{$user->userId});
-
-	if ($role) {
-	    push (@participants_out, {user => $user->userId,
-				      role => $role,
-				      type => 0,
-		  });
+	if ($obj) {
+	    # replace with db user
+	    $obj->user( $user );
+	    push (@users_out, $obj);
 	}
     }
 
-    my @users_not_found = keys %user_roles;
+    my @users_not_found = keys %users;
 
     die "unknown user(s): @users_not_found\n"
 	if @users_not_found;
 
-    return @participants_out;
+    return @users_out;
 }
 
 ########################################################################
@@ -530,43 +511,39 @@ sub _get_users {
 sub _get_groups {
     my @groups_in = @_;
 
-    my %group_roles;
+    my %groups;
 
     foreach (@groups_in) {
 
-	my $group = $_->{group};
-	my $role = $_->{role};
-	
-	die "bad groupname: $group\n"
-	    if $group =~ m{'}x;
+	my $group_spec = Elive::Entity::Group->stringify($_->group);
+	$group_spec =~ s{^\*}{};
 
-	$group_roles{$group} = $role || 3;
+	$groups{$group_spec} = $_;
     }
 
     my $filter = join(' OR ',
 		      map {sprintf("groupId='%s' OR groupName='%s'",
 				   $_, $_)}
-		      (keys %group_roles)
+		      (keys %groups)
 	);
 
-    my $groups = Elive::Entity::Group->list(filter => $filter);
+    my $db_groups = Elive::Entity::Group->list(filter => $filter);
 
     my @groups_out;
 
-    foreach my $group (@$groups) {
+    foreach my $group (@$db_groups) {
 
-	my $role = delete($group_roles{$group->groupId})
-	    || delete($group_roles{$group->groupName});
+	my $obj1 = delete $groups{$group->groupId};
+	my $obj2 = delete $groups{$group->groupName};
+	my $obj = $obj1 || $obj2;
 
-	if ($role) {
-	    push (@groups_out, {group => $group->groupId,
-			       role => $role,
-			       type => 1,
-		  });
+	if ($obj) {
+	    $obj->group($group);
+	    push (@groups_out, $obj)
 	}
     }
 
-    my @groups_not_found = keys %group_roles;
+    my @groups_not_found = keys %groups;
 
     die "unknown group(s): @groups_not_found\n"
 	if @groups_not_found;

@@ -124,6 +124,8 @@ __PACKAGE__->_alias(serverTeleconferenceAddress => 'serverTelephonyAddress', fre
 
 __PACKAGE__->_alias(serverTeleconferencePIN => 'serverTelephonyPIN', freeze => 1);
 
+__PACKAGE__->_alias(add_preload => 'preloadIds');
+
 sub _alias {
     my ($entity_class, $from, $to, %opt) = @_;
 
@@ -270,7 +272,7 @@ sub _freeze_participants {
     ($data->{invitedGuests},
      $data->{invitedModerators},
      $data->{invitedParticipantsList})
-	= $participants->tidied(facilitatorId => $data->{facilitatorId});
+	= $participants->tidied();
 
     return $data
 }
@@ -304,11 +306,15 @@ sub insert {
     my $connection = $opt{connection} || $class->connection
 	or die "not connected";
 
-    my $facilitatorId = $data{facilitatorId} || $connection->login->userId;
     my $participants = Elive::Entity::ParticipantList::Participants->new( $data{participants} );
-    $data{participants} = $participants->tidied(facilitatorId => $facilitatorId);
 
-    # todo
+    my $facilitatorId = $data{facilitatorId} || $connection->login->userId;
+    my $facilitator_participation = {user => $facilitatorId, role => 2};
+    $participants->add($facilitator_participation);
+
+    $data{participants} = $participants->tidied;
+
+    # todo - recurrring meetings
 
     die "recurring meetings not supported"
 	if $data{recurrenceCount} || $data{recurrenceDays};
@@ -384,11 +390,15 @@ sub update {
 	|| $self->facilitatorId
 	|| $connection->login->userId;
 
+	my $facilitator_participation = {user => $facilitatorId, role => 2};
+
 	my $participants_data = $update_data{participants}
 	|| $self->participants;
 
 	my $participants = Elive::Entity::ParticipantList::Participants->new( $participants_data );
-	$update_data{participants} = $participants->tidied(facilitatorId => $facilitatorId);
+	$participants->add($facilitator_participation);
+
+	$update_data{participants} = $participants->tidied;
 
 	return $self->SUPER::update( \%update_data, %opt, changed => $changed );
     }

@@ -27,10 +27,11 @@ sub _build_array {
     my $spec = shift;
 
     my $type = Elive::Util::_reftype( $spec );
+    $spec = [$spec] if ($type && $type ne 'ARRAY');
 
     my @participants;
 
-    if ($type eq 'ARRAY') {
+    if ($type) {
 	@participants = @$spec;
     }
     elsif (defined $spec) {
@@ -105,7 +106,7 @@ sub _group_by_type {
     my $untidy = 'trev;bob=3;bob=2'
     my $participants = Elive::Entity::Participants->new($untidy);
     # outputs: alice=2;bob=3;trev=3
-    print $participants->tidy(facilitatorId => 'alice');
+    print $participants->tidy;
 
 Produces a tidied list of participants. These are sorted with duplicates
 removed (highest role is retained).
@@ -117,16 +118,11 @@ is included and has a moderator role.
 
 sub tidied {
     my $self = shift;
-    my %opt = @_;
 
     my ($_users, $_groups, $_guests) = $self->_group_by_type;
 
     # weed out duplicates as we go
     my %roles = (%$_users, %$_groups, %$_guests);
-
-    # any facilitators should be included
-    $roles{ $opt{facilitatorId} } = 2
-	if $opt{facilitatorId};
 
     if (wantarray) {
 

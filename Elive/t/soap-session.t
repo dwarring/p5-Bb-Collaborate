@@ -5,8 +5,6 @@ use Test::Exception;
 use Test::Warn;
 use Test::Builder;
 
-# early tests for Elive::Entity::Session - under construction
-
 use lib '.';
 use t::Elive;
 
@@ -131,13 +129,7 @@ SKIP: {
 
     $insert_data{facilitatorId} = Elive->login->userId,
 
-    my $preload = Elive::Entity::Preload->upload({
-	type => 'whiteboard',
-	name => 'test.wbd',
-	ownerId => Elive->login,
-	data => 'junk dsadksadkl a dfflkdsfnmsdfsd xddsfhsfsdfxssl sd',
-    });
-
+    my $preload = _create_preload();
     $insert_data{preloadIds} = [$preload];
 
     my $session = $class->insert(\%insert_data);
@@ -157,11 +149,14 @@ SKIP: {
 	boundaryMinutes => 30,
 	);
 
+    my $preload2 = _create_preload();
+    $update_data{preloadIds} = [$preload2];
+
     lives_ok( sub{$session->update( \%update_data )}, 'session update - lives' );
 
     $preloads = undef;
     $preloads = $session->list_preloads;
-    is_deeply($preloads, [$preload], 'preloads after update');
+    is_deeply($preloads, [$preload, $preload2], 'preloads after update');
 
     my %props;
     @props{ keys %insert_data, keys %update_data } = undef;
@@ -193,6 +188,19 @@ SKIP: {
     lives_ok( sub{$session->update()}, 'ineffective session update - lives' );
 
     $session->delete;
+    $preload->delete;
+    $preload2->delete;
+}
+
+########################################################################
+
+sub _create_preload {
+    Elive::Entity::Preload->upload({
+	type => 'whiteboard',
+	name => 'test.wbd',
+	ownerId => Elive->login,
+	data => 'junk dsadksadkl a dfflkdsfnmsdfsd xddsfhsfsdfxssl sd',
+    });
 }
 
 Elive->disconnect;

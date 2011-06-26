@@ -8,6 +8,8 @@ extends 'Elive::Entity::Session';
 has 'id' => (is => 'rw', isa => 'Int', required => 1);
 __PACKAGE__->primary_key('id');
 
+use Elive::Entity::Preloads;
+
 =head1 NAME
 
 Elive::View::Session - Session view class
@@ -72,6 +74,7 @@ sub insert {
     my %data = %{ shift() };
     my %opts = @_;
 
+    my $preloads = delete $data{add_preload};
     #
     # start by inserting the meeting
     #
@@ -98,6 +101,8 @@ sub insert {
 	#
 	$self->update(\%data, %opts)
 	    if keys %data;
+
+	$self->__add_preloads( $preloads ) if $preloads;
 
 	$self;
 
@@ -139,16 +144,22 @@ sub update {
 	$self->$delegate->update( \%delegate_data, %opts );
     }
 
+    $self->__add_preloads( $preloads ) if $preloads;
+
+    return $self;
+}
+
+sub __add_preloads {
+    my $self = shift;
+    my $preloads = shift;
+
     if ($preloads) {
-	$preloads = [$preloads]
-	    unless Elive::Util::_reftype($preloads) eq 'ARRAY';
+	$preloads = Elive::Entity::Preloads->_build_array( $preloads );
 
 	foreach my $preload (@$preloads) {
 	    $self->meeting->add_preload( $preload );
 	}
     }
-
-    return $self;
 }
 
 =head2 buildJNLP check_preload add_preload remove_preload is_participant is_moderator list_preloads list_recordings

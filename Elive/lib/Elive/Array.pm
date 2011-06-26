@@ -32,10 +32,11 @@ sub _build_array {
     my $spec = shift;
 
     my $type = Elive::Util::_reftype( $spec );
+    $spec = [$spec] if ($type && $type ne 'ARRAY');
 
     my @args;
 
-    if ($type eq 'ARRAY') {
+    if ($type) {
 	@args = map {Elive::Util::string($_)} @$spec;
     }
     else {
@@ -59,14 +60,12 @@ Serialises array members by joining individual elements.
 
 sub stringify {
     my $class = shift;
-    my $arr  = shift;
-    $arr = $class
-	if !defined $arr && ref $class;
-
+    my $spec  = shift;
     my $type = shift || $class->element_class;
 
-    $arr = [split($class->separator, $arr)]
-	if defined $arr && !Scalar::Util::reftype($arr);
+    $spec = $class
+	if !defined $spec && ref $class;
+    my $arr = $class->_build_array( $spec );
 
     return join($class->separator, sort map {Elive::Util::string($_, $type)} @$arr)
 }
@@ -80,7 +79,7 @@ sub stringify {
 sub new {
     my ($class, $spec) = @_;
     my $array = $class->_build_array( $spec );
-    return bless($array || [], $class);
+    return bless($array, $class);
 }
 
 =head2 add 
