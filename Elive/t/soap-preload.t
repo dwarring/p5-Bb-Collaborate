@@ -1,6 +1,6 @@
 #!perl
 use warnings; use strict;
-use Test::More tests => 59;
+use Test::More tests => 60;
 use Test::Exception;
 use Test::Builder;
 
@@ -33,7 +33,7 @@ SKIP: {
     my %result = t::Elive->test_connection(only => 'real');
     my $auth = $result{auth};
 
-    skip ($result{reason} || 'skipping live tests', 57)
+    skip ($result{reason} || 'skipping live tests', 58)
 	unless $auth;
 
     my $connection_class = $result{class};
@@ -166,6 +166,10 @@ SKIP: {
 	     'meeting->check_preloads - lives');
 
     ok($check, 'check_meeting after add - returns true');
+
+    # just to define what happens if we attempt to re-add a preload
+    dies_ok(sub {$check = $session->meeting->add_preload($preloads[2])},
+	     're-add of preload to session - dies');
 
     # preload 3 - session level access
 
