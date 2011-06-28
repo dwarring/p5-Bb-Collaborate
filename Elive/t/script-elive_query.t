@@ -177,7 +177,6 @@ SKIP: {
 	    fullPermissions => 1,
 	    supervised => 1,
 	    seats => 2,
-	    restrictedMeeting => 1,
 	    );
 
 	my $session = Elive::View::Session->insert(\%insert_data,
