@@ -26,7 +26,7 @@ Elive::Entity::InvitedGuest - Invited Guest entity class
 =head1 DESCRIPTION
 
 This is the structural class for an invited guest. It is associated with
-meetings via the L<Elive::Entity::ParticipantList::Participant> entity.
+meetings via the L<Elive::Entity::Participant> entity.
 
 =cut
 

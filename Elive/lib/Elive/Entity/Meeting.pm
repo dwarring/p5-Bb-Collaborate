@@ -174,7 +174,7 @@ them yourself, E.g.:
 =item With Elluminate 9.5 onwards simply sets the I<deleted> property to true.
 
 Meetings, Meeting Parameters, Server Parameters and recordings remain
-accessable via the SOAP inteface.
+accessible via the SOAP interface.
 
 You'll need to remember to check for deleted meetings:
 

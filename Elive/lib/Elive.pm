@@ -7,11 +7,11 @@ Elive - Elluminate Live! (c) Command Toolkit bindings
 
 =head1 VERSION
 
-Version 0.91_1
+Version 0.95
 
 =cut
 
-our $VERSION = '0.91_1';
+our $VERSION = '0.95';
 
 use parent qw{Class::Data::Inheritable};
 use Scalar::Util;
@@ -273,7 +273,7 @@ detecting and repairing missing adapters.
 
 =item   "User [<username>], not permitted to access the command {<command>]"
 
-Please ensure that the user is a sytem administrator account and/or the
+Please ensure that the user is a system administrator account and/or the
 user has been configured to access commands via web services. See also the
 L<README> file.
 
@@ -373,9 +373,9 @@ can be obtained from Elluminate.
 
 =item ELM2.5_SDK.pdf
 
-General Description of SDK developmenmt for Elluminate I<Live!>. In particular
+General Description of SDK development for Elluminate I<Live!>. In particular
 see section 4 - the SOAP Command Toolkit. This module concentrates on
-implementing the Entity Commands desribed in section 4.1.8.
+implementing the Entity Commands described in section 4.1.8.
 
 =item DatabaseSchema.pdf
 

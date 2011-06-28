@@ -5,7 +5,7 @@ use Test::Warn;
 
 use Elive::DAO;
 use Elive::Entity::Role;
-use Elive::Entity::ParticipantList::Participants;
+use Elive::Entity::Participants;
 
 use Carp; $SIG{__DIE__} = \&Carp::confess;
 
@@ -67,23 +67,23 @@ _participant_array_tests('mixed',
     );
 
 
-ok(! $class->_cmp_col('Elive::Entity::ParticipantList::Participants',
+ok(! $class->_cmp_col('Elive::Entity::Participants',
 		      'a;b;c', 'c;b;a'),
    '_cmp entity array == (stringified)');
 
-ok( $class->_cmp_col('Elive::Entity::ParticipantList::Participants',
+ok( $class->_cmp_col('Elive::Entity::Participants',
 		      'a;b;c', 'x;b;a'),
    '_cmp entity array != (stringified)');
 
-ok(! $class->_cmp_col('Elive::Entity::ParticipantList::Participants',
+ok(! $class->_cmp_col('Elive::Entity::Participants',
 		      'a=3;b;c=3', 'c;b=3;a'),
    '_cmp entity array != (defaulted roles)');
 
-ok(! $class->_cmp_col('Elive::Entity::ParticipantList::Participants',
+ok(! $class->_cmp_col('Elive::Entity::Participants',
 		      'a=2;b;c', 'c;b;a=2'),
    '_cmp entity array == (similar roles)');
 
-ok( $class->_cmp_col('Elive::Entity::ParticipantList::Participants',
+ok( $class->_cmp_col('Elive::Entity::Participants',
 		      'a=2;b;c', 'c;b;a=3'),
    '_cmp entity array != (differing roles)');
 
@@ -95,17 +95,17 @@ sub _participant_array_tests {
     my $medium = shift;
     my $high   = shift;
  
-    ok(! $class->_cmp_col('Elive::Entity::ParticipantList::Participants', [$low, $high], [$low, $high]), "_cmp entity array == (simple $type)");
+    ok(! $class->_cmp_col('Elive::Entity::Participants', [$low, $high], [$low, $high]), "_cmp entity array == (simple $type)");
 
-    ok(! $class->_cmp_col('Elive::Entity::ParticipantList::Participants', [$high, $low], [$low, $high]), "_cmp entity array == (reordered $type)");
+    ok(! $class->_cmp_col('Elive::Entity::Participants', [$high, $low], [$low, $high]), "_cmp entity array == (reordered $type)");
 
-    ok(! $class->_cmp_col('Elive::Entity::ParticipantList::Participants', [], []), "_cmp entity array == (empty $type)");
+    ok(! $class->_cmp_col('Elive::Entity::Participants', [], []), "_cmp entity array == (empty $type)");
 
-   ok($class->_cmp_col('Elive::Entity::ParticipantList::Participants', [$low], [$low, $high]), "_cmp entity array != (different length $type)");
+   ok($class->_cmp_col('Elive::Entity::Participants', [$low], [$low, $high]), "_cmp entity array != (different length $type)");
 
-    ok($class->_cmp_col('Elive::Entity::ParticipantList::Participants', [$low, $medium], [$low, $high]) < 0, "_cmp entity array < (simple $type)");
+    ok($class->_cmp_col('Elive::Entity::Participants', [$low, $medium], [$low, $high]) < 0, "_cmp entity array < (simple $type)");
 
-    ok($class->_cmp_col('Elive::Entity::ParticipantList::Participants', [$low, $high], [$low, $medium]) > 0, "_cmp entity array > (simple $type)");
+    ok($class->_cmp_col('Elive::Entity::Participants', [$low, $high], [$low, $medium]) > 0, "_cmp entity array > (simple $type)");
 
 };
 

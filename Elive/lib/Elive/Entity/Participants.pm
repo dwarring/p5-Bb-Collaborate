@@ -1,4 +1,4 @@
-package Elive::Entity::ParticipantList::Participants;
+package Elive::Entity::Participants;
 use warnings; use strict;
 
 use Mouse;
@@ -6,15 +6,20 @@ use Mouse::Util::TypeConstraints;
 
 extends 'Elive::Array';
 
-use Elive::Entity::ParticipantList::Participant;
+use Elive::Entity::Participant;
 use Elive::Util;
 
-__PACKAGE__->element_class('Elive::Entity::ParticipantList::Participant');
+__PACKAGE__->element_class('Elive::Entity::Participant');
 __PACKAGE__->mk_classdata('separator' => ';');
 
 =head1 NAME
 
-Elive::Entity::ParticipantList::Participants - A list of participants
+Elive::Entity::Participants - A list of participants
+
+=head1 DESCRIPTION
+
+This class implements the C<participants> property of C<Elive::Entity::Session>
+and C<Elive::Entity::ParticipantList>
 
 =cut
 
@@ -38,10 +43,40 @@ sub _build_array {
 	@participants = split(__PACKAGE__->separator, Elive::Util::string($spec));
     }
 
-    my @args = map {Scalar::Util::blessed($_)
-			  ? $_ 
-			  : Elive::Entity::ParticipantList::Participant->new($_)
-		 } @participants;
+    my $cur_role;
+    my @args;
+    my $element_class = $class->element_class;
+
+    foreach (@participants) {
+
+	foreach (Elive::Util::_reftype($_) eq 'ARRAY' ? @$_ : ($_)) {
+	    next unless defined;
+
+	    if (!ref && m{^-(\w+)$}) {
+		my $opt = $1;
+
+		if ($opt =~ m{^(participant|other)(s?)$}) {
+		$cur_role = 3;
+		}
+		elsif ($opt =~ m{^moderator(s?)$}) {
+		    $cur_role = 2;
+		}
+		else {
+		    die "unknown option '$_' in participant list (expected: '-participant', '-moderator' or '-other'";
+		}
+
+		next;
+	    }
+
+	    my $participant = $_;
+	    $participant = $element_class->new($participant)
+		unless ref && Scalar::Util::blessed($_) && $_->isa($element_class);
+
+	    $participant->role($cur_role) if $cur_role;
+
+	    push (@args, $participant);
+	}
+    }
 
     return \@args;
 }
@@ -76,7 +111,7 @@ sub _group_by_type {
     my %guests;
 
     foreach (@raw_participants) {
-	my $participant = Elive::Entity::ParticipantList::Participant->BUILDARGS($_);
+	my $participant = Elive::Entity::Participant->BUILDARGS($_);
 	my $id;
 	my $roleId = Elive::Entity::Role->stringify( $participant->{role} )
 	    || 3;
@@ -157,5 +192,12 @@ sub tidied {
        return $self->stringify([ map { $_.'='.$roles{$_} } sort keys %roles ]);
     }
 }
+
+=head1 SEE ALSO 
+
+L<Elive::Entity::Session>
+L<Elive::Entity::ParticipantList>
+
+=cut
 
 1;

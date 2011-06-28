@@ -339,7 +339,7 @@ my $participant_list_obj =  Elive::Entity::ParticipantList->construct($participa
     my $p = $participant_list_obj;
     ok($p = $p->$_, "found $_ in data") for('participants');
 
-    isa_ok($p, 'Elive::Entity::ParticipantList::Participants', 'participants');
+    isa_ok($p, 'Elive::Entity::Participants', 'participants');
 
     foreach my $n (0..1) {
 	ok(my $pn = $p->[$n], "found participants->[$n]");

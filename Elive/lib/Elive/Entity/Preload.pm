@@ -353,7 +353,7 @@ sub _readback_check {
 
 =over 4
 
-=item -- Under Elluminate 9.6.0 and LDAP, you may need to abritrarily add a 'DomN:'
+=item -- Under Elluminate 9.6.0 and LDAP, you may need to arbitrarily add a 'DomN:'
 prefix to the owner ID, when creating or updating a meeting.
 
     $preload->ownerId('Dom1:freddy');

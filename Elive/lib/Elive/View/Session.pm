@@ -36,6 +36,8 @@ Creates a new session on an Elluminate server.
     $session_start .= '000';
     $session_end .= '000';
 
+    my $preload = Elive::Entity::Preload->upload('c:\\Documents\intro.wbd');
+
     my %session_data = (
 	name => 'An example session',
 	facilitatorId => Elive->login->userId,
@@ -52,7 +54,11 @@ Creates a new session on an Elluminate server.
 	fullPermissions => 1,
 	supervised => 1,
 	seats => 2,
-        participants => [qw(alice bob)],
+        participants => [
+            -moderators => [qw(alice bob)],
+            -others => '*staff_group'
+        ],
+        add_preload => $preload
     );
 
     my $session = Elive::View::Session->insert( \%session_data );
@@ -164,11 +170,11 @@ sub __add_preloads {
 
 =head2 buildJNLP check_preload add_preload remove_preload is_participant is_moderator list_preloads list_recordings
 
-These methods are available from L<Elive::Entity::Meeting>.
+These methods are available from the base class L<Elive::Entity::Session>.
 
 =head2 adapter allModerators boundaryMinutes costCenter deleted enableTelephony end facilitatorId followModerator fullPermissions id inSessionInvitation maxTalkers moderatorNotes moderatorTelephonyAddress moderatorTelephonyPIN name participantTelephonyAddress participantTelephonyPIN participants password privateMeeting profile raiseHandOnEnter recordingObfuscation recordingResolution recordingStatus redirectURL restrictedMeeting seats serverTelephonyAddress serverTelephonyPIN start supervised telephonyType userNotes videoWindow 
 
-These attributes are available from: L<Elive::Entity::Meeting>, L<Elive::Entity::MeetingParamaters>, L<Elive::Entity::ServerParameters>, L<Elive::Entity::ParticipantList>.
+These attributes are available from the base class L<Elive::Entity::Session>.
 
 =cut
 
@@ -222,22 +228,9 @@ sub derivable {
 	);
 }
 
-=head1 BUGS AND LIMITATIONS
+=head1 SEE ALSO
 
-Maintaining the L<Elive::View::Session> abstraction may involve fetches from
-several entities. This is mostly transparent, but does have some implications
-for the C<list> method:
-
-=over 4
-
-=item * You can only filter on core meeting properties (C<name>, C<start>, C<end>, C<password>, C<deleted>, C<faciltatorId>, C<privateMeeting>, C<allModerators>, C<restrictedMeeting> and C<adapter>).
-
-=item * Access to other properties requires a secondary fetch. This is done
-lazily on a per record basis and may be considerably slower. This includes
-access to attributes of meeting parameters, server parameter and  participant
-list.
-
-=back
+    L<Elive::Entity::Session>  (the base class).
 
 =cut
 

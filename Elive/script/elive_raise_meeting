@@ -25,15 +25,14 @@ elive_raise_meeting
 
 =head1 SYNOPSIS
 
-  elive_raise_meeting http://myserver.com/my-site[:port] userid[=role] [userid[=role]]...
-  elive_raise_meeting http://user:pass@myserver.com/my-site[:port] ...
+  elive_raise_meeting [url] [options] [participants]
 
-  Authentication
+  Authentication Options
 
     -user someAdminUser          # SDK/SOAP username
     -pass somePass               # SDK/SOAP password
 
-  Basic
+  Basic Options
 
     -facilitator  userId
     -name         'meeting name'
@@ -42,11 +41,28 @@ elive_raise_meeting
     -end    '[YYYY-MM-DD ]HH:MM' # end time
     -occurs {days|weeks}=n       # repeat the meeting over n days/weeks (elm2)
 
-  Meeting Settings
+  Moderators and Participants
+
+     -moderators user|*group|guest-name(guest-id) ...
+     -participants user|*group|guest-name(guest-id) ...
+
+     Where each participant or moderator can be:
+
+        'user'        - add this elluminate user. This can be either the
+                        user's username or user-id.
+
+        '*group'      - include all users from this group. This can be
+                        either the group-name or group-id.
+
+        'Display Name(loginName)
+                      - grant one-time access to this guest.
+
+  Meeting Setup Options
 
     -boundary     0|15|30|..     # minutes participants can arrive before or
                                  # leave after the scheduled meeting times.
     -max_talkers  n              # max no. of simultaneous talkers
+    -max_cameras  n              # max no. of simultaneous cameras (elm3)
     -recording    off|on|manual  # set recording status
                                  #  - off:    recording disabled
                                  #  - on:     starts automatically
@@ -64,17 +80,17 @@ elive_raise_meeting
     -cost_center     'code'
     -exit_url=http://somesite.com  # URL to visit on meeting exit (elm3)
 
-  Preloads
+  Preload Options
 
     -upload              local_file     # upload a file from the client
     -import_from_server  remote_file    # import a server side file
     -add_preload         preload_id,... # add existing preloads
 
-  Compatibility
+  Compatibility Options
 
      -use elm2                  # ELM 2.x compat (via Elive::View::Session)
      -use elm3                  # ELM 3.x compat (via Elive::Entity::Session)
-     -use Some::Custom::Class   # create session via a custom class
+     -use Some::Custom::Class   # create session via a custom session class
 
   Information
 
@@ -103,7 +119,8 @@ my $start_str;
 my $end_str;
 my $meeting_name = 'elive test meeting';
 my $meeting_password;
-my $max_talkers = 1;
+my $max_talkers;
+my $max_cameras;
 my $recording = 'remote';
 my $raise_hands;
 my $import;
@@ -121,6 +138,8 @@ my $invites;
 my $moderator_notes;
 my $user_notes;
 my $cost_center;
+my @moderators;
+my @participants;
 my $exit_url;
 
 my %occurs;
@@ -139,8 +158,11 @@ sub main {
 	'facilitator|moderator=s' => \$facilitator_id,
 	'start=s' => \$start_str,
 	'end=s' => \$end_str,
+	'moderators|moderator=s{,}' => \@moderators,
+	'participants|participant|others|other=s{,}' => \@participants,
 	'meeting_password|meeting_pass=s' => \$meeting_password,
 	'max_talkers=i' => \$max_talkers,
+	'max_cameras=i' => \$max_cameras,
 	'raise_hands!' => \$raise_hands,
 	'private!' => \$private,
 	'restricted!' => \$restricted,
@@ -160,7 +182,6 @@ sub main {
 	'user_notes=s' => \$user_notes,
 	'moderator_notes=s' => \$moderator_notes,
 	'cost_center|cost_centre=s' => \$cost_center,
-	# elm 3.x
 	'use=s' => \$class,
 	'exit_url=s' => \$exit_url,
     )
@@ -248,48 +269,48 @@ sub main {
 	? _get_user($facilitator_id)
 	: Elive->login;
 
+    $facilitator_id ||= $facilitator->userId;
+    #
+    # Ensure that the facilitator is included as a moderator, but not as
+    # a regular participant
+    #
+    push (@moderators, $facilitator_id)
+	unless grep {$_ eq $facilitator_id} @moderators;
+
+    @participants = grep {$_ ne $facilitator_id} @participants;
+
+    # participants can also be passed in argv (old usage)
+    my @args = grep {$_ ne $facilitator_id} @ARGV;
+
+    my @participants = (
+	parse_participants(\@moderators, role => 2),
+	parse_participants(\@participants, role => 3),
+	parse_participants(\@args),
+	);
+    #
+    # collate by type
+    #
     my @users;
     my @groups;
     my @guests;
 
-    foreach my $spec (map {split(';',$_)} @ARGV) {
+    foreach my $participant (@participants) {
 
-	my $participant = eval {
-	    Elive::Entity::ParticipantList::Participant->new($spec)
-	};
-
-	if ($@) {
-	    warn "$@\n";
-	    next;
-	}
-	#
-	# Ignore the facilitator. we're going to add them later
-	#
 	my $type = $participant->type;
 
 	if (! $type ) {
-	    push (@users, $participant)
-		unless ($participant->user eq $facilitator->userId
-		     || $participant->user eq $facilitator->loginName);
+	    push (@users, $participant);
 	}
 	elsif ($type == 1) {
-
 	    push (@groups, $participant);
-
 	}
 	elsif ($type == 2) {
 	    push (@guests, $participant); 
 	}
 	else {
-	    warn "don't know how to handle $spec (type $type)";
+	    warn "don't know how to handle participant type: $type";
 	}
     }
-
-    #
-    # Include the facilitator as a moderator/participant.
-    #
-    push (@users, Elive::Entity::ParticipantList::Participant->new({user => $facilitator->userId, role => 2}));
-
     #
     # Vet participants
     #
@@ -315,6 +336,9 @@ sub main {
 
     $session_data{maxTalkers}  = $max_talkers
 	if defined $max_talkers;
+
+    $session_data{videoWindow}  = $max_cameras
+	if defined $max_cameras;
 
     $session_data{raiseHandOnEnter} = $raise_hands
 	if defined $raise_hands;
@@ -409,6 +433,33 @@ sub main {
     Elive->disconnect;
 
     return @sessions;
+}
+
+sub parse_participants {
+    my $spec = shift;
+    my %opt = @_;
+
+    my @participants;
+
+    foreach my $spec (map {split(';',$_)} @$spec) {
+
+	my $participant = eval {
+	    Elive::Entity::ParticipantList::Participant->new($spec)
+	};
+
+	if ($@) {
+	    warn "$@\n";
+	    next;
+	}
+	#
+	# Ignore the facilitator. we're going to add them later
+	#
+	$participant->role( $opt{role} ) if $opt{role};
+
+	push (@participants, $participant);
+    }
+
+    return @participants;
 }
 
 ########################################################################

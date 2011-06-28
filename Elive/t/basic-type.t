@@ -6,7 +6,7 @@ use Test::Warn;
 use Elive::Util;
 use Elive::Array;
 use Elive::Entity::Role;
-use Elive::Entity::ParticipantList::Participants;
+use Elive::Entity::Participants;
 
 my $type = Elive::Util::inspect_type('Int');
 
@@ -35,14 +35,14 @@ ok($type->is_struct,'inspect_type(role); is_struct - as expected');
 ok($type->is_ref,'inspect_type(role); is_ref - as expected');
 is($type->type => 'Elive::Entity::Role', 'inspect_type(role); type as expected');
 
-$type = Elive::Util::inspect_type('Elive::Entity::ParticipantList::Participants|Str');
+$type = Elive::Util::inspect_type('Elive::Entity::Participants|Str');
 
-is($type->elemental_type => 'Elive::Entity::ParticipantList::Participant',
+is($type->elemental_type => 'Elive::Entity::Participant',
    'inspect_type(participants); elemental_type as expected');
 ok($type->is_array,'inspect_type(participants); is_array - as expected');
 ok($type->is_struct,'inspect_type(participants); is_struct - as expected');
 ok($type->is_ref,'inspect_type(participants); is_ref - as expected');
-is($type->type => 'Elive::Entity::ParticipantList::Participants',
+is($type->type => 'Elive::Entity::Participants',
    'inspect_type(participants); type as expected');
 
 

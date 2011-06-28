@@ -1,8 +1,88 @@
 Revision history for Elive
 
-0.92    tba
-        Introduced Elive::Entity::Session; ELM 3.0 compatible meeting/session
-        creation and management (via createSession and updateSession commands).
+0.95    28th June 2011
+        [A pretty big release. This introduces Elive::Entity::Session; ELM 3.0
+         compatible meeting/session creation and management].
+
+        - New class Elive::Entity::Session. This implements inserts and updates
+          via the ELM 3.x createSession and updateSession commands.
+
+           -- Recurring meetings and telephony are not yet implemented.
+
+           -- I'm not using this in production anywhere, so I treating this
+              as a trial release, proabably until after the release of
+              Elluminate 11.0 [Gemini]).
+
+           -- It's largely call compatible with Elive::View::Session so in
+              most cases all you need to do in your source code to start
+              using it is: s{Elive::View::Session}{Elive::Entity::Session}.
+
+        - Refactored Elive::View::Meeting, now based on Elive::Entity::Session.
+          Elive::View::Meeting will be retained for the forseeable future, its
+          continuing roles are:
+
+             -- continue to allow insert/update via elm 2.x commands.
+
+             -- support for elive_query
+
+        [Elive::DAO refactoring]
+
+        - removed ugly need to call 'construct' when coercing sub-objects.
+          Elive::DAO::construct now works recursively and only needs to be
+          called once.
+
+        [Elive::Entity::Participants Construction]
+
+        - Full support for users, groups and invited guests.
+
+        - Introduced '-moderators' and '-participants' in participant
+          list construction. So you now have the option of:
+
+              Elive::Entity::Session->create({
+                     ...
+                     participants => [
+                        -moderators => [qw(alice bob)],
+                        -others => '*staff_group',
+                     ]
+                    });
+
+           Instead of using magic numbers for roles:
+
+                Elive::Entity::Session->create({
+                     ...
+                     participants => [
+                       'alice=2', 'bob=2', '*staff_group=3',
+                     ]
+                    });
+
+            Also works for Elive::View::Session.        
+
+        [Some renaming and new classes]
+
+        - Added class Elive::Entity::Preloads - lists of preloads
+
+        - Class Elive::Entity::ParticipantList::Participants has been
+          renamed to Elive::Entity::Participants.
+
+        - Class Elive::Entity::ParticipantList::Participant has been
+          renamed to Elive::Entity::Participant.
+
+        [elive_raise_meeting elm 3.x support]
+
+        - now supports -participant and -moderators|other options
+
+        - is now capable of raising meetings via either Elive::View::Meeting
+          (option -use elm2) or Elive::Entity::Meeting (option -use elm3).
+
+        - has new elm3 options: -exit_url -max_cameras -restricted
+
+        [other minor bug fixes]
+
+        - elive_query: tweaked binmode/utf8 on stdout as flagged by latest
+          Test::Perl::Critic
+
+        - elive_raise_meeeting (and underlying Elive::Entity::Meeting) now
+          properly support the add_preload option.
 
 0.91    15th June 2011
         Elive::View::Session - documented delegate attributes and methods.

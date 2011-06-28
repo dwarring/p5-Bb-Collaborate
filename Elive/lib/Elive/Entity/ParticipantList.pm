@@ -6,8 +6,8 @@ use Mouse::Util::TypeConstraints;
 
 extends 'Elive::Entity';
 
-use Elive::Entity::ParticipantList::Participant;
-use Elive::Entity::ParticipantList::Participants;
+use Elive::Entity::Participant;
+use Elive::Entity::Participants;
 use Elive::Entity::User;
 use Elive::Entity::Group;
 use Elive::Entity::Role;
@@ -26,7 +26,7 @@ has 'meetingId' => (is => 'rw', isa => 'Int', required => 1);
 __PACKAGE__->primary_key('meetingId');
 __PACKAGE__->params(users => 'Str');
 
-has 'participants' => (is => 'rw', isa => 'Elive::Entity::ParticipantList::Participants', coerce => 1);
+has 'participants' => (is => 'rw', isa => 'Elive::Entity::Participants', coerce => 1);
 #
 # NOTE: thawed data may be returned as the 'participants' property.
 # but for frozen data the parameter name is 'users'.
@@ -253,15 +253,15 @@ sub _set_participant_list {
     my @participants;
 
     foreach (keys %$users) {
-	push(@participants, Elive::Entity::ParticipantList::Participant->new({user => $_, role => $users->{$_}, type => 0}) )
+	push(@participants, Elive::Entity::Participant->new({user => $_, role => $users->{$_}, type => 0}) )
     }
 
     foreach (keys %$groups) {
-	push(@participants, Elive::Entity::ParticipantList::Participant->new({group => $_, role => $groups->{$_}, type => 1}) )
+	push(@participants, Elive::Entity::Participant->new({group => $_, role => $groups->{$_}, type => 1}) )
     }
 
     foreach (keys %$guests) {
-	push(@participants, Elive::Entity::ParticipantList::Participant->new({guest => $_, role => $guests->{$_}, type => 2}) )
+	push(@participants, Elive::Entity::Participant->new({guest => $_, role => $guests->{$_}, type => 2}) )
     }
 
     my %params;
@@ -363,9 +363,9 @@ L<Elive::Entity::Meeting>
 
 L<Elive::View::Session>
 
-L<Elive::Entity::ParticipantList::Participants>
+L<Elive::Entity::Participants>
 
-L<Elive::Entity::ParticipantList::Participant>
+L<Elive::Entity::Participant>
 
 =cut
 

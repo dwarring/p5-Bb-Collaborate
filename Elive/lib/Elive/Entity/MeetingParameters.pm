@@ -49,8 +49,10 @@ __PACKAGE__->_alias('invites' => 'inSessionInvitation');
 
 has 'followModerator'  => (is => 'rw', isa => 'Bool',
 			   documentation => 'Whiteboard slides are locked to moderator view');
+
 has 'videoWindow'  => (is => 'rw', isa => 'Int',
 		       documentation => 'Max simultaneous cameras');
+__PACKAGE__->_alias('max_cameras' => 'videoWindow');
 
 has 'recordingObfuscation'  => (is => 'rw', isa => 'Bool');
 has 'recordingResolution'  => (is => 'rw', isa => 'Str',

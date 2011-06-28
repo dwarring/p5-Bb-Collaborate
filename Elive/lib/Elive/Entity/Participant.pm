@@ -1,4 +1,4 @@
-package Elive::Entity::ParticipantList::Participant;
+package Elive::Entity::Participant;
 use warnings; use strict;
 
 use Mouse;
@@ -16,11 +16,11 @@ use Elive::Entity::Role;
 
 =head1 NAME
 
-Elive::Entity::ParticipantList::Participant - A Single Meeting Participant
+Elive::Entity::Participant - A Single Meeting Participant
 
 =head1 DESCRIPTION
 
-This is a component of L<Elive::Entity::ParticipantList::Participants>. It
+This is a component of L<Elive::Entity::Participants>. It
 contains details on a participating user, including their details and
 participation role (normally 2 for a moderator or 3 for a regular participant).
 
@@ -144,7 +144,7 @@ sub BUILDARGS {
     return die "'$_' not in format: userId=[0-3] or *groupId=[0-3] or guestName(guestLogin)";
 }
 
-coerce 'Elive::Entity::ParticipantList::Participant' => from 'Str'
+coerce 'Elive::Entity::Participant' => from 'Str'
     => via { __PACKAGE__->new( $_) };
 
 =head2 participant
@@ -197,7 +197,7 @@ sub stringify {
 =head1 SEE ALSO
 
 L<Elive::Entity::ParticipantList>
-L<Elive::Entity::ParticipantList::Participants>
+L<Elive::Entity::Participants>
 L<Elive::Entity::User>
 L<Elive::Entity::Group>
 L<Elive::Entity::InvitedGues>;

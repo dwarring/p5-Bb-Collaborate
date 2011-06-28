@@ -544,6 +544,8 @@ for use by the C<is_changed> and C<revert> methods.
 sub construct {
     my ($class, $data, %opt) = @_;
 
+    $data = $class->BUILDARGS($data) if $class->can('BUILDARGS');
+
     croak "usage: ${class}->construct( \\%data )"
 	unless (Elive::Util::_reftype($data) eq 'HASH');
 
@@ -1632,7 +1634,7 @@ sub DEMOLISH {
 =head2 Object Management
 
 L<Elive::DAO> keeps a reference table to all current database objects. This
-is primaryly used to detect errors, such as destroying or overwriting objects
+is primarily used to detect errors, such as destroying or overwriting objects
 with unsaved changes.
 
 You can also reuse objects from this cache by passing C<reuse => 1> to the
