@@ -1,6 +1,6 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 53;
+use Test::More tests => 54;
 use Test::Warn;
 
 use Carp; $SIG{__DIE__} = \&Carp::confess;
@@ -198,6 +198,20 @@ my $participant_list_5 = Elive::Entity::ParticipantList->construct(
 	});
 
 is($participant_list_5->participants->stringify, '1122=2;1123=3;2222=2;2223=2;3333=3;3334=3', "participants stringification");
+
+my $participant_list_6 = Elive::Entity::ParticipantList->construct(
+    {
+        meetingId => $meeting,
+        participants => ['1122=2', '1123',]
+    });
+ 
+# try using modifiers in add method
+
+$participant_list_6->participants->add(-moderators => 2222, -others => 2223, 2224);
+
+is($participant_list_6->participants->stringify, '1122=2;1123=3;2222=2;2223=3;2224=3', "participants stringification");
+
+$participant_list_6->revert;
 
 do {
 

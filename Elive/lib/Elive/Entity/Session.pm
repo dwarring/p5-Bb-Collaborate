@@ -340,8 +340,7 @@ sub insert {
     my $participants = Elive::Entity::Participants->new( $data{participants} );
 
     my $facilitatorId = $data{facilitatorId} || $connection->login->userId;
-    my $facilitator_participation = {user => $facilitatorId, role => 2};
-    $participants->add($facilitator_participation);
+    $participants->add(-moderators => $facilitatorId);
 
     $data{participants} = $participants->tidied;
 
@@ -435,13 +434,13 @@ sub update {
 	|| $self->facilitatorId
 	|| $connection->login->userId;
 
-	my $facilitator_participation = {user => $facilitatorId, role => 2};
-
-	my $participants_data = $update_data{participants}
+	my $participants = $update_data{participants}
 	|| $self->participants;
 
-	my $participants = Elive::Entity::Participants->new( $participants_data );
-	$participants->add($facilitator_participation);
+	$participants = Elive::Entity::Participants->new( $participants )
+	    unless Scalar::Util::blessed( $participants );
+
+	$participants->add(-moderators => $facilitatorId);
 
 	$update_data{participants} = $participants->tidied;
 
@@ -650,7 +649,7 @@ example, to print the list of participants for a session:
 
 You may modify this list in any way, then update the session it belongs to:
 
-    push (@$participants, 'trev');  # add a user
+    $participants->add( -moderators => 'trev');  # add a user as a moderator
 
     $session->update({participants => $participants});
 
@@ -837,7 +836,7 @@ Either a PHONE number or SIP address for the participants for telephone.
 
 PIN for participants telephony.
 
-=head2 participants
+=head2 participants (Array)
 
 A list of users, groups and invited guest that are attending the session,
 along with their access levels (moderators or participants). See
@@ -851,12 +850,12 @@ A password for the session (see L<Working with Participants>).
 
 Whether to hide the session (meeting) from the public schedule.
 
-=head2 profile
+=head2 profile (Str)
 
 Which user profiles are displayed on mouse-over: C<none>, C<mod>
 (moderators only) or C<all>.
 
-=head2 raiseHandOnEnter
+=head2 raiseHandOnEnter (Bool)
 
 Raise hands automatically when users join the session.
 
@@ -905,7 +904,7 @@ Whether the moderator can see private messages.
 
 This can be either C<SIP> or C<PHONE>.
 
-=head2 userNotes
+=head2 userNotes (Str)
 
 General notes for users. These are not uploaded to the live session).
 
@@ -916,7 +915,7 @@ The maximum number of cameras.
 
 =head1 BUGS AND LIMITATIONS
 
-Maintaining the L<Elive::View::Session> abstraction may involve fetches from
+Maintaining the L<Elive::Entity::Session> abstraction may involve fetches from
 several entities. This is mostly transparent, but does have some implications
 for the C<list> method:
 
