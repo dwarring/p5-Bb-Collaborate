@@ -14,7 +14,7 @@ use Elive;
 use Elive::Util;
 use Elive::Entity::Preload;
 use Elive::Entity::User;
-use Elive::Entity::ParticipantList::Participant;
+use Elive::Entity::Participant;
 
 use URI;
 use URI::Escape;
@@ -411,7 +411,7 @@ sub main {
     my @preloads = grep {$_} ($existing_preload, $uploaded_preload, $imported_preload);
 
     $session_data{add_preload} = \@preloads if @preloads;
-    my $ptmp = Elive::Entity::ParticipantList::Participants->new($session_data{participants});
+    my $ptmp = Elive::Entity::Participants->new($session_data{participants});
 
     my @sessions = $class->insert(\%session_data);
 
@@ -444,7 +444,7 @@ sub parse_participants {
     foreach my $spec (map {split(';',$_)} @$spec) {
 
 	my $participant = eval {
-	    Elive::Entity::ParticipantList::Participant->new($spec)
+	    Elive::Entity::Participant->new($spec)
 	};
 
 	if ($@) {
