@@ -1255,15 +1255,16 @@ sub update {
 
     foreach (@updated_properties, keys %primary_key) {
 
-	my $type = $self->property_types->{$_};
+	my $update_val = $self->$_;
 
-	croak 'primary key field $_ updated - refusing to save'
-	    if (exists $primary_key{ $_ }
-		&& $self->_cmp_col($type,
-				   $self->_db_data->{$_},
-				   $self->$_));
+	if (exists $primary_key{$_} ) {
+	    my $type = $self->property_types->{$_};
+	    my $db_val = $self->_db_data->$_;
+	    croak 'primary key field $_ updated - refusing to save'
+		if $self->_cmp_col($type, $db_val, $update_val);
+	}
 
-	$updates{$_} = $self->$_;
+	$updates{$_} = $update_val;
     }
 
     my $command = $opt{command} || 'update'.$self->entity_name;
