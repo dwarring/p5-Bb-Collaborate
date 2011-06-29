@@ -65,6 +65,8 @@ elive_raise_meeting
                               # leave after the scheduled meeting times.
  -max_talkers  n              # max no. of simultaneous talkers
  -max_cameras  n              # max no. of simultaneous cameras (elm3)
+ -profile_display      none|mod|all       # profiles to display (elm3)
+                              # none, mod (moderators only), or all
  -recording_status     off|on|manual      # set recording status
                               #  - off:    recording disabled
                               #  - on:     starts automatically
@@ -89,9 +91,9 @@ elive_raise_meeting
 
 =head2 Preload Options
 
- -upload              local_file     # upload a file from the client
+ -upload              local_file     # upload a local file
  -import_from_server  remote_file    # import a server side file
- -add_preload         preload_id,... # add existing preloads
+ -add_preload         preload_id,... # associate with existing preloads
 
 =head2 Compatibility Options
 
@@ -128,6 +130,7 @@ my $meeting_name = 'elive test meeting';
 my $meeting_password;
 my $max_talkers;
 my $max_cameras;
+my $profile_display;
 my $recording_status;
 my $recording_resolution;
 my $raise_hands;
@@ -182,6 +185,7 @@ sub main {
 	'upload=s' => \$upload,
 	'import_from_server=s' => \$import,
 	'add_preload|use_preload=i' => \$preload_opt,
+	'profile|profile_display=s' => \$profile_display,
 	'recording|recording_status=s' => \$recording_status,
 	'recording_resolution=s' => \$recording_resolution,
 	'boundary=i' => \$boundary,
@@ -218,15 +222,22 @@ sub main {
 	$recording_status =~ s{^manual$}{remote}x;
 	$recording_status =~ s{^auto(matic)?$}{on}x;
 
-	die pod2usage("recording mode must be on/auto, off/none/disabled or manual/remote\n")
+	die pod2usage("-recording_status must be on/auto, off/none/disabled or manual/remote\n")
 	    unless $recording_status =~ m{^on|off|remote$}x;
     }
 
     if (defined $recording_resolution) {
 	$recording_resolution = uc $recording_resolution;
 
-	die ("recording resolution must be: cg|cc|mg|mc|fg|fc\n")
+	die ("-recording_resolution must be: cg|cc|mg|mc|fg|fc\n")
 	    unless $recording_resolution =~ m{^[CMF][GC]$}x;
+    }
+
+    if (defined $profile_display) {
+	$profile_display = lc $profile_display;
+
+	die ("-profile_display must be: none|mod|all\n")
+	    unless $profile_display =~ m{^(none|mod|all)$}x;
     }
 
     my ($recurrence_count, $recurrence_days) = _get_occurances(\%occurs);
@@ -366,6 +377,9 @@ sub main {
 
     $session_data{recordingResolution} = $recording_resolution
 	if defined $recording_resolution;
+
+    $session_data{profile} = $profile_display
+	if defined $profile_display;
 
     $session_data{password} = $meeting_password
 	if defined $meeting_password;
