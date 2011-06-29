@@ -27,80 +27,82 @@ elive_raise_meeting
 
   elive_raise_meeting [url] [options] [participants]
 
-  Authentication Options
+=head2 Authentication Options
 
-    -user someAdminUser          # SDK/SOAP username
-    -pass somePass               # SDK/SOAP password
+ [url]                        # web address and site instance path, e.g.
+                             # http://myserver.com/mysite 
+ -user someAdminUser          # SDK/SOAP username
+ -pass somePass               # SDK/SOAP password
 
-  Basic Options
+=head2 Basic Options
 
-    -facilitator  userId
-    -name         'meeting name'
-    -meeting_pass otherpass      # meeting password
-    -start  '[YYYY-MM-DD ]HH:MM' # start time
-    -end    '[YYYY-MM-DD ]HH:MM' # end time
-    -occurs {days|weeks}=n       # repeat the meeting over n days/weeks (elm2)
+ -facilitator  userId
+ -name         'meeting name'
+ -meeting_pass otherpass      # meeting password
+ -start  '[YYYY-MM-DD ]HH:MM' # start time
+ -end    '[YYYY-MM-DD ]HH:MM' # end time
+ -occurs {days|weeks}=n       # repeat the meeting over n days/weeks (elm2)
 
-  Moderators and Participants
+=head2 Moderators and Participants
 
-     -moderators user|*group|guest-name(guest-id) ...
-     -participants user|*group|guest-name(guest-id) ...
+ -moderators user|*group|guest-name(guest-id) ...
+ -participants user|*group|guest-name(guest-id) ...
 
-     Where each participant or moderator can be:
+ Where each participant or moderator can be:
 
-        'user'        - add this elluminate user. This can be either the
-                        user's username or user-id.
+    'user'        - add this elluminate user. This can be either the
+                    user's username or user-id.
 
-        '*group'      - include all users from this group. This can be
-                        either the group-name or group-id.
+    '*group'      - include all users from this group. This can be
+                    either the group-name or group-id.
 
-        'Display Name(loginName)
-                      - grant one-time access to this guest.
+    'Display Name(loginName)'
+                  - guest login.
 
-  Meeting Setup Options
+=head2 Meeting Setup Options
 
-    -boundary     0|15|30|..     # minutes participants can arrive before or
-                                 # leave after the scheduled meeting times.
-    -max_talkers  n              # max no. of simultaneous talkers
-    -max_cameras  n              # max no. of simultaneous cameras (elm3)
-    -recording    off|on|manual  # set recording status
-                                 #  - off:    recording disabled
-                                 #  - on:     starts automatically
-                                 #  - manual: recording started by moderator
-    -seats        count          # number of seats to reserve on server
-    -[no]invites                 # allow in-session invitations
-    -[no]private                 # hide from public schedule
-    -[no]restricted              # only allow entry to registered users (elm3)
-    -[no]permissions             # let participants perform activities
-    -[no]raise_hands             # automatically raise hands on entry
-    -[no]supervised              # moderator can see private messages
+ -boundary     0|15|30|..     # minutes participants can arrive before or
+                              # leave after the scheduled meeting times.
+ -max_talkers  n              # max no. of simultaneous talkers
+ -max_cameras  n              # max no. of simultaneous cameras (elm3)
+ -recording    off|on|manual  # set recording status
+                              #  - off:    recording disabled
+                              #  - on:     starts automatically
+                              #  - manual: recording started by moderator
+ -seats        count          # number of seats to reserve on server
+ -[no]invites                 # allow in-session invitations
+ -[no]private                 # hide from public schedule
+ -[no]restricted              # only allow entry to registered users (elm3)
+ -[no]permissions             # let participants perform activities
+ -[no]raise_hands             # automatically raise hands on entry
+ -[no]supervised              # moderator can see private messages
 
-    -user_notes      'some text'
-    -moderator_notes 'some text'
-    -cost_center     'code'
-    -exit_url=http://somesite.com  # URL to visit on meeting exit (elm3)
+ -user_notes      'some text'
+ -moderator_notes 'some text'
+ -cost_center     'code'
+ -exit_url=http://somesite.com  # URL to visit on meeting exit (elm3)
 
-  Preload Options
+=head2 Preload Options
 
-    -upload              local_file     # upload a file from the client
-    -import_from_server  remote_file    # import a server side file
-    -add_preload         preload_id,... # add existing preloads
+ -upload              local_file     # upload a file from the client
+ -import_from_server  remote_file    # import a server side file
+ -add_preload         preload_id,... # add existing preloads
 
-  Compatibility Options
+=head2 Compatibility Options
 
-     -use elm2                  # ELM 2.x compat (via Elive::View::Session)
-     -use elm3                  # ELM 3.x compat (via Elive::Entity::Session)
-     -use Some::Custom::Class   # create session via a custom session class
+ -use elm2                  # ELM 2.x compat (via Elive::View::Session)
+ -use elm3                  # ELM 3.x compat (via Elive::Entity::Session)
+ -use Some::Custom::Class   # create session via a custom session class
 
-  Information
+=head2 Information
 
-    -? --help                   # print this help
-    -v --version                # print version and exit
-    --debug=n                   # set debug level
+ -? --help                   # print this help
+ -v --version                # print version and exit
+ --debug=n                   # set debug level
 
 =head1 DESCRIPTION
 
-Creates a meeting on an Elluminate I<Live!> server
+Creates a meeting (session) on an Elluminate I<Live!> server
 
 =head1 SEE ALSO
 
@@ -109,7 +111,7 @@ Creates a meeting on an Elluminate I<Live!> server
 
 =cut
 
-my $class = 'Elive::Entity::Session';
+my $class;
 
 my $username;
 my $password;
@@ -199,14 +201,6 @@ sub main {
 
     $recording = lc($recording);
 
-    $class = {elm2 => 'Elive::View::Session',
-	      elm3 => 'Elive::Entity::Session'}->{$class} || $class;
-
-    my $can_insert = eval "use $class";
-    die "unable to load class $class: $@" if $@;
-
-    die "class $class: does not implement the 'insert' method"
-	unless eval{ $class->can('insert') };
     #
     # accept some of the other symonymns for the various modes as
     # seen in documentation and elluminate's web interface.
@@ -220,7 +214,9 @@ sub main {
 
     my ($recurrence_count, $recurrence_days) = _get_occurances(\%occurs);
 
-    Elive->debug($debug);
+    Elive->debug($debug) if defined $debug;
+    # debug may also be set via $ENV{ELIVE_DEBUG}
+    $debug = Elive->debug;
 
     if ($debug) {
 	$SIG{__WARN__} = \&Carp::cluck if $debug > 1;
@@ -251,6 +247,30 @@ sub main {
 
     my $server_version = $connection->server_details->version;
     my $server_version_num = version->new($server_version)->numify;
+
+    $class ||= do {
+	#
+	# use hasn't specified elluminate compatibility, or which session
+	# class to use. Work it out from their Elluminate server version.
+	#
+	my $elm3_min_version_num = version->declare( '10.0.1' )->numify;
+
+	warn "Elluminate Live! version: $server_version_num (elm3 min: $elm3_min_version_num)\n" if $debug;
+	$server_version_num >= $elm3_min_version_num
+	    ? 'elm3'
+	    : 'elm2'
+    };
+
+    $class = {elm2 => 'Elive::View::Session',
+	      elm3 => 'Elive::Entity::Session'}->{$class} || $class;
+
+    warn "Session class: $class\n" if $debug;
+
+    my $can_insert = eval "use $class";
+    die "unable to load class $class: $@" if $@;
+
+    die "class $class: does not implement the 'insert' method"
+	unless eval{ $class->can('insert') };
 
     my $start = $start_str
 	? Date::Parse::str2time($start_str)
