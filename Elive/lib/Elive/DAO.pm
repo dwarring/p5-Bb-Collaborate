@@ -377,7 +377,7 @@ sub _cmp_col {
 	}
 	elsif ($type =~ m{^Int}ix) {
 	    # int comparision
-	    $cmp = $v1 <=> $v2;
+	    $cmp = defined $v1 && defined $v2 && $v1 <=> $v2;
 	}
 	else {
 	    Carp::croak "class $class: unknown type: $type\n";
