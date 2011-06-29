@@ -30,7 +30,7 @@ elive_raise_meeting
 =head2 Authentication Options
 
  [url]                        # web address and site instance path, e.g.
-                             # http://myserver.com/mysite 
+                              # http://myserver.com/mysite 
  -user someAdminUser          # SDK/SOAP username
  -pass somePass               # SDK/SOAP password
 
@@ -65,12 +65,17 @@ elive_raise_meeting
                               # leave after the scheduled meeting times.
  -max_talkers  n              # max no. of simultaneous talkers
  -max_cameras  n              # max no. of simultaneous cameras (elm3)
- -recording    off|on|manual  # set recording status
+ -recording_status     off|on|manual      # set recording status
                               #  - off:    recording disabled
                               #  - on:     starts automatically
                               #  - manual: recording started by moderator
+ -recording_resolution cg|cc|mg|mc|fg|fc  # set recording resolution (elm3)
+                              #  - cg:course gray, cc:course color,
+                              #  - mg:medium gray, mc:medium color,
+                              #  - fg:fine gray,   fc:fine color
  -seats        count          # number of seats to reserve on server
  -[no]invites                 # allow in-session invitations
+ -[no]follow                  # lock whiteboard to moderator's view (elm3)
  -[no]private                 # hide from public schedule
  -[no]restricted              # only allow entry to registered users (elm3)
  -[no]permissions             # let participants perform activities
@@ -123,7 +128,8 @@ my $meeting_name = 'elive test meeting';
 my $meeting_password;
 my $max_talkers;
 my $max_cameras;
-my $recording = 'remote';
+my $recording_status;
+my $recording_resolution;
 my $raise_hands;
 my $import;
 my $private;
@@ -137,6 +143,7 @@ my $seats;
 my $permissions;
 my $supervised;
 my $invites;
+my $follow_moderator;
 my $moderator_notes;
 my $user_notes;
 my $cost_center;
@@ -175,10 +182,12 @@ sub main {
 	'upload=s' => \$upload,
 	'import_from_server=s' => \$import,
 	'add_preload|use_preload=i' => \$preload_opt,
-	'recording=s' => \$recording,
+	'recording|recording_status=s' => \$recording_status,
+	'recording_resolution=s' => \$recording_resolution,
 	'boundary=i' => \$boundary,
 	'seats=i' => \$seats,
 	'invites|invitations!' => \$invites,
+	'follow|follow_moderator!' => \$follow_moderator,
         'occurs=i%' => \%occurs,
 	'v|version' => \$version,
 	'user_notes=s' => \$user_notes,
@@ -199,18 +208,26 @@ sub main {
     ($url = shift @ARGV)
 	or pod2usage("missing url argument");
 
-    $recording = lc($recording);
+    if (defined $recording_status) {
+	$recording_status = lc($recording_status);
+	#
+	# accept some of the other symonymns for the various modes as
+	# seen in documentation and elluminate's web interface.
+	#
+	$recording_status =~ s{^none|disabled$}{off}x;
+	$recording_status =~ s{^manual$}{remote}x;
+	$recording_status =~ s{^auto(matic)?$}{on}x;
 
-    #
-    # accept some of the other symonymns for the various modes as
-    # seen in documentation and elluminate's web interface.
-    #
-    $recording =~ s{^none|disabled$}{off}x;
-    $recording =~ s{^manual$}{remote}x;
-    $recording =~ s{^auto(matic)?$}{on}x;
+	die pod2usage("recording mode must be on/auto, off/none/disabled or manual/remote\n")
+	    unless $recording_status =~ m{^on|off|remote$}x;
+    }
 
-    die pod2usage("recording mode must be on/auto, off/none/disabled or manual/remote\n")
-	unless $recording =~ m{^on|off|remote$}x;
+    if (defined $recording_resolution) {
+	$recording_resolution = uc $recording_resolution;
+
+	die ("recording resolution must be: cg|cc|mg|mc|fg|fc\n")
+	    unless $recording_resolution =~ m{^[CMF][GC]$}x;
+    }
 
     my ($recurrence_count, $recurrence_days) = _get_occurances(\%occurs);
 
@@ -342,8 +359,13 @@ sub main {
 	facilitatorId => $facilitator,
 	start => $start . '000',
 	end => $end . '000',
-	recordingStatus => $recording,
 	);
+
+    $session_data{recordingStatus} = $recording_status
+	if defined $recording_status;
+
+    $session_data{recordingResolution} = $recording_resolution
+	if defined $recording_resolution;
 
     $session_data{password} = $meeting_password
 	if defined $meeting_password;
@@ -365,6 +387,9 @@ sub main {
 
     $session_data{inSessionInvitation}  = $invites
 		if defined $invites;
+
+    $session_data{followModerator}  = $follow_moderator
+		if defined $follow_moderator;
 
     $session_data{fullPermissions} = $permissions
 	if defined $permissions;
