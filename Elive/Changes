@@ -1,5 +1,17 @@
 Revision history for Elive
 
+0.96    20th June 2011
+        elive_raise_meeting:
+        - default session class to Elive::Entity::Session (elm3) for
+          server version >= 10.0.1, Elive::Session::Class (elm2) otherwise
+        - added further elm3 options: -follow -recording_resolution -profile
+        - fixed long standing nit - not picking $ELIVE_DEBUG (also added to
+          elive_query).
+        Elive::View::Session
+        - parameterless use of update() method now works as documented
+        Elive::Entity::Session
+        - fixed a bug that prevented retrieved objects from beiing updated. 
+
 0.95    28th June 2011
         [A pretty big release. This introduces Elive::Entity::Session; ELM 3.0
          compatible meeting/session creation and management].

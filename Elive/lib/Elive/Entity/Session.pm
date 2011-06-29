@@ -532,8 +532,6 @@ sub delete {
     return 1;
 }
 
-# nb if you change any of the worked example here, please also
-
 =head1 Working with Participants
 
 =head2 Constructing Participant Lists
@@ -567,15 +565,14 @@ Each participant in the list can be one of several things:
 =back
 
 Unless you're using LDAP, you're likely to have to look-up users and groups
-based on their login names and group names:
+to resolve login names and group names:
 
     my $alice = Elive::Entity::User->get_by_loginName('alice');
     my $bob = Elive::Entity::User->get_by_loginName('bob');
     my $tut_group = Elive::Entity::Group->list(filter => "groupName = 'Perl Tutorial Group 1'");
-    my @guests = qw{'Larry Wall(TimToady)'}; # just in case ;-)
 
     my @participants = (-moderators => [$alice, $bob],
-                        -others => [@$tut_group, @guests],
+                        -others => [@$tut_group],
                        );
 
 Then, you just need to pass the list in when you create or update the session:
@@ -655,7 +652,7 @@ example, to print the list of participants for a session:
 
 You may modify this list in any way, then update the session it belongs to:
 
-    $participants->add( -moderators => 'trev');  # add a user as a moderator
+    $participants->add( -moderators => 'trev');  # add 'trev' as a moderator
 
     $session->update({participants => $participants});
 
@@ -663,10 +660,10 @@ You may modify this list in any way, then update the session it belongs to:
 
 Preloads may be both uploaded from the client or server:
 
-    # upload from a file
+    # 1. upload a local file
     my $preload1 = Elive::Entity::Preload->upload('c:\\Documents\slide1.wbd');
 
-    # stream it ourselves
+    # 2. stream it ourselves
     open ( my $fh, '<', 'c:\\Documents\slide2.wbd')
 	or die "unable to open preload file $!";
     my $content = do {local $/; $fh->binmode; <$fh>};
@@ -677,40 +674,44 @@ Preloads may be both uploaded from the client or server:
                      data => $content,
                    );
 
+    # 3. import a file on the Elluminate Live! server
     my $preload3 = Elive::Entity::Preload
          ->import_from_server('/home/uploads/slide3.wbd');
 
-These can then be added in a number of ways:
+These can then be added to sessions in a number of ways:
 
+    # 1. at session creation
     my $session = Elive::Entity->Session->create({
                            # ...
-                           add_preloads => $preload1,
+                           add_preload => $preload1,
                         });
 
-    $session->update({add_preloads => $preload2});
+    # 2. when updating a session
+    $session->update({add_preload => $preload2});
 
+    # 3. via the add_preload() method
     $session->add_preload( $preload3 );
 
-The one preload can be reused across multiple sessions:
+A single preload can be shared between sessions:
 
     $session1->add_preload( $preload );
     $session2->add_preload( $preload );
 
-Adding a preload more than once is consider an error. The C<check_preload>
-method can help here>
+Attempt to add the same preload to a session more than once is considered an
+error. The C<check_preload> method might help here>
 
     $session->add_preload( $preload )
         unless $session->check_preload( $preload );
 
 Preloads are not automatically deleted when you delete session, if you want to
-delete them, you'll need to do this yourself:
+delete them, you can do this yourself:
 
-    my $preloads = $session->preloads;
+    my $preloads = $session->list_preloads;
     $session->delete;
     $_->delete for (@$preloads);
 
-But the preload also become unavailable for any other meetings
-that are sharing it, which may not be what you want.
+But you'd only want to delete the preload if it's not being shared with other
+active sessions!
 
 Please see also L<Elive::Entity::Preload>.
 
@@ -727,15 +728,15 @@ There's a slightly different format for guests:
     my $guest_jnlp = $session->buildJNLP(userName => $guest_username,
                                          displayName => $guest_display_name);
 
-Unlike registered users, guests do not need to be registered as a participant
-for you to add them as a guest.
+Unlike registered users, guests do not need to be registered as a session
+participant for you to add them as a guest.
 
 For more information, please see L<Elive::Entity::Meeting>.
 
 =head1 Working with recordings (recording JNLPs)
 
 A session can be associated with multiple recording segments. A segment is
-created each time recording is stopped an restarted, or the participants
+created each time recording is stopped an restarted, or when all participants
 entirely vacate the session. This can happen multiple times for long running
 sessions.
 
@@ -749,13 +750,16 @@ if (@$recordings) {
    my $recording_jnlp = $recordings[0]->buildJNLP(userId => $username);
 }
 
-Also note that recordings a not deleted, when you delete sessions. In a similar
-vain to preloads, if you want to delete associated recordings when you delete
-sessions:
+Also note that recordings are not deleted, when you delete sessions. If you
+want to delete associated recordings when you delete sessions:
 
    my $recordings = $session->recordings;
     $session->delete;
     $_->delete for (@$recordings);
+
+However it is often customary to keep recordings for an extended period of
+time - they will remain accessable from the C<Recordings> web page on your
+Elluminate Live! web server.
 
 For more information, please see L<Elive::Entity::Recording>.
 

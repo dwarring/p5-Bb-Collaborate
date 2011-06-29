@@ -230,7 +230,7 @@ sub derivable {
 
 =head1 SEE ALSO
 
-    L<Elive::Entity::Session>  (the base class).
+L<Elive::Entity::Session>  (the base class).
 
 =cut
 
