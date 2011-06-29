@@ -463,7 +463,13 @@ sub retrieve {
     my $id = shift;
     my %opt = @_;
     ($id) = @$id if ref($id);
-    my $self = bless {id => Elive::Util::string($id)}, $class;
+
+    my $id_string = Elive::Util::string($id);
+    die "nothing to retrieve" unless $id_string;
+
+    my $self = $class->new({id => $id_string});
+
+    $self->_db_data( $class->new({id => $id_string}) );
 
     for ($opt{connection}) {
 	$self->connection($_) if $_;
