@@ -118,7 +118,9 @@ sub main {
 	die $@ if $@;
 
 	our $debug = $options{debug};
-	Elive->debug( $debug );
+	Elive->debug($debug) if defined $debug;
+	# debug may also be set via $ENV{ELIVE_DEBUG}
+	$debug = Elive->debug;
 
 	$connection = _connect($adapter_class => $url, %options)
 	    if $url;
