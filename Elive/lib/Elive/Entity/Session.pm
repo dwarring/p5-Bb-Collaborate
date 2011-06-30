@@ -497,7 +497,7 @@ sub list {
     my @sessions = map {
 	my $meeting = $_;
 
-	my $self = bless {id => $meeting->meetingId}, $class;
+	my $self = $class->new( {id => $meeting->meetingId} );;
 	$self->meeting($meeting);
 	$self->connection($connection);
 
