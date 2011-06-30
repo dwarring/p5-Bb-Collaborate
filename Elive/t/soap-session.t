@@ -1,6 +1,6 @@
 #!perl
 use warnings; use strict;
-use Test::More tests => 58;
+use Test::More tests => 61;
 use Test::Exception;
 use Test::Warn;
 use Test::Builder;
@@ -121,75 +121,108 @@ SKIP: {
     my $auth = $result{auth};
 
     my $connection_class = $result{class};
-    skip ($result{reason} || 'skipping live tests', 43)
+    skip ($result{reason} || 'skipping live tests', 46)
 	if $connection_class->isa('t::Elive::MockConnection');
 
     $connection = $connection_class->connect(@$auth);
     Elive->connection($connection);
 
     $insert_data{facilitatorId} = Elive->login->userId,
-
-    my $preload = _create_preload();
-    $insert_data{preloadIds} = [$preload];
-
-    my $session = $class->insert(\%insert_data);
-
-    isa_ok($session, $class, 'session');
-
-    foreach (sort keys %insert_data) {
-	next if $_ =~ m{preload|password};
-	is( $session->$_, $insert_data{$_}, "insert: $_ saved");
-    }
-
-    my $preloads = $session->list_preloads;
-    is_deeply($preloads, [$preload], 'preloads after insert');
-
     my %update_data = (
 	costCenter => 'testing again',
 	boundaryMinutes => 30,
 	);
 
-    my $preload2 = _create_preload();
-    $update_data{preloadIds} = [$preload2];
-
-    lives_ok( sub{$session->update( \%update_data )}, 'session update - lives' );
-
-    $preloads = undef;
-    $preloads = $session->list_preloads;
-    is_deeply($preloads, [$preload, $preload2], 'preloads after update');
-
-    my %props;
-    @props{ keys %insert_data, keys %update_data } = undef;
-
-    foreach (sort keys %props) {
-	next if $_ =~ m{preload|password};
-
-	my $expected_value = (exists $update_data{$_}
-			      ? $update_data{$_}
-			      : $insert_data{$_});
-
-	is( $session->$_, $expected_value, "update: $_ saved");
-    }
+    my $session_id;
 
     do {
-	my $sessionJNLP;
-	lives_ok(sub {$sessionJNLP = $session->buildJNLP(
-			  version => '8.0',
-			  displayName => 'Elive Test',
-			  )},
-		'$session->buildJNLP - lives');
+	my $preload = _create_preload();
+	$insert_data{preloadIds} = [$preload];
 
-	ok($sessionJNLP && !ref($sessionJNLP), 'got session JNLP');
-	lives_ok(sub {XMLin($sessionJNLP)}, 'session JNLP is valid XML (XHTML)');
+	my $session = $class->insert(\%insert_data);
+
+	isa_ok($session, $class, 'session');
+
+	foreach (sort keys %insert_data) {
+	    next if $_ =~ m{preload|password};
+	    is( $session->$_, $insert_data{$_}, "insert: $_ saved");
+	}
+
+	my $preloads = $session->list_preloads;
+	is_deeply($preloads, [$preload], 'preloads after insert');
+
+	my $preload2 = _create_preload();
+	$update_data{preloadIds} = [$preload2];
+
+	lives_ok( sub{$session->update( \%update_data )}, 'session update - lives' );
+
+	$preloads = undef;
+	$preloads = $session->list_preloads;
+	is_deeply($preloads, [$preload, $preload2], 'preloads after update');
+
+	my %props;
+	@props{ keys %insert_data, keys %update_data } = undef;
+
+	foreach (sort keys %props) {
+	    next if $_ =~ m{preload|password};
+
+	    my $expected_value = (exists $update_data{$_}
+				  ? $update_data{$_}
+				  : $insert_data{$_});
+
+	    is( $session->$_, $expected_value, "update: $_ saved");
+	}
+
+	do {
+	    my $sessionJNLP;
+	    lives_ok(sub {$sessionJNLP = $session->buildJNLP(
+			      version => '8.0',
+			      displayName => 'Elive Test',
+			      )},
+		     '$session->buildJNLP - lives');
+
+	    ok($sessionJNLP && !ref($sessionJNLP), 'got session JNLP');
+	    lives_ok(sub {XMLin($sessionJNLP)}, 'session JNLP is valid XML (XHTML)');
+	};
+	
+	ok($session->web_url, 'got session web_url()');
+
+	lives_ok( sub{$session->update()}, 'ineffective session update - lives' );
+	$preload->delete;
+	$preload2->delete;
+
+	$session_id = $session->id;
     };
 
-    ok($session->web_url, 'got session web_url()');
+    # drop out of scope to impicitly cull objects and clear object cache
 
-    lives_ok( sub{$session->update()}, 'ineffective session update - lives' );
+    do {
 
-    $session->delete;
-    $preload->delete;
-    $preload2->delete;
+	my %update_data = (
+	    costCenter => 'testing yet again!',
+	    boundaryMinutes => 45,
+	    );
+
+	my $session = Elive::Entity::Session->retrieve($session_id);
+
+	#
+	# also try a different variation of update. set properties before-hand,
+	# then do a parameterless update
+	#
+	foreach (sort keys %update_data) {
+	    $session->$_( $update_data{$_} );
+	}
+
+	$session->update;
+
+	is($session->name, $insert_data{name}, 'session value unchanged (name)');
+
+	foreach (sort keys %update_data) {
+	    is($session->$_, $update_data{$_}, "session value updated ($_)");
+	}
+
+	$session->delete;
+    };
 }
 
 ########################################################################
