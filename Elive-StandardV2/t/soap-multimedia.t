@@ -33,9 +33,9 @@ SKIP: {
       lives_ok(sub {
 	  $multimedia = Elive::StandardV2::Multimedia->insert(
 	      {
-		filename => 'elive-standardv2-test-14-multimedia-t.mpeg',
+		filename => 'elive-standardv2-soap-session-multimedia-t.mpeg',
 		content => $data,
-                description => 'created by t/14-soap-multimedia.t',
+                description => 'created by t/soap-multimedia.t',
 		creatorId => 'elive-standardv2-tester',
 	      })
 	       },
@@ -49,7 +49,7 @@ SKIP: {
     isa_ok($multimedia, $class, 'preload object');
 
     #
-    # Body of tests to be adapted from Elive/t/24-soap-preload.t
+    # Body of tests to be adapted from Elive/t/soap-preload.t
     #
 
     lives_ok(sub {$multimedia->delete},'multimedia deletion - lives');
