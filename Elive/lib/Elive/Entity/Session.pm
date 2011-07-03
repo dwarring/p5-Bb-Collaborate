@@ -112,7 +112,6 @@ __PACKAGE__->_alias(reservedSeatCount => 'seats', freeze => 1);
 
 __PACKAGE__->_alias(restrictParticipants => 'restrictedMeeting', freeze => 1);
 
-
 __PACKAGE__->_alias(supervisedMeeting => 'supervised', freeze => 1);
 
 __PACKAGE__->_alias(sessionServerTeleconferenceType => 'telephonyType', freeze => 1);
@@ -146,9 +145,8 @@ sub _alias {
     die "$entity_class: can't alias $from it's already a property!"
 	if $entity_class->property_types->{$from};
 
-# get this test working
-##    die "$entity_class: attempt to alias $from to non-existant property $to - check spelling and declaration order"
-##	unless $entity_class->property_types->{$to};
+    die "$entity_class: attempt to alias $from to non-existant target $to - check spelling and declaration order"
+	unless $entity_class->can($to) || { $entity_class->params }->{$to};
 
     $opt{to} = $to;
     $aliases->{$from} = \%opt;
@@ -925,6 +923,16 @@ The maximum number of cameras.
 
 =head1 BUGS AND LIMITATIONS
 
+This class is still under construction, in particular:
+
+=over 4
+
+=item * recurring meetings are not yet implemented
+
+=item * meeting telephony is not yet supported
+
+=back
+
 Maintaining the L<Elive::Entity::Session> abstraction may involve fetches from
 several entities. This is mostly transparent, but does have some implications
 for the C<list> method:
@@ -937,10 +945,6 @@ for the C<list> method:
 lazily on a per record basis and may be considerably slower. This includes
 access to attributes of meeting parameters, server parameter and  participant
 list.
-
-=item * recurring meetings are not yet implemented
-
-=item * meeting telephony is not yet tested or supported
 
 =back
 
