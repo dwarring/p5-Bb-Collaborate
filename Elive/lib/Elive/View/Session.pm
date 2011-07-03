@@ -98,8 +98,10 @@ sub insert {
     my @objs = map {
 	my $meeting = $_;
 
-	my $self = bless {id => $meeting->meetingId,
-			  meeting => $meeting}, $class;
+	my $self = Elive::Entity::Session->new( {id => $meeting->meetingId,
+						 meeting => $meeting} );
+	bless $self, $class;
+
 	$self->connection( $meeting->connection );
 	#
 	# from here on in, it's just a matter of updating attributes owned by
