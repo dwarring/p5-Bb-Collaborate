@@ -1,3 +1,5 @@
+# Leave out telephony testing, for the moment
+soap-session-telephony.t
 # Subversion
 \B\.svn\b
 # Git (proposed)
