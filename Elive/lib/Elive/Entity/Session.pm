@@ -41,6 +41,7 @@ __PACKAGE__->params(
     invitedModerators => 'Elive::Array',
     invitedGuests => 'Elive::Array',
 
+    timeZone                     => 'Str',
     until                        => 'HiResDate',
     repeatEvery                  => 'Int',
     repeatSessionInterval        => 'Int',
@@ -205,8 +206,15 @@ sub _readback_check {
 	}
 
 	$delegated_updates{meetingId} = $id if $id;
+	if ($delegate eq 'meeting') {
+	    # actual start and end times can get a bit tricky for
+	    # scheduled meetings. just avoid checking them for now
+	    delete $delegated_updates{start};
+	    delete $delegated_updates{end};
+	}
 
 	foreach my $row (@$rows) {
+
 	    $delegate_class
 		->_readback_check(\%delegated_updates, [$row->{$delegate}], @args);
 	}
@@ -278,13 +286,37 @@ sub _unpack_as_list {
 
     my $results_list = $class->SUPER::_unpack_as_list($data);
 
-    my %results ;
-    @results{qw{meeting serverParameters meetingParameters participantList}} = @$results_list;
+    my %result ;
+    (my $meetings,
+     @result{qw{serverParameters meetingParameters participantList}})
+	= @$results_list;
 
-    $results{Id} = $results{meeting}{MeetingAdapter}{Id};
+    #
+    # allow for a list of repeated meetings
+    $meetings = [ $meetings ]
+	unless Elive::Util::_reftype( $meetings ) eq 'ARRAY';
 
-    # todo: more checking, recurring meetings
-    return [\%results]
+    my @results = map {
+	my $meeting = $_;
+	my $meeting_id = $meeting->{MeetingAdapter}{Id};
+
+	my $result = Elive::Util::_clone( \%result );
+
+	foreach (keys %$result) {
+	    #
+	    # add the meetingId to each of the sub-records
+	    my $adapter = $_.'Adapter';
+	    $adapter =~ s/^(.)/uc $1/e;
+	    $result->{$_}{$adapter}{MeetingId} = $meeting_id;
+	}
+
+	$result->{meeting} = $meeting;
+	$result->{Id} = $meeting_id;
+
+	$result;
+    } @{ $meetings };
+
+    return \@results;
 }
 
 =head2 insert
@@ -347,7 +379,8 @@ sub insert {
     die "recurring meetings not supported"
 	if $data{recurrenceCount} || $data{recurrenceDays};
 
-    return $class->SUPER::insert( \%data, command => 'createSession', %opt );
+    my @objs = $class->SUPER::insert( \%data, command => 'createSession', %opt );
+    return wantarray? @objs : $objs[0];
 }
 
 =head2 is_changed

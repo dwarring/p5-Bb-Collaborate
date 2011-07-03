@@ -7,11 +7,11 @@ Elive - Elluminate Live! (c) Command Toolkit bindings
 
 =head1 VERSION
 
-Version 0.96
+Version 0.97
 
 =cut
 
-our $VERSION = '0.96';
+our $VERSION = '0.97';
 
 use parent qw{Class::Data::Inheritable};
 use Scalar::Util;
@@ -395,22 +395,11 @@ David Warring, C<< <david.warring at gmail.com> >>
 
 =over 4
 
-=item Elive is a newish module
-
-It has been used and tested against a number of sites running Elluminate 9.5
-to 10.0.1.
-
-So far it does not implement all SOAP calls, but concentrates on entities
-such as users, meetings, preloads and meeting participants.
-
-=item Elive does not support hosted (SAS) systems
+=item (*) Elive does not support hosted (SAS) systems
 
 The Elive distribution only supports the Elluminate SDK which is implemented
 by ELM (Elluminate Live Manager) session manager. This SDK is not supported by
 SAS (Session Administration System).
-
-Update: See also the companion CPAN module L<Elive::StandardV2> which is under
-construction and will support the alternate Elluminate I<Live!> standard bridge (v2).
 
 =back
 

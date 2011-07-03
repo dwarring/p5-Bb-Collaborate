@@ -1,6 +1,6 @@
 #!perl
 use warnings; use strict;
-use Test::More tests => 30;
+use Test::More tests => 31;
 use Test::Exception;
 use Test::Builder;
 
@@ -18,6 +18,12 @@ our $t = Test::Builder->new;
 our $class = 'Elive::View::Session' ;
 
 our $connection;
+
+ok($class->can('start')
+   && $class->can('seats')
+   && $class->can('participants')
+   && $class->can('meeting')
+   , 'delegation sanity');
 
 SKIP: {
 

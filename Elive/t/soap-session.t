@@ -1,6 +1,6 @@
 #!perl
 use warnings; use strict;
-use Test::More tests => 61;
+use Test::More tests => 62;
 use Test::Exception;
 use Test::Warn;
 use Test::Builder;
@@ -20,6 +20,12 @@ our $t = Test::Builder->new;
 our $class = 'Elive::Entity::Session' ;
 
 our $connection;
+
+ok($class->can('start')
+   && $class->can('seats')
+   && $class->can('participants')
+   && $class->can('meeting')
+   , 'delegation sanity');
 
 lives_ok(sub {
     $class->_readback_check(
