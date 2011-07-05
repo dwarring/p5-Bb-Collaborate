@@ -634,7 +634,7 @@ L<Elive::Entity::Participant>. Each participant contains one of:
 
 =item type 1 (L<Elive::Entity::Group>), or
 
-=item type 2 (L<Elive::Entity::Invited::Guest>)
+=item type 2 (L<Elive::Entity::InvitedGuest>)
 
 =back
 
