@@ -110,22 +110,26 @@ sub _group_by_type {
     my %groups;
     my %guests;
 
-    foreach (@raw_participants) {
-	my $participant = Elive::Entity::Participant->BUILDARGS($_);
+    foreach my $participant (@raw_participants) {
+
+	$participant = Elive::Entity::Participant->new($participant)
+	    unless Scalar::Util::blessed $participant
+	    && $participant->isa('Elive::Entity::Participant');
+
 	my $id;
-	my $roleId = Elive::Entity::Role->stringify( $participant->{role} )
+	my $roleId = Elive::Entity::Role->stringify( $participant->role )
 	    || 3;
 
-	if (! $participant->{type} ) {
-	    $id = Elive::Entity::User->stringify( $participant->{user} );
+	if (! $participant->type ) {
+	    $id = Elive::Entity::User->stringify( $participant->user );
 	    $users{ $id } = $roleId;
 	}
-	elsif ($participant->{type} == 1) {
-	    $id = Elive::Entity::Group->stringify( $participant->{group} );
+	elsif ($participant->type == 1) {
+	    $id = Elive::Entity::Group->stringify( $participant->group );
 	    $groups{ $id } = $roleId;
 	}
-	elsif ($participant->{type} == 2) {
-	    $id = Elive::Entity::InvitedGuest->stringify( $participant->{guest} );
+	elsif ($participant->type == 2) {
+	    $id = Elive::Entity::InvitedGuest->stringify( $participant->guest );
 	    $guests{ $id } = $roleId;
 	}
 	else {

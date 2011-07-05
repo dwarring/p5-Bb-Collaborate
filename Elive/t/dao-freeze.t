@@ -15,6 +15,8 @@ use Elive::Util;
 use lib '.';
 use t::Elive::MockConnection;
 
+use Carp; $SIG{__DIE__} = \&Carp::confess;
+
 Elive->connection( t::Elive::MockConnection->connect() );
 
 is(Elive::Util::_freeze('123456', 'Int'), '123456', 'simple Int');
