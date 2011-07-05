@@ -444,7 +444,9 @@ sub retrieve {
     my $class = shift;
     my $id = shift;
     my %opt = @_;
-    ($id) = @$id if ref($id);
+
+    ($id) = @$id
+	if Elive::Util::_reftype($id) eq 'ARRAY';
 
     my $id_string = Elive::Util::string($id);
     die "nothing to retrieve" unless $id_string;

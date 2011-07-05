@@ -2,7 +2,7 @@ Revision history for Elive
 
 0.97    6th July 2011
         Elive::View::Session
-        - Added support (and come documentation) for recurring sessions.
+        - Added support (and some documentation) for recurring sessions.
 
 0.96    29th June 2011
         elive_raise_meeting:
