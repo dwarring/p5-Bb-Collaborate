@@ -93,7 +93,7 @@ sub update {
     my %changed;
     @changed{$self->is_changed, 'name','description','xml','ownerId'} = undef;
 
-    return $self->SUPER::update(undef, @args, changed => [keys %changed]);
+    return $self->SUPER::update($update_data, @args, changed => [keys %changed]);
 }
 
 1;
