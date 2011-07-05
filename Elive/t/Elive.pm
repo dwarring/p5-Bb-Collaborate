@@ -125,4 +125,29 @@ sub a_week_between {
     return $ok;
 }
 
+=head2 a_day_between
+
+    ok(t::Elive::a_day_between($yesterday, $today)
+
+A rough test of times being about a day apart
+
+=cut
+
+sub a_day_between {
+    my $start = shift;
+    my $end = shift;
+
+    my $seconds_in_a_day = 24 * 60 * 60;
+    #
+    # just test that the dates are a week apart to within an hour and a
+    # half, or so. This should accomodate daylight savings and other
+    # adjustments of up to 1.5 hours.
+    #
+    my $drift = 1.6 * 60 * 60; # a little over 1.5 hours
+    my $ok = abs ($end - $start - $seconds_in_a_day) < $drift;
+
+    return $ok;
+}
+
 1;
+

@@ -23,7 +23,8 @@ Elive::Entity::Session - Session insert/update via ELM 3.x (TRIAL)
 
 Elive::Entity::Session is under construction as a likely successor to
 L<Elive::View::Session>. It implements the C<createSession> and
-C<updateSession> commands, introduced with Elluminate 3.0.
+C<updateSession> commands, introduced with ELM (Elluminate I<Live!> Manager)
+3.0.
 
 =cut
 
@@ -137,9 +138,6 @@ sub _alias {
 
     my $aliases = $entity_class->_get_aliases;
 
-    #
-    # Set our entity name. Register it in our parent
-    #
     die "$entity_class: attempted redefinition of alias: $from"
 	if $aliases->{$from};
 
@@ -383,53 +381,6 @@ sub insert {
     return wantarray? @objs : $objs[0];
 }
 
-=head2 is_changed
-
-     my $session = Elive::Entity::Session->retrieve( $session_id);
-     #
-     # ..then later on
-     #
-     $session->seats( $session->seats + 5);
-     @changed = $session->is_changed;
-     #
-     # @changed will contained 'seats', plus any other unsaved updates.
-     #
-
-Returns a list of properties that have unsaved changes. To avoid warnings, you
-will either need to call C<update> on the object to save the changes, or
-C<revert> to discard the changes.
-
-=cut
-
-sub is_changed {
-    my $self = shift;
-
-    my $delegates = $self->_delegates;
-
-    return map {$self->{$_}? $self->$_->is_changed: ()} (sort keys %$delegates)
-}
-
-=head2 revert
-
-    $session->revert('seats'); # revert just the 'seats' property
-    $session->revert();        # revert everything
-
-Reverts unsaved updates.
-
-=cut
-
-sub revert {
-    my $self = shift;
-
-    my $delegates = $self->_delegates;
-
-    for (sort keys %$delegates) {
-	$self->$_->revert if $self->{$_};
-    }
-
-    return $self;
-}
-
 =head2 update
 
     $session->update({ boundaryTime => 15});
@@ -563,6 +514,53 @@ sub delete {
     return 1;
 }
 
+=head2 is_changed
+
+     my $session = Elive::Entity::Session->retrieve( $session_id);
+     #
+     # ..then later on
+     #
+     $session->seats( $session->seats + 5);
+     @changed = $session->is_changed;
+     #
+     # @changed will contained 'seats', plus any other unsaved updates.
+     #
+
+Returns a list of properties that have unsaved changes. To avoid warnings, you
+will either need to call C<update> on the object to save the changes, or
+C<revert> to discard the changes.
+
+=cut
+
+sub is_changed {
+    my $self = shift;
+
+    my $delegates = $self->_delegates;
+
+    return map {$self->{$_}? $self->$_->is_changed: ()} (sort keys %$delegates)
+}
+
+=head2 revert
+
+    $session->revert('seats'); # revert just the 'seats' property
+    $session->revert();        # revert everything
+
+Reverts unsaved updates.
+
+=cut
+
+sub revert {
+    my $self = shift;
+
+    my $delegates = $self->_delegates;
+
+    for (sort keys %$delegates) {
+	$self->$_->revert if $self->{$_};
+    }
+
+    return $self;
+}
+
 =head1 Working with Participants
 
 =head2 Constructing Participant Lists
@@ -618,7 +616,9 @@ You can also fully construct the participant list.
     use Elive::Entity::Participants;
     my $participants_obj = Elive::Entity::Participants->new(\@participants);
 
-     Elive::Entity::Session->create({
+    $participants_obj->add(-other => \@latecomers);
+
+    Elive::Entity::Session->create({
                      # ... other options
                      participants => $participants_obj,
                     });
@@ -774,17 +774,17 @@ sessions.
 The recordings seem to generally become available within a few minutes, without
 any need to close or exit the session.
 
-my $recordings = $session->list_records;
+    my $recordings = $session->list_recordings;
 
-if (@$recordings) {
-   # provide access to the first recording
-   my $recording_jnlp = $recordings[0]->buildJNLP(userId => $username);
-}
+    if (@$recordings) {
+        # build a JNLP for the first recording
+        my $recording_jnlp = $recordings[0]->buildJNLP(userId => $username);
+    }
 
 Also note that recordings are not deleted, when you delete sessions. If you
 want to delete associated recordings when you delete sessions:
 
-   my $recordings = $session->recordings;
+    my $recordings = $session->recordings;
     $session->delete;
     $_->delete for (@$recordings);
 
@@ -794,9 +794,91 @@ Elluminate Live! web server.
 
 For more information, please see L<Elive::Entity::Recording>.
 
+=head2 Working with Recurring aSessions
+
+The C<create> command has a number of additional parameters that can assist
+with setting up blocks of recurring meetings:
+
+=over 4
+
+=item C<until> (HiResDate)
+
+Repeat session until this date.
+
+=item C<repeatEvery> (Int)
+
+Repeat session type:
+
+=over 4
+
+=item 0 no repeat,
+
+=item 1 -> repeat every X days (as defined by C<repeatSessionInterval>),
+
+=item 2 -> Repeat every x (as defined by C<repeatSessionInterval>) weeks for each of the select days as defined by C<sundaySessionIndicator> ... C<saturdaySessionIndicator>.
+
+=item 3-5 -> Reserved,
+
+=item 6 -> Monthly session: Repeat on the X'th week on the month of the day of the as defined: 0 -> sunday, 1 -> Monday, etc.
+
+=back
+
+=item C<repeatSessionInterval> (Int)
+
+Repeat the session every X days|days depending of repeatEvery value.
+
+=item C<repeatSessionMonthlyInterval> (Int)
+
+Week of the month session should be scheduled in.
+
+=item C<repeatSessionMonthlyDay> (Int)
+
+Day of the week the monthly session should be scheduled in.
+
+=item C<sundaySessionIndicator> ... C<saturdaySessionIndicator> (Bool)
+
+For C<repeatEvery> value = 2, which days sessions should be scheduled.
+
+=item C<timeZone> (Str)
+
+An optional alternate time-zone name to use for for the scheduling
+calculations (E.g. C<Australia/Melbourne>).
+
+=back
+
+For example, the following inserts three meetings, of duration 30 minutes,
+for today (starting in 5 minutes), tomorrow and the following day:
+
+    use DateTime;
+
+    my $start = DateTime->now->add(minutes => 5);
+    my $end = $start->clone->add(minutes => 30);
+    my $until = $end->clone->add(days => 2);
+
+    my $start_msec = $start->epoch . '000';
+    my $end_msec   = $end->epoch   . '000';
+    my $until_msec = $until->epoch . '000';
+    
+    my %insert_data = (
+	name => 'tests, generated by t/soap-session-recurring.t',
+	facilitatorId => Elive->login->userId,
+	password => 'sssh!',
+	privateMeeting => 1,
+	restrictedMeeting => 1,
+
+	start =>  $start_msec,
+	end => $end_msec,
+	until => $until_msec,
+
+	repeatEvery => 1,
+	repeatSessionInterval => 1,
+    );
+
+    my @sessions = $class->insert(\%insert_data);
+
 =head1 Session Property Reference
 
-Here's an alphabetical list of all available session properties:
+Here's an alphabetical list of all available session properties
 
 =head2 adapter (String)
 
@@ -956,11 +1038,8 @@ The maximum number of cameras.
 
 =head1 BUGS AND LIMITATIONS
 
-This class is still under construction, in particular:
 
 =over 4
-
-=item * recurring meetings are not yet implemented
 
 =item * meeting telephony is not yet supported
 
