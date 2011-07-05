@@ -33,7 +33,7 @@ sub BUILDARGS {
 
     my $args;
     if ($spec && ! ref $spec) {
-	my $group_id = $_;
+	my $group_id = $spec;
 	$group_id =~ s{^ \s* \* \s*}{}x;  # just in case leading '*' leaks
 	$args = {groupId => $group_id};
     }
