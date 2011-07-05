@@ -449,13 +449,10 @@ sub retrieve {
     my $id_string = Elive::Util::string($id);
     die "nothing to retrieve" unless $id_string;
 
-    my $self = $class->new({id => $id_string});
+    my $connection = $opt{connection} || $class->connection
+	or die "not connected";
 
-    $self->_db_data( $class->new({id => $id_string}) );
-
-    for ($opt{connection}) {
-	$self->connection($_) if $_;
-    }
+    my $self = $class->construct({id => $id_string}, connection => $connection);
 
     return $self;
 }
@@ -479,9 +476,10 @@ sub list {
     my @sessions = map {
 	my $meeting = $_;
 
-	my $self = bless {id => $meeting->meetingId}, $class;
+	my $self = $class->construct({id => $meeting->meetingId},
+				     connection => $connection);
+
 	$self->meeting($meeting);
-	$self->connection($connection);
 
 	$self;
     } @$meetings;
