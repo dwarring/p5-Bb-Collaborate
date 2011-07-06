@@ -1,5 +1,13 @@
 Revision history for Elive
 
+0.98    tba
+        Elive::Entity::Session
+        - further documentation, particularly working with preloads
+        Elive::Entity::Preload
+        - implmented short form of import_from_server() method.
+        Elive::Entity::Report
+        - update() method was losing update data parameter - fixed.
+
 0.97    6th July 2011
         Elive::View::Session
         - Added support (and some documentation) for recurring sessions.
@@ -9,12 +17,12 @@ Revision history for Elive
         - default session class to Elive::Entity::Session (elm3) for
           server version >= 10.0.1, Elive::Session::Class (elm2) otherwise
         - added further elm3 options: -follow -recording_resolution -profile
-        - fixed long standing nit - not picking $ELIVE_DEBUG (also added to
-          elive_query).
+        - fixed long standing nit - not picking up $ELIVE_DEBUG (also fixed
+          in elive_query).
         Elive::View::Session
         - parameterless use of update() method now works as documented
         Elive::Entity::Session
-        - fixed a bug that prevented retrieved objects from beiing updated. 
+        - fixed a bug that prevented retrieved objects from being updated. 
 
 0.95    28th June 2011
         [A pretty big release. This introduces Elive::Entity::Session; ELM 3.0
@@ -51,8 +59,8 @@ Revision history for Elive
 
         - Full support for users, groups and invited guests.
 
-        - Introduced '-moderators' and '-participants' in participant
-          list construction. So you now have the option of:
+        - Introduced '-moderators' and '-participants' modifiers in
+          participant list construction. So you now have the option of:
 
               Elive::Entity::Session->create({
                      ...

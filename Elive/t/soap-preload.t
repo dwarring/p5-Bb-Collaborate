@@ -1,6 +1,6 @@
 #!perl
 use warnings; use strict;
-use Test::More tests => 60;
+use Test::More tests => 65;
 use Test::Exception;
 use Test::Builder;
 
@@ -33,7 +33,7 @@ SKIP: {
     my %result = t::Elive->test_connection(only => 'real');
     my $auth = $result{auth};
 
-    skip ($result{reason} || 'skipping live tests', 58)
+    skip ($result{reason} || 'skipping live tests', 63)
 	unless $auth;
 
     my $connection_class = $result{class};
@@ -284,10 +284,25 @@ SKIP: {
 	is($imported_preload->name, $basename, 'imported preload name as expected');
 	ok($imported_preload->size > 0, 'imported preload has non-zero size');
 	lives_ok (sub {$imported_preload->delete}, 'imported preload delete - lives');
-    }
+
+	#
+	# try the short form as well
+	#
+	lives_ok( sub {
+	    $imported_preload = Elive::Entity::Preload->import_from_server( $path_on_server)
+		  }, 'import_from_server (short form) - lives');
+
+	isa_ok($imported_preload, 'Elive::Entity::Preload', 'imported preload');
+
+	diag 'imported preload has size: '.$imported_preload->size.' and type '.$imported_preload->type.' ('.$imported_preload->mimeType.')';
+
+	is($imported_preload->name, $basename, 'imported preload name as expected');
+	ok($imported_preload->size > 0, 'imported preload has non-zero size');
+	lives_ok (sub {$imported_preload->delete}, 'imported preload delete - lives');
+ }
     else {
 	$t->skip('skipping import_preload_test (set ELIVE_TEST_PRELOAD_SERVER_PATH to run)')
-	    for (1 .. 5);
+	    for (1 .. 10);
     }
 }
 

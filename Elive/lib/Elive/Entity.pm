@@ -42,7 +42,7 @@ sub data_classes {
 #
 # Normalise our data and reconstruct arrays.
 #
-# See t/05-entity-unpack.t for examples and further explanation.
+# See t/dao-unpack.t for examples and further explanation.
 #
 
 sub _get_results {

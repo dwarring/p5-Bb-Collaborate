@@ -65,10 +65,6 @@ sub BUILDARGS {
 	#
 	my $preload_path = $spec;
 
-	my $preload_basename = File::Basename::basename( $preload_path );
-	croak "unable to determine a basename for preload path: $preload_path"
-	    unless length $preload_basename;
-
 	open ( my $fh, '<', $preload_path)
 	    or die "unable to open preload file $preload_path";
 
@@ -81,7 +77,7 @@ sub BUILDARGS {
 	    unless length $content;
 
 	%args = (
-	    name => $preload_basename,
+	    fileName => $preload_path,
 	    data => $content,
 	);
     }
@@ -94,6 +90,12 @@ sub BUILDARGS {
 
     if ($args{data}) {
 	$args{size} ||= length( $args{data} );
+    }
+
+    if (defined $args{fileName} && length $args{fileName}) {
+	$args{name} ||= File::Basename::basename( $args{fileName} );
+	croak "unable to determine a basename for preload path: $args{fileName}"
+	    unless length $args{name};
     }
 
     die "unable to determine file name"
@@ -151,7 +153,7 @@ There are three possible types of preloads: media, plan and whiteboard.
          );
 
 Upload data from a client and create a preload.  If a C<mimeType> is not
-supplied, it will be guessed from the C<fileName> extension, using
+supplied, it will be guessed from the C<name> extension, using
 MIME::Types.
 
 =cut
@@ -205,7 +207,7 @@ sub download {
     die "unable to get a preload_id"
 	unless $preload_id;
 
-    my $connection = $self->connection
+    my $connection = $opt{connection} || $self->connection
 	or die "not connected";
 
     my $som = $connection->call('getPreloadStream',
@@ -232,18 +234,25 @@ sub download {
          );
 
 Create a preload from a file that is already present on the server. If
-a C<mimeType> is not supplied, it will be guessed from the C<fileName>
-extension using MIME::Types.
+a C<mimeType> is not supplied, it will be guessed from the C<name> or
+C<fileName> extension using MIME::Types.
 
 =cut
 
 sub import_from_server {
     my ($class, $spec, %opt) = @_;
 
+    $spec = {fileName => $spec} if defined $spec && !ref $spec;
+
+    my $connection = $opt{connection} || $class->connection
+	or die "not connected";
+
     my $insert_data = $class->BUILDARGS($spec);
 
     die "missing required parameter: fileName"
 	unless $insert_data->{fileName};
+
+    $insert_data->{ownerId} ||= $connection->login->userId;
 
     $opt{command} ||= 'importPreload';
 
