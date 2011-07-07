@@ -13,6 +13,8 @@ Version 0.98
 
 our $VERSION = '0.98';
 
+use 5.008;
+
 use parent qw{Class::Data::Inheritable};
 use Scalar::Util;
 

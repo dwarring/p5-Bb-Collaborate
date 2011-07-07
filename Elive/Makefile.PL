@@ -3,14 +3,11 @@
 use strict;
 use warnings;
 use inc::Module::Install;
-perl_version    5.005;
 
 name           ('Elive');
-module_name    ('Elive');
 author         ('David Warring <david.warring@gmail.com>');
-version_from   ('lib/Elive.pm');
+all_from       ('lib/Elive.pm');
 license	       ('perl');
-abstract       ('Elluminate Live (c) Command Toolkit bindings');
 install_script ('elive_query', 'elive_raise_meeting', 'elive_lint_config');
 
 requires(
