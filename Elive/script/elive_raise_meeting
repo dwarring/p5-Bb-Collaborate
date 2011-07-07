@@ -29,8 +29,8 @@ elive_raise_meeting
 
 =head2 Authentication Options
 
- [url]                        # web address and site instance path, e.g.
-                              # http://myserver.com/mysite 
+ [url]                        # web address and site instance path,
+                              # e.g.: http://myserver.com/mysite 
  -user someAdminUser          # SDK/SOAP username
  -pass somePass               # SDK/SOAP password
 
@@ -41,7 +41,7 @@ elive_raise_meeting
  -meeting_pass otherpass      # meeting password
  -start  '[YYYY-MM-DD ]HH:MM' # start time
  -end    '[YYYY-MM-DD ]HH:MM' # end time
- -occurs {days|weeks}=n       # repeat the meeting over n days/weeks (elm2)
+ -occurs {days|weeks}=n       # repeat over n days/weeks (elm2)
 
 =head2 Moderators and Participants
 
@@ -50,14 +50,14 @@ elive_raise_meeting
 
  Where each participant or moderator can be:
 
-    'user'        - add this elluminate user. This can be either the
+    'user'        - a single Elluminate user. This can be either the
                     user's username or user-id.
 
-    '*group'      - include all users from this group. This can be
-                    either the group-name or group-id.
+    '*group'      - a group of users. This can be either the group-name
+                    or group-id.
 
     'Display Name(loginName)'
-                  - guest login.
+                  - a guest login.
 
 =head2 Meeting Setup Options
 
@@ -71,15 +71,15 @@ elive_raise_meeting
                               #  - off:    recording disabled
                               #  - on:     starts automatically
                               #  - manual: recording started by moderator
- -recording_resolution cg|cc|mg|mc|fg|fc  # set recording resolution (elm3)
+ -recording_resolution cg|cc|mg|mc|fg|fc  # recording resolution (elm3)
                               #  - cg:course gray, cc:course color,
                               #  - mg:medium gray, mc:medium color,
                               #  - fg:fine gray,   fc:fine color
  -seats        count          # number of seats to reserve on server
  -[no]invites                 # allow in-session invitations
- -[no]follow                  # lock whiteboard to moderator's view (elm3)
+ -[no]follow                  # lock whiteboard to moderator view (elm3)
  -[no]private                 # hide from public schedule
- -[no]restricted              # only allow entry to registered users (elm3)
+ -[no]restricted              # restrict entry to registered users (elm3)
  -[no]permissions             # let participants perform activities
  -[no]raise_hands             # automatically raise hands on entry
  -[no]supervised              # moderator can see private messages
@@ -103,9 +103,9 @@ elive_raise_meeting
 
 =head2 Information
 
- -? --help                   # print this help
- -v --version                # print version and exit
- --debug=n                   # set debug level
+ -? --help                  # print this help
+ -v --version               # print version and exit
+ --debug=n                  # set debug level
 
 =head1 DESCRIPTION
 
@@ -113,8 +113,9 @@ Creates a meeting (session) on an Elluminate I<Live!> server
 
 =head1 SEE ALSO
 
-    perldoc Elive
-    http://search.cpan.org/dist/Elive
+perldoc Elive
+
+http://search.cpan.org/dist/Elive
 
 =cut
 
@@ -167,7 +168,7 @@ sub main {
 	'name|meeting_name=s' => \$meeting_name,
 	'username|user=s' => \$username,
 	'password|pass=s' => \$password,
-	'facilitator|moderator=s' => \$facilitator_id,
+	'facilitator=s' => \$facilitator_id,
 	'start=s' => \$start_str,
 	'end=s' => \$end_str,
 	'moderators|moderator=s{,}' => \@moderators,
@@ -183,7 +184,7 @@ sub main {
 	'debug=i' => \$debug,
 	'help|?' => \$help,
 	'upload=s' => \$upload,
-	'import_from_server=s' => \$import,
+	'import_from_server|import=s' => \$import,
 	'add_preload|use_preload=i' => \$preload_opt,
 	'profile|profile_display=s' => \$profile_display,
 	'recording|recording_status=s' => \$recording_status,
@@ -240,7 +241,7 @@ sub main {
 	    unless $profile_display =~ m{^(none|mod|all)$}x;
     }
 
-    my ($recurrence_count, $recurrence_days) = _get_occurances(\%occurs);
+    my ($recurrence_count, $recurrence_days) = _get_occurrences(\%occurs);
 
     Elive->debug($debug) if defined $debug;
     # debug may also be set via $ENV{ELIVE_DEBUG}
@@ -678,7 +679,7 @@ sub _get_user {
 
 ########################################################################
 
-sub _get_occurances {
+sub _get_occurrences {
     my $occurs = shift;
 
     my $recurrence_count = 1;
