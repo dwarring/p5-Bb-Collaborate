@@ -1,12 +1,15 @@
 Revision history for Elive
 
-0.98    tba
+0.98    8th July 2011
+        [Minor bug fixes and documentation]
+        Elive::DAO
+        - corrected update() handling of uncached objects.
         Elive::Entity::Session
-        - further documentation, particularly working with preloads
+        - further documentation, particularly on working with preloads
         Elive::Entity::Preload
         - implmented short form of import_from_server() method.
         Elive::Entity::Report
-        - update() method was losing update data parameter - fixed.
+        - update() method was ignoring data parameter - fixed.
 
 0.97    6th July 2011
         Elive::View::Session

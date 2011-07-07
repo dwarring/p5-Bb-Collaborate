@@ -1283,10 +1283,13 @@ sub update {
 	#
 	# refresh the object from the database read-back
 	#
-	my $obj = $self->construct($rows[0], connection => $self->connection, overwrite => 1);
+	my $cached_obj = $self->construct($rows[0], connection => $self->connection, overwrite => 1);
 
-	$self->__set_db_data( Elive::Util::_clone($rows[0]), connection => $self->connection, copy => 1)
-	    unless (_refaddr($obj) eq _refaddr($self));
+	unless (_refaddr($cached_obj) eq _refaddr($self)) {
+	    # clone the result
+	    %{$self} = %{ Elive::Util::_clone($cached_obj) };
+	    $self->__set_db_data( Elive::Util::_clone($cached_obj->_db_data), connection => $self->connection, copy => 1);
+	}
     }
 
     return $self;
@@ -1615,6 +1618,9 @@ sub AUTOLOAD {
 sub DEMOLISH {
     my ($self) = shift;
     my $class = ref($self);
+
+    warn "DEMOLISH $self: db_data=".($self->_db_data||'(null)').', blessed='.(Scalar::Util::blessed($self->_db_data)?'Y':'N')."\n"
+	if ($self->debug||0) >= 6;
 
     if (my $db_data = $self->_db_data) {
 	if ((my @changed = $self->is_changed) && ! $self->_deleted) {
