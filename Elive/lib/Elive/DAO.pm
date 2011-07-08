@@ -24,7 +24,7 @@ BEGIN {
     __PACKAGE__->mk_classdata('_isa');
 };
 
-foreach my $accessor (qw/_connection _db_data _deleted/) {
+foreach my $accessor (qw{_connection _db_data _deleted _is_copy}) {
     __PACKAGE__->has_metadata($accessor);
 }
 
@@ -566,13 +566,8 @@ sub construct {
 	? $data
 	: $class->new($data);
 
-    return $self if ($opt{copy});
-
     my $connection = delete $opt{connection} || $class->connection
 	or die "not connected";
-
-    die "can't construct objects without a connection"
-	unless $connection;
 
     my %primary_key_data = map {$_ => $data->{ $_ }} ($class->primary_key);
 
@@ -582,10 +577,13 @@ sub construct {
 	}
     }
 
+    $self->_is_copy(1)
+	if $opt{copy};
+
     my $data_copy = Elive::Util::_clone($self);
     return $self->__set_db_data($data_copy,
 				connection => $connection,
-				copy => $opt{copy},
+				copy => $self->_is_copy,
 				overwrite => $opt{overwrite},
 	);
 }
@@ -1283,12 +1281,12 @@ sub update {
 	#
 	# refresh the object from the database read-back
 	#
-	my $cached_obj = $self->construct($rows[0], connection => $self->connection, overwrite => 1);
+	my $obj = $self->construct($rows[0], connection => $self->connection, overwrite => 1, copy => $self->_is_copy);
 
-	unless (_refaddr($cached_obj) eq _refaddr($self)) {
+	unless (_refaddr($obj) eq _refaddr($self)) {
 	    # clone the result
-	    %{$self} = %{ Elive::Util::_clone($cached_obj) };
-	    $self->__set_db_data( Elive::Util::_clone($cached_obj->_db_data), connection => $self->connection, copy => 1);
+	    %{$self} = %{ Elive::Util::_clone($obj) };
+	    $self->__set_db_data( Elive::Util::_clone($obj->_db_data), connection => $self->connection, copy => 1);
 	}
     }
 
