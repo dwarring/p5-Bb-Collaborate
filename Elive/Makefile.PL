@@ -5,6 +5,7 @@ use warnings;
 use inc::Module::Install;
 
 name           ('Elive');
+module_name    ('Elive');
 author         ('David Warring <david.warring@gmail.com>');
 all_from       ('lib/Elive.pm');
 license	       ('perl');
