@@ -1,6 +1,6 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 8;
+use Test::More tests => 11;
 use Test::Warn;
 
 use Elive::Connection;
@@ -40,6 +40,16 @@ do {
 						    reuse => 1);
 
     is(_ref($user1), _ref($user1_again), 'basic entity reuse');
+
+    my $user1_copy =  Elive::Entity::User->construct(
+	{userId => 11111,
+	 loginName => 'repete'},
+	copy => 1,
+	);
+
+    isnt(_ref($user1), _ref($user1_copy), 'copy is distinct from original');
+    ok(! $user1->_is_copy, '$obj->is_copy - false on original');
+    ok( $user1_copy->_is_copy, '$obj->is_copy - true on copy');
 
     my $user2 =  Elive::Entity::User->construct(
 	{userId => 22222,
