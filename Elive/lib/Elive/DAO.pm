@@ -646,11 +646,13 @@ sub __set_db_data {
 		    }
 		    else {
 			$cache_access = 'init';
-			weaken ($Stored_Objects{$obj_url} = $struct);
 		    }
 
+		    # rewrite, for benefit of 5.13.3
+		    weaken ($Stored_Objects{$obj_url} = $struct);
+
 		    if ($struct->debug >= 5) {
-			warn YAML::Dump({opt => \%opt, struct => $struct, class => ref($struct), url => $obj_url, cache => $cache_access});
+			warn YAML::Dump({opt => \%opt, struct => $struct, class => ref($struct), url => $obj_url, cache => $cache_access, ref1 => "$struct", ref2 => "$Stored_Objects{$obj_url}"});
 		    }
 		}
 
@@ -1197,7 +1199,6 @@ sub live_entities {
     return \%Stored_Objects;
 }
 
-
 =head2 update
 
 Abstract method to update entities. The following commits outstanding changes
@@ -1292,7 +1293,7 @@ sub update {
 	my $obj = $self->construct($rows[0], connection => $self->connection, overwrite => 1, copy => $self->_is_copy);
 
 	unless (_refaddr($obj) eq _refaddr($self)) {
-	    warn "$obj - not in cache, but not a copy?"
+	    warn $obj->url." (obj=$obj, self=$self) - not in cache, nor is it a copy."
 		unless $self->_is_copy;
 	    # clone the result
 	    %{$self} = %{ Elive::Util::_clone($obj) };
@@ -1627,7 +1628,7 @@ sub DEMOLISH {
     my ($self) = shift;
     my $class = ref($self);
 
-    warn "DEMOLISH $self: db_data=".($self->_db_data||'(null)').', blessed='.(Scalar::Util::blessed($self->_db_data)?'Y':'N')."\n"
+    warn 'DEMOLISH '.$self->url.': db_data='.($self->_db_data||'(null)').', blessed='.(Scalar::Util::blessed($self->_db_data)?'Y':'N')."\n"
 	if ($self->debug||0) >= 6;
 
     if (my $db_data = $self->_db_data) {
