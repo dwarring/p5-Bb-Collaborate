@@ -1,6 +1,6 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 11;
+use Test::More tests => 12;
 use Test::Warn;
 
 use Elive::Connection;
@@ -33,7 +33,9 @@ do {
 
     my $user1 =  Elive::Entity::User->construct(
 	{userId => 11111,
-	 loginName => 'pete'},
+	 loginName => 'pete',
+	 role => {roleId => 3},
+	},
 	);
 
     my $user1_again = Elive::Entity::User->retrieve([11111],
@@ -43,13 +45,18 @@ do {
 
     my $user1_copy =  Elive::Entity::User->construct(
 	{userId => 11111,
-	 loginName => 'repete'},
+	 loginName => 'repeat',
+	 role => {roleId => 3},
+	},
 	copy => 1,
 	);
 
     isnt(_ref($user1), _ref($user1_copy), 'copy is distinct from original');
     ok(! $user1->_is_copy, '$obj->is_copy - false on original');
     ok( $user1_copy->_is_copy, '$obj->is_copy - true on copy');
+
+    ok(! $user1->role->_is_copy && $user1_copy->role->_is_copy,
+       'copy is applied recursively');
 
     my $user2 =  Elive::Entity::User->construct(
 	{userId => 22222,

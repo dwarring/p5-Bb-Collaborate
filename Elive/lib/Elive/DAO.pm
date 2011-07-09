@@ -583,7 +583,6 @@ sub construct {
     my $data_copy = Elive::Util::_clone($self);
     return $self->__set_db_data($data_copy,
 				connection => $connection,
-				copy => $self->_is_copy,
 				overwrite => $opt{overwrite},
 	);
 }
@@ -598,6 +597,15 @@ sub __set_db_data {
     my $type = Elive::Util::_reftype( $struct );
 
     if ($type) {
+
+	if (Scalar::Util::blessed $struct
+	    && $struct->can('_is_copy')) {
+
+	    $opt{copy} ||=  $struct->_is_copy;
+
+	    $struct->_is_copy(1)
+		if $opt{copy};
+	}  
 
 	# recurse
 	if ($type eq 'ARRAY') {
@@ -1284,6 +1292,8 @@ sub update {
 	my $obj = $self->construct($rows[0], connection => $self->connection, overwrite => 1, copy => $self->_is_copy);
 
 	unless (_refaddr($obj) eq _refaddr($self)) {
+	    warn "$obj - not in cache, but not a copy?"
+		unless $self->_is_copy;
 	    # clone the result
 	    %{$self} = %{ Elive::Util::_clone($obj) };
 	    $self->__set_db_data( Elive::Util::_clone($obj->_db_data), connection => $self->connection, copy => 1);
