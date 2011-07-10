@@ -220,6 +220,16 @@ sub debug {
 
 our %Meta_Data;
 
+#
+# create metadata properties. NB this will be stored inside out to
+# ensure our object is an exact image of the data.
+#
+
+sub _refaddr {
+    my $self = shift;
+    return Scalar::Util::refaddr( $self );
+}
+
 =head2 has_metadata
 
 Associate an inside-out property with objects of a given class.

@@ -1,9 +1,13 @@
 Revision history for Elive
 
 0.98    8th July 2011
-        [Minor bug fixes and documentation]
+        [Minor bug fixes, testing and documentation]
+        META.yml
+        - Raised minimum perl version from the default 5.0.5 to 5.8.1. This
+          is the earliest versions reporting reliable smoke test results.
         Elive::DAO
-        - corrected update() handling of uncached objects.
+        - corrected update handling of uncached objects. Error was reported
+          by perl 5.13.3 smoke tests.
         Elive::Entity::Session
         - further documentation, particularly on working with preloads
         Elive::Entity::Preload

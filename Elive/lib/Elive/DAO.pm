@@ -41,16 +41,6 @@ datastore.
 
 our %Stored_Objects;
 
-#
-# create metadata properties. NB this will be stored inside out to
-# ensure our object is an exact image of the data.
-#
-
-sub _refaddr {
-    my $self = shift;
-    return Scalar::Util::refaddr( $self );
-}
-
 sub BUILDARGS {
     my ($class, $raw, @args) = @_;
 
