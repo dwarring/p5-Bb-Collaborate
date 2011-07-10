@@ -367,7 +367,9 @@ sub insert {
 
     my $participants = Elive::Entity::Participants->new( $data{participants} );
 
-    my $facilitatorId = $data{facilitatorId} || $connection->login->userId;
+    $data{facilitatorId} ||= $connection->login->userId;
+    my $facilitatorId = $data{facilitatorId};
+
     $participants->add(-moderators => $facilitatorId);
 
     $data{participants} = $participants->tidied;
