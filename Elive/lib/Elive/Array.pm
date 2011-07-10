@@ -11,6 +11,7 @@ use Elive::Util;
 
 __PACKAGE__->mk_classdata('element_class');
 __PACKAGE__->mk_classdata('separator' => ',');
+__PACKAGE__->has_metadata( '_is_copy' );
 
 =head1 NAME
 
