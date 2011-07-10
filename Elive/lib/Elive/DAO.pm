@@ -1618,7 +1618,7 @@ sub DEMOLISH {
     my ($self) = shift;
     my $class = ref($self);
 
-    warn 'DEMOLISH '.$self->url.': db_data='.($self->_db_data||'(null)').', blessed='.(Scalar::Util::blessed($self->_db_data)?'Y':'N')."\n"
+    warn 'DEMOLISH '.$self->url.': db_data='.($self->_db_data||'(null)')."\n"
 	if ($self->debug||0) >= 6;
 
     if (my $db_data = $self->_db_data) {
