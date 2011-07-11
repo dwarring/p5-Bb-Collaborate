@@ -3,14 +3,27 @@ use warnings; use strict;
 
 use Mouse;
 
-extends 'Elive::StandardV2';
-
-use Scalar::Util;
-use Carp;
+extends 'Elive::StandardV2::_Content';
 
 =head1 NAME
 
 Elive::StandardV2::Multimedia - Multimedia entity class
+
+=head1 DESCRIPTION
+
+This class can be used to upload multimedia content, including:
+
+=over 4
+
+=item MPEG files: C<.mpeg>, C<.mpg>, C<.mpe>, C<.m4v>, C<.mp3>, C<.mp4>
+
+=item QuickTime files: C<.mov>, C<.qt>
+
+=item Windows Media files: C<.wmv>
+
+=item Flash files: C<.swf>
+
+=back
 
 =cut
 
@@ -35,45 +48,29 @@ has 'filename' => (is => 'rw', isa => 'Str');
 
 =head2 insert
 
-Uploads content and creates a new multimedia resource.
+Uploads content and creates a new multimedia resource. You can either upload
+a file, or upload binary data for the multimedia content.
 
-    # get the binary data from somewhere
-    open (my $rec_fh, '<', $multimedia_path)
+   # 1. upload a local file
+    my $multimedia = Elive::StandardV2::Multimedia->insert('c:\\Documents\intro.wav');
+
+    # 2. stream it ourselves
+    open (my $fh, '<', $multimedia_path)
         or die "unable to open $multimedia_path: $!";
+    $fh->binmode;
 
-    my $content = do {local $/ = undef; <$rec_fh>};
+    my $content = do {local $/ = undef; <$fh>};
     die "no multimedia data: $multimedia_path"
         unless ($content);
 
     my $multimedia = Elive::StandardV2::Multimedia->insert(
              {
                     filename => 'demo.wav',
-                    creatorId =>  'bob',
+                    creatorId =>  'alice',
                     content => $content,
 	     },
          );
-
 =cut
-
-sub _freeze {
-    my $class = shift;
-    my $db_data = shift;
-
-    $db_data = $class->SUPER::_freeze( $db_data );
-
-    for (grep {$_} $db_data->{content}) {
-	$db_data->{size} ||= Elive::Util::_freeze( length($_), 'Int');
-
-	#
-	# (a bit of layer bleed here...). Do we need a separate data type
-	# for base 64 encoded data?
-	#
-	eval {require SOAP::Lite}; die $@ if $@;
-	$_ = SOAP::Data->type(base64 => $_);
-    }
-
-    return $db_data;
-}
 
 sub insert {
     my ($class, $insert_data, %opt) = @_;

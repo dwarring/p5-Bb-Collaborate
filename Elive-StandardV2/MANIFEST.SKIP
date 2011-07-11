@@ -35,3 +35,7 @@ Makefile.old
 # Anything that's gzipped
 #
 \.gz$
+#
+# cygwin
+#
+\.stackdump$

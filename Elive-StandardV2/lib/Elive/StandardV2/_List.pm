@@ -1,4 +1,4 @@
-package Elive::StandardV2::List;
+package Elive::StandardV2::_List;
 use warnings; use strict;
 
 use Mouse;
@@ -11,7 +11,11 @@ use Scalar::Util;
 
 =head1 NAME
 
-Elive::StandardV2::List - Abstract for arrays. Typically chair-persons, participants or courses
+Elive::StandardV2::_List - Abstract class for lists.
+
+=head1 DESCRIPTION
+
+Use as a base class for chair-persons, participants, coursesm and sessions attendees.
 
 =cut
 
@@ -27,17 +31,17 @@ Add additional elements
 
 =cut
 
-coerce 'Elive::StandardV2::List' => from 'ArrayRef'
+coerce 'Elive::StandardV2::_List' => from 'ArrayRef'
           => via {
 	      my @participants = grep {$_ ne ''} map {split(',')} @$_;
-	      Elive::StandardV2::List->new(\@participants);
+	      Elive::StandardV2::_List->new(\@participants);
 };
 
-coerce 'Elive::StandardV2::List' => from 'Str'
+coerce 'Elive::StandardV2::_List' => from 'Str'
           => via {
 	      my @participants = grep {$_ ne ''} split(',');
 
-	      Elive::StandardV2::List->new(\@participants);
+	      Elive::StandardV2::_List->new(\@participants);
           };
 
 =head2 stringify
@@ -54,7 +58,6 @@ sub stringify {
 
     $arr = [split(';', $arr)]
 	if defined $arr && !Scalar::Util::reftype($arr);
-
 
     return join(',', sort map {Elive::Util::string($_, $type)} @$arr)
 }

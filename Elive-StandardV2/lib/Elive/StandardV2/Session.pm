@@ -10,7 +10,7 @@ use Carp;
 
 use Elive::Util;
 
-use Elive::StandardV2::List;
+use Elive::StandardV2::_List;
 use Elive::StandardV2::SessionAttendance;
 use Elive::StandardV2::SessionTelephony;
 use Elive::StandardV2::Presentation;
@@ -31,7 +31,7 @@ __PACKAGE__->params(
     displayName => 'Str',
     userId => 'Str',
     groupingId => 'Str',
-    presentationIds => 'Elive::StandardV2::List',
+    presentationIds => 'Elive::StandardV2::_List',
     sessionId => 'Int',
     );
 
@@ -50,7 +50,7 @@ has 'boundaryTime' => (is => 'rw', isa => 'Int',
 	       documentation => 'boundary time minutes: 0, 15, 30...',
     );
 
-has 'chairList' => (is => 'rw', isa => 'Elive::StandardV2::List', coerce => 1,
+has 'chairList' => (is => 'rw', isa => 'Elive::StandardV2::_List', coerce => 1,
 	       documentation => 'list of chair-persons (comma separated)',
     );
 
@@ -65,7 +65,7 @@ has 'creatorId' => (is => 'rw', isa => 'Str', required => 1,
 has 'endTime' => (is => 'rw', isa => 'HiResDate', required => 1,
 	      documentation => 'session end time');
 
-has 'groupingList' => (is => 'rw', isa => 'Elive::StandardV2::List', coerce => 1,
+has 'groupingList' => (is => 'rw', isa => 'Elive::StandardV2::_List', coerce => 1,
 	       documentation => 'list of courses etc (user defined)',
     );
 
@@ -89,7 +89,7 @@ has 'mustBeSupervised' => (is => 'rw', isa => 'Bool',
 			   documentation => 'Session number be supervised',
     );
 
-has 'nonChairList' => (is => 'rw', isa => 'Elive::StandardV2::List', coerce => 1,
+has 'nonChairList' => (is => 'rw', isa => 'Elive::StandardV2::_List', coerce => 1,
 	       documentation => 'list of participants (comma separated)',
     );
 

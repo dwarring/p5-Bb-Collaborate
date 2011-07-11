@@ -3,14 +3,16 @@ use warnings; use strict;
 
 use Mouse;
 
-extends 'Elive::StandardV2';
-
-use Scalar::Util;
-use Carp;
+extends 'Elive::StandardV2::_Content';
 
 =head1 NAME
 
 Elive::StandardV2::Presentation - Presentation entity class
+
+=head1 DESCRIPTION
+
+This class can be used to upload presentation content, including Elluminate
+I<Live!> plan files (C<*.elpx> etc) and whiteboard content C<*.wbd> etc).
 
 =cut
 
@@ -34,57 +36,36 @@ has 'filename' => (is => 'rw', isa => 'Str');
 
 =head2 insert
 
-Uploads content and creates a new presentation resource.
+Uploads content and creates a new presentation resource. You can either upload
+a file, or upload binary data for the presentation.
 
-    # get the binary data from somewhere
-    open (my $rec_fh, '<', $presentation_path)
+   # 1. upload a local file
+    my $multimedia = Elive::StandardV2::Presentation->insert('c:\\Documents\intro.wbd');
+
+    # 2. stream it ourselves
+    open (my $fh, '<', $presentation_path)
         or die "unable to open $presentation_path: $!";
+    $fh->binmode;
 
-    my $content = do {local $/ = undef; <$rec_fh>};
+    my $content = do {local $/ = undef; <$fh>};
     die "no presentation data: $presentation_path"
         unless ($content);
 
     my $presentation = Elive::StandardV2::Presentation->insert(
              {
-                    filename => 'intro.wav',
+                    filename => 'myplan.elpx',
                     creatorId =>  'bob',
                     content => $content,
 	     },
          );
-
 =cut
-
-sub _freeze {
-    my $class = shift;
-    my $db_data = shift;
-
-    $db_data = $class->SUPER::_freeze( $db_data );
-
-    for (grep {$_} $db_data->{content}) {
-##	$db_data->{size} ||= Elive::Util::_freeze( length($_), 'Int');
-
-	#
-	# (a bit of layer bleed here...). Do we need a seperate data type
-	# for base 64 encoded data?
-	#
-	eval {require SOAP::Lite}; die $@ if $@;
-	$_ = SOAP::Data->type(base64 => $_);
-##	use MIME::Base64;
-##	chomp($_ = MIME::Base64::encode_base64( $_ ));
-	
-    }
-
-    return $db_data;
-}
 
 sub insert {
     my ($class, $insert_data, %opt) = @_;
 
-    my $self = $class->SUPER::insert($insert_data,
+    return $class->SUPER::insert($insert_data,
 				     command => 'uploadPresentationContent',
 				     %opt);
-
-    return $self;
 }
 
 =head2 list

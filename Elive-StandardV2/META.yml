@@ -41,4 +41,4 @@ requires:
 resources:
   license: http://dev.perl.org/licenses/
   repository: https://elive.svn.sourceforge.net/svnroot/elive/trunk/Elive-StandardV2
-version: 0.00_8
+version: 0.00_9

@@ -6,7 +6,7 @@ use Mouse::Util::TypeConstraints;
 
 use Scalar::Util;
 
-extends 'Elive::StandardV2::List';
+extends 'Elive::StandardV2::_List';
 
 use Elive::StandardV2::SessionAttendance::Attendee;
 
