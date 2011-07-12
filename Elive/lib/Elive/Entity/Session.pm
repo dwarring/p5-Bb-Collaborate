@@ -764,7 +764,7 @@ A single preload can be shared between sessions:
     $session2->add_preload( $preload );
 
 Attempting to add the same preload to a session more than once is considered
-an error. The C<check_preload> method might help here>
+an error. The C<check_preload> method might help here.
 
     $session->add_preload( $preload )
         unless $session->check_preload( $preload );
