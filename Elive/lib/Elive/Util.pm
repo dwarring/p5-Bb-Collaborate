@@ -66,9 +66,9 @@ sub _freeze {
 		$_ = lc if $type =~ m{^enum};
 	    }
 	    elsif ($type =~ m{^(Int|HiResDate)}ix) {
-		
+
 		$_ = _tidy_decimal($_);
-		
+
 	    }
 	    elsif ($type =~ m{^Ref}ix) {
 		$val = undef;
@@ -142,24 +142,18 @@ sub _tidy_decimal {
     #
     # l-r trim
     #
-    $i =~ s{^ \s* (.*?) \s* $}{$1}x;
-
-    #
-    # non number => undef
-    #
-    return
-	unless $i =~ m{^[+-]?\d+$};
+    $i =~ s{^ [\s\+]* (-?\d+) \s* $}{$1}x
+	or return;
 
     #
     # remove any leading zeros:
-    # +000123 => 123
+    # 000123 => 123
     # -00045 => -45
     # -000 => 0
     #
 
     $i =~ s{^
-            \+?    # leading plus -discarded 
-            (-?)   # leading minus retained (usually)
+            (-?)   # leading minus retained (for now)
             0*     # leading zeros discarded
             (\d+?) # number - retained
             $}
