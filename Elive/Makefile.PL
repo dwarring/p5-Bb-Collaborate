@@ -32,6 +32,7 @@ requires(
     'Term::ReadKey'                => 0,
     'Term::ReadLine'               => 0,
     'Time::Local'                  => 0,
+    'Try::Tiny'                    => 0,
     'URI'                          => 0,
     'URI::Escape'                  => 0,
     'YAML'                         => 0,

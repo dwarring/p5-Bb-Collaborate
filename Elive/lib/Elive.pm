@@ -19,8 +19,8 @@ use parent qw{Class::Data::Inheritable};
 use Scalar::Util;
 
 use YAML;
-
 use Carp;
+use Try::Tiny;
 
 =head1 EXAMPLE
 
@@ -116,8 +116,8 @@ sub connect {
     die "usage: ${class}->new(url, [login_name] [, pass])"
 	unless ($class && $url);
 
-    eval {require Elive::Connection};
-    die $@ if $@;
+    try {require Elive::Connection};
+    catch { die $_};
 
     my $connection = Elive::Connection->connect(
 	$url,

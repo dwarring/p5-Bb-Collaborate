@@ -105,7 +105,8 @@ Retrieve on loginName, which is a co-key for the users table.
 Please note that the Elluminate Web Services raise an error if the user
 was not found. So, if you're not sure if the user exists:
 
-    my $user = eval {Elive::Entity::User->get_by_loginName('joebloggs')};
+    use Try::Tiny;
+    my $user = try {Elive::Entity::User->get_by_loginName('joebloggs')};
 
 =cut
 

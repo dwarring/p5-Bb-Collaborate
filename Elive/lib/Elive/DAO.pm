@@ -10,6 +10,7 @@ use YAML;
 use Scalar::Util qw{weaken};
 use Storable qw{dclone};
 use Carp;
+use Try::Tiny;
 
 use Elive::Util;
 
@@ -989,6 +990,7 @@ sub is_changed {
     }
 
     my @props = $self->properties;
+    my $property_types = $self->property_types;
 
     foreach my $prop (@props) {
 
@@ -996,7 +998,7 @@ sub is_changed {
 	my $old = $db_data->$prop;
 
 	if (defined ($new) != defined ($old)
-	    || $self->_cmp_col($self->property_types->{$prop}, $new, $old)) {
+	    || $self->_cmp_col($property_types->{$prop}, $new, $old)) {
 
 	    push (@updated_properties, $prop);
 	}
@@ -1578,9 +1580,9 @@ sub can {
 
     my $subref;
 
-    unless ($subref = eval{ $class->SUPER::can($method) }) {
+    unless ($subref = try { $class->SUPER::can($method) }) {
 
-	my $aliases = eval{ $class->_aliases };
+	my $aliases = try { $class->_aliases };
 
 	if ($aliases && $aliases->{$method}
 	    && (my $alias_to = $aliases->{$method}{to})) {
@@ -1619,7 +1621,7 @@ sub DEMOLISH {
     my $class = ref($self);
 
     warn 'DEMOLISH '.$self->url.': db_data='.($self->_db_data||'(null)')."\n"
-	if ($self->debug||0) >= 6;
+	if ($self->debug||0) >= 5;
 
     if (my $db_data = $self->_db_data) {
 	if ((my @changed = $self->is_changed) && ! $self->_deleted) {
@@ -1627,6 +1629,8 @@ sub DEMOLISH {
 	    Carp::carp("$class $self_string destroyed without saving or reverting changes to: "
 		 . join(', ', @changed));
 
+	    use YAML; warn YAML::Dump {self => $self, db_data => $db_data}
+	    if ($self->debug||0) >= 6;
 	}
 	#
 	# Destroy this objects data

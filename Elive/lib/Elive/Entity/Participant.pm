@@ -13,6 +13,7 @@ use Elive::Entity::User;
 use Elive::Entity::Group;
 use Elive::Entity::InvitedGuest;
 use Elive::Entity::Role;
+use Try::Tiny;
 
 =head1 NAME
 
@@ -63,7 +64,7 @@ sub BUILDARGS {
 
     if (Scalar::Util::blessed($_)) {
 
-	if (eval{$_->isa('Elive::Entity::User')}) {
+	if (try {$_->isa('Elive::Entity::User')}) {
 	    #
 	    # coerce participant as regular user
 	    #
@@ -74,7 +75,7 @@ sub BUILDARGS {
 	    }
 	}
 
-	if (eval{$_->isa('Elive::Entity::Group')}) {
+	if (try {$_->isa('Elive::Entity::Group')}) {
 	    #
 	    # coerce to group of participants
 	    #
@@ -85,7 +86,7 @@ sub BUILDARGS {
 	    }
 	}
 
-	if (eval{$_->isa('Elive::Entity::InvitedGuests')}) {
+	if (try {$_->isa('Elive::Entity::InvitedGuests')}) {
 	    #
 	    # coerce to an invited guest
 	    #

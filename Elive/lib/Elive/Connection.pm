@@ -8,6 +8,7 @@ use Scalar::Util;
 require SOAP::Lite;
 use URI;
 use URI::Escape qw{};
+use Try::Tiny;
 
 use parent qw{Class::Accessor Class::Data::Inheritable};
 
@@ -279,7 +280,7 @@ sub call {
 
 	$value = SOAP::Data->type(string => Elive::Util::string($value))
 	    unless (Scalar::Util::blessed($value)
-		    && eval {$value->isa('SOAP::Data')});
+		    && try {$value->isa('SOAP::Data')});
 
 	my $soap_param = $value->name($name);
 
