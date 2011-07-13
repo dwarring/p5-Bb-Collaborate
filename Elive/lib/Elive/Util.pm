@@ -7,6 +7,7 @@ use IO::Interactive;
 use Scalar::Util;
 use Storable;
 use YAML;
+use Try::Tiny;
 
 use Elive::Util::Type;
 
@@ -40,10 +41,10 @@ sub inspect_type {
 sub _freeze {
     my ($val, $type) = @_;
 
-    for ($val) {
+    do {
+	local ($_) = $val;
 
 	if (!defined) {
-
 	    warn "undefined value of type $type\n"
 	}
 	else {
@@ -77,7 +78,9 @@ sub _freeze {
 		    unless defined;
 	    }
 	}
-    }
+
+	$val = $_;
+    };
 
     return $val;
 }
@@ -94,7 +97,9 @@ sub _thaw {
 
     return unless defined $val;
 
-    for ($val) {
+    do {
+	local ($_) = $val;
+
 	if ($type =~ m{^Bool}i) {
 	    #
 	    # Perlise boolean flags..
@@ -116,18 +121,19 @@ sub _thaw {
 	else {
 	    die "unknown type: $type";
 	}
-    }
+
+	$val = $_;
+    };
 
     return $val;
 }
-
 
 #
 # _tidy_decimal(): general cleanup and normalisation of an integer.
 #               used to clean up numbers for data storage or comparison
 
 sub _tidy_decimal {
-    my $i = shift;;
+    my $i = shift;
     #
     # well a number really. don't convert or sprintf etc
     # to avoid overflow. Just normalise it for potential
@@ -283,7 +289,7 @@ sub string {
 	    my ($dt) = ($data_type =~ m{(.*)});
 
 	    return $dt->stringify($_)
-		if eval{$dt->can('stringify')};
+		if try {$dt->can('stringify')};
 	}
 
 	my $reftype =  _reftype($_);
