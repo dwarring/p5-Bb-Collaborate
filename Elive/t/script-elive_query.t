@@ -110,7 +110,7 @@ SKIP: {
 	     -pass => $pass,
 	     -c => "select $selection from serverDetails"]);
        
-	ok($stdout =~ m{serverDetailsId .* \w+ }ixs, "$script_name 'select $selection from serverDetails expected select output");
+	ok($stdout =~ m{serverDetailsId .* \w+ }ixs, "$script_name 'select $selection from serverDetails expected output");
 	
     };
 
@@ -208,6 +208,8 @@ SKIP: {
 	is_deeply($data, $expected_data, 'yaml dump matches session contents');
 
 	$session->delete;
+
+	$connection->disconnect;
 
     };
 }
