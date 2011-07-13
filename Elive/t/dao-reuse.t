@@ -1,6 +1,6 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 12;
+use Test::More tests => 14;
 use Test::Warn;
 
 use Elive::Connection;
@@ -46,6 +46,7 @@ do {
     my $user1_copy =  Elive::Entity::User->construct(
 	{userId => 11111,
 	 loginName => 'repeat',
+	 firstName => 'Pete',
 	 role => {roleId => 3},
 	},
 	copy => 1,
@@ -57,6 +58,16 @@ do {
 
     ok(! $user1->role->_is_copy && $user1_copy->role->_is_copy,
        'copy is applied recursively');
+
+    $user1_copy->firstName( $user1_copy->firstName . 'r' );
+
+    ok(! $user1->is_changed && $user1_copy->is_changed,
+       'is_changed on copy object');
+
+    $user1_copy->revert;
+
+    ok(! $user1->is_changed && ! $user1_copy->is_changed,
+       'is_changed on copy object - after revert');
 
     my $user2 =  Elive::Entity::User->construct(
 	{userId => 22222,

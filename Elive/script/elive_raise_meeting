@@ -30,7 +30,7 @@ elive_raise_meeting
 =head2 Authentication Options
 
  [url]                        # web address and site instance path,
-                              # e.g.: http://myserver.com/mysite 
+                              # E.g.: http://myserver.com/mysite 
  -user someAdminUser          # SDK/SOAP username
  -pass somePass               # SDK/SOAP password
 

@@ -17,4 +17,4 @@ eval "use Pod::Coverage $min_pc";
 plan skip_all => "Pod::Coverage $min_pc required for testing POD coverage"
     if $@;
 
-all_pod_coverage_ok({also_private => [qr/^DEMOLISH|can|construct|derivable|properties|property_doco|property_types|set|stringify|BUILD|BUILDARGS$/]});
+all_pod_coverage_ok({also_private => [qr/^(DEMOLISH|can|construct|derivable|properties|property_doco|property_types|set|stringify|BUILD|BUILDARGS)$/]});

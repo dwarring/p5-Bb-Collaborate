@@ -1,13 +1,24 @@
 Revision history for Elive
 
+0.99    14th July 2011
+        Introduced Try::Tiny. Replaced all non-stringy evals with 'try'.
+        Elive::DAO - Fixes update() handling of copy objects.
+        - Updates on copy objects  were resulting in unblessed
+          $obj->_db_data and breaking the is_changed() method.
+        - Subrecords are now copied as well. Added _is_copy() metadata
+          and modified __set_db_data to copy recursively.
+        Elive::Util
+        - Minor refactoring of _freeze() method to avoid occasional SEGVs
+          during DEMOLISH of objects in program exit global destruction
+          (observed running while tests on perl 5.8.8 - 5.10.1).
+
 0.98    8th July 2011
         [Minor bug fixes, testing and documentation]
         META.yml
         - Raised minimum perl version from the default 5.0.5 to 5.8.1. This
           is the earliest versions reporting reliable smoke test results.
-        Elive::DAO
-        - corrected update handling of uncached objects. Error was reported
-          by perl 5.13.3 smoke tests.
+        - corrected Scalar::Util::weaken() handling of copy objects to
+          work on perl 5.13.3 - monor nit from smoke tests.
         Elive::Entity::Session
         - further documentation, particularly on working with preloads
         Elive::Entity::Preload
@@ -236,8 +247,8 @@ Revision history for Elive
 
               "unable to add 7 of 35 participants; rejected users: user1 user2 ..."
 
-        - Eliminated remaining direct uses of Elive::Util::_freeze() function
-          with Elive::DAO::->_freeze() for consistancy.
+        - Eliminated remaining direct uses of Elive::Util::_freeze() function.
+          Replaced with Elive::DAO::->_freeze() for consistancy.
 
 0.79    21st January 2011
         - bugfix to elive_query. Had silently broken 'select * ...' queries
