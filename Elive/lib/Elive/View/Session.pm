@@ -170,7 +170,7 @@ sub __add_preloads {
     }
 }
 
-=head2 buildJNLP check_preload add_preload remove_preload is_participant is_moderator list_preloads list_recordings
+=head2 list retrieve buildJNLP check_preload add_preload remove_preload is_participant is_moderator list_preloads list_recordings
 
 These methods are available from the base class L<Elive::Entity::Session>.
 
@@ -229,11 +229,5 @@ sub derivable {
 	map { $_->derivable } sort values %$delegates,
 	);
 }
-
-=head1 SEE ALSO
-
-L<Elive::Entity::Session>  (the base class).
-
-=cut
 
 1;
