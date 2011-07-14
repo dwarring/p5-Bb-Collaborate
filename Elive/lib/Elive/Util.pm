@@ -67,7 +67,8 @@ sub _freeze {
 	    }
 	    elsif ($type =~ m{^(Int|HiResDate)}ix) {
 
-		$_ = _tidy_decimal($_);
+		$_ = _tidy_decimal($_)
+		    unless $_ eq '0' || m{^[1-9][0-9]*$};
 
 	    }
 	    elsif ($type =~ m{^Ref}ix) {
@@ -138,7 +139,6 @@ sub _tidy_decimal {
     # well a number really. don't convert or sprintf etc
     # to avoid overflow. Just normalise it for potential
     # string comparisons
-
     #
     # l-r trim
     #
