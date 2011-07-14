@@ -2,8 +2,9 @@ Revision history for Elive
 
 0.99    14th July 2011
         [Pre version 1.00 jitters. Regression tested against various perls,
-         including 5.8.3, 5.8.8, 5.10.1 and 5.14.0. Fixed further nits and
-         incompatibilities and established minimum supportable version]
+         including 5.8.3, 5.8.8, 5.10.1, 5.12.2 (ActiveState) and 5.14.0.
+         Fixed further nits and incompatibilities and established minimum
+         supportable version]
         META.yml
         - Further raised minimum perl version 5.8.1 to 5.8.3
         - Pod::Usage minimum version set to 1.36
