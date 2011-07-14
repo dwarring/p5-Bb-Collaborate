@@ -68,7 +68,7 @@ sub BUILDARGS {
 	open ( my $fh, '<', $preload_path)
 	    or die "unable to open preload file $preload_path";
 
-	$fh->binmode;
+	binmode $fh;
 	my $content = do {local $/; <$fh>};
 
 	close $fh;
