@@ -1,5 +1,5 @@
 ---
-abstract: 'Elluminate Live (c) Standard Bridge V2 API bindings'
+abstract: 'Perl bindings for the Elluminate Live Standard Bridge (V2)'
 author:
   - 'David Warring <david.warring@gmail.com>'
 build_requires:
@@ -37,8 +37,8 @@ requires:
   URI: 0
   XML::Simple: 0
   YAML: 0
-  perl: 5.005
+  perl: 5.8.3
 resources:
   license: http://dev.perl.org/licenses/
-  repository: https://elive.svn.sourceforge.net/svnroot/elive/trunk/Elive-StandardV2
+  repository: https://dwarring@elive.svn.sourceforge.net/svnroot/elive/trunk/Elive-StandardV2
 version: 0.00_9

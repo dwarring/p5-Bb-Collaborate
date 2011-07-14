@@ -11,11 +11,11 @@ use Scalar::Util;
 
 =head1 NAME
 
-Elive::StandardV2::_List - Abstract class for lists.
+Elive::StandardV2::_List - Abstract Base for lists.
 
 =head1 DESCRIPTION
 
-Use as a base class for chair-persons, participants, courses and sessions attendees.
+Used as a base class for chair-persons, participants, courses and session attendees.
 
 =cut
 

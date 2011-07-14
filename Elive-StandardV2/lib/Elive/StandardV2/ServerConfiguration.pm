@@ -5,8 +5,6 @@ use Mouse;
 
 extends 'Elive::DAO::Singleton','Elive::StandardV2';
 
-use Scalar::Util;
-
 =head1 NAME
 
 Elive::StandardV2::ServerConfiguration - Server Configuration entity class

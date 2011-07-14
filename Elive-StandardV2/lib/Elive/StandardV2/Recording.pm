@@ -16,7 +16,7 @@ Elive::StandardV2::Recording - Elluminate Recording instance class
 
 =head1 DESCRIPTION
 
-This is the main entity class for recordings.
+This class is used to locate and access Elluminate Live recordings.
 
 =cut
 

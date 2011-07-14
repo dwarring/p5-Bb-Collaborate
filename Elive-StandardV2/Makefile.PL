@@ -3,14 +3,12 @@
 use strict;
 use warnings;
 use inc::Module::Install;
-perl_version    5.005;
 
 name           ('Elive-StandardV2');
 module_name    ('Elive::StandardV2');
 author         ('David Warring <david.warring@gmail.com>');
-version_from   ('lib/Elive/StandardV2.pm');
+all_from   ('lib/Elive/StandardV2.pm');
 license	       ('perl');
-abstract       ('Elluminate Live (c) Standard Bridge V2 API bindings');
 install_script ();
 
 requires(

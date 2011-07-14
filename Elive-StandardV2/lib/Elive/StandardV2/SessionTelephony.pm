@@ -16,7 +16,7 @@ Elive::StandardV2::SessionTelephony - Elluminate SessionTelephony instance class
 
 =head1 DESCRIPTION
 
-This is the main entity class for session telephony.
+This class is used to setup Telephony for a given Session
 
 =cut
 

@@ -24,6 +24,8 @@ Version 0.00_9
 
 our $VERSION = '0.00_9';
 
+use 5.008003;
+
 =head1 SYNOPSIS
 
     use Elive::StandardV2;
@@ -34,13 +36,15 @@ our $VERSION = '0.00_9';
                                 'http://myserver/mysite',
                                 'some_user' => 'some_pass' );
 
+    # Sessions must start and end on the quarter hour.
+
     my $session_start = Elive::Util::next_quarter_hour();
     my $session_end = Elive::Util::next_quarter_hour( $session_start );
 
     my %session_data = (
 	sessionName   => 'My Demo Session',
 	creatorId     => $connection->user,
-	startTime     =>  $session_start . '000',
+	startTime     => $session_start . '000',
 	endTime       => $session_end . '000',
 	openChair     => 1,
 	mustBeSupervised => 0,
@@ -164,11 +168,7 @@ Abstract method to commit outstanding object updates to the server.
 Updates may also be passed as parameters.
 
    # change and save foo and bar. All in one go.
-    $obj->update({foo => 'Foo', bar => 'Bar'},
-                 command => $cmd,      # soap command to use
-                 params => \%params,   # additional soap params,
-                 changed => \@props,   # properties to update,
-                );
+    $obj->update({foo => 'Foo', bar => 'Bar'});
 
 =cut
 

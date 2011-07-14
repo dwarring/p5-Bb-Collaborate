@@ -12,9 +12,6 @@ Elluminate Standard Bridge V2 SOAP services ('standardv2' adapter).
 This is a newer alternative to the Command Toolkit, as supported by the
 Elive::Entity classess ('default' adapter).
 
-At this stage, both the Standard Bridge API V2 and the Perl bindings are
-under construction.
-
 INSTALLATION
 ============
 To install this module, run the following commands:
