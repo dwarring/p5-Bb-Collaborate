@@ -24,7 +24,7 @@ requires(
     'MIME::Types'                  => 0,
     'MIME::Base64'                 => 0,
     'Mouse'                        => 0.81,
-    'Pod::Usage'                   => 0,  # for elive_raise_meeting
+    'Pod::Usage'                   => 1.36,  # for elive_raise_meeting
     'parent'                       => 0,
     'Scalar::Util'                 => 0,
     'SOAP::Lite'                   => 0.712,

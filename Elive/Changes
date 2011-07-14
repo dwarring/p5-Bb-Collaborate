@@ -1,16 +1,24 @@
 Revision history for Elive
 
 0.99    14th July 2011
-        Introduced Try::Tiny. Replaced all non-stringy evals with 'try'.
+        [Pre version 1.00 jitters. Regression tested against various perls,
+         including 5.8.3, 5.8.8, 5.10.1 and 5.14.0. Fixed further nits and
+         incompatibilities and established minimum supportable version]
+        META.yml
+        - Further raised minimum perl version 5.8.1 to 5.8.3
+        - Pod::Usage minimum version set to 1.36
+        Elive::Entity::Preload
+        - $fh->binmode => binmode $fh for 5.8.3 IO::Handle compatability
+        Elive::Util
+        - Minor refactoring of _freeze() method to avoid occasional SEGVs
+          during DEMOLISH of objects in program exit global destruction
+          (observed running while tests on perl 5.8.8 - 5.10.1).
         Elive::DAO - Fixes update() handling of copy objects.
         - Updates on copy objects  were resulting in unblessed
           $obj->_db_data and breaking the is_changed() method.
         - Subrecords are now copied as well. Added _is_copy() metadata
           and modified __set_db_data to copy recursively.
-        Elive::Util
-        - Minor refactoring of _freeze() method to avoid occasional SEGVs
-          during DEMOLISH of objects in program exit global destruction
-          (observed running while tests on perl 5.8.8 - 5.10.1).
+        Introduced Try::Tiny. Replaced all non-stringy evals with 'try'.
 
 0.98    8th July 2011
         [Minor bug fixes, testing and documentation]

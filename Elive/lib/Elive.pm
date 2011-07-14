@@ -13,7 +13,7 @@ Version 0.99
 
 our $VERSION = '0.99';
 
-use 5.008001;
+use 5.008003;
 
 use parent qw{Class::Data::Inheritable};
 use Scalar::Util;
