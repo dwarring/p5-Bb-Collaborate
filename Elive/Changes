@@ -19,7 +19,9 @@ Revision history for Elive
           $obj->_db_data and breaking the is_changed() method.
         - Subrecords are now copied as well. Added _is_copy() metadata
           and modified __set_db_data to copy recursively.
-        Introduced Try::Tiny. Replaced all non-stringy evals with 'try'.
+        [Standardized on Try::Tiny's 'try' method]
+        - Added dependency on Try::Tiny.
+        - Replaced all non-stringy use of 'eval' built-in with 'try'.
 
 0.98    8th July 2011
         [Minor bug fixes, testing and documentation]
