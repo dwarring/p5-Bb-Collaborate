@@ -12,7 +12,7 @@ Elive::StandardV2::Presentation - Presentation entity class
 =head1 DESCRIPTION
 
 This class can be used to upload presentation content, including Elluminate
-I<Live!> plan files (C<*.elpx> etc) and whiteboard content C<*.wbd> etc).
+I<Live!> plan files (C<*.elpx> etc) and whiteboard content (C<*.wbd> etc).
 
 =cut
 

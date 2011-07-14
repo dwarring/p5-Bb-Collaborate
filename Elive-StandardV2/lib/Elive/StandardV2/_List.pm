@@ -15,7 +15,7 @@ Elive::StandardV2::_List - Abstract class for lists.
 
 =head1 DESCRIPTION
 
-Use as a base class for chair-persons, participants, coursesm and sessions attendees.
+Use as a base class for chair-persons, participants, courses and sessions attendees.
 
 =cut
 
