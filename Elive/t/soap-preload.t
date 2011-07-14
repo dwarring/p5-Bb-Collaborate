@@ -79,7 +79,7 @@ SKIP: {
 			       SUFFIX => '.wav',
 			       DIR => File::Spec->tmpdir() );
 
-    $fh->binmode();
+    binmode $fh;
     print $fh $data[1];
     close $fh;
 
