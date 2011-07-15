@@ -819,7 +819,7 @@ any need to close or exit the session.
 Also note that recordings are not deleted, when you delete sessions. If you
 want to delete associated recordings when you delete sessions:
 
-    my $recordings = $session->recordings;
+    my $recordings = $session->list_recordings;
     $session->delete;
     $_->delete for (@$recordings);
 
