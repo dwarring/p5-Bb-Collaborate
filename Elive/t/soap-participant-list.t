@@ -157,8 +157,7 @@ SKIP: {
 		  }, 'setting up a larger meeting - lives');
     }
     else {
-	$t->skip('insufficent users to run large meeting tests')
-	    for 1 .. 10;
+	$t->skip('insufficent users to run large meeting tests');
     }
 
     ok($meeting->is_participant( Elive->login), 'is_participant($moderator)');
@@ -286,8 +285,7 @@ SKIP: {
 	lives_ok(sub {$participant_list->update({ participants => [$group, $participant1, $invited_guest]})}, 'setting of participant groups - lives');
     }
     else {
-	$t->skip('no candidates found for group tests')
-	    for (1 .. 2);
+	$t->skip('no candidates found for group tests');
     }
 
     #
