@@ -1,6 +1,6 @@
 #!perl
 use warnings; use strict;
-use Test::More tests => 29;
+use Test::More tests => 28;
 use Test::Exception;
 use Test::Builder;
 
@@ -27,7 +27,7 @@ SKIP: {
     my %result = t::Elive->test_connection( only => 'real');
     my $auth = $result{auth};
 
-    skip ($result{reason} || 'skipping live tests', 29)
+    skip ($result{reason} || 'skipping live tests', 28)
 	unless $auth;
 
     my $connection_class = $result{class};
