@@ -13,6 +13,10 @@ use Elive::Entity::Recording;
 use Elive::Entity::Meeting;
 use XML::Simple;
 
+use version;
+
+our $t = Test::Builder->new;
+
 my $class = 'Elive::Entity::Recording';
 
 my @data;
@@ -106,14 +110,22 @@ SKIP: {
     ok(do{grep {$_->recordingId eq $recording_id} @$recordings},
        'uploaded recording found in recordings');
 
-    my $data_download = $recording->download;
+    my $version = version->parse(Elive->server_details->version)->numify;
+    if ($version le '9.005000') {
+	$t->skip("recording downloads - not supported for Elluminate Live! <= 9.50")
+	    for 1..3;
+    }
+    else {
 
-    ok($data_download, 'got recording download');
-    ok(length($data_download) == length($data[0]),
-       sprintf('download has expected size %d bytes', length($data[0])),
-	);
+	my $data_download = $recording->download;
 
-    is($data_download, $data[0], 'downloaded data matches upload');
+	ok($data_download, 'got recording download');
+	ok(length($data_download) == length($data[0]),
+	   sprintf('download has expected size %d bytes', length($data[0])),
+	    );
+
+	is($data_download, $data[0], 'downloaded data matches upload');
+    }
 
     my $recordingJNLP;
 

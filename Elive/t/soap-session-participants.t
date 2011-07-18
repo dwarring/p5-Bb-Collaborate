@@ -139,8 +139,7 @@ SKIP: {
 		  }, 'setting up a larger session - lives');
     }
     else {
-	$t->skip('insufficient users to run large session tests')
-	    for 1 .. 10;
+	$t->skip('insufficient users to run large session tests');
     }
 
     ok($session->is_participant( Elive->login), 'is_participant($moderator)');
@@ -181,12 +180,10 @@ SKIP: {
 	# The next test verifies bug fixes under ELM 3.3.4/10.0.2. It probably wont
 	# work with 10.0.1 or earlier.
 	#
-	$t->skip('skipping participant long-list test for Elluminate < v10.0.2')
-	    for (1..2);
+	$t->skip('skipping participant long-list test for Elluminate < v10.0.2');
     }
     elsif ( !$participant2 )  {
-	$t->skip('not enough participants to run long-list test')
-	    for (1..2);
+	$t->skip('not enough participants to run long-list test');
     }
     else { 
 	#

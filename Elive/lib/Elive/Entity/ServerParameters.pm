@@ -72,6 +72,10 @@ has 'serverTelephonyAddress'
 has 'redirectURL' => (is => 'rw', isa => 'Str',
 		      documentation => 'URL to redirect users to after the online session is over.');
 
+## Mispellings - Required to support Elm/3.0 / Elive 9.5.0
+__PACKAGE__->_alias(ModertatorTelephonyAddress => 'ModeratorTelephonyAddress');
+__PACKAGE__->_alias(ModertatorTelephonyPIN => 'ModeratorTelephonyPIN');
+
 =head1 NAME
 
 Elive::Entity::ServerParameters - Meeting server parameters entity class

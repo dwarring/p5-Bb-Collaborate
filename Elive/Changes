@@ -1,5 +1,16 @@
 Revision history for Elive
 
+1.00    tba
+        [Reran against Elm 3.0 / Elluminate Live 9.5 - first time in a
+         while .Minor changes and refinements to test suite for backwards
+         compatibility]
+        - soap-recording.t - skipped recording download tests for ELM < 9.50
+          - known not to work.
+        - Elive::Entity::ServerParameters - aliased a couple of mispellings
+          in toolkit (sic) ModertatorTelephonyAddress, ModertatorTelephonyPIN
+        - Note: createSession and updateSession commands pass! changed
+          Elive::Entity::Session documentation. 
+
 0.99    14th July 2011
         [Pre version 1.00 jitters. Regression tested against various perls,
          including 5.8.3, 5.8.8, 5.10.1, 5.12.2 (ActiveState) and 5.14.0.
