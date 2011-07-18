@@ -111,8 +111,8 @@ SKIP: {
        'uploaded recording found in recordings');
 
     my $version = version->parse(Elive->server_details->version)->numify;
-    if ($version le '9.005000') {
-	$t->skip("recording downloads - not supported for Elluminate Live! <= 9.50")
+    if ($version <= '9.005000') {
+	$t->skip("recording downloads - not supported for Elluminate Live! <= 9.50 ($version)")
 	    for 1..3;
     }
     else {
