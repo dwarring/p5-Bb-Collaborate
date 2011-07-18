@@ -11,6 +11,7 @@ use Scalar::Util qw{weaken};
 use Storable qw{dclone};
 use Carp;
 use Try::Tiny;
+use URI;
 
 use Elive::Util;
 
@@ -487,12 +488,15 @@ sub connection {
     return $connection || $self->SUPER::connection;
 }
 
-sub _url {
+sub _restful_url {
     my $class = shift;
     my $connection = shift || $class->connection;
     my $path = shift;
 
-    return join('/', $connection->url,
+    my $uri_obj = URI->new( $connection->url );
+    $uri_obj->scheme('http');
+
+    return join('/', $uri_obj->as_string,
 		$class->entity_name,
 		$path);
 }
@@ -510,7 +514,7 @@ is used internally to uniquely identify and cache objects across repositories.
 sub url {
     my $self = shift;
     my $connection = shift || $self->connection;
-    return $self->_url($connection, $self->stringify);
+    return $self->_restful_url($connection, $self->stringify);
 }
 
 =head2 construct
@@ -1421,7 +1425,7 @@ sub retrieve {
 	my %pkey;
 	@pkey{$class->primary_key} = @$vals;
 
-	my $obj_url = $class->_url(
+	my $obj_url = $class->_restful_url(
 	    $connection,
 	    $class->stringify(\%pkey)
 	    );

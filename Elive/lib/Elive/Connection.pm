@@ -130,17 +130,17 @@ sub _connect {
 
     $uri_obj->path(File::Spec::Unix->catdir(@path));
 
-    my $restful_url = $uri_obj->as_string;
+    my $soap_url = $uri_obj->as_string;
 
     #
-    # ugly
+    # remove any embedded credentials
     #
-    $restful_url =~ s{\Q${userinfo}\E\@}{} if $userinfo;
+    $soap_url =~ s{\Q${userinfo}\E\@}{} if $userinfo;
 
     my $self = {};
     bless $self, $class;
 
-    $self->url($restful_url);
+    $self->url($soap_url);
     $self->user($user);
     $self->pass($pass);
     $self->debug($debug);

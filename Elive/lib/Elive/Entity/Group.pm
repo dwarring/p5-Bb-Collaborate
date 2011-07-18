@@ -67,6 +67,14 @@ sub stringify {
 
 }
 
+sub _restful_url {
+    my $self = shift;
+    my $connection = shift;
+    my $id = shift;
+    $id =~ s{^\*}{};
+    return $self->SUPER::_restful_url($connection, $id);
+}
+
 =head1 NAME
 
 Elive::Entity::Group - Elluminate Group entity instance class

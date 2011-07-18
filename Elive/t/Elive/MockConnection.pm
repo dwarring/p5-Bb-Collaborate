@@ -37,7 +37,7 @@ sub _connect {
     $url =~ s{/$}{};                    # lose trailing '/'
     $url =~ s{/webservice\.event$}{};   # lose endpoint
     $url =~ s{/v2$}{};                  # lose adapter path
-    $url =~ s{http://(.*)\@}{http://};  # lose credentials
+    $url =~ s{^(\w+)://(.*)\@}{$1://};  # lose credentials
     $self->url($url);
 
     $self->user($user);
