@@ -3,6 +3,7 @@ use warnings; use strict;
 use Test::More tests => 65;
 use Test::Exception;
 use Test::Builder;
+use version;
 
 use lib '.';
 use t::Elive;
@@ -232,8 +233,8 @@ SKIP: {
 
     dies_ok(sub {$preloads[0]->retrieve([$preload_id])}, 'attempted retrieval of deleted preload - dies');
 
-    my $server_details = Elive->server_details;
-    if ($server_details->version ge '10.0.0') {
+    my $version = version->parse(Elive->server_details->version)->numify;
+    if ($version >= '10') {
 	$t->skip('skipping known Elluminate v10.0.0+ bugs')
 	    for (1..2);
     }
