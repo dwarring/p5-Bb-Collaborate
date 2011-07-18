@@ -247,8 +247,7 @@ SKIP: {
 	lives_ok(sub {$session->update({ participants => [$group, $participant1, $invited_guest]})}, 'setting of participant groups - lives');
     }
     else {
-	$t->skip('no candidates found for group tests')
-	    for (1 .. 2);
+	$t->skip('no candidates found for group tests');
     }
 
     #
