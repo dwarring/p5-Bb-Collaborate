@@ -21,8 +21,8 @@ Elive::Entity::Session - Session insert/update via ELM 3.x (TRIAL)
 
 =head1 DESCRIPTION
 
-Elive::Entity::Session is under construction as a likely successor to
-L<Elive::View::Session>. It maintains sessions via the C<createSession>.
+Elive::Entity::Session creates and modifies meetings via the C<createSession>
+and C<updateSession> commands, introduced with Elluminate Live! Manager 3.0.
 
 =cut
 

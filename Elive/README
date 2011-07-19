@@ -15,9 +15,7 @@ COMPATIBILITY
     servers.
 
     - works best with ELM (Elluminate Live Manager) version 3.0 - 3.3.5 and
-      Elluminate Live! version 9.5 - 10.0.2
-
-    - Elive::Entity::Session requires ELM 10.0.2 or better.
+      Elluminate Live! version 9.5 - 10.0.1
 
     - does not support access to externally hosted servers deployed with SAS
       (Session Administration System).
@@ -31,13 +29,10 @@ INSTALLATION
         make test
         make install
 
-SERVER CONFIGURATION
+LDAP CONFIGURATION
 
-    Prior to Elluminate 9.5, all users with a role of '0' (System
-    Administrator) have been given full access to the SDK.
-
-    From Elluminate 9.5 onwards, you will need to manually configure
-    SDK access.
+    If you are using LDAP, you'll need to manually configure your site
+    instance to provide access for the SDK user.
 
     To do this, firstly stop the site using the Elluminate Live Instance
     Manager (http://yourserver/elmcontrol).
@@ -93,7 +88,7 @@ ADDITIONAL TESTING
         make test
 
     There's also some additional envirnoment variables that may be set
-    to further  extend the range of tests:
+    to further extend the range of tests:
 
     ELIVE_TEST_PRELOAD_SERVER_PATH - absolute path of an existing preload
                file on the server. Set this to enable testing of the

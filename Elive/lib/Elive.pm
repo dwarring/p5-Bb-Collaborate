@@ -47,7 +47,7 @@ participants:
     #
     my $preload = Elive::Entity::Preload->upload('welcome.wbd');
 
-    my $meeting = Elive::View::Session->insert({
+    my $meeting = Elive::Entity::Session->insert({
 	 name           => $meeting_name,
 	 facilitatorId  => Elive->login,
 	 start          => $start . '000',
@@ -308,7 +308,7 @@ to show the user entity:
     Elive query 0.xx  - type 'help' for help
 
     elive> show
-    usage: show group|meeting|meetingParameters|participantList|preload|recording|serverDetails|serverParameters|session|users
+    usage: show group|meeting|...|serverParameters|session|users
 
     elive> show meeting
     meeting: Elive::Entity::Meeting:

@@ -1,21 +1,30 @@
 Revision history for Elive
 
-1.00    tba
-        [Reran against Elm 3.0 / Elluminate Live 9.5 - first time in a
-         while .Minor changes and refinements to test suite for backwards
-         compatibility]
-        - soap-recording.t - skipped recording download tests for ELM < 9.50
-          - known not to work.
-        - Elive::Entity::ServerParameters - aliased a couple of mispellings
-          in toolkit (sic) ModertatorTelephonyAddress, ModertatorTelephonyPIN
-        - Note: createSession and updateSession commands pass! changed
-          Elive::Entity::Session documentation. 
+1.00    19th July 2911
+        [Regression tested against Elm 3.0 / Elive 9.5 (earliest supported
+         version). Back-ported recently introduced Elive::Entity::Session
+         to  Elm 3.0+. Other minor changes for compatibility.].
+        Elive
+        - amended introductory example POD to create a meeting using
+          Elive::Entity::Session (was using Elive::View::Session).
+        elive_raise_meeting
+        - now unconditionally uses Elive::Entity::Session as the default
+          class for raising meetings (-use elm3).
+        soap-recording.t
+        - skipped some failing download tests for ELM <= 9.50.
+        Elive::Entity::ServerParameters
+        - included some aliases for mispellings present in Elm 3.0 responses
+          (sic) ModertatorTelephonyAddress, ModertatorTelephonyPIN
+        [Minor refactorings]
+        - added _restful_url() method to Elive::DAO. Inherited and
+          overriden by Elive::Entity::Group.
+        [README]
+        - Manual configuration instructions amended - only needed for LDAP
 
 0.99    14th July 2011
-        [Pre version 1.00 jitters. Regression tested against various perls,
-         including 5.8.3, 5.8.8, 5.10.1, 5.12.2 (ActiveState) and 5.14.0.
-         Fixed further nits and incompatibilities and established minimum
-         supportable version]
+        [Regression tested against various perls, including 5.8.3, 5.8.8,
+         5.10.1 and 5.14.0. Fixed further nits and incompatibilities and
+         established 5.8.3 minimum supportable version]
         META.yml
         - Further raised minimum perl version 5.8.1 to 5.8.3
         - Pod::Usage minimum version set to 1.36
