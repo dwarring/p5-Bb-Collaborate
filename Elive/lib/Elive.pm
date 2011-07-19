@@ -30,7 +30,7 @@ participants:
     use Elive;
     use Elive::Entity::User;
     use Elive::Entity::Preload;
-    use Elive::View::Session;
+    use Elive::Entity::Session;
 
     my $meeting_name = 'Meeting of the Smiths';
 
