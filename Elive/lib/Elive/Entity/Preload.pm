@@ -278,25 +278,6 @@ sub list_meeting_preloads {
     return $self->_fetch({meetingId => $meeting_id}, %opt);
 }
 
-sub _freeze {
-    my ($class, $db_data, %opt) = @_;
-
-    $db_data = $class->SUPER::_freeze( $db_data, %opt);
-
-    if (my $filename = $db_data->{fileName}) {
-	$db_data->{name} ||= File::Basename::basename( $filename );
-    }
-
-    if ($db_data->{name}) {
-
-	$_ = File::Basename::basename($_)
-	    for $db_data->{name};
-
-    }
-
-    return $db_data;
-}
-
 sub _thaw {
     my ($class, $db_data, %opt) = @_;
 
