@@ -389,10 +389,10 @@ sub main {
 	if defined $raise_hands;
 
     $session_data{inSessionInvitation}  = $invites
-		if defined $invites;
+	if defined $invites;
 
     $session_data{followModerator}  = $follow_moderator
-		if defined $follow_moderator;
+	if defined $follow_moderator;
 
     $session_data{fullPermissions} = $permissions
 	if defined $permissions;

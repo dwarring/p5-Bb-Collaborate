@@ -29,49 +29,56 @@ INSTALLATION
         make test
         make install
 
-LDAP CONFIGURATION
+GRANTING ACCESS TO THE SDK
 
-    If you are using LDAP, you'll need to manually configure your site
-    instance to provide access for the SDK user.
+    By default, only the elluminate administrator account is granted
+    access to the SDK.
+
+    If you wish to to grant access to non-administrator accounts and/or
+    revoke administrator access, you'll need to manually configure this
+    in your site instance.
 
     To do this, firstly stop the site using the Elluminate Live Instance
     Manager (http://yourserver/elmcontrol).
 
     Then you'll need to edit the configuration.xml for the site instance.
 
-	    Under Linux, the web application root is:
+      (*) Under Linux, the web application root is:
 
-		 /opt/ElluminateLive/manager/tomcat/webapps
+          /opt/ElluminateLive/manager/tomcat/webapps
 
-	    or under Windows, it's:
+      (*) or under Windows, it's:
 
-		 C:/Program Files/ElluminateLive/manager/tomcat/webapps
+         C:/Program Files/ElluminateLive/manager/tomcat/webapps
 
-	    The actual configuration for the root instance is the sub-path:
+      (*) The actual configuration for the root instance is the sub-path:
 
-		 ROOT/WEB-INF/resources/configuration.xml
+         ROOT/WEB-INF/resources/configuration.xml
 
-	     or for any additional sites built with the instance manager:
+      (*) or for any additional sites built with the instance manager:
 
-		 mysite/WEB-INF/resources/configuration.xml
+                 mysite/WEB-INF/resources/configuration.xml
 
-	Edit the file and add an entry for the SDK user to the security section:
+    Edit the file and add an entry for the SDK user to the security section:
 
-	    <elm>
-		...
-	       <proxymanager enable="true">
-		 <proxy name="web" ..>
-		  ...
-		  <security adapter-name="default">
-		    <permissions>
-		      ...
-		      <!-- ++ ADD THIS -->
-		      <user name="some_user">
-			 <allow command="*" />
-		      </user>
-		      <!-- -- ADD THIS -->
-		    </permissions>
-		    ...
+            <elm>
+                ...
+               <proxymanager enable="true">
+                 <proxy name="web" ..>
+                  ...
+                  <security adapter-name="default">
+                    <permissions>
+                      <role id="0">
+                        <allow command="*" />
+                      </role>
+
+                      <!-- ++ ADD THIS -->
+                      <user name="some_user">
+                         <allow command="*" />
+                      </user>
+                      <!-- -- ADD THIS -->
+                    </permissions>
+                    ...
 
 ADDITIONAL TESTING
 
@@ -83,7 +90,7 @@ ADDITIONAL TESTING
 
         perl Makefile.PL
         make
-        export ELIVE_TEST_URL=http://sdk_user@some_server.com/some_test_instance
+        export ELIVE_TEST_URL=http://sdk_user@some_server.com/some_instance
         export ELIVE_TEST_PASS=some_password
         make test
 
@@ -100,8 +107,8 @@ ADDITIONAL TESTING
     ELIVE_TEST_GROUP_UPDATES - set this to true to enable insert and update
                of groups on a live site (t/soap-group.t).
 
-    The User and Group update tests can only be run on sites that have not been
-    configured for LDAP.
+    The User and Group update tests can only be run on sites that have not
+    been configured for LDAP.
 
     WARNING: These tests will both create and delete various entities
     instances. For this reason you should be wary of running the live
@@ -121,13 +128,13 @@ POST INSTALLATION
 
     You will need to enter a password. You should then get:
 
-	connecting to http://myserver/mysite...done
-	Elive query 0.nn (Elluminate Live 9.x.y) - type 'help' for help
-	elive>
+        connecting to http://myserver/mysite...done
+        Elive query 0.nn (Elluminate Live 9.x.y) - type 'help' for help
+        elive>
 
     You can then try a simple query:
 
-	elive> select * from users
+        elive> select * from users
 
     See also elive_raise_meeting. This is a utility script that creates
     Elluminate meetings.
@@ -152,17 +159,17 @@ TROUBLESHOOTING
     You can use the installed script elive_lint_config to check for
     missing adapters.
 
-	% cd /opt/ElluminateLive/manager/tomcat/webapps
-	% elive_lint_config WEB-INF/resources/configuration.xml
-	missing adapter command: getUser
-	missing adapter command: deletePreload
-	missing adapter command: listPreloads
+        % cd /opt/ElluminateLive/manager/tomcat/webapps
+        % elive_lint_config WEB-INF/resources/configuration.xml
+        missing adapter command: getUser
+        missing adapter command: deletePreload
+        missing adapter command: listPreloads
 
     The adapters can be added to your configuration file.
 
     For example, if elive_lint_config returned the error:
 
-	"missing adapter command: getUser"
+        "missing adapter command: getUser"
 
     You'll need to first stop Elluminate services.
 
@@ -171,14 +178,14 @@ TROUBLESHOOTING
 
     E.g., to add the getUser adapter:
 
-	<elm>
-	    ...
-	    <adapters>
-	       <adapter name="default" class="com.elluminate.adapter.CommandAdapter" adapterType="ELM">
-		  <commands>
-		    ...
+        <elm>
+            ...
+            <adapters>
+               <adapter name="default" class="com.elluminate.adapter.CommandAdapter" adapterType="ELM">
+                  <commands>
+                    ...
                     <!-- ++ ADD COMMANDS HERE -->
-		    <command name="getUser" class="com.elluminate.adapter.command.GetUserCommand" />
+                    <command name="getUser" class="com.elluminate.adapter.command.GetUserCommand" />
                     <!-- -- ADD COMMANDS HERE -->
 
 LDAP AUTHENTICATION
@@ -203,21 +210,21 @@ SUPPORT AND DOCUMENTATION
     After installing, you can find documentation for this module with the
     perldoc command.
 
-	perldoc Elive
+        perldoc Elive
 
     You can also look for information at:
 
-	RT, CPAN's request tracker
-	    http://rt.cpan.org/NoAuth/Bugs.html?Dist=Elive
+        RT, CPAN's request tracker
+            http://rt.cpan.org/NoAuth/Bugs.html?Dist=Elive
 
-	AnnoCPAN, Annotated CPAN documentation
-	    http://annocpan.org/dist/Elive
+        AnnoCPAN, Annotated CPAN documentation
+            http://annocpan.org/dist/Elive
 
-	CPAN Ratings
-	    http://cpanratings.perl.org/d/Elive
+        CPAN Ratings
+            http://cpanratings.perl.org/d/Elive
 
-	Search CPAN
-	    http://search.cpan.org/dist/Elive/
+        Search CPAN
+            http://search.cpan.org/dist/Elive/
 
 
 COPYRIGHT AND LICENCE

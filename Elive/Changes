@@ -1,6 +1,17 @@
 Revision history for Elive
 
-1.00    19th July 2911
+1.01    20th July 2011
+        [bug fixes]
+        Elive::Entity::Preload
+        - removed legacy method Elive::Entity::Preload::_freeze(). This was
+          interfering with readback checks.
+        [documentation]
+        README
+        - Amendements to section 'Granting Access to the Sdk'
+        Elive
+        - Admendments introductory example POD
+
+1.00    19th July 2011
         [Regression tested against Elm 3.0 / Elive 9.5 (earliest supported
          version). Back-ported recently introduced Elive::Entity::Session
          to  Elm 3.0+. Other minor changes for compatibility.].

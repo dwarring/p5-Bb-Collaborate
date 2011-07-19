@@ -17,7 +17,7 @@ use Elive::Array;
 
 =head1 NAME
 
-Elive::Entity::Session - Session insert/update via ELM 3.x (TRIAL)
+Elive::Entity::Session - Session insert/update via ELM 3.x
 
 =head1 DESCRIPTION
 
