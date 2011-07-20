@@ -345,7 +345,7 @@ see the README file.
 
 =item L<Elive::Connection::SDK> - Elluminate SOAP connection
 
-=item L<Elive::View::Session>
+=item L<Elive::Entity::Session>
 
 =item L<Elive::Entity::Group>
 
