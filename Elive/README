@@ -1,4 +1,4 @@
-Elluminate Live! (c) is software for virtual online classrooms. It is suitable
+lluminate Live! (c) is software for virtual online classrooms. It is suitable
 for meetings, demonstrations web conferences, seminars, general training and
 support.
 
@@ -29,14 +29,14 @@ INSTALLATION
         make test
         make install
 
-GRANTING ACCESS TO THE SDK
+CONFIGURING SDK ACCESS
 
-    By default, only the elluminate administrator account is granted
-    access to the SDK.
+    By default, only Elluminate Live! administrator users (Role 0) are
+    granted access to the SDK.
 
-    If you wish to to grant access to non-administrator accounts and/or
-    revoke administrator access, you'll need to manually configure this
-    in your site instance.
+    If you wish to to grant access to non-administrator users and/or
+    revoke administrator access, you'll need to manually change this
+    in your site instance configuration.
 
     To do this, firstly stop the site using the Elluminate Live Instance
     Manager (http://yourserver/elmcontrol).
