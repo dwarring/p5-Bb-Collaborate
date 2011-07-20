@@ -82,6 +82,9 @@ Elive::Entity::ServerParameters - Meeting server parameters entity class
 
 =head1 SYNOPSIS
 
+Note: the C<insert()> and C<update()> methods are depreciated. For alternatives
+please see L<Elive::Entity::Session>.
+
     my $meeting = Elive::Entity::Meeting->insert( \%meeting_data );
     my $server_params $meeting->server_parameters;
 
@@ -209,8 +212,7 @@ sub _thaw {
 
 =head1 See Also
 
-L<Elive::Entity::Meeting>
-L<Elive::Entity::MeetingParameters>
+L<Elive::Entity::Session>
 
 =cut
 

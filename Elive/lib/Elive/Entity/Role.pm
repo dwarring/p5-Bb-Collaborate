@@ -23,10 +23,22 @@ __PACKAGE__->entity_name('Role');
 has 'roleId' => (is => 'rw', isa => 'Int', required => 1);
 __PACKAGE__->primary_key('roleId');
 
-coerce 'Elive::Entity::Role' => from 'HashRef'
-          => via {Elive::Entity::Role->new($_) };
+sub BUILDARGS {
+    my $class = shift;
+    my $spec = shift;
 
-coerce 'Elive::Entity::Role' => from 'Int'
-          => via {Elive::Entity::Role->new({roleId => $_}) };
+    my $args;
+    if (defined $spec && ! ref $spec) {
+	$args = {roleId => $spec};
+    }
+    else {
+	$args = $spec;
+    }
+
+    return $args;
+}
+
+coerce 'Elive::Entity::Role' => from 'HashRef|Int'
+          => via {Elive::Entity::Role->new($_) };
 
 1;

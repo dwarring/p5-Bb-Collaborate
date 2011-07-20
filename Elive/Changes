@@ -1,5 +1,21 @@
 Revision history for Elive
 
+1.02    21st July 2011
+
+        [pod]
+        Noted insert() and update() methods as undergoing depreciation for
+        meetings, meeting parameters, server parameters and participant list.
+
+        [enhancements]
+        Elive::Entity::Participant
+        - added is_participant() setter/getter
+        Elive::Entity:Role
+        - added BUILDARGS() method and simplied coercements.
+
+        [bug fixes]
+        Elive::Entity::User
+        - corrected ineffective BULDARGS() method.
+
 1.01    20th July 2011
         [bug fixes]
         Elive::Entity::Preload
@@ -7,7 +23,7 @@ Revision history for Elive
           interfering with readback checks.
         [documentation]
         README
-        - Amendements to section 'Granting Access to the Sdk'
+        - Amendements to section 'Configuring SDK Access'
         Elive
         - Admendments introductory example POD
 
@@ -22,7 +38,7 @@ Revision history for Elive
         - now unconditionally uses Elive::Entity::Session as the default
           class for raising meetings (-use elm3).
         soap-recording.t
-        - skipped some failing download tests for ELM <= 9.50.
+        - skipped some failing download tests for Elm <= 3.0.
         Elive::Entity::ServerParameters
         - included some aliases for mispellings present in Elm 3.0 responses
           (sic) ModertatorTelephonyAddress, ModertatorTelephonyPIN

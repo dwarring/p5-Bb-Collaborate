@@ -1,6 +1,6 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 56;
+use Test::More tests => 60;
 use Test::Warn;
 
 use Carp; $SIG{__DIE__} = \&Carp::confess;
@@ -82,6 +82,14 @@ ok($participants->[0]->is_moderator, 'is_moderator() on moderator');
 
 is($participants->[2]->stringify, 'dave=3', 'participant stringified');
 ok(! $participants->[2]->is_moderator, 'is_moderator() on regular participant');
+
+# upgrade/downgrade tests on moderator privileges
+
+ok( $participants->[2]->is_moderator(1), 'is_moderator() upgrade');
+is($participants->[2]->stringify, 'dave=2', 'upgraded participant stringified');
+
+ok(!  $participants->[2]->is_moderator(0), 'is_moderator() downgrade');
+is($participants->[2]->stringify, 'dave=3', 'downgraded participant stringified');
 
 is($participants->stringify, '112233=2;223344=3;dave=3;late_comer=3',
    'participants stringification');

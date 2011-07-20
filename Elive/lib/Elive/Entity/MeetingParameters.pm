@@ -67,6 +67,11 @@ has 'profile'  => (is => 'rw', isa => 'Str',
 
 Elive::Entity::MeetingParameters - Meeting parameters entity class
 
+=head1 SYNOPSIS
+
+Note: the C<insert()> and C<update()> methods are depreciated. For alternatives,
+please see L<Elive::Entity::Session>.
+
     use Elive::Entity::MeetingParameters;
 
     my $meeting_params
@@ -141,8 +146,7 @@ sub _thaw {
 
 =head1 See Also
 
-L<Elive::Entity::Meeting>
-L<Elive::View::Session>
+L<Elive::Entity::Session>
 
 =cut
 

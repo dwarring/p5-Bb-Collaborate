@@ -53,14 +53,14 @@ sub BUILDARGS {
     my $spec = shift;
 
     my $args;
-    if ($spec && ! ref $spec) {
-	$args = {userId => $_};
+    if (defined $spec && ! ref $spec) {
+	$args = {userId => $spec};
     }
     else {
 	$args = $spec;
     }
 
-    return $spec;
+    return $args;
 }
 
 coerce 'Elive::Entity::User' => from 'HashRef|Str'

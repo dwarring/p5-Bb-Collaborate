@@ -24,10 +24,6 @@ Elive::Entity::Meeting - Elluminate Meeting instance class
 
 This is the main entity class for meetings.
 
-Note: L<Elive::View::Session> is an alternate convenience class that combines
-L<Elive::Entity::Meeting>, L<Elive::Entity::MeetingParameters>,
-L<Elive::Entity::ServerParameters> and L<Elive::Entity::ParticipantList>.
-
 =cut
 
 __PACKAGE__->entity_name('Meeting');
@@ -97,6 +93,9 @@ has 'adapter' => (is => 'rw', isa => 'Str',
 =cut
 
 =head2 insert
+
+Note: the C<insert()> and C<update()> methods are depreciated. For alternatives,
+please see L<Elive::Entity::Session>.
 
     my $start = time() + 15 * 60; # starts in 15 minutes
     my $end   = $start + 30 * 60; # runs for half an hour
@@ -658,23 +657,9 @@ sub list_recordings {
 	       @args);
 }
 
-=head1 BUGS AND LIMITATIONS
-
-=over 4
-
-=item
-
-Meetings can not be set to restricted (as of Elluminate 9.7 - 10.0), nor
-does the SDK respect the server default settings for restricted meetings.
-
-Update: As of Elluminate 10.0.1, the restrictedMeeting property is inherited
-from Preferences E<gt>E<gt> Session Defaults E<gt>E<gt> Restrict Meetings.
-
-=back
-
 =head1 SEE ALSO
 
-L<Elive::View::Session>
+L<Elive::Entity::Session>
 
 L<Elive::Entity::Preload>
 

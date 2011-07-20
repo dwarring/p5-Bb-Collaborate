@@ -99,10 +99,11 @@ sub download {
 =head2 upload
 
     # get the binary data from somewhere
-    open (my $rec_fh, '<', $recording_file)
+    open (my $fh, '<', $recording_file)
         or die "unable to open $recording_file: $!";
+    $fh->binmode;
 
-    my $data = do {local $/ = undef; <$rec_fh>};
+    my $data = do {local $/ = undef; <$fh>};
     die "no recording data: $recording_file"
         unless ($data && length($data));
 
@@ -187,11 +188,11 @@ or recovering recordings that have not been closed cleanly.
    });
 
 
-The Recording C<insert>, unlike other entities, method requires that you supply
+The Recording C<insert> method, unlike other entities, requires that you supply
 a primary key. This is then used to determine the name of the file to look for
 in the recording directory, as in the above example.
 
-The meetingId is optional. Recordings do not have to be associated with a
+The C<meetingId> is optional. Recordings do not have to be associated with a
 particular meetings. They will still be searchable and are available for
 playback.
 

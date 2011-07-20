@@ -43,6 +43,9 @@ This is the entity class for meeting participants.
 
 The participants property is an array of type Elive::Entity::Participant.
 
+Note: the C<insert()> and C<update()> methods are depreciated. For alternatives,
+please see L<Elive::Entity::Session>.
+
 =head2 User Participants
 
 The I<participants> property may be specified in the format: userId[=roleId],

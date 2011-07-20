@@ -21,9 +21,8 @@ Elive::Entity::Participant - A Single Meeting Participant
 
 =head1 DESCRIPTION
 
-This is a component of L<Elive::Entity::Participants>. It
-contains details on a participating user, including their details and
-participation role (normally 2 for a moderator or 3 for a regular participant).
+This is a component of L<Elive::Entity::Participants>. It contains details
+on a participating user, including their type and participation role.
 
 =head1 METHODS
 
@@ -150,17 +149,33 @@ coerce 'Elive::Entity::Participant' => from 'Str'
 
 =head2 is_moderator
 
+Setter / getter for moderator privileges:
+
+    # does Bob have moderator privileges?
+    my $is_moderator = $bob->is_moderator;
+
+    # grant moderator privileges to Alice
+    $alice->is_moderator(1);  
+
 Returns non-zero if the participant has moderator privileges (role <= 2).
 
 =cut
 
 sub is_moderator {
     my $self = shift;
-    my $data = shift || $self;
 
-    $data = $self->BUILDARGS($data);
+    my $role_id;
 
-    my $role_id = Elive::Entity::Role->stringify($data->{role});
+    if (@_) {
+	my $is_moderator = shift;
+	$role_id = $is_moderator? 2 : 3;
+
+	$self->role( Elive::Entity::Role->new( $role_id ) )
+	    unless $role_id == $self->role->stringify;
+    }
+    else {
+	$role_id = $self->role->stringify;
+    }
 
     return $role_id && $role_id <= 2;
 }
