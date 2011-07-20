@@ -1,6 +1,6 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 54;
+use Test::More tests => 56;
 use Test::Warn;
 
 use Carp; $SIG{__DIE__} = \&Carp::confess;
@@ -78,8 +78,10 @@ is($participants->[0]->user->stringify, '112233', 'user stringified');
 is($participants->[0]->role->stringify, '2', 'role stringified');
 
 is($participants->[0]->stringify, '112233=2', 'participant stringified');
+ok($participants->[0]->is_moderator, 'is_moderator() on moderator');
 
 is($participants->[2]->stringify, 'dave=3', 'participant stringified');
+ok(! $participants->[2]->is_moderator, 'is_moderator() on regular participant');
 
 is($participants->stringify, '112233=2;223344=3;dave=3;late_comer=3',
    'participants stringification');

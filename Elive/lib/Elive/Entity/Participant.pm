@@ -50,7 +50,7 @@ has 'guest' => (is => 'rw', isa => 'Elive::Entity::InvitedGuest|Str',
 __PACKAGE__->_alias( invitedGuestId => 'guest' );
 
 has 'role' => (is => 'rw', isa => 'Elive::Entity::Role|Str',
-	       documentation => 'Role of the user within this meeting',
+	       documentation => 'Role level of the meeting participant',
 	       coerce => 1,
     );
 
@@ -147,6 +147,23 @@ sub BUILDARGS {
 
 coerce 'Elive::Entity::Participant' => from 'Str'
     => via { __PACKAGE__->new( $_) };
+
+=head2 is_moderator
+
+Returns non-zero if the participant has moderator privileges (role <= 2).
+
+=cut
+
+sub is_moderator {
+    my $self = shift;
+    my $data = shift || $self;
+
+    $data = $self->BUILDARGS($data);
+
+    my $role_id = Elive::Entity::Role->stringify($data->{role});
+
+    return $role_id && $role_id <= 2;
+}
 
 =head2 participant
 

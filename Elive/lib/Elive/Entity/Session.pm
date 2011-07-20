@@ -673,6 +673,9 @@ example, to print the list of participants for a session:
 	else {
 	    die "unknown participant type $type"; # elm 4.x? ;-)
 	}
+
+        print " (moderator)" if $_->is_moderator;
+
         print "\n";
     }
 
