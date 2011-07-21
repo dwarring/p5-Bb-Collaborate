@@ -576,15 +576,15 @@ Each participant in the list can be one of several things:
 
 =over 4
 
-=item * A user-id string, in the format '<userId>'
+=item * A user-id string, in the format C<E<lt>userIdE<gt>>
 
-=item * A pre-fetched user object of type Elive::Entity::User
+=item * A pre-fetched user object of type L<Elive::Entity::User>
 
-=item * A group-id string, in the format '*<groupId>'
+=item * A group-id string, in the format C<*E<lt>groupIdE<gt>>
 
-=item * A pre-fetched group object of type Elive::Entity::Group
+=item * A pre-fetched group object of type L<Elive::Entity::Group>
 
-=item * An invited guest, in the format 'Display Name(loginName)'
+=item * An invited guest, in the format C<Display Name(loginName)>
 
 =back
 
@@ -882,13 +882,13 @@ calculations (E.g. C<Australia/Melbourne>).
 
 =head2 Recurring Sessions - Example
 
-For example, the following inserts three meetings, of duration 30 minutes,
+For example, the following inserts three meetings, of duration 15 minutes,
 for today (starting in 5 minutes), tomorrow and the following day:
 
     use DateTime;
 
     my $start = DateTime->now->add(minutes => 5);
-    my $end = $start->clone->add(minutes => 30);
+    my $end = $start->clone->add(minutes => 15);
     my $until = $end->clone->add(days => 2);
 
     my $start_msec = $start->epoch . '000';
@@ -901,7 +901,7 @@ for today (starting in 5 minutes), tomorrow and the following day:
 	password          => 'sssh!',
 	privateMeeting    => 1,
 	restrictedMeeting => 1,
-
+        add_participants => '*the_team',
 	start =>  $start_msec,
 	end   => $end_msec,
 
@@ -998,7 +998,7 @@ PIN for participants telephony.
 =head2 participants (Array)
 
 A list of users, groups and invited guest that are attending the session,
-along with their access levels (moderators or participants). See
+along with their access levels (moderator or participant). See
 L<Working with Participants>.
 
 =head2 password (Str)

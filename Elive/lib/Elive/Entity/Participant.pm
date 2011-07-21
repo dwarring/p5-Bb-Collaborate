@@ -147,17 +147,30 @@ sub BUILDARGS {
 coerce 'Elive::Entity::Participant' => from 'Str'
     => via { __PACKAGE__->new( $_) };
 
+=head2 participant
+
+Returns a participant. This can either be of type L<Elive::Entity::User> (type
+0), L<Elive::Entity::Group> (type 1) or L<Elive::Entity::InvitedGuest> (type 2).
+
+=cut
+
+sub participant {
+    my ($self) = @_;
+
+    return   (! $self->type)    ? $self->user
+           : ($self->type == 1) ? $self->group
+	   : $self->guest;
+}
+
 =head2 is_moderator
 
-Setter / getter for moderator privileges:
+Utility method to exam or set a meeting participant's moderator privileges.
 
     # does Bob have moderator privileges?
     my $is_moderator = $bob->is_moderator;
 
     # grant moderator privileges to Alice
     $alice->is_moderator(1);  
-
-Returns non-zero if the participant has moderator privileges (role <= 2).
 
 =cut
 
@@ -178,21 +191,6 @@ sub is_moderator {
     }
 
     return $role_id && $role_id <= 2;
-}
-
-=head2 participant
-
-Returns a participant. This can either be of type L<Elive::Entity::User> (type
-0), L<Elive::Entity::Group> (type 1) or L<Elive::Entity::InvitedGuest> (type 2).
-
-=cut
-
-sub participant {
-    my ($self) = @_;
-
-    return   (! $self->type)    ? $self->user
-           : ($self->type == 1) ? $self->group
-	   : $self->guest;
 }
 
 =head2 stringify
