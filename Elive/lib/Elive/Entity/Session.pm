@@ -576,15 +576,15 @@ Each participant in the list can be one of several things:
 
 =over 4
 
-=item * A user-id string, in the format C<E<lt>userIdE<gt>>
+=item * A user-id string, in the format: C<E<lt>userIdE<gt>>
 
 =item * A pre-fetched user object of type L<Elive::Entity::User>
 
-=item * A group-id string, in the format C<*E<lt>groupIdE<gt>>
+=item * A group-id string, in the format: C<*E<lt>groupIdE<gt>>
 
 =item * A pre-fetched group object of type L<Elive::Entity::Group>
 
-=item * An invited guest, in the format C<Display Name(loginName)>
+=item * An invited guest, in the format: C<Display Name(loginName)>
 
 =back
 
@@ -639,12 +639,12 @@ example, to print the list of participants for a session:
     my $session = Elive::Entity::Session->retrieve($session_id);
     my $participants = $session->participants;
 
-    foreach (@$participants) {
-	my $type = $_->type;
+    foreach my $participant (@$participants) {
+	my $type = $participant->type;
 	my $str;
 
 	if (! $type)  {
-	    my $user = $_->user;
+	    my $user = $participant->user;
 	    my $loginName = $user->loginName;
 	    my $email = $user->email;
 
@@ -653,7 +653,7 @@ example, to print the list of participants for a session:
 		if $email;
 	}
 	elsif ($type == 1) {
-	    my $group = $_->group;
+	    my $group = $participant->group;
 	    my $id = $group->groupId;
 	    my $name = $group->name;
 
@@ -662,7 +662,7 @@ example, to print the list of participants for a session:
 		if $name;
 	}
 	elsif ($type == 2) {
-	    my $guest = $_->guest;
+	    my $guest = $participant->guest;
 	    my $loginName = $guest->loginName;
 	    my $displayName = $guest->displayName;
 
@@ -674,7 +674,7 @@ example, to print the list of participants for a session:
 	    die "unknown participant type $type"; # elm 4.x? ;-)
 	}
 
-        print " (moderator)" if $_->is_moderator;
+        print " [moderator]" if $participant->is_moderator;
 
         print "\n";
     }
@@ -691,11 +691,11 @@ There are three types of preloads:
 
 =over 4
 
-=item (1) whiteboard (file extension C<*.wbd>)
+=item (1) C<whiteboard>: file extension C<*.wbd>
 
-=item (2) Elluminate Plan! (file extension C<*.elp>)
+=item (2) C<plan> (Elluminate Plan!): file extensions: C<*.elp>,  C<*.elpx>
 
-=item (3) Multimedia (everything else)
+=item (3) C<media> (Multimedia): anything else
 
 =back
 
@@ -901,7 +901,7 @@ for today (starting in 5 minutes), tomorrow and the following day:
 	password          => 'sssh!',
 	privateMeeting    => 1,
 	restrictedMeeting => 1,
-        add_participants => '*the_team',
+        participants => '*the_team',
 	start =>  $start_msec,
 	end   => $end_msec,
 

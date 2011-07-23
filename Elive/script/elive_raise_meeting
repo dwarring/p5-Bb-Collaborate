@@ -15,9 +15,12 @@ use Elive::Util;
 use Elive::Entity::Preload;
 use Elive::Entity::User;
 use Elive::Entity::Participant;
+use Elive::View::Session;
 
 use URI;
 use URI::Escape;
+
+use YAML;
 
 =head1 NAME
 
@@ -105,6 +108,7 @@ elive_raise_meeting
 
  -? --help                  # print this help
  -v --version               # print version and exit
+ --dump=yaml                # out created sessions as YAML
  --debug=n                  # set debug level
 
 =head1 DESCRIPTION
@@ -154,6 +158,7 @@ my $cost_center;
 my @moderators;
 my @participants;
 my $exit_url;
+my $dump;
 
 my %occurs;
 my $version;
@@ -200,6 +205,7 @@ sub main {
 	'cost_center|cost_centre=s' => \$cost_center,
 	'use=s' => \$class,
 	'exit_url=s' => \$exit_url,
+	'dump=s' => \$dump,
     )
 	or die pod2usage(1);
 
@@ -463,19 +469,12 @@ sub main {
 
     my @sessions = $class->insert(\%session_data);
 
-    foreach my $session (@sessions) {
-	print "created meeting: ".$session->name." with id ".$session->sessionId."\n";
-
-	if (@users || @groups || @guests) {
-
-	    show_participants($session);
-
-	}
-	else {
-	    print "no participants\n";
-	}
-
-	print "session address: ".$session->web_url."\n";
+    if ($dump && $dump =~ m{yaml}i) {
+	_yaml_dump_sessions( 'Elive::View::Session' => @sessions );
+    }
+    else {
+	warn "ignoring option: -dump=$dump" if $dump;
+	_echo_sessions( @sessions );
     }
 
     Elive->disconnect;
@@ -686,4 +685,49 @@ sub _get_occurrences {
     }
 
     return ($recurrence_count, $recurrence_days);
+}
+
+sub _echo_sessions {
+    my @sessions = @_;
+
+    foreach my $session (@sessions) {
+	print "created meeting: ".$session->name." with id ".$session->sessionId."\n";
+
+	if (@{ $session->participants }) {
+
+	    show_participants($session);
+
+	}
+	else {
+	    print "no participants\n";
+	}
+
+	print "session address: ".$session->web_url."\n";
+    }
+
+}
+
+########################################################################
+
+sub _yaml_dump_sessions {
+    my $class = shift;
+    my @sessions = @_;
+
+    my @props = $class->properties;
+    my %derivable = $class->derivable;
+    my $entity_name = $class->entity_name;
+
+    foreach my $session (@sessions) {
+	
+	my %vals = (
+	    map {
+		my $meth = $derivable{$_} || $_;
+		my $val = $session->$meth;
+		$_ => $val,
+	    } (sort (@props, keys %derivable)));
+
+	print YAML::Dump {$entity_name => \%vals};
+
+    }
+
 }

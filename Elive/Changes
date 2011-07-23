@@ -1,5 +1,13 @@
 Revision history for Elive
 
+1.03    24th July 2011
+
+        [enhancements]
+        elive_raise_meeting - added '--dump=yaml' option
+
+        [pod]
+        A few minor corrections to Elive::Entity::Session pod.    
+
 1.02    21st July 2011
 
         [pod]
@@ -14,7 +22,7 @@ Revision history for Elive
 
         [bug fixes]
         Elive::Entity::User
-        - corrected ineffective BULDARGS() method.
+        - corrected ineffective BUILDARGS() method.
 
 1.01    20th July 2011
         [bug fixes]
