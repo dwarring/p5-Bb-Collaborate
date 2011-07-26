@@ -4,6 +4,7 @@ use warnings; use strict;
 use Mouse;
 
 use Carp;
+use Try::Tiny;
 
 extends 'Elive::StandardV2';
 
@@ -73,7 +74,7 @@ sub _freeze {
 	# (a bit of layer bleed here...). Do we need a separate data type
 	# for base 64 encoded data?
 	#
-	eval {require SOAP::Lite}; die $@ if $@;
+	try {require SOAP::Lite} catch {die $_};
 	$_ = SOAP::Data->type(base64 => $_);
     }
 

@@ -4,6 +4,8 @@ use warnings; use strict;
 use Mouse;
 use Mouse::Util::TypeConstraints;
 
+use Try::Tiny;
+
 use Elive '0.84';
 
 extends 'Elive::DAO';
@@ -16,13 +18,13 @@ Elive::StandardV2 - Perl bindings for the Elluminate Live Standard Bridge (V2) [
 
 =head1 VERSION
 
-Version 0.01_0
+Version 0.01_2
 
 ** DEVELOPER RELEASE - UNDER CONSTRUCTION **
 
 =cut
 
-our $VERSION = '0.01_0';
+our $VERSION = '0.01_2';
 
 use 5.008003;
 
@@ -128,8 +130,8 @@ sub connect {
     die "usage: ${class}->connect(url, [login_name], [pass])"
 	unless ($class && $url);
 
-    eval {require Elive::StandardV2::Connection};
-    die $@ if $@;
+    try {require Elive::StandardV2::Connection}
+    catch {die $_};
 
     my $connection = Elive::StandardV2::Connection->connect(
 	$url,

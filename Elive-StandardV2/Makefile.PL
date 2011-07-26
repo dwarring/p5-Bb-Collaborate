@@ -21,9 +21,10 @@ requires(
     'Elive'                        => '0.84',
     'Mouse'                        => 0.56,
     'SOAP::Lite'                   => 0.712,
+    'Try::Tiny'                    => 0,
     'URI'                          => 0,
-    'YAML'                         => 0,
     'XML::Simple'                  => 0,
+    'YAML'                         => 0,
     );
 
 recommends(
