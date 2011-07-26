@@ -60,9 +60,9 @@ Elluminate Live! supports the following presentation file types:
 
 =over 4
 
-=item (*) Elluminate Live! Whiteboard files: C<.wbd>, C<.wbp>
+=item * Elluminate Live! Whiteboard files: C<.wbd>, C<.wbp>
 
-=item (*) Elluminate Plan! files: C<.elp>, C<.elpx>.
+=item * Elluminate Plan! files: C<.elp>, C<.elpx>.
 
 =back
 

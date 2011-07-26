@@ -210,9 +210,9 @@ has 'hideParticipantNames' => (is => 'rw', isa => 'Bool',
 
 Maximum number of simultaneous video cameras to be configured in the Elluminate Live! session at session launch time.
 
-For single server configurations, this value must be between 1 and C<maxAvailableCameras> (as returned from the L<EliveStandardV2::ServerConfiguration> C<get()> command).
+For single server configurations, this value must be between 1 and C<maxAvailableCameras> (as returned from the L<Elive::StandardV2::ServerConfiguration> C<get()> command).
 
-For multiple server configurations, this must be between 1 and versionMaxFilmersLimit for the version you are using (as returned from the L<EliveStandardV2::ServerVersions> C<get()> command).
+For multiple server configurations, this must be between 1 and versionMaxFilmersLimit for the version you are using (as returned from the L<Elive::StandardV2::ServerVersions> C<get()> command).
 
 If you don't specify a value, the default is taken from the C<Maximum Simultaneous Cameras> setting in the Default Session Preferences.
 No
@@ -227,7 +227,7 @@ has 'maxCameras' => (is => 'rw', isa => 'Int',
 
 Maximum number of simultaneous talkers to be configured in the Elluminate Live! session at session launch time.
 
-For single server configurations, this value must be between 1 and C<maxAvailableTalkers> property (as returned from the L<EliveStandardV2::ServerConfiguration> C<get()> command).
+For single server configurations, this value must be between 1 and C<maxAvailableTalkers> property (as returned from the L<Elive::StandardV2::ServerConfiguration> C<get()> command).
 
 For multiple server configurations, this must be between 1 and C<versionMaxTalkersLimit> for the version you are using (as returned from the C<Elive::StandardV2::ServerVersions> C<get()> command).
 
