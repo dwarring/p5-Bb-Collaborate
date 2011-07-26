@@ -22,7 +22,7 @@ This class is used to setup Telephony for a given Session
 
 __PACKAGE__->entity_name('SessionTelephony');
 
-=head1 SESSION TELEPHONY PROPERTIES
+=head1 PROPERTIES
 
 =head2 sessionId (Int)
 

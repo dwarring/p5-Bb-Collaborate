@@ -22,6 +22,8 @@ This class is used to locate and access Elluminate Live recordings.
 
 __PACKAGE__->entity_name('Recording');
 
+=head1 PROPERTIES
+
 =head2 recordingId (Long)
 
 The ELM-generated recordingId for the Elluminate Live! session recording.

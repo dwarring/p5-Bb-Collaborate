@@ -13,7 +13,15 @@ Elive::StandardV2::ServerVersions - Server Versions entity class
 
 =cut
 
+=head1 DESCRIPTION
+
+This class information regarding the Elluminate I<Live!> versions to which you have access.
+
+=cut
+
 __PACKAGE__->entity_name('ServerVersions');
+
+=head1 PROPERTIES
 
 =head2 versionId (Int)
 

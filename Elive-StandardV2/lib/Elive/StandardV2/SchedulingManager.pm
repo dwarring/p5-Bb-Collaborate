@@ -13,7 +13,15 @@ Elive::StandardV2::SchedulingManager - Scheduling Manager entity class
 
 =cut
 
+=head1 DESCRIPTION
+
+Gets the scheduling manager (ELM) and version.
+
+=cut
+
 __PACKAGE__->entity_name('SchedulingManager');
+
+=head1 PROPERTIES
 
 =head2 manager (Str)
 

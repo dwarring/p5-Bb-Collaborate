@@ -17,6 +17,8 @@ This is the element class of Elive::StandardV2::SessionAttendance::Attendees
 
 __PACKAGE__->entity_name('Attendee');
 
+=head1 PROPERTIES
+
 =head2 attendeeName (Str)
 
 The display name of the attendee as it appeared in the Elluminate Live! session.

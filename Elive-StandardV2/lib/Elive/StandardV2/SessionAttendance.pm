@@ -24,6 +24,8 @@ __PACKAGE__->params(sessionId => 'Int',
 		    endTime => 'HiResDate',
     );
 
+=head1 PROPERTIES
+
 =head2 roomName (Str)
 
 The name of the room. This is derived from the name of the session as it was defined at the time the scheduled session was launched.
@@ -81,6 +83,7 @@ __PACKAGE__->_alias(attendeeResponseCollection => 'attendees');
 
 Gets a session attendance report. It returns a reference to an array of Elive::StandardV2::SessionAttendance objects.
 
+The attendance information is returned for the specified session for the 24 hour period starting from the date/time passed in. If the session ran more than once during that 24 hour period, you will get the attendance data for all instances of the session that ran during that date.
 =cut
 
 1;

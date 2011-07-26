@@ -69,7 +69,7 @@ __PACKAGE__->params(
 
 =cut
 
-=head1 SESSION PROPERTIES
+=head1 PROPERTIES
 
 =head2 sessionId (Int)
 

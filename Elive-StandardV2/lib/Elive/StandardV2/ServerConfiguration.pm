@@ -11,7 +11,15 @@ Elive::StandardV2::ServerConfiguration - Server Configuration entity class
 
 =cut
 
+=head1 DESCRIPTION
+
+This class contains important configuration settings.
+
+=cut
+
 __PACKAGE__->entity_name('ServerConfiguration');
+
+=head1 PROPERTIES
 
 =head2 boundaryTime (Int)
 

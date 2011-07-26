@@ -21,6 +21,14 @@ method.
 
 __PACKAGE__->entity_name('Presentation');
 
+=head1 PROPERTIES
+
+=head2 presentationId (Int)
+
+Identifier of the presentation file in the ELM repository.
+
+=cut
+
 has 'presentationId' => (is => 'rw', isa => 'Int', required => 1);
 __PACKAGE__->primary_key('presentationId');
 __PACKAGE__->params(

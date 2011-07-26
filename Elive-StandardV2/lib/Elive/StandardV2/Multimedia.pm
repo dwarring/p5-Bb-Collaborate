@@ -21,6 +21,14 @@ method.
 
 __PACKAGE__->entity_name('Multimedia');
 
+=head1 PROPERTIES
+
+=head2 multimediaId (Int)
+
+Identifier of the multimedia file in the ELM repository.
+
+=cut
+
 has 'multimediaId' => (is => 'rw', isa => 'Int', required => 1);
 __PACKAGE__->primary_key('multimediaId');
 __PACKAGE__->params(
