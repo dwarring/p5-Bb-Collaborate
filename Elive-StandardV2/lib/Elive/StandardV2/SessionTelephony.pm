@@ -16,7 +16,7 @@ Elive::StandardV2::SessionTelephony - Elluminate SessionTelephony instance class
 
 =head1 DESCRIPTION
 
-This class is used to setup Telephony for a given Session
+This class is used to setup telephony information for an existing session
 
 =cut
 
