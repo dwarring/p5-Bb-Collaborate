@@ -93,7 +93,7 @@ sub test_connection {
 }
 
 sub generate_id {
-    my @chars = ('a' .. 'z', 'A' .. 'Z', '0' .. '9', '.', '_', '-');
+    my @chars = ('a' .. 'z', 'A' .. 'Z', '0' .. '9',  '_');
     my @p = map {$chars[ sprintf("%d", rand(scalar @chars)) ]} (1.. 6);
 
     return join('', @p);

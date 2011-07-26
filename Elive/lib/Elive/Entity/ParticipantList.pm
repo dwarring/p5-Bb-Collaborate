@@ -27,10 +27,6 @@ __PACKAGE__->primary_key('meetingId');
 __PACKAGE__->params(users => 'Str');
 
 has 'participants' => (is => 'rw', isa => 'Elive::Entity::Participants', coerce => 1);
-#
-# NOTE: thawed data may be returned as the 'participants' property.
-# but for frozen data the parameter name is 'users'.
-#
 __PACKAGE__->_alias(users => 'participants', freeze => 1);
 
 =head1 NAME
@@ -175,33 +171,67 @@ sub update {
 
     my $participants = $self->_set_participant_list( $users, $groups, $guests );
     #
-    # do our readback
+    # do our own readback and reread from the database (The setParticipantList
+    # command doesn't return a response object.)
     #
     $self->revert;
     my $class = ref($self);
     $self = $class->retrieve([$self->id], connection => $self->connection);
 
-    my ($added_users, $_added_groups, $_added_guests) = $self->participants->_group_by_type;
-    #
-    # a common scenario is adding unknown users. Check for this specific
-    # condition and raise a specific friendlier error.
-    #
-    my %requested_users = %$users;
-    my $requested_user_count = scalar keys %requested_users;
-    delete @requested_users{ keys %$added_users };
-    my @rejected_users = sort keys %requested_users;
-    my $rejected_user_count = scalar @rejected_users;
-
-    Carp::croak "unable to add $rejected_user_count of $requested_user_count participants; rejected users: @rejected_users"
-	if $rejected_user_count;
-
-    #
-    # todo currently bypassing our own readback check!
-    $class->SUPER::_readback_check({meetingId => $self->meetingId,
-				    participants => $participants},
-				   [$self]);
+    $class->_readback_check({meetingId => $self->meetingId,
+			     participants => $participants},
+			    [$self]);
 
     return $self;
+}
+
+#
+# _readback_check reimplementation of our validation rule
+#  -- warn when input participants are omitted
+#  -- error when output contains participants that weren't in the input
+#
+
+sub _readback_check {
+    my $class = shift;
+    my $_data = shift;
+    my $rows = shift;
+    my %opt = @_;
+
+    my %data = %{ $_data };
+
+    if (my $participants = delete $data{participants}) {
+
+	my $participants_in = Elive::Entity::Participants->new( $participants );
+	my %requested = map {Elive::Entity::Participant->stringify($_) => 1} @$participants_in;
+	my $requested_count = scalar keys %requested;
+
+	foreach my $row (@$rows) {
+
+	    if ($participants = $row->{participants}) {
+		my $participants_out = Elive::Entity::Participants->new( $participants );
+		my %actual = map {Elive::Entity::Participant->stringify($_) => 1} @$participants_out;
+		my %rejected = %requested;
+		delete @rejected{ keys %actual };
+
+		my @rejected_participants = sort keys %rejected;
+		my $rejected_count = scalar @rejected_participants;
+
+		Carp::croak "unable to add $rejected_count of $requested_count participants; rejected participants: @rejected_participants"
+		    if $rejected_count;
+
+		my %extra = %actual;
+		delete @extra{ keys %requested };
+		my @extra_participants = sort keys %extra;
+		my $extra_count = scalar @extra_participants;
+
+		Carp::croak "found $extra_count extra participants: @extra_participants"
+		    if $extra_count;
+
+	    }
+	}
+    }
+
+    $class->SUPER::_readback_check( \%data, $rows, %opt);
 }
 
 sub _build_elm2x_participants {
@@ -214,14 +244,13 @@ sub _build_elm2x_participants {
     #
    if (keys %$guests) {
        # no can do invited guests
-	carp join(' ', "ignoring guests:", sort keys %$guests);
+	carp join(' ', "ignoring invited guests:", sort keys %$guests);
 	%$guests = ();
     }
 
     foreach my $group_spec (keys %$groups) {
 	#
-	# Current restriction with passing groups via setParticipantList
-	# etc adapters.
+	# Best we can do with groups is to expand members
 	#
 	carp "client side expansion of group: $group_spec";
 	my $role = delete $groups->{ $group_spec };
@@ -306,7 +335,8 @@ sub insert {
 
     my $meeting_id = delete $data->{meetingId}
     or die "can't insert participant list without meetingId";
-    my $self = $class->retrieve([$meeting_id], reuse => 1);
+    my $self = $class->retrieve([$meeting_id], reuse => 1)
+	or die "No such meeting: $meeting_id";
 
     $self->update($data, %opt);
 

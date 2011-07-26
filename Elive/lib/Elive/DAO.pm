@@ -1477,7 +1477,7 @@ sub _retrieve_all {
     die "nothing to retrieve"
 	unless (keys %fetch);
 
-    return $class->_fetch(\%fetch, %opt, mode => 'fetch');
+    return $class->_fetch(\%fetch, %opt);
 }
 
 =head2 delete

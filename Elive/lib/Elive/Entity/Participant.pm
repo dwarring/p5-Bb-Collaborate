@@ -206,14 +206,15 @@ sub stringify {
     my $data = shift || $self;
 
     $data = $self->BUILDARGS($data);
+    my $role_id = Elive::Entity::Role->stringify($data->{role});
 
     if (! $data->{type} ) {
 	# user => 'userId'
-	return Elive::Entity::User->stringify($data->{user}).'='.Elive::Entity::Role->stringify($data->{role});
+	return Elive::Entity::User->stringify($data->{user}).'='.$role_id;
     }
     elsif ($data->{type} == 1) {
 	# group => '*groupId'
-	return Elive::Entity::Group->stringify($data->{group}).'='.Elive::Entity::Role->stringify($data->{role});
+	return Elive::Entity::Group->stringify($data->{group}).'='.$role_id;
     }
     elsif ($data->{type} == 2) {
 	# guest => 'displayName(loginName)'

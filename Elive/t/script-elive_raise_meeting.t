@@ -180,7 +180,7 @@ SKIP: {
 		is($stderr, '', "stderr empty ($class)");
 	    }
 	    else {
-		like($stderr, qr{ignoring guests}, "std has 'ignoring guests' warning");
+		like($stderr, qr{ignoring invited guests}, "std has 'ignoring invitied guests' warning");
 	    }
 
 	    my $last_meeting_start;

@@ -1,5 +1,12 @@
 Revision history for Elive
 
+1.04    tba
+
+        [refactoring]
+        Elive::Entity::ParticipantList - moved participant update() checks
+        into _readback_checks() - for consistancy and for the benefit of
+        Elive::Entity::Session.
+
 1.03    24th July 2011
 
         [enhancements]

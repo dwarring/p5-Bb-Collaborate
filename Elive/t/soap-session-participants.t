@@ -1,6 +1,6 @@
 #!perl
 use warnings; use strict;
-use Test::More tests => 28;
+use Test::More tests => 29;
 use Test::Exception;
 use Test::Builder;
 
@@ -27,7 +27,7 @@ SKIP: {
     my %result = t::Elive->test_connection( only => 'real');
     my $auth = $result{auth};
 
-    skip ($result{reason} || 'skipping live tests', 28)
+    skip ($result{reason} || 'skipping live tests', 29)
 	unless $auth;
 
     my $connection_class = $result{class};
@@ -175,14 +175,7 @@ SKIP: {
     is($p->[0]->role && $p->[0]->role->roleId, 2,
        'participant_list reset - single participant has moderator role');
 
-    if (! $elm_3_3_4_or_better ) {
-	#
-	# The next test verifies bug fixes under ELM 3.3.4/10.0.2. It probably wont
-	# work with 10.0.1 or earlier.
-	#
-	$t->skip('skipping participant long-list test for Elluminate < v10.0.2');
-    }
-    elsif ( !$participant2 )  {
+    if ( !$participant2 )  {
 	$t->skip('not enough participants to run long-list test');
     }
     else { 
@@ -205,6 +198,15 @@ SKIP: {
 	    }
 	}
 
+	dies_ok( sub {
+	  $session->update( {participants => [
+				-moderators => Elive->login,
+				-others => @big_user_list
+				 ] } )
+		  }, 'session participants long-list - dies'
+	      );
+
+	$session->revert;
 	#
 	# refetch the participant list and check that all real users
 	# are present
