@@ -12,21 +12,21 @@ use Carp;
 
 =head1 NAME
 
-Elive::StandardV2 - Perl bindings for the Elluminate Live Standard Bridge (V2)
+Elive::StandardV2 - Perl bindings for the Elluminate Live Standard Bridge (V2) [TRIAL]
 
 =head1 VERSION
 
-Version 0.00_9
+Version 0.01_0
 
 ** DEVELOPER RELEASE - UNDER CONSTRUCTION **
 
 =cut
 
-our $VERSION = '0.00_9';
+our $VERSION = '0.01_0';
 
 use 5.008003;
 
-=head1 SYNOPSIS
+=head1 EXAMPLE
 
     use Elive::StandardV2;
     use Elive::StandardV2::Session;
@@ -55,7 +55,7 @@ use 5.008003;
 
     my $session = Elive::StandardV2::Session->insert(\%session_data);
 
-    my $url = $session->url( userId => 'bob');
+    my $url = $session->web_url( userId => 'bob');
     print "bob's session link is: $url\n";
 
 =head1 DESCRIPTION
@@ -347,6 +347,11 @@ L<http://cpanratings.perl.org/d/Elive-StandardV2>
 L<http://search.cpan.org/dist/Elive-StandardV2/>
 
 =back
+
+=head1 SEE ALSO
+
+I<Elluminate_Live_Standard_Bridge_API_ELM_v2.0.pdf> - this contains essential
+background information and a full description of the available commands.
 
 =head1 ACKNOWLEDGEMENTS
 

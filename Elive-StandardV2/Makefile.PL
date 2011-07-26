@@ -34,7 +34,6 @@ test_requires (
     'Test::Builder'                => 0,
     'Test::More'                   => 0,
     'Test::Warn'                   => 0,
-    'DateTime'                     => 0,
     'Test::Exception'              => 0,
     'version'                      => 0,
     );

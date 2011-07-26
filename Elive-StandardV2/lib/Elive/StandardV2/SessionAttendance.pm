@@ -14,7 +14,7 @@ Elive::StandardV2::SessionAttendance - Elluminate Session Attendance Report
 
 =head1 DESCRIPTION
 
-This is the main entity class for attendees.
+This is the main entity class for session attendance reports.
 
 =cut
 
@@ -24,15 +24,41 @@ __PACKAGE__->params(sessionId => 'Int',
 		    endTime => 'HiResDate',
     );
 
+=head2 roomName (Str)
+
+The name of the room. This is derived from the name of the session as it was defined at the time the scheduled session was launched.
+
+=cut
+
 has 'roomName' => (is => 'rw', isa => 'Str', required => 1,
 		   documentation => 'Name of the room'
     );
 
+=head2 roomOpened (HiResDate)
+
+The date and time that the room opened (also known as the date and time session was launched) in milliseconds.
+
+=cut
+
 has 'roomOpened' => (is => 'rw', isa => 'HiResDate', required => 1,
 		       documentation => 'date and time that the session was launched');
 
+=head2 roomClosed (HiResDate)
+
+The date and time that the room shut down.
+
+=cut
+
 has 'roomClosed' => (is => 'rw', isa => 'HiResDate', required => 1,
 		       documentation => 'date and time that room shut down');
+
+=head2 attendees (Arr)
+
+This is a collection of L<Elive::StandardV2::SessionAttendance::Attendee> objects. This collection represents all the attendees who were present in this session between the roomOpen and roomClosed time.
+
+Since guests can attend sessions, not all the attendees may be users in your system.
+
+=cut
 
 has 'attendees' => (is => 'rw', isa => 'Elive::StandardV2::SessionAttendance::Attendees',
 		    coerce => 1, documentation => 'Session attendees',);

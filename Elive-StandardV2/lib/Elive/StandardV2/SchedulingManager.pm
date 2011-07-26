@@ -15,7 +15,20 @@ Elive::StandardV2::SchedulingManager - Scheduling Manager entity class
 
 __PACKAGE__->entity_name('SchedulingManager');
 
+=head2 manager (Str)
+
+The name of the Scheduling Server. This will be C<ELM>.
+
+=cut
+
 has 'manager' => (is => 'rw', isa => 'Str');
+
+=head2 version (Str)
+
+The version identification information of ELM. This will
+
+=cut
+
 has 'version' => (is => 'rw', isa => 'Str');
 
 =head1 METHODS

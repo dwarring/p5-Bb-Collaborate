@@ -80,17 +80,18 @@ sub _freeze {
     return $db_data;
 }
 
-sub insert {
+sub upload {
     my ($class, $spec, %opt) = @_;
 
-    my $connection = $opt{connection} || $class->connection
-	or die "not connected";
+    my $upload_data = $class->BUILDARGS( $spec );
+    $upload_data->{creatorId} ||= do {
+	my $connection = $opt{connection} || $class->connection
+	    or die "not connected";
 
-    my $insert_data = $class->BUILDARGS( $spec );
-    $insert_data->{creatorId} ||= $connection->user;
+	$connection->user;
+    };
 
-    my $self = $class->SUPER::insert($insert_data,
-				     %opt);
+    my $self = $class->SUPER::insert($upload_data, %opt);
 
     return $self;
 }

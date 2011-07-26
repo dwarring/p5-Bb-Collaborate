@@ -31,7 +31,7 @@ SKIP: {
   TODO: {
       local $TODO = 'insert of preload';
       lives_ok(sub {
-	  $multimedia = Elive::StandardV2::Multimedia->insert(
+	  $multimedia = Elive::StandardV2::Multimedia->upload(
 	      {
 		filename => 'elive-standardv2-soap-session-multimedia-t.mpeg',
 		content => $data,
