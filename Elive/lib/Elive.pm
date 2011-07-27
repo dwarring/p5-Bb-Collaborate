@@ -61,12 +61,10 @@ participants:
 
 =head1 DESCRIPTION
 
-Elive is a set of Perl bindings and entity definitions for the Elluminate
-I<Live!> Command Toolkit; in particular, the entity commands.
-
-These commands are available as a SOAP web service and can be used to automate
-the raising, management and connection to meetings; and other related entities,
-including users, groups, preloads and recordings.
+Elive is a set of Perl bindings and entity definitions for quick and easy
+integration with the Elluminate I<Live!> application. It can be used to
+automate a range of tasks including setting up meetings and participants,
+managing users and groups.
 
 =head1 BACKGROUND
 
@@ -303,10 +301,10 @@ for listing and retrieving entities. It serves as a simple demonstration
 script, and can be used to confirm basic operation of Elive.
 
 It server a secondary function of querying entity metadata. For example,
-to show the user entity:
+to show the C<user> entity:
 
     % elive_query
-    Elive query 0.xx  - type 'help' for help
+    Elive query 1.xx  - type 'help' for help
 
     elive> show
     usage: show group|meeting|...|serverParameters|session|users
@@ -330,7 +328,7 @@ This is a demonstration script to create a meeting, set options, assign
 participants and upload meeting preloads (whiteboard and media files to be
 used to used for the meeting.
 
-For more information, type the command: elive_raise_meeting --help
+For more information, type the command: C<elive_raise_meeting --help>
 
 =head2 elive_lint_config
 
@@ -409,7 +407,7 @@ David Warring, C<< <david.warring at gmail.com> >>
 
 =over 4
 
-=item (*) Elive does not support hosted (SAS) systems
+=item * Elive does not support hosted (SAS) systems
 
 The Elive distribution only supports the Elluminate SDK which is implemented
 by ELM (Elluminate Live Manager) session manager. This SDK is not supported by

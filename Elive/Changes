@@ -19,13 +19,13 @@ Revision history for Elive
 
         [pod]
         Noted insert() and update() methods as undergoing depreciation for
-        meetings, meeting parameters, server parameters and participant list.
+        meetings, meeting parameters, server parameters and participant lists.
 
         [enhancements]
         Elive::Entity::Participant
         - added is_participant() setter/getter
         Elive::Entity:Role
-        - added BUILDARGS() method and simplied coercements.
+        - added BUILDARGS() method and simplified coercements.
 
         [bug fixes]
         Elive::Entity::User

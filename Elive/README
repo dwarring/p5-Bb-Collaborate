@@ -129,7 +129,7 @@ POST INSTALLATION
     You will need to enter a password. You should then get:
 
         connecting to http://myserver/mysite...done
-        Elive query 0.nn (Elluminate Live 9.x.y) - type 'help' for help
+        Elive query 1.xx (Elluminate Live 10.y.z) - type 'help' for help
         elive>
 
     You can then try a simple query:

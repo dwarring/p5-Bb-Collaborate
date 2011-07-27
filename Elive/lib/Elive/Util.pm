@@ -313,7 +313,7 @@ Quarter hour advancement for the Time Module impoverished.
     my $end = Elive::Util::next_quarter_hour($start);
 
 Advance to the next quarter hour without the use of any supporting
-time modules. We just simply increment in seconds until localtime
+time modules. We just simply increment in seconds until C<localtime>
 indicates that we're exactly on a quarter hour and ahead of the start time.
 
 A small initial increment is added to ensure that the date remains

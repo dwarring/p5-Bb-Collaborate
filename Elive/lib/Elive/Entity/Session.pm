@@ -77,8 +77,7 @@ sub _delegate {
 	    if $prop eq 'meeting';
 	has $prop
 	    => (is => 'rw', isa => $class, coerce => 1,
-		handles => \@delegates,
-		lazy => 1,
+		handles => \@delegates, lazy => 1,
 		default => sub {$class->retrieve($_[0]->id, reuse => 1, connection => $_[0]->connection)},
 	    );
     }
@@ -253,8 +252,6 @@ sub _freeze {
 
     $class->__apply_freeze_aliases( \%frozen )
 	unless $opts{canonical};
-
-    # todo lots more tidying and construction
 
     return \%frozen;
 }
@@ -1074,7 +1071,6 @@ The maximum number of cameras.
 
 =head1 BUGS AND LIMITATIONS
 
-
 =over 4
 
 =item * meeting telephony is not yet supported
@@ -1091,8 +1087,8 @@ for the C<list> method:
 
 =item * Access to other properties requires a secondary fetch. This is done
 lazily on a per record basis and may be considerably slower. This includes
-access to attributes of meeting parameters, server parameter and  participant
-list.
+access to attributes of meeting parameters, server parameter and the
+participant list.
 
 =back
 

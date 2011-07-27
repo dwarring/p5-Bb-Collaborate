@@ -73,6 +73,7 @@ A series of sessions can be created using the C<recurrenceCount> and C<recurrenc
                             recurrenceCount => 3,
                             recurrenceDays  => 7,
                         });
+
 =cut
 
 sub insert {
@@ -229,5 +230,16 @@ sub derivable {
 	map { $_->derivable } sort values %$delegates,
 	);
 }
+
+=head1 BUGS AND LIMITATIONS
+
+The C<insert()> and C<update()> methods in this class are undergoing
+depreciation.
+
+Sites running ELM 3.0 / Elluminate Live 9.5 or newer should instead
+use L<Elive::Entity::Session> which implements the newer C<createSession>
+and C<updateSession> commands.
+
+=cut
 
 1;

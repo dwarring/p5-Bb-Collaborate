@@ -102,7 +102,7 @@ sub BUILDARGS {
 	unless defined $args{name} && length $args{name};
 
     $args{mimeType} ||= $class->_guess_mimetype($args{name});
-    $args{type} ||= ($args{name} =~ m{\.wbd$}ix     ? 'whiteboard'
+    $args{type} ||= ($args{name} =~ m{\.wb[pd]$}ix  ? 'whiteboard'
 		     : $args{name} =~ m{\.elpx?$}ix ? 'plan'
 		     : 'media');
 
@@ -154,7 +154,7 @@ There are three possible types of preloads: media, plan and whiteboard.
 
 Upload data from a client and create a preload.  If a C<mimeType> is not
 supplied, it will be guessed from the C<name> extension, using
-MIME::Types.
+L<MIME::Types>.
 
 =cut
 

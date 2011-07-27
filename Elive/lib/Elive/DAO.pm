@@ -32,7 +32,7 @@ foreach my $accessor (qw{_connection _db_data _deleted _is_copy}) {
 
 =head1 NAME
 
-    Elive::DAO - Abstract class for Elive Data Access Objects
+Elive::DAO - Abstract class for Elive Data Access Objects
 
 =head1 DESCRIPTION
 
@@ -1686,7 +1686,7 @@ The following are all equivalent, and are all ok:
 
 =head1 SEE ALSO
 
- Mouse
+L<Mouse>
 
 =cut
 

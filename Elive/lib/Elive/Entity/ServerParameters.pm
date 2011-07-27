@@ -39,7 +39,7 @@ has 'enableTelephony'
 
 has 'telephonyType'
     => (is => 'rw', isa => 'Str',
-			documentation => 'Can be either SIP/PHONE.' );
+	documentation => 'Can be either SIP/PHONE.' );
 
 has 'moderatorTelephonyAddress'
     => (is => 'rw', isa => 'Str',
