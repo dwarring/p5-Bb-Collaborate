@@ -1,6 +1,6 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 4;
+use Test::More tests => 6;
 use Test::Warn;
 
 =pod
@@ -16,6 +16,7 @@ use Elive::Entity::Group;
 use Elive::Entity::User;
 use Elive::Entity::Recording;
 use Elive::Entity::MeetingParameters;
+use Elive::Entity::ServerParameters;
 
 #
 # Group Ids can be non-numeric when configured to use LDAP for 
@@ -43,3 +44,10 @@ is($recording_types->{recordingId}, 'Str', "non-numeric recordingId's permitted"
 my $meeting_parameter_types = Elive::Entity::MeetingParameters->property_types;
 ok(exists $meeting_parameter_types->{inSessionInvitation},
    'inSessionInvitation declared for meeting parameters (9.0 compat)');
+
+#
+# some toolkit mispellings. required as long as we're supporting 9.x
+#
+my %to_aliases = Elive::Entity::ServerParameters->_to_aliases;
+is( $to_aliases{modertatorTelephonyAddress} => 'moderatorTelephonyAddress', 'moderatorTelephonyAddress (sic)');
+is( $to_aliases{modertatorTelephonyPIN} => 'moderatorTelephonyPIN', 'moderatorTelephonyPIN (sic)');
