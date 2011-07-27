@@ -101,7 +101,7 @@ sub stringify {
     my $data = shift;
 
     $data = $class
-	if !defined $data && ref$class;
+	if !defined $data && ref $class;
 
     return $data
 	unless $data && Elive::Util::_reftype($data);
@@ -318,7 +318,7 @@ sub _ordered_attributes {
 
     my $meta = $class->meta;
 
-    return map {$meta->get_attribute($_) || die "$class: unknown attribute $_"} ($class->_ordered_attribute_names);
+    return map {$meta->get_attribute($_) or die "$class: unknown attribute $_"} ($class->_ordered_attribute_names);
 }
 
 sub _cmp_col {
@@ -830,7 +830,7 @@ sub _thaw {
 
     foreach my $alias (keys %$aliases) {
 	my $to = $aliases->{$alias}{to}
-	|| die "malformed alias: $alias";
+	or die "malformed alias: $alias";
 
 	$prop_key_map{ ucfirst($alias) } = $to;
     }
@@ -1110,7 +1110,7 @@ sub _to_aliases {
 
     foreach my $alias (keys %$aliases) {
 	my $to = $aliases->{$alias}{to}
-	|| die "malformed alias: $alias";
+	or die "malformed alias: $alias";
 
 	$aliased_to{$alias} = $to;
     }
@@ -1541,7 +1541,7 @@ sub revert {
     my ($self, @props) = @_;
 
     my $db_data = $self->_db_data
-	|| die "object doesn't have db-data!? - can't cope";
+	or die "object doesn't have db-data!? - can't cope";
 
     @props = $self->is_changed
 	unless @props;
