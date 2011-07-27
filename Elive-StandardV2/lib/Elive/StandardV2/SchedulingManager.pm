@@ -33,7 +33,7 @@ has 'manager' => (is => 'rw', isa => 'Str');
 
 =head2 version (Str)
 
-The version identification information of ELM. This will
+The version identification information of ELM. This will include version (e.g., 3.3.0) and revision (e.g., 3368).
 
 =cut
 

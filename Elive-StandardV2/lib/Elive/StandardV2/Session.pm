@@ -99,7 +99,7 @@ If you don't specify a value, the default is taken from the C<Restrict Session A
 =cut
 
 has 'accessType' => (is => 'rw', isa => 'Int',
-	       documentation => 'access type; 1:private, 2:restricted, 3:public',
+	       documentation => '1=n/a, 2=restricted, 3=public',
     );
 
 =head2 allowInSessionInvites (Bool)
