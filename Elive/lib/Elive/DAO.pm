@@ -1318,7 +1318,7 @@ sub list {
     my @params;
 
     if (my $filter = delete $opt{filter} ) {
-	push( @params, filter => $filter );
+	push( @params, filter => Elive::Util::_freeze($filter => 'Str') );
     }
 
     my $connection = $opt{connection}

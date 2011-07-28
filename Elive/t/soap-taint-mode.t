@@ -2,11 +2,13 @@
 use warnings; use strict;
 use Test::More;
 use Test::Exception;
-
+use Test::Builder;
 use Elive;
 
 use lib '.';
 use t::Elive;
+
+my $t = Test::Builder->new();
 
 my $class = 'Elive::Entity::User' ;
 
@@ -19,7 +21,7 @@ eval "use $MODULE";
 plan skip_all => "$MODULE not available for taint tests"
     if $@;
 
-plan tests => 12;
+plan tests => 15;
 #
 # restrict our user tests to the mock connections. Live updates
 # are just to dangerous. There is also the possibility that the
@@ -98,6 +100,32 @@ dies_ok( sub { $pleb_user = $class->retrieve([$user_id_tainted]) },
 lives_ok( sub { $pleb_user = $class->retrieve([$user_id_untainted]) },
 	 'retrieve on tainted data - dies');
 isa_ok($pleb_user, $class, 'retrieved user');
+
+if ($connection_class->isa('t::Elive::MockConnection')) {
+
+    $t->skip('skipping "list" test on mock connection')
+	for (1 .. 3);
+
+}
+else {
+
+    $pleb_user = undef;
+    my @pleb_users;
+
+    dies_ok( sub {
+	@{ $class->list( filter => "firstName = '".$firstname_tainted. "'" );
+	} },
+	     '"list()" with tainted filter - dies'
+	);
+
+    lives_ok( sub {
+	@pleb_users = @{ $class->list( filter => "firstName = '".$firstname_untainted. "'" );
+	    } },
+	     '"list()" with untainted filter - lives'
+	);
+
+    isa_ok($pleb_users[0], $class, '"list()" output');
+}
 
 $pleb_user->delete;
 

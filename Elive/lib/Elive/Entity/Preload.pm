@@ -177,8 +177,10 @@ sub upload {
 	# 2. Now upload data to it
 	#
 	my $som = $connection->call('streamPreload',
-				    preloadId => $self->preloadId,
-				    length => $self->size,
+				    %{ $self->_freeze(
+					   {preloadId => $self->preloadId,
+					    length => $self->size,
+					   })},
 				    stream => (SOAP::Data
 					       ->type('hexBinary')
 					       ->value($content)),

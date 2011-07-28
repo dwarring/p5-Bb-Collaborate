@@ -61,7 +61,9 @@ sub _freeze {
 	    elsif ($type =~ m{^(Str|enum)}ix) {
 
 		#
-		# low level check for taintness
+		# low level check for taintness. Only applicible when
+		# perl program is running in taint mode
+		#
 		die "attempt to freeze tainted data (type $type): $_"
 		    if Scalar::Util::tainted($_);
 		#

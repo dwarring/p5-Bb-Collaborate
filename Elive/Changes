@@ -1,6 +1,19 @@
 Revision history for Elive
 
-1.04    tba
+1.04    28th July 2011
+
+        [security]
+        Elive::DAO - now honors taint mode. Any attempts to freeze tainted
+        strings (type Str) now results in an error.
+        - added new tests t/soap_taint-mode.t
+        - added security notes to README
+
+        Notes:
+        - Taint checking is limited to outgoing strings. No attempts are
+          made to test integers (Int) or booleans (Bool). However both are
+          sanitised when building requests
+        - Tainting is restricted to outgoing data only. No attempt is made
+          to apply taint checking to incoming data from SOAP::Lite requests.
 
         [refactoring]
         Elive::Entity::ParticipantList - moved participant update() checks

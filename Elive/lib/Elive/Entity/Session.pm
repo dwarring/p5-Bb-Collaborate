@@ -465,6 +465,7 @@ sub list {
 
     my $connection = $opt{connection} || $class->connection
 	or die "not connected";
+
     my $meetings = Elive::Entity::Meeting->list(%opt);
 
     my @sessions = map {

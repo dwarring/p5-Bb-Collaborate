@@ -16,6 +16,7 @@ __PACKAGE__->primary_key('recordingId');
 __PACKAGE__->params(
     userId => 'Str',
     userIP => 'Str',
+    length => 'Int',
     );
 
 has 'creationDate' => (is => 'rw', isa => 'HiResDate', required => 1,
@@ -102,7 +103,9 @@ sub download {
 	or die "not connected";
 
     my $som = $connection->call('getRecordingStream',
-				recordingId => $recording_id,
+				%{ $self->_freeze({
+				       recordingId => $recording_id,
+				       })},
 	);
 
     my $results = $self->_get_results($som, $connection);
@@ -165,8 +168,9 @@ sub upload {
 	    or die "not connected";
 
 	my $som = $connection->call('streamRecording',
-				    recordingId => $self->recordingId,
-				    length => $size,
+				    %{ $class->_freeze({
+					   recordingId => $self->recordingId,
+					   length => $size}) },
 				    stream => (SOAP::Data
 					       ->type('hexBinary')
 					       ->value($binary_data)),
