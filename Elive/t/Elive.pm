@@ -85,8 +85,18 @@ sub test_connection {
 	$result{class} = 't::Elive::MockConnection';
     }
 
-    if ($result{auth} && (my $debug = Elive->debug)) {
-	push (@{$result{auth}}, debug => $debug);
+    if ($result{auth}) {
+
+	foreach (@{ $result{auth} }) {
+	    #
+	    # untaint
+	    #
+	    m{(.*)};
+	    $_ = $1;
+	}
+
+	push (@{$result{auth}}, debug => Elive->debug)
+	    if Elive->debug;
     }
 
     return %result;

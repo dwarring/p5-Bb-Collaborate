@@ -75,9 +75,9 @@ elive_raise_meeting
                               #  - on:     starts automatically
                               #  - manual: recording started by moderator
  -recording_resolution cg|cc|mg|mc|fg|fc  # recording resolution (elm3)
-                              #  - cg:course gray, cc:course color,
-                              #  - mg:medium gray, mc:medium color,
-                              #  - fg:fine gray,   fc:fine color
+                              #  - cg:course gray  - cc:course color
+                              #  - mg:medium gray  - mc:medium color
+                              #  - fg:fine gray    - fc:fine color
  -seats        count          # number of seats to reserve on server
  -[no]invites                 # allow in-session invitations
  -[no]follow                  # lock whiteboard to moderator view (elm3)

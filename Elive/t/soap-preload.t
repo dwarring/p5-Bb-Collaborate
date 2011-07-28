@@ -262,7 +262,9 @@ SKIP: {
 	$preloads[$i]->delete;
     }
 
-    if (my $path_on_server = $ENV{ELIVE_TEST_PRELOAD_SERVER_PATH}) {
+    if ($ENV{ELIVE_TEST_PRELOAD_SERVER_PATH}) {
+	# untaint
+	my ($path_on_server) = ($ENV{ELIVE_TEST_PRELOAD_SERVER_PATH} =~ m{(.*)});
 	diag 'running preload import tests ($ELIVE_TEST_PRELOAD_SERVER_PATH set)';
 	diag "importing server-side file: $path_on_server";
 	my $basename = File::Basename::basename($path_on_server);
