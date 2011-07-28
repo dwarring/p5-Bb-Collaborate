@@ -1,9 +1,10 @@
 #!perl
 use warnings; use strict;
-use Test::More tests => 22;
+use Test::More tests => 25;
 use Test::Exception;
 use Test::Builder;
 use version;
+use Try::Tiny;
 
 use lib '.';
 use t::Elive::StandardV2;
@@ -18,7 +19,7 @@ our $connection;
 
 SKIP: {
 
-    my $skippable = 22;
+    my $skippable = 25;
 
     my %result = t::Elive::StandardV2->test_connection();
     my $auth = $result{auth};
@@ -26,8 +27,8 @@ SKIP: {
    skip ($result{reason} || 'skipping live tests', $skippable)
 	unless $auth && @$auth;
 
-    eval{require Elive::StandardV2::Connection};
-    die $@ if $@;
+    try {require Elive::StandardV2::Connection} catch {die $_};
+
     my $connection_class = $result{class};
     $connection = $connection_class->connect(@$auth);
     Elive::StandardV2->connection($connection);
@@ -72,6 +73,16 @@ SKIP: {
 
     $session = undef;
 
+    my $sessions;
+
+    ok ($sessions = Elive::StandardV2::Session->list(filter => {sessionId => $session_id}),
+	'List of session');
+  
+    is(scalar @$sessions, 1, 'list returns unique session');
+
+    is( try {$sessions->[0]->sessionId}, $session_id, 'listed sessionId as expected');
+    $sessions = undef;
+
     ok ($session = Elive::StandardV2::Session->retrieve([$session_id]),
 	'Refetch of session');
 
@@ -95,7 +106,7 @@ SKIP: {
     lives_ok(sub {$session->delete},'session deletion - lives');
 
     my $deleted_session;
-    eval {$deleted_session = Elive::StandardV2::Session->retrieve([$session_id])};
+    try {$deleted_session = Elive::StandardV2::Session->retrieve([$session_id])};
 
     ok($@ || !$deleted_session, "can't retrieve deleted session");
 }

@@ -370,6 +370,12 @@ has 'secureSignOn' => (is => 'rw', isa => 'Bool',
 		       documentation => 'N/A to ELM',
     );
 
+=head2 recordings (Bool)
+
+Whether the session has any recordings.
+
+=cut
+
 has 'recordings' => (is => 'rw', isa => 'Bool',
 		       documentation => 'Whether session has any recordings',
     );

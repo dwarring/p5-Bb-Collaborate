@@ -18,7 +18,7 @@ requires(
     'Carp'                         => 0,
     'File::Spec'                   => 0,
     'File::Basename'               => 0,
-    'Elive'                        => '0.84',
+    'Elive'                        => '1.04',
     'Mouse'                        => 0.56,
     'SOAP::Lite'                   => 0.712,
     'Try::Tiny'                    => 0,
