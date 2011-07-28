@@ -41,8 +41,6 @@ Elive->connection($connection);
 
 taint_checking_ok();
 
-diag "user test url: ".$connection->url;
-
 my $password_untainted = 'secret_'.t::Elive::generate_id();
 taint(my $password_tainted = $password_untainted);
 

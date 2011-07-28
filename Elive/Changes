@@ -3,22 +3,32 @@ Revision history for Elive
 1.04    28th July 2011
 
         [security]
-        Elive::DAO - now honors taint mode. Any attempts to freeze tainted
-        strings (type Str) now results in an error.
-        - added new tests t/soap_taint-mode.t
-        - added security notes to README
+        Essential changes to improve general security and play better with
+        Perl's Taint mode.
+        - These changes will only haven an impact when taint is enabled,
+          e.g. '-T' has been passed as a perl option.
+        - Taint checking is limited to outgoing strings (Str) in SOAP requests.
+        - Neither booleans (Bool) or integers (Int) are checked. However both
+          Int and Bool are sanitised when building SOAP requests.
+        - No attempt is made to apply taint checking to incoming data from
+          SOAP::Lite requests.
 
-        Notes:
-        - Taint checking is limited to outgoing strings. No attempts are
-          made to test integers (Int) or booleans (Bool). However both are
-          sanitised when building requests
-        - Tainting is restricted to outgoing data only. No attempt is made
-          to apply taint checking to incoming data from SOAP::Lite requests.
+        Elive::Util::_freeze() - Any attempts to freeze tainted strings
+          (type Str) while in taint mode now results in an error
+        Elive::DAO::list() - the 'filter' parameter is now frozen to avoid
+          bypassing taintness checks.
+        Elive::Entity::Recording, Elive::Entity::Preload - all SOAP
+          parameters are now frozen and taint checks are applied.
 
-        [refactoring]
-        Elive::Entity::ParticipantList - moved participant update() checks
-        into _readback_checks() - for consistancy and for the benefit of
-        Elive::Entity::Session.
+        Dropped dependency on Storable::dclone; replaced with Clone::clone.
+        - Storable::dclone doesn't seem to honor taintness, whereas
+          Clone::clone does.
+
+       [enhancements]
+       Elive::Entity::Recording - added BUILDARGS method. 'size' is now
+       computed and doesn't need to be specified in upload()s.
+       Elive::Entity::ParticipantList - movedf update checks to
+       _readback_checks() for the benefit of Elive::Entity::Session.
 
 1.03    24th July 2011
 
