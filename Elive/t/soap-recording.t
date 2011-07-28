@@ -1,7 +1,7 @@
 #!perl -T
 use warnings; use strict;
 use Test::Builder;
-use Test::More tests => 18;
+use Test::More tests => 20;
 use Test::Exception;
 
 use lib '.';
@@ -51,14 +51,15 @@ do {
 	meetingId => $meeting->meetingId,
 ##	fileName => '/tmp/recording.out',
 	data => $data[0],
-	size => length($data[0]),
 	version => Elive->server_details->version,
 	roomName => 'room t/soap-recording.t',
 	creationDate => $now.'000',
 	open => 1,
     },
     );
+
     isa_ok($recording, 'Elive::Entity::Recording');
+    is($recording->size, length($data[0]), 'recording size as expected');
 
     Elive->disconnect;
 };
@@ -72,7 +73,7 @@ SKIP: {
     my %result = t::Elive->test_connection(only => 'real');
     my $auth = $result{auth};
 
-    skip ($result{reason} || 'skipping live tests', 16)
+    skip ($result{reason} || 'skipping live tests', 17)
 	unless $auth;
 
     my $connection_class = $result{class};
@@ -92,7 +93,6 @@ SKIP: {
 		roomName => $room_name,
 		version => Elive->server_details->version,
 		data => $data[0],
-		size => length($data[0]),
 	    },
 	    )
 		 },
@@ -102,6 +102,8 @@ SKIP: {
     isa_ok($recording, $class, 'uploaded recording');
     is($recording->recordingId, $recording_id, 'uploaded recording id as expected');
     is($recording->roomName, $room_name,'uploaded recording name as expected');
+
+    is($recording->size, length($data[0]), 'recording size as expected');
 
     my $recordings = Elive::Entity::Recording->list;
 

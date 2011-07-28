@@ -71,7 +71,6 @@ sub BUILDARGS {
     my %args = %{ $spec };
 
     if (defined $args{data}) {
-	# compute size defeat tainting
 	$args{size} ||= length( $args{data} );
     }
 
@@ -154,7 +153,9 @@ Note: the C<facilitator>, when supplied must match the facilitator for the given
 =cut
 
 sub upload {
-    my ($class, $insert_data, %opt) = @_;
+    my ($class, $spec, %opt) = @_;
+
+    my $insert_data = $class->BUILDARGS( $spec );
 
     my $binary_data = delete $insert_data->{data};
 
@@ -191,7 +192,7 @@ or recovering recordings that have not been closed cleanly.
     my $import_filename = sprintf("%s_recordingData.bin", $recording->recordingId);
 
     #
-    # Somehow import the file to the server and work-out the byte-szie.
+    # Somehow import the file to the server and work-out the byte-size.
     # This needs to be uploaded to:
     #        ${instancesRoot}/${instanceName}/WEB-INF/resources/recordings
     # where $instanceRoot is typically /opt/ElluminateLive/manager/tomcat
