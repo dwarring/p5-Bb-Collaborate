@@ -1,7 +1,5 @@
 .cvsignore
 Changes
-connection
-Debian_CPANTS.txt-26680
 inc/Module/Install.pm
 inc/Module/Install/Base.pm
 inc/Module/Install/Can.pm
@@ -47,7 +45,6 @@ README
 script/elive_lint_config
 script/elive_query
 script/elive_raise_meeting
-script/elive_run_report
 t/00load.t
 t/basic-struct.t
 t/basic-type.t
@@ -88,6 +85,7 @@ t/soap-report.t
 t/soap-session-participants.t
 t/soap-session-recurring.t
 t/soap-session.t
+t/soap-taint-mode.t
 t/soap-user.t
 t/soap-view-session-recurring.t
 t/soap-view-session.t
