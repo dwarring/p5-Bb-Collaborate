@@ -69,7 +69,8 @@ sub _freeze {
 		#
 		# l-r trim
 		#
-		s{^ \s* (.*?) \s* $}{$1}x;
+		$_ = $1
+		    if m{^ \s* (.*?) \s* $}x;
 		$_ = lc if $type =~ m{^enum};
 	    }
 	    elsif ($type =~ m{^(Int|HiResDate)}ix) {
@@ -118,7 +119,8 @@ sub _thaw {
 	    #
 	    # l-r trim
 	    #
-	    s{^ \s* (.*?) \s* $}{$1}x;
+	    $_ = $1
+		if m{^ \s* (.*?) \s* $}x;
 	    $_ = lc if $type =~ m{^enum}i;
 	}
 	elsif ($type =~ m{^Int|HiResDate}i) {
