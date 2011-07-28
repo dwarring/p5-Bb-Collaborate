@@ -1,4 +1,4 @@
-#!perl
+#!perl -T
 use warnings; use strict;
 use Test::More tests => 20;
 use Test::Exception;

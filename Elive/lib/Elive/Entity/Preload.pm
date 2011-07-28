@@ -89,7 +89,7 @@ sub BUILDARGS {
     }
 
     if ($args{data}) {
-	$args{size} ||= length( $args{data} );
+	$args{size} ||= length( $args{data} )
     }
 
     if (defined $args{fileName} && length $args{fileName}) {

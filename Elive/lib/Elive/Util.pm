@@ -5,7 +5,7 @@ use Term::ReadKey;
 use Term::ReadLine;
 use IO::Interactive;
 use Scalar::Util;
-use Storable;
+use Clone;
 use YAML;
 use Try::Tiny;
 
@@ -59,6 +59,11 @@ sub _freeze {
 		$_ =  $_ ? 'true' : 'false';
 	    }
 	    elsif ($type =~ m{^(Str|enum)}ix) {
+
+		#
+		# low level check for taintness
+		die "attempt to freeze tainted data (type $type): $_"
+		    if Scalar::Util::tainted($_);
 		#
 		# l-r trim
 		#
@@ -209,7 +214,7 @@ sub _reftype {
 }
 
 sub _clone {
-    return Storable::dclone(shift);
+    return Clone::clone(shift);
 }
 
 #

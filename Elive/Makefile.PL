@@ -14,6 +14,7 @@ install_script ('elive_query', 'elive_raise_meeting', 'elive_lint_config');
 requires(
     'Class::Accessor'              => 0,
     'Class::Data::Inheritable'     => 0,
+    'Clone'                        => 0,
     'Date::Parse'                  => 0,
     'Carp'                         => 0,  # for scripts
     'File::Spec'                   => 0,
@@ -28,7 +29,6 @@ requires(
     'parent'                       => 0,
     'Scalar::Util'                 => 0,
     'SOAP::Lite'                   => 0.712,
-    'Storable'                     => 0,
     'Term::ReadKey'                => 0,
     'Term::ReadLine'               => 0,
     'Time::Local'                  => 0,

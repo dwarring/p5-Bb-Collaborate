@@ -1,4 +1,4 @@
-#!perl
+#!perl -T
 use warnings; use strict;
 use Test::More tests => 65;
 use Test::Exception;
@@ -15,6 +15,8 @@ use Elive::Util;
 
 use File::Spec qw();
 use File::Temp qw();
+
+use Carp; $SIG{__DIE__} = \&Carp::confess;
 
 our $t = Test::Builder->new;
 my $class = 'Elive::Entity::Preload' ;

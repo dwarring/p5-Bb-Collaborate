@@ -60,6 +60,23 @@ Elive::Entity::Recording - Elluminate Recording Entity class
 
 =cut
 
+sub BUILDARGS {
+    my $class = shift;
+    my $spec = shift;
+
+    die "usage $class->new({ ... }, ...)"
+	unless Elive::Util::_reftype($spec) eq 'HASH';
+
+    my %args = %{ $spec };
+
+    if (defined $args{data}) {
+	# compute size defeat tainting
+	$args{size} ||= length( $args{data} );
+    }
+
+    return \%args;
+}
+
 =head1 METHODS
 
 =cut
@@ -124,7 +141,6 @@ sub download {
                     roomName => 'Meeting of the Smiths',
                     version => Elive->server_details->version,
                     data => $binary_data,
-                    size => length($binary_data),
 	     },
          );
 
@@ -171,11 +187,12 @@ or recovering recordings that have not been closed cleanly.
     my $import_filename = sprintf("%s_recordingData.bin", $recording->recordingId);
 
     #
-    # Somehow import the file to the server. This needs to be uploaded
-    # to ${instancesRoot}/${instanceName}/WEB-INF/resources/recordings
+    # Somehow import the file to the server and work-out the byte-szie.
+    # This needs to be uploaded to:
+    #        ${instancesRoot}/${instanceName}/WEB-INF/resources/recordings
     # where $instanceRoot is typically /opt/ElluminateLive/manager/tomcat
     #
-    import_recording($import_filename);
+    my $bytes = import_recording($import_filename); # implementation dependant
 
     my $recording = Elive::Entity::Recording->insert({
         recordingId => $recordingId,
@@ -184,7 +201,7 @@ or recovering recordings that have not been closed cleanly.
         meetingId => $meetingId,
         facilitator => $meeting->faciliator,
         version => Elive->server_details->version,
-        size => length($number_of_bytes),
+        size => $bytes,
    });
 
 

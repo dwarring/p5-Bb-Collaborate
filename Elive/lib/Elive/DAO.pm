@@ -8,7 +8,6 @@ use parent 'Elive';
 
 use YAML;
 use Scalar::Util qw{weaken};
-use Storable qw{dclone};
 use Carp;
 use Try::Tiny;
 use URI;
@@ -681,7 +680,7 @@ sub _freeze {
 
     $db_data ||= $class if ref($class);
     $db_data ||= {};
-    $db_data = Storable::dclone( $db_data );
+    $db_data = Elive::Util::_clone( $db_data );
 
     my $property_types = $class->property_types || {};
     my %param_types = $class->params;

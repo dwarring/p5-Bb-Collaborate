@@ -16,9 +16,8 @@ use warnings; use strict;
 use Test::More tests => 8;
 use Test::Warn;
 
-use Storable;
-
 use Elive::Entity;
+use Elive::Util;
 
 my %user = (
 	'FirstName' => 'Blinky',
@@ -51,7 +50,7 @@ my $canonical_encoded = {
 
 #------ Simple value
 
-my $simple_unpacked = Elive::Entity->_unpack_as_list(Storable::dclone($canonical_encoded));
+my $simple_unpacked = Elive::Entity->_unpack_as_list(Elive::Util::_clone($canonical_encoded));
 isa_ok($simple_unpacked, 'ARRAY');
 is_deeply($canonical, $simple_unpacked->[0], 'Simple unpacking');
 
@@ -60,7 +59,7 @@ is_deeply($canonical, $simple_unpacked->[0], 'Simple unpacking');
 my $collection = {
     Collection => {
 	Entry => [
-	    Storable::dclone($canonical_encoded),
+	    Elive::Util::_clone($canonical_encoded),
 	]
     }
 };
@@ -72,7 +71,7 @@ is_deeply($canonical, $collection_unpacked->[0], 'Collection unpacking');
 
 my $collection1 = {
     Collection => {
-	Entry => Storable::dclone($canonical_encoded),
+	Entry => Elive::Util::_clone($canonical_encoded),
     }
 };
 
@@ -86,7 +85,7 @@ my $hash_map = {
 	Entry => [
 	    {
 		Key   => 123456789000,
-		Value => Storable::dclone($canonical_encoded),
+		Value => Elive::Util::_clone($canonical_encoded),
 	    },
 	],
     }
@@ -101,7 +100,7 @@ my $hash_map1 = {
     Map => {
 	Entry => {
 		Key   => 123456789000,
-		Value => Storable::dclone($canonical_encoded),
+		Value => Elive::Util::_clone($canonical_encoded),
 	    },
     }
 };
