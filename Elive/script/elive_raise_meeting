@@ -30,7 +30,7 @@ elive_raise_meeting
 
   elive_raise_meeting [url] [options] [participants]
 
-=head2 Authentication Options
+=head2 Authentication
 
  [url]                        # web address and site instance path,
                               # E.g.: http://myserver.com/mysite 
@@ -62,7 +62,7 @@ elive_raise_meeting
     'Display Name(loginName)'
                   - a guest login.
 
-=head2 Meeting Setup Options
+=head2 Meeting Setup
 
  -boundary     0|15|30|..     # minutes participants can arrive before or
                               # leave after the scheduled meeting times.
@@ -92,11 +92,17 @@ elive_raise_meeting
  -cost_center     'code'
  -exit_url=http://somesite.com  # URL to visit on meeting exit (elm3)
 
-=head2 Preload Options
+=head2 Preloads
 
  -upload              local_file     # upload a local file
  -import_from_server  remote_file    # import a server side file
  -add_preload         preload_id,... # associate with existing preloads
+
+ Where preload files can include:
+
+    *.wbd *.wbp                   - Elluminate Live! whiteboard files
+    *.elp *.elpx                  - Elluminate Plan! files
+    *.mpg, *.mov, *.qt, *.swf ... - Multimedia content
 
 =head2 Compatibility Options
 
@@ -108,7 +114,7 @@ elive_raise_meeting
 
  -? --help                  # print this help
  -v --version               # print version and exit
- --dump=yaml                # out created sessions as YAML
+ --dump=yaml                # output created sessions as YAML
  --debug=n                  # set debug level
 
 =head1 DESCRIPTION
