@@ -179,6 +179,12 @@ sub is_moderator {
 
     my $role_id;
 
+    if ($self->type && $self->type == 2) {
+	#
+	# invited guests cannot be moderators
+	return;
+    }
+
     if (@_) {
 	my $is_moderator = shift;
 	$role_id = $is_moderator? 2 : 3;
@@ -206,6 +212,12 @@ sub stringify {
     my $data = shift || $self;
 
     $data = $self->BUILDARGS($data);
+
+    if ($data->{type} && $data->{type} == 2) {
+	# guest => 'displayName(loginName)'
+	return Elive::Entity::InvitedGuest->stringify($data->{guest});
+    }
+
     my $role_id = Elive::Entity::Role->stringify($data->{role});
 
     if (! $data->{type} ) {
@@ -215,10 +227,6 @@ sub stringify {
     elsif ($data->{type} == 1) {
 	# group => '*groupId'
 	return Elive::Entity::Group->stringify($data->{group}).'='.$role_id;
-    }
-    elsif ($data->{type} == 2) {
-	# guest => 'displayName(loginName)'
-	return Elive::Entity::InvitedGuest->stringify($data->{guest});
     }
     else {
 	# unknown

@@ -78,7 +78,7 @@ SKIP: {
     #
 
     my ($fh, $filename)
-	= File::Temp::tempfile('elive-t-24-soap-preload-XXXXXXXX',
+	= File::Temp::tempfile('elive-t-soap-preload-XXXXXXXX',
 			       SUFFIX => '.wav',
 			       DIR => File::Spec->tmpdir() );
 

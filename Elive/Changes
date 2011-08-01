@@ -1,11 +1,19 @@
-Revision history for Elive
+evision history for Elive
+
+1.05    1st August 2011
+        [bug fixes]
+        Elive::Entity::Session - fixed incorrect insert()  and update ()
+        methods to correctly construct lists of invited guests.
+        - Corrected SOAP delimiter for invited guests list from ',' to ';'
+        - Disallow promotion of Invited guests to moderator.
 
 1.04    28th July 2011
 
         [security]
         Essential changes to improve general security and play better with
-        Perl's Taint mode.
-        - These changes will only haven an impact when taint is enabled,
+        Perl's Taint mode. Elive now dies when any attempt is made to
+        construct a request from tainted strings.
+        - These changes will only have an impact when taint is enabled,
           e.g. '-T' has been passed as a perl option.
         - Taint checking is limited to outgoing strings (Str) in SOAP requests.
         - Neither booleans (Bool) or integers (Int) are checked. However both

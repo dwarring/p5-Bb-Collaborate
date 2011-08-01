@@ -1,6 +1,6 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 60;
+use Test::More tests => 70;
 use Test::Warn;
 
 use Carp; $SIG{__DIE__} = \&Carp::confess;
@@ -98,20 +98,35 @@ is($participant_list->participants->[0]->user->loginName, 'test_user',
    'participant dereference');
 
 #
-# test participant list coercian
+# test participant list parsing and coercement
 #
 my $participant_list_2 = Elive::Entity::ParticipantList->construct(
     {
 	meetingId => 234567,
-	participants => '1111;2222=2;alice=3'
+	participants => '1111;2222=2;alice=3;Robert(bob);*the_team'
     });
 
 my $participants_2 = $participant_list_2->participants;
+is(scalar @$participants_2, 5, 'Participant count as expected');
 is($participants_2->[0]->user->userId, 1111, 'participant list user[0]');
 is($participants_2->[0]->role->roleId, 3, 'participant list role[0] (defaulted)');
 is($participants_2->[1]->user->userId, 2222, 'participant list user[1]');
 is($participants_2->[1]->role->roleId, 2, 'participant list role[1] (explicit)');
 is($participants_2->[2]->user->userId,'alice', 'participant list user[2] (alphanumeric - ldap compat)');
+
+is($participants_2->[3]->type, 2, 'Invited guest detected');
+is_deeply($participants_2->[3]->guest, {loginName => 'bob',
+				   displayName => 'Robert'},
+	  'invited guest contents');
+ok( ! $participants_2->[3]->is_moderator(1), 'cannot promote guest to moderator');
+
+is($participants_2->[4]->type, 1, 'Group detected');
+is_deeply($participants_2->[4]->group, {groupId => 'the_team'},
+	  'group contents');
+ok( $participants_2->[4]->is_moderator(1), 'can promote group to moderators');
+ok( $participants_2->[4]->is_moderator && $participants_2->[4]->role->roleId == 2, 'group promotion persistance');
+ok( ! $participants_2->[4]->is_moderator(0), 'can demote group to participants');
+ok( ! $participants_2->[4]->is_moderator && $participants_2->[4]->role->roleId == 3, 'group demotion persistance');
 
 my $participant_list_3 = Elive::Entity::ParticipantList->construct(
     {
