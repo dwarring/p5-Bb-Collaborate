@@ -1006,7 +1006,7 @@ L<Working with Participants>.
 
 =head2 password (Str)
 
-A password for the session (see L<Working with Participants>). 
+A password for the session.
 
 =head2 privateMeeting (Str)
 
