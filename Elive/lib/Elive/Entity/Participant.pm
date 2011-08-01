@@ -118,17 +118,17 @@ sub BUILDARGS {
     }
     elsif (m{^ \s* (\*?) \s* ([^,]*?) \s* (= (\d) \s*)? $}x) {
 
-	my $type = $1;
-
+	my $is_group = $1;
 	my $id = $2;
 	my $roleId = $4;
+
 	$roleId = 3 unless defined $roleId;
 
-	if (! $type ) {
+	if (! $is_group ) {
 	    $parse{user} = {userId => $id};
 	    $parse{type} = 0;
 	}
-	elsif ($type eq '*') {
+	else {
 	    $parse{group} = {groupId => $id};
 	    $parse{type} = 1;
 	}
