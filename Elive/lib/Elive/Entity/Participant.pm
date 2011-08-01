@@ -109,14 +109,14 @@ sub BUILDARGS {
     #
     my %parse;
 
-    if (m{^ \s* (.*?) \s* \( ([^\)]+) \) \s* (= (\d) \s*)? $}x) {
+    if (m{^ \s* ([^;]*?) \s* \( ([^;\)]+) \) \s* (= (\d) \s*)? $}x) {
 
 	$parse{guest} = {displayName => $1, loginName => $2};
 	$parse{type} = 2;
 
 	return \%parse;
     }
-    elsif (m{^ \s* (\*?) \s* (.*?) \s* (= (\d) \s*)? $}x) {
+    elsif (m{^ \s* (\*?) \s* ([^,]*?) \s* (= (\d) \s*)? $}x) {
 
 	my $type = $1;
 

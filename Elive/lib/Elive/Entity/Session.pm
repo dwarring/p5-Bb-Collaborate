@@ -265,10 +265,15 @@ sub _freeze_participants {
     my $raw = delete $data->{participants};
     my $participants = Elive::Entity::Participants->new( $raw );
 
-    ($data->{invitedGuests},
-     $data->{invitedModerators},
-     $data->{invitedParticipantsList})
-	= $participants->tidied();
+    my ($guests, $moderators, $others) = $participants->tidied();
+
+    #
+    # Note: invited guest list is ';' seperated. Others are ',' separated.
+    #
+
+    $data->{invitedGuests} = join(';', @$guests);
+    $data->{invitedModerators} = join(',', @$moderators);
+    $data->{invitedParticipantsList}= join(',', @$others);
 
     return $data
 }

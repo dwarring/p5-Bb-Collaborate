@@ -186,10 +186,9 @@ sub tidied {
 	    }
 	}
 
-	return (Elive::Array->stringify([ keys %guests]),
-		Elive::Array->stringify([ keys %moderators]),
-		Elive::Array->stringify([ keys %participants])
-	    )
+	return ([ sort keys %guests],
+		[ sort keys %moderators],
+		[ sort keys %participants])
     }
     else {
 	# elm2.x compat

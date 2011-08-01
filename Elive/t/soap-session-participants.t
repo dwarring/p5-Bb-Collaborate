@@ -1,6 +1,6 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 29;
+use Test::More tests => 30;
 use Test::Exception;
 use Test::Builder;
 
@@ -27,7 +27,7 @@ SKIP: {
     my %result = t::Elive->test_connection( only => 'real');
     my $auth = $result{auth};
 
-    skip ($result{reason} || 'skipping live tests', 29)
+    skip ($result{reason} || 'skipping live tests', 30)
 	unless $auth;
 
     my $connection_class = $result{class};
@@ -184,21 +184,33 @@ SKIP: {
 	# call to bypass overly helpful readback checks and removal of duplicates.
 	#
 	my @big_user_list;
+	my %expected_users = ($session->facilitatorId => 1);
+	my %expected_guests;
 
       MAKE_BIG_LIST:
 	while (1) {
-	    foreach ($participant1, $participant2, @participants) {
-		#
-		# include a smattering of unknown users
-		#
-		my $user = rand() < .1 ? t::Elive::generate_id(): $_->userId;
-		push (@big_user_list, $user);
+	    foreach my $user ($participant1, $participant2, @participants) {
+
+		if (rand() < .1) {
+		    #
+		    # include a smattering of random invited guests
+		    #	
+		    my $guest_name = t::Elive::generate_id();
+		    my $guest_spec = sprintf("%s (%s)", $guest_name, lc $ guest_name );
+		    $expected_guests{$guest_spec}++;
+
+		    push (@big_user_list, $guest_spec);
+		}
+
+		$expected_users{$user->userId}++;
+		push (@big_user_list, $user->userId);
+
 		last MAKE_BIG_LIST
-		    if @big_user_list > 2500;
+		    if @big_user_list > 500;
 	    }
 	}
 
-	dies_ok( sub {
+	lives_ok( sub {
 	  $session->update( {participants => [
 				-moderators => Elive->login,
 				-others => @big_user_list
@@ -206,28 +218,41 @@ SKIP: {
 		  }, 'session participants long-list - dies'
 	      );
 
-	$session->revert;
 	#
 	# refetch the participant list and check that all real users
 	# are present
 	#
 	my @users_in =  (Elive->login, $participant1, $participant2, @participants);
 	my @user_ids_in = map {$_->userId} @users_in;
-	my %users_seen;
-	@users_seen{ @user_ids_in } = undef;
-	my @expected_users = sort keys %users_seen;
+
 	#
 	# retrieve via elm 2x getParticipantList command
 	#
 	$participant_list = Elive::Entity::ParticipantList->retrieve($session->id, copy => 1);
 	my $participants = $participant_list->participants;
 
-	my @actual_users = sort map {$_->user->userId} @$participants;
+	my @actual_users;
+	my @actual_guests;
 
-	is_deeply(\@actual_users, \@expected_users, "participant list as expected (no repeats or unknown users)");
+	foreach my $participant (@$participants) {
+
+	    if (! $participant->type ) { # simple user
+		push( @actual_users, $participant->user->stringify );
+	    }
+	    elsif ($participant->type == 2) { # invited guest
+		
+		push( @actual_guests, $participant->guest->stringify );
+	    }
+	    else {
+		die "unexpected participant type: ".$participant->type;
+	    }
+	}
+
+	is_deeply([ sort @actual_users], [sort keys %expected_users], "user participant users as expected");
+
+	is_deeply([ sort @actual_guests], [sort keys %expected_guests], "participant guests as expected");
     }
 
-    my $group;
     my @groups;
     my $group_member;
     #
@@ -241,12 +266,12 @@ SKIP: {
 
     #
     # you've got to refetch the group to populate the list of recipients
-    ($group) = grep {$_->retrieve($_); @{ $_->members } } @groups;
+    my ($group1, $group2) = grep {$_->retrieve($_); @{ $_->members } } @groups;
 
-    if ($group) {
+    if ($group1 && $group2) {
 	my $invited_guest = 'Robert(bob)';
-	diag "using group ".$group->name;
-	lives_ok(sub {$session->update({ participants => [$group, $participant1, $invited_guest]})}, 'setting of participant groups - lives');
+	diag "using groups: <".$group1->name.">, <".$group2->name.">";
+	lives_ok(sub {$session->update({ participants => [$group1, $group2, $participant1, $invited_guest]})}, 'setting of participant groups - lives');
     }
     else {
 	$t->skip('no candidates found for group tests');
