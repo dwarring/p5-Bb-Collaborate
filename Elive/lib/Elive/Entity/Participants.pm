@@ -4,7 +4,7 @@ use warnings; use strict;
 use Mouse;
 use Mouse::Util::TypeConstraints;
 
-extends 'Elive::Array';
+extends 'Elive::DAO::Array';
 
 use Elive::Entity::Participant;
 use Elive::Util;

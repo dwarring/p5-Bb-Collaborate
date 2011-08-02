@@ -236,8 +236,8 @@ sub derivable {
 The C<insert()> and C<update()> methods in this class are undergoing
 depreciation.
 
-Sites running ELM 3.0 / Elluminate Live 9.5 or newer should instead
-use L<Elive::Entity::Session> which implements the newer C<createSession>
+Sites running ELM 3.0 / Elluminate Live 9.5 or newer should consider
+using L<Elive::Entity::Session>, which implements the newer C<createSession>
 and C<updateSession> commands.
 
 =cut

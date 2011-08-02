@@ -14,7 +14,7 @@ use Elive::Util;
 
 use Elive::Entity::Group;
 
-extends 'Elive::Array';
+extends 'Elive::DAO::Array';
 __PACKAGE__->separator(',');
 __PACKAGE__->element_class('Elive::Entity::Group');
 

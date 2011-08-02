@@ -4,6 +4,7 @@ use Test::More tests => 57;
 use Test::Warn;
 
 use Elive::DAO;
+use Elive::DAO::Array;
 use Elive::Entity::Role;
 use Elive::Entity::Participants;
 
@@ -38,10 +39,10 @@ ok($class->_cmp_col('enumRecordingStates', 'off', 'off') == 0, '_cmp enum ==');
 ok($class->_cmp_col('enumRecordingStates', 'Off', 'off') == 0, '_cmp enum == (case insensitve)');
 isnt($class->_cmp_col('enumRecordingStates', 'off', 'on'), 0, '_cmp enum !=');
 
-ok($class->_cmp_col('Elive::Array', [1,2,3],[1,2,3]) == 0, '_cmp array ==');
-ok($class->_cmp_col('Elive::Array', [1,2,3],[3,2,1]) == 0, '_cmp array == (unordered)');
-ok($class->_cmp_col('Elive::Array', [2,3,4],[1,2,3]) > 0, '_cmp array >');
-ok($class->_cmp_col('Elive::Array', [1,2,3],[2,3,4]) < 0, '_cmp array <');
+ok($class->_cmp_col('Elive::DAO::Array', [1,2,3],[1,2,3]) == 0, '_cmp array ==');
+ok($class->_cmp_col('Elive::DAO::Array', [1,2,3],[3,2,1]) == 0, '_cmp array == (unordered)');
+ok($class->_cmp_col('Elive::DAO::Array', [2,3,4],[1,2,3]) > 0, '_cmp array >');
+ok($class->_cmp_col('Elive::DAO::Array', [1,2,3],[2,3,4]) < 0, '_cmp array <');
 
 ok($class->_cmp_col('Elive::Entity::Role', {roleId => 2},{roleId => 2}) == 0, '_cmp Entity ==');
 ok($class->_cmp_col('Elive::Entity::Role', {roleId => 3},{roleId => 2}) > 0, '_cmp Entity >');

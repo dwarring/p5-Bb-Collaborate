@@ -1,4 +1,4 @@
-package Elive::Array;
+package Elive::DAO::Array;
 use warnings; use strict;
 
 use Mouse;
@@ -15,7 +15,7 @@ __PACKAGE__->has_metadata( '_is_copy' );
 
 =head1 NAME
 
-Elive::Array - Base class for arrays
+Elive::DAO::Array - Base class for arrays
 
 =head1 DESCRIPTION
 
@@ -73,7 +73,7 @@ sub stringify {
 
 =head2 new
 
-   my $array_obj = Elive::Array->new($array_ref);
+   my $array_obj = Elive::DAO::Array->new($array_ref);
 
 =cut
 

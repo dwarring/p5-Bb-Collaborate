@@ -31,7 +31,7 @@ my $group1 = Elive::Entity::Group->construct({
 isa_ok($group1, 'Elive::Entity::Group');
 is($group1->groupId, 111, 'constructed group - id accessor');
 is($group1->name, 'group_with_several_members', 'constructed group - name accessor');
-isa_ok($group1->members, 'Elive::Array', 'group->members');
+isa_ok($group1->members, 'Elive::DAO::Array', 'group->members');
 is_deeply([ @{$group1->members}], \@base_members, 'group members preserved');
 
 ok(!$group1->is_changed, 'is_changed returns false before change');

@@ -4,8 +4,8 @@ use warnings; use strict;
 use Mouse;
 use Mouse::Util::TypeConstraints;
 
-use Elive::Array;
-extends 'Elive::Array';
+use Elive::DAO::Array;
+extends 'Elive::DAO::Array';
 
 use Scalar::Util;
 

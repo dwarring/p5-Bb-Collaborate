@@ -13,7 +13,7 @@ use Elive::Entity::MeetingParameters;
 use Elive::Entity::ServerParameters;
 use Elive::Entity::ParticipantList;
 use Elive::Entity::Participants;
-use Elive::Array;
+use Elive::DAO::Array;
 
 =head1 NAME
 
@@ -35,10 +35,12 @@ __PACKAGE__->_alias(meetingId => 'id');
 __PACKAGE__->_alias(sessionId => 'id');
 
 __PACKAGE__->params(
+
     preloadIds => 'Elive::Entity::Preloads',
-    invitedParticipantsList => 'Elive::Array',
-    invitedModerators => 'Elive::Array',
-    invitedGuests => 'Elive::Array',
+
+    invitedParticipantsList => 'Elive::DAO::Array',
+    invitedModerators => 'Elive::DAO::Array',
+    invitedGuests => 'Elive::DAO::Array',
 
     timeZone                     => 'Str',
     until                        => 'HiResDate',
@@ -54,6 +56,7 @@ __PACKAGE__->params(
     thursdaySessionIndicator  => 'Bool',
     fridaySessionIndicator    => 'Bool',
     saturdaySessionIndicator  => 'Bool',
+
     );
 
 __PACKAGE__->mk_classdata(_delegates => {
@@ -400,8 +403,8 @@ sub update {
 
     if (@$changed || keys %update_data) {
 	#
-	# Early ELM 3.x has a habit of wiping defaults we're better off to
-	# rewrite the whole record
+	# Early ELM 3.x has a habit of wiping defaults. We're better off
+	# to rewrite the whole record
 	#
 	my @all_props =  map {$_->properties} values %{$self->_delegates};
 		       

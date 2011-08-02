@@ -12,7 +12,7 @@ Elive::Entity::Preloads - List of Preloads
 
 use Elive::Entity::Preload;
 
-extends 'Elive::Array';
+extends 'Elive::DAO::Array';
 __PACKAGE__->separator(',');
 __PACKAGE__->element_class('Elive::Entity::Preload');
 

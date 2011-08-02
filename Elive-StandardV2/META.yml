@@ -28,7 +28,7 @@ requires:
   Class::Accessor: 0
   Class::Data::Inheritable: 0
   Date::Parse: 0
-  Elive: 0.84
+  Elive: 1.04
   File::Basename: 0
   File::Spec: 0
   Mouse: 0.56
