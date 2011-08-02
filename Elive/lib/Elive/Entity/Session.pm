@@ -602,7 +602,7 @@ to resolve login names and group names:
     my $tut_group = Elive::Entity::Group->list(filter => "groupName = 'Perl Tutorial Group 1'");
 
     my @participants = (-moderators => [$alice, $bob],
-                        -others => [@$tut_group],
+                        -others => $tut_group,
                        );
 
 Then, you just need to pass the list in when you create or update the session:
@@ -646,8 +646,8 @@ example, to print the list of participants for a session:
     my $participants = $session->participants;
 
     foreach my $participant (@$participants) {
+
 	my $type = $participant->type;
-	my $str;
 
 	if (! $type)  {
 	    my $user = $participant->user;
@@ -677,10 +677,11 @@ example, to print the list of participants for a session:
 		if $loginName;
 	}
 	else {
-	    die "unknown participant type $type"; # elm 4.x? ;-)
+	    die "unknown participant type: $type"; # elm 4.x? ;-)
 	}
 
-        print " [moderator]" if $participant->is_moderator;
+        print " [moderator]"
+            if $participant->is_moderator;
 
         print "\n";
     }
@@ -697,7 +698,7 @@ There are three types of preloads:
 
 =over 4
 
-=item (1) C<whiteboard>: file extension C<*.wbd>
+=item (1) C<whiteboard>: file extension C<*.wbd>, C<*.wbp>
 
 =item (2) C<plan> (Elluminate Plan!): file extensions: C<*.elp>,  C<*.elpx>
 
