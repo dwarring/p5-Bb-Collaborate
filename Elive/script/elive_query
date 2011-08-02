@@ -11,6 +11,7 @@ use Elive::Util;
 use Term::ReadLine;
 use Pod::Usage;
 use UNIVERSAL;
+use Try::Tiny;
 
 use IO::Interactive;
 
@@ -93,11 +94,11 @@ sub main {
     our %entity_collections;
     #
     # this may barf if /dev/tty can't be opened. E.g. when executing from cron
-    our $is_tty = eval { IO::Interactive::is_interactive() };
+    our $is_tty = try { IO::Interactive::is_interactive() };
 
     our $term;
     if ($is_tty) {
-	$term = eval{ Term::ReadLine->new('elive shell') }
+	$term = try { Term::ReadLine->new('elive shell') }
     }
 
     my $prompt = "elive> ";
@@ -138,7 +139,7 @@ sub main {
 	eval "require $class";
 	die $@ if $@;
 
-	unless (eval{$class->entity_name}) {
+	unless (try {$class->entity_name}) {
 	    warn "Omitting non entity class: $class";
 	    next;
 	}
@@ -185,7 +186,7 @@ sub main {
 
 	last unless defined $cmd;
 
-	$term->addhistory($cmd) if $term;
+	$term->addhistory($cmd) if $term && $cmd ne '';
 	#
 	# strip leading white-space & trailing white-space + semicolon
 	#
@@ -458,96 +459,97 @@ sub _select {
     my @output;
     my $rows;
 
-    eval {
+    try {
 	if ($id) {
 	    $rows =  [grep {$_} $entity_class->retrieve([$id], connection => $connection)];
 	}
 	else {
 	    $rows = $entity_class->list(filter => $filter, connection => $connection);
 	}
-    };
-
-    if ($@) {
-	print "error:$@";
     }
-    elsif (!@$rows) {
-	print "No results.\n";
+    catch {
+	print "error: $_";
     }
-    elsif ($opt{dump} && $opt{dump} =~ /^(yaml)$/i) {
-	foreach my $row (@$rows) {
-	    print YAML::Dump({$entity_name => _fetch_row_href($props, \%derivable, $row)});
+    finally {
+	if (!@$rows) {
+	    print "No results.\n";
 	}
-    }
-    else {
-	foreach my $row (@$rows) {
-	    
-	    my $row =  _fetch_row_aref($props, \%derivable, $row);
-	    push(@output, $row);
-	}
-
-	#
-	# pass 1: filter columns
-	#
-
-	my @show;
-
-	foreach my $row (@output) {
-	    
-	    my $col = 0;
-
-	    foreach (@$row) {
-		$show[ $col++ ] ||= !$hide_undef || defined $_
-		}
-	}
-
-	#
-	# pass 2: compute output widths
-	#
-
-	my @widths;
-
-	foreach  my $row ($props,@output) {
-
-	    my $col = 0;
-
-	    foreach (@$row) {
-
-		my $this_width = length(defined($_)? $_ : '(undef)');
-
-		for ($widths[ $col++ ]) {
-		    $_ = $this_width
-			if (!defined || $this_width > $_);
-		}
+	elsif ($opt{dump} && $opt{dump} =~ /^(yaml)$/i) {
+	    foreach my $row (@$rows) {
+		print YAML::Dump({$entity_name => _fetch_row_href($props, \%derivable, $row)});
 	    }
 	}
+	else {
+	    foreach my $row (@$rows) {
+	    
+		my $row =  _fetch_row_aref($props, \%derivable, $row);
+		push(@output, $row);
+	    }
+
+	    #
+	    # pass 1: filter columns
+	    #
+
+	    my @show;
+
+	    foreach my $row (@output) {
+	    
+		my $col = 0;
+
+		foreach (@$row) {
+		    $show[ $col++ ] ||= !$hide_undef || defined $_
+		}
+	    }
+
+	    #
+	    # pass 2: compute output widths
+	    #
+
+	    my @widths;
+
+	    foreach  my $row ($props,@output) {
+
+		my $col = 0;
+
+		foreach (@$row) {
+
+		    my $this_width = length(defined($_)? $_ : '(undef)');
+
+		    for ($widths[ $col++ ]) {
+			$_ = $this_width
+			    if (!defined || $this_width > $_);
+		    }
+		}
+	    }
 	
-	#
-	# pass 3: output
-	#
+	    #
+	    # pass 3: output
+	    #
 
-	my @hrule = map {'-' x ($_||0)} @widths;
+	    my @hrule = map {'-' x ($_||0)} @widths;
 
-	foreach my $row ($props, \@hrule, @output) {
+	    foreach my $row ($props, \@hrule, @output) {
 
-	    my $col = 0;
-	    my @cols = (
+		my $col = 0;
+		my @cols = (
 
-			grep {$_}
+		    grep {$_}
 
-			map {
-			    my $v = defined($_) ? $_ : '(undef)';
-			    my $s = $show[ $col ];
-			    my $w = $widths[ $col ];
-			    ++$col;
-			    $s ? sprintf('%-*s', $w, $v)
-				: undef;
-			}
+		    map {
+			my $v = defined($_) ? $_ : '(undef)';
+			my $s = $show[ $col ];
+			my $w = $widths[ $col ];
+			++$col;
+			$s ? sprintf('%-*s', $w, $v)
+			    : undef;
+		    }
 
-			@$row);
+		    @$row);
 
-	    print join('|', map{defined($_) ? $_ : '(undef)'} @cols)."\n"; 
+		print join('|', map{defined($_) ? $_ : '(undef)'} @cols)."\n"; 
+	    }
 	}
-    }
+    };
 
     return;
 }
