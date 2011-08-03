@@ -347,8 +347,6 @@ see the README file.
 
 =item L<Elive::Entity::Group>
 
-=item L<Elive::Entity::ParticipantList>
-
 =item L<Elive::Entity::Preload>
 
 =item L<Elive::Entity::Recording>

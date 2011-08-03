@@ -271,7 +271,7 @@ sub _freeze_participants {
     my ($guests, $moderators, $others) = $participants->tidied();
 
     #
-    # Note: invited guest list is ';' seperated. Others are ',' separated.
+    # Note: invited guest list is ';' separated. Others are ',' separated.
     #
 
     $data->{invitedGuests} = join(';', @$guests);

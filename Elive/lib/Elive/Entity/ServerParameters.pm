@@ -35,7 +35,7 @@ has 'supervised' => (is => 'rw', isa => 'Bool',
 
 has 'enableTelephony'
     => (is => 'rw', isa => 'Bool',
-	documentation => 'Enable Telephony');
+	documentation => 'Telephony is enabled');
 
 has 'telephonyType'
     => (is => 'rw', isa => 'Str',
@@ -185,7 +185,7 @@ sub update {
 	$connection->_check_for_errors($som);
     }
     #
-    # This adapter barfs if we don't write values back, whether they've
+    # This command barfs if we don't write values back, whether they've
     # changed or not.
     #
     return $self->SUPER::update(undef, %opt, changed => [sort keys %changed]);

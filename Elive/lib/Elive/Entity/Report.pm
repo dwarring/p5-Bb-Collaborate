@@ -44,7 +44,7 @@ Elive::Entity::Report - Elluminate Report entity instance class
 This is the entity class for server side reports. These are visible
 on the Elluminate server under the 'Reports' tab.
 
-Please note that the C<list> method (C<listReports> adapter) does not return the body
+Please note that the C<list> method (C<listReports> command) does not return the body
 of the report. The report object needs to be refetched via the C<retrieve> method.
 
 For example, to export all reports on a connected server:

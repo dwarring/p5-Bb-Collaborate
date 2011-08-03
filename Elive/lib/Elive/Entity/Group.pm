@@ -81,8 +81,9 @@ Elive::Entity::Group - Elluminate Group entity instance class
 
 =head1 DESCRIPTION
 
-These are used to maintain user groups for general use. In particular,
-for group selection of meeting participants.
+Groups of users are typically used to specify session participants.
+
+This class is used to query and maintain groups.
 
 The C<members> property contains the group members as an array of user IDs
 or sub-group objects.
@@ -90,6 +91,7 @@ or sub-group objects.
 If the a site is configured for LDAP, groups are mapped to LDAP groups. 
 Group access becomes read-only. The affected methods are: C<insert>, C<update>,
 and C<delete>.
+
 =cut
 
 sub _freeze {
@@ -141,7 +143,7 @@ sub _thaw {
      },
     );
 
-Inserts a new group from data.
+Inserts a new group.
 
 =cut
 
@@ -149,6 +151,8 @@ Inserts a new group from data.
 
     $group->update({members => [111111,'222222', $alice->userId, $bob]});
     $group->update({members => '111111,222222,333333'});
+
+Updates an existing group.
 
 =cut
 

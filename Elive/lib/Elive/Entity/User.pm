@@ -74,7 +74,7 @@ Elive::Entity::User - Elluminate Users entity class
 
 =head1 DESCRIPTION
 
-These are used to query and maintain information on registered Elluminate I<Live!> users.
+This class is used query and maintain information on registered Elluminate I<Live!> users.
 
 =cut
 
