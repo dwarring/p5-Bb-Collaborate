@@ -1,6 +1,6 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 49;
+use Test::More tests => 50;
 use Test::Warn;
 use Test::Exception;
 
@@ -168,10 +168,6 @@ lives_ok(sub{$recording->revert}, 'recording revert - lives');
 is($recording->meetingId, $meetingId1,'recording meetingId after revert');
 ok(!$recording->is_changed, 'recording - is_changed is false after revert');
 
-#
-# let's roll out big bertha
-#
-
 my $session;
 lives_ok( sub {
     $session = Elive::Entity::Session->construct({
@@ -185,7 +181,14 @@ lives_ok( sub {
 	  meetingParameters => {
 	    meetingId => 12345,
 	    userNotes => 'testing',
-	  }
+	  },
+	  serverParameters => {
+	    meetingId => 12345,
+	    fullPermissions => 0,
+          },
+	  participantList => {
+	    meetingId => 12345,
+          },
      })
   },'session construct - lives');
 
@@ -196,3 +199,8 @@ is_deeply( [$session->is_changed], [qw(name userNotes)], 'session->is_changed() 
 
 $session->revert;
 is_deeply( [$session->is_changed], [], 'session->is_changed() after revert');
+
+is_deeply( [ do {$session->enableTeleconferencing(1); $session->is_changed} ],
+	   ['enableTelephony'], 'session update via freeze alias');
+
+$session->revert;
