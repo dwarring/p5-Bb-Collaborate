@@ -65,8 +65,8 @@ SKIP: {
     my $login_raw_data;
 
     lives_ok(
-	     sub {$login_raw_data = Elive::Entity::User->retrieve([$login->userId], reuse => 1)},
-	     're-retrieve of updated object with reuse - lives');
+	     sub {$login_raw_data = Elive::Entity::User->retrieve([$login->userId], raw => 1)},
+	     'retrieval of raw data - lives');
 
     ok(!Scalar::Util::blessed($login_raw_data), 'raw retrieval returns unblessed data');
     

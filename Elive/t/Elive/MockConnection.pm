@@ -147,7 +147,7 @@ sub call {
 			my $id;
 			my $ctr;
 			do {
-			    $id = sprintf("%d", rand(32767));
+			    $id = sprintf("%d", rand(32767) + 1);
 			    die "mockup primary keys exhausted for $entity_name?"
 				if (++$ctr > 10000);
 			} while exists $self->mockdb->{__IDS__}{$entity_name}{$id};
