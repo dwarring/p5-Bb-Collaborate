@@ -93,7 +93,7 @@ Download data for a recording.
 sub download {
     my ($self, %opt) = @_;
 
-    my $recording_id = $opt{recording_id} ||= $self->recordingId;
+    my $recording_id = $opt{recording_id} || $self->recordingId;
 
     die "unable to get a recording_id"
 	unless $recording_id;

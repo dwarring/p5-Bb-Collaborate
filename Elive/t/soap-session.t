@@ -83,7 +83,7 @@ dies_ok( sub {
     $class->_readback_check(
 	{id => 12345, participants => 'bob=3;alice=2'},
 	[{id => 12345, participantList => {meetingId => 12345, participants => 'alice=2;bob=3;gatecrasher=3'}}]
-	)}, 'readback with extraneous users - dies');
+	)}, 'readback with extraneous participants - dies');
 
 my $session_start = time();
 my $session_end = $session_start + 900;

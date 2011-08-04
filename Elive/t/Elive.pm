@@ -10,6 +10,7 @@ t::Elive
 Testing support package for Elive
 
 =cut
+
 =head2 auth
 
 locate test authorization from the environment

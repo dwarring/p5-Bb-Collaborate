@@ -37,7 +37,15 @@ sub _connect {
     $url =~ s{/$}{};                    # lose trailing '/'
     $url =~ s{/webservice\.event$}{};   # lose endpoint
     $url =~ s{/v2$}{};                  # lose adapter path
-    $url =~ s{^(\w+)://(.*)\@}{$1://};  # lose credentials
+
+    if ($url =~ s{^(\w+)://(.*)\@}{$1://}) {  # lose/capture credentials
+
+	my ($_user, $_pass) = split(':', $2, 2);
+
+	$user ||= $_user;
+	$pass ||= $_pass if $_pass;
+    }
+
     $self->url($url);
 
     $self->user($user);
@@ -46,7 +54,8 @@ sub _connect {
     $self->pass($pass);
     $self->pass('test_pass') unless $self->pass;
 
-    $self->debug($opt{debug});
+    $self->debug($opt{debug})
+	if defined $opt{debug};
 
     $self->mockdb({});
 

@@ -121,7 +121,7 @@ This is the entity class for meeting preloads.
                         filter =>  'mimeType=application/x-shockwave-flash',
                     );
 
-    my $preload = Elive::Entity::Preload->retrieve([$preload_id]);
+    my $preload = Elive::Entity::Preload->retrieve($preload_id);
 
     my $type = $preload->type;
 
@@ -194,10 +194,10 @@ sub upload {
 
 =head2 download
 
-    my $preload = Elive::Entity::Preload->retrieve([$preload_id]);
+    my $preload = Elive::Entity::Preload->retrieve($preload_id);
     my $binary_data = $preload->download;
 
-Download data for a preload.
+Download preload data.
 
 =cut
 
@@ -235,9 +235,9 @@ sub download {
 	     },
          );
 
-Create a preload from a file that is already present on the server. If
-a C<mimeType> is not supplied, it will be guessed from the C<name> or
-C<fileName> extension using MIME::Types.
+Create a preload from a file that is already present on the server's
+file-system. If a C<mimeType> is not supplied, it will be guessed from
+the C<name> or C<fileName> extension using MIME::Types.
 
 =cut
 
@@ -246,15 +246,17 @@ sub import_from_server {
 
     $spec = {fileName => $spec} if defined $spec && !ref $spec;
 
-    my $connection = $opt{connection} || $class->connection
-	or die "not connected";
-
     my $insert_data = $class->BUILDARGS($spec);
 
     die "missing required parameter: fileName"
 	unless $insert_data->{fileName};
 
-    $insert_data->{ownerId} ||= $connection->login->userId;
+    $insert_data->{ownerId} ||= do {
+	my $connection = $opt{connection} || $class->connection
+	    or die "not connected";
+
+	$connection->login->userId;
+    };
 
     $opt{command} ||= 'importPreload';
 

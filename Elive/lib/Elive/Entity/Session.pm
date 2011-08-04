@@ -698,11 +698,11 @@ There are three types of preloads:
 
 =over 4
 
-=item (1) C<whiteboard>: file extension C<*.wbd>, C<*.wbp>
+=item * C<whiteboard>: file extension C<*.wbd>, C<*.wbp>
 
-=item (2) C<plan> (Elluminate Plan!): file extensions: C<*.elp>,  C<*.elpx>
+=item * C<plan> (Elluminate Plan!): file extensions: C<*.elp>,  C<*.elpx>
 
-=item (3) C<media> (Multimedia): anything else
+=item * C<media> (Multimedia): anything else
 
 =back
 
