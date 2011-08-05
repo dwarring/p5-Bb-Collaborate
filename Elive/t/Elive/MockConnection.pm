@@ -11,7 +11,6 @@ A partial emulation of the SOAP connection and database backend.
 
 =cut
 
-use Elive::Connection::SDK;
 use parent 'Elive::Connection::SDK';
 
 use Elive;

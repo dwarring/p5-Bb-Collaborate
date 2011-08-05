@@ -80,6 +80,7 @@ __PACKAGE__->_alias(private => 'privateMeeting', freeze => 1);
 
 has  'allModerators' => (is => 'rw', isa => 'Bool',
 			 documentation => "all participants can moderate");
+__PACKAGE__->_alias(all_moderators => 'allModerators');
 
 has  'restrictedMeeting' => (is => 'rw', isa => 'Bool',
 			     documentation => "Restricted meeting");

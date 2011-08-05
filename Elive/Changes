@@ -1,11 +1,23 @@
-evision history for Elive
+Revision history for Elive
+
+1.06    6th August 2011
+        [enhancements]
+        elive_raise_meeting - added -all_moderators option
+        [refactoring]
+        - renamed class Elive::Array to Elive::DAO::Array. Use of old
+          class produces a depreciated warning.
+        [testing]
+        - corrected occasional bogus failures (invalid ID generation) in
+          mock tests.
 
 1.05    1st August 2011
         [bug fixes]
-        Elive::Entity::Session - fixed incorrect insert()  and update ()
-        methods to correctly construct lists of invited guests.
+        Elive::Entity::Session - corrected handling of invited guests in
+          insert() and update () methods
         - Corrected SOAP delimiter for invited guests list from ',' to ';'
-        - Disallow promotion of Invited guests to moderator.
+        - Disallow promotion of Invited guests to moderator, ie
+          $participant->is_moderator(1) has no effect when the participant
+          is a group ($participant->type == 1).
 
 1.04    28th July 2011
 
@@ -97,7 +109,7 @@ evision history for Elive
 0.99    14th July 2011
         [Regression tested against various perls, including 5.8.3, 5.8.8,
          5.10.1 and 5.14.0. Fixed further nits and incompatibilities and
-         established 5.8.3 minimum supportable version]
+         established 5.8.3 as the minimum supportable perl version]
         META.yml
         - Further raised minimum perl version 5.8.1 to 5.8.3
         - Pod::Usage minimum version set to 1.36

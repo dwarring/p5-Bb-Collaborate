@@ -39,8 +39,8 @@ elive_raise_meeting
 
 =head2 Basic Options
 
- -facilitator  userId
  -name         'meeting name'
+ -facilitator  userId
  -meeting_pass otherpass      # meeting password
  -start  '[YYYY-MM-DD ]HH:MM' # start time
  -end    '[YYYY-MM-DD ]HH:MM' # end time
@@ -68,6 +68,7 @@ elive_raise_meeting
                               # leave after the scheduled meeting times.
  -max_talkers  n              # max no. of simultaneous talkers
  -max_cameras  n              # max no. of simultaneous cameras (elm3)
+ -seats        n              # number of seats to reserve on server
  -profile_display      none|mod|all       # profiles to display (elm3)
                               # none, mod (moderators only), or all
  -recording_status     off|on|manual      # set recording status
@@ -78,7 +79,6 @@ elive_raise_meeting
                               #  - cg:course gray  - cc:course color
                               #  - mg:medium gray  - mc:medium color
                               #  - fg:fine gray    - fc:fine color
- -seats        count          # number of seats to reserve on server
  -[no]invites                 # allow in-session invitations
  -[no]follow                  # lock whiteboard to moderator view (elm3)
  -[no]private                 # hide from public schedule
@@ -86,6 +86,7 @@ elive_raise_meeting
  -[no]permissions             # let participants perform activities
  -[no]raise_hands             # automatically raise hands on entry
  -[no]supervised              # moderator can see private messages
+ -[no]all_moderators          # all participants can moderate (elm3)
 
  -user_notes      'some text'
  -moderator_notes 'some text'
@@ -158,6 +159,7 @@ my $permissions;
 my $supervised;
 my $invites;
 my $follow_moderator;
+my $all_moderators;
 my $moderator_notes;
 my $user_notes;
 my $cost_center;
@@ -192,6 +194,7 @@ sub main {
 	'restricted!' => \$restricted,
 	'supervised!' => \$supervised,
 	'permissions!' => \$permissions,
+	'all_moderators!' => \$all_moderators,
 	'debug=i' => \$debug,
 	'help|?' => \$help,
 	'upload=s' => \$upload,
@@ -408,6 +411,9 @@ sub main {
 
     $session_data{fullPermissions} = $permissions
 	if defined $permissions;
+
+    $session_data{allModerators} = $all_moderators
+	if defined $all_moderators;
 
     $session_data{supervised} = $supervised
 	if defined $supervised;
