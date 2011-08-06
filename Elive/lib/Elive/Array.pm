@@ -8,7 +8,7 @@ use parent qw{Elive::DAO::Array};
 
 =head1 NAME
 
-ELive::Array
+Elive::Array
 
 =head1 DESCRIPTION
 
