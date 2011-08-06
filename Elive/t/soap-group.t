@@ -1,7 +1,10 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 15;
+use Test::More tests => 18;
 use Test::Exception;
+use Test::Builder;
+
+my $t = Test::Builder->new();
 
 use Elive;
 use Elive::Entity::User;
@@ -118,8 +121,21 @@ do {
     $group2->members->add( $group );
     @actual_members2 = sort @{ $group2->{members} };
     is_deeply(\@actual_members2, [sort (@members2, $group)], 'sub groups');
+    my $expected_members_str = join(',', sort ('*'.$group->groupId, @members2));
 
-    is($group2->members->stringify, join(',', sort ('*'.$group->groupId, @members2)), "members stringification");
+    is($group2->members->stringify, $expected_members_str, "members stringification");
+
+    #
+    # todo: get mock group updates working
+    #
+    if ($connection_class->isa('t::Elive::MockConnection')) {
+	$t->skip('skipping update tests on mock connection')
+	    for (1 .. 2);
+    }
+    else {
+	lives_ok(sub {$group2->update}, "group update - lives");
+	is($group2->members->stringify, $expected_members_str, "members stringification (after update)");
+    }
 
     #
     # someone will do this sooner or later
@@ -127,6 +143,19 @@ do {
     $group2->members->add( $group2 );
     my @expanded_members = $group2->expand_members;
     is_deeply(\@expanded_members, [sort values %user_ids], 'expanded membership');
+
+    #
+    # just to define behavour of attempted to add a circular reference to
+    # a group - the command toolkit should detect this and barf.
+    #
+    if ($connection_class->isa('t::Elive::MockConnection')) {
+	$t->skip('skipping circular update test on mock connection')
+	    for (1);
+    }
+    else {
+	dies_ok(sub {$group2->update}, "attempt group update with circular reference - dies");
+    }
+
     $group2->revert;
 };
 
