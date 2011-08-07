@@ -1,5 +1,11 @@
 Revision history for Elive
 
+1.08    tba
+        [compatibility]
+        Under Elive 10.0.1+ the getUser command (Elive::Entity::User retrieve
+        method) matches on both userId and loginName. Changed _readback method
+        and added tests to capture this behaviour.
+
 1.07    7th August 2011
         [compatibility]
         Some failures were detected when running soap-user.t and soap-group.t

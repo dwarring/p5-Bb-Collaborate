@@ -1,7 +1,9 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 20;
+use Test::More tests => 22;
 use Test::Exception;
+use Test::Builder;
+use version;
 
 use Elive;
 
@@ -9,6 +11,7 @@ use lib '.';
 use t::Elive;
 
 my $class = 'Elive::Entity::User' ;
+our $t = Test::Builder->new;
 
 use Carp;
 
@@ -31,19 +34,16 @@ Elive->connection($connection);
 
 diag "user test url: ".$connection->url;
 
+my $user_login_name = 'soap-user.t-' . t::Elive::generate_id();
+
 my %insert_data = (
-    loginName => 'some_test_user',
+    loginName => $user_login_name,
     loginPassword => t::Elive::generate_id(),
     email => 'test@acme.org',
     role => 3,
     firstName => 'test',
     lastName => 'user'
     );
-
-if (my $existing_user = $class->get_by_loginName($insert_data{loginName})) {
-    diag "deleting existing user: $insert_data{loginName}";
-    $existing_user->delete;
-}
 
 my $pleb_user = ($class->insert(\%insert_data));
 isa_ok($pleb_user, $class);
@@ -78,12 +78,9 @@ foreach (keys %update_data) {
     is(Elive::Util::string($pleb_user->$_), $expected_value, "$_ property as expected");
 }
 
-if (my $existing_user = $class->get_by_loginName('test_admin')) {
-    diag "deleting existing user: test_admin";
-    $existing_user->delete;
-}
+my $admin_login_name = 'soap-user.t-admin-' . t::Elive::generate_id();
 
-my $admin_user = $class->insert({loginName => "test_admin", # alias for loginName
+my $admin_user = $class->insert({loginName => $admin_login_name, # alias for loginName
 				 role => 0,
 				 loginPassword => t::Elive::generate_id(),
 				 email => 'test@acme.org'},);
@@ -91,8 +88,25 @@ my $admin_user = $class->insert({loginName => "test_admin", # alias for loginNam
 my $admin_id = $admin_user->userId;
 
 $admin_user = undef;
-$admin_user = $class->retrieve([$admin_id]);
-isa_ok($admin_user, $class, 'admin user before delete');
+$admin_user = $class->retrieve($admin_id);
+isa_ok($admin_user, $class, 'admin user - retrieve by id');
+
+our $elm_3_3_4_or_better =  (version->declare( $connection->server_details->version )->numify
+			     > version->declare( '10.0.1' )->numify);
+my $is_mock_connection = $connection_class->isa('t::Elive::MockConnection');
+
+if ($elm_3_3_4_or_better || $is_mock_connection) {
+
+    $admin_user = undef;
+    $admin_user = $class->retrieve($admin_login_name);
+    isa_ok($admin_user, $class, 'admin user - retrieve by loginName');
+    is($admin_user->userId, $admin_id, 'admin user - userId');
+
+}
+else {
+    $t->skip('skipping retrive by loginName for Elive < 10.0.1')
+	for (1 .. 2);
+}
 
 lives_ok(
     sub {

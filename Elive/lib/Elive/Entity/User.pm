@@ -93,6 +93,14 @@ sub _readback_check {
 
     delete $updates{loginPassword};
 
+    #
+    # retrieve can accept either a userId or loginName
+    #
+    delete $updates{userId}
+    if ($updates{userId} && @$rows
+	&& exists $rows->[0]{loginName}
+	&& $updates{userId} eq $rows->[0]{loginName});
+
     return $class->SUPER::_readback_check(\%updates, $rows, @args, case_insensitive => 1);
 }
 

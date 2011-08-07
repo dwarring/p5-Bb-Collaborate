@@ -241,14 +241,14 @@ sub call {
 
 		my $pkey = $params{$primary_key[0]};
 
-		if (!$params{$primary_key[0]} && $entity_name eq 'user') {
+		if ($entity_name eq 'user') {
 
-		    my $user = $params{loginName} || $params{userName};
+		    my $user = $params{loginName} || $params{userName} || $params{userId};
 		    #
-		    # try by login name
+		    # users can be retrieved by userId or loginName
 		    #
 		    if ($user) {
-			my ($_data) = grep {$_->{loginName} eq $user} values %{  $self->mockdb->{$entity_name} || {} };
+			my ($_data) = grep {$_->{loginName} eq $user || $_->{userId} eq $user} values %{  $self->mockdb->{$entity_name} || {} };
 			if ($_data) {
 			    $pkey = $_data->{userId}
 			}
