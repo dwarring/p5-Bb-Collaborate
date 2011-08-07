@@ -12,6 +12,8 @@ Revision history for Elive
         - Elive::Entity::User - declare 'groups' and 'domain' as type 'Any'
         - Elive::Entity::User - declare 'domain' as type 'Any'
         Will monitor these properties in new releases.
+        [bug fixes]
+        elive_query - reverted use of Try::Tiny based on perl 5.8.3 regressions
 
 1.06    6th August 2011
         [enhancements]
