@@ -11,7 +11,6 @@ use t::Elive;
 my $class = 'Elive::Entity::User' ;
 
 use Carp;
-$SIG{__DIE__} = \&Carp::confess;
 
 #
 # restrict our user tests to the mock connections. Live updates
