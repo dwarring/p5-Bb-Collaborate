@@ -96,7 +96,8 @@ dies_ok( sub { $pleb_user = $class->retrieve([$user_id_tainted]) },
 	 'retrieve on tainted data - dies');
 
 lives_ok( sub { $pleb_user = $class->retrieve([$user_id_untainted]) },
-	 'retrieve on tainted data - dies');
+	 'retrieve on untainted data - lives');
+
 isa_ok($pleb_user, $class, 'retrieved user');
 
 if ($connection_class->isa('t::Elive::MockConnection')) {
@@ -107,7 +108,6 @@ if ($connection_class->isa('t::Elive::MockConnection')) {
 }
 else {
 
-    $pleb_user = undef;
     my @pleb_users;
 
     dies_ok( sub {

@@ -42,25 +42,25 @@ has 'lastName' => (is => 'rw', isa => 'Str',
 # but haven't survived to 9.5.2. Will cull these shortly.
 #
 
-has 'groups' => (is => 'rw', isa => 'Str',
-		documentation => 'ldap groups?');
+has 'groups' => (is => 'rw', isa => 'Any',
+		documentation => 'groups that this user belongs to?');
 
-has 'domain' => (is => 'rw', isa => 'Str',
-		 documentation => 'ldap domain?');
+has 'domain' => (is => 'rw', isa => 'Any',
+		documentation => 'groups that this user belongs to?');
 
 sub BUILDARGS {
     my $class = shift;
     my $spec = shift;
 
-    my $args;
+    my %args;
     if (defined $spec && ! ref $spec) {
-	$args = {userId => $spec};
+	%args = (userId => $spec);
     }
     else {
-	$args = $spec;
+	%args = %$spec;
     }
 
-    return $args;
+    return \%args;
 }
 
 coerce 'Elive::Entity::User' => from 'HashRef|Str'

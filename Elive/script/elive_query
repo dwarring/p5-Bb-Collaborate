@@ -292,7 +292,8 @@ sub main {
 				#
 				my $include_derivable = $2? 1: 0;
 				$hide_undef = $3? 1: 0;
-				@props = $entity_class->properties;
+				my $property_types = $entity_class->property_types;
+				@props = grep {$property_types->{$_} ne 'Any'} $entity_class->properties;
 				if ($include_derivable) {
 				    my %derivable = $entity_class->derivable;
 				    push (@props, sort keys %derivable);

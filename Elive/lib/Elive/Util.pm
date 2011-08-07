@@ -79,7 +79,7 @@ sub _freeze {
 		    unless $_ eq '0' || m{^[1-9][0-9]*$};
 
 	    }
-	    elsif ($type =~ m{^Ref}ix) {
+	    elsif ($type =~ m{^Ref|Any}ix) {
 		$val = undef;
 	    }
 	    else {
@@ -127,6 +127,10 @@ sub _thaw {
 
 	    $_ = _tidy_decimal($_);
 
+	}
+	elsif ($type eq 'Any') {
+	    # more or less a placeholder type
+	    $_ = string($_);
 	}
 	else {
 	    die "unknown type: $type";

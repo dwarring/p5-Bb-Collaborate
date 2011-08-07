@@ -342,7 +342,7 @@ sub _cmp_col {
 	my $t = $array_type || $type;
 	$cmp = $t->stringify($v1) cmp $t->stringify($v2);
     }
-    elsif ($type =~ m{^Ref}ix) {
+    elsif ($type =~ m{^Ref|Any}ix) {
 	$cmp = YAML::Dump($v1) cmp YAML::Dump($v2);
     }
     else {

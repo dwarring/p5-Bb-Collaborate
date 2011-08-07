@@ -1,6 +1,6 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 6;
+use Test::More tests => 9;
 use Test::Warn;
 
 =pod
@@ -24,6 +24,7 @@ use Elive::Entity::ServerParameters;
 #
 my $group_types = Elive::Entity::Group->property_types;
 is($group_types->{groupId}, 'Str', 'non-numeric groupIds permitted (LDAP compat)');
+ok($group_types->{domain}, 'group has domain property (early ELM 3.0 compat');
 
 #
 # User Ids can be non-numeric when configured to use LDAP for 
@@ -31,6 +32,8 @@ is($group_types->{groupId}, 'Str', 'non-numeric groupIds permitted (LDAP compat)
 #
 my $user_types = Elive::Entity::User->property_types;
 is($user_types->{userId}, 'Str', 'non-numeric userIds permitted (LDAP compat)');
+ok($user_types->{domain}, 'user has domain property (early ELM 3.0 compat');
+ok($user_types->{groups}, 'user has groups property (early ELM 3.0 compat');
 
 #
 # recording IDs can be user supplied and non-numeric

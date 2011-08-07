@@ -24,6 +24,9 @@ has 'members' => (is => 'rw', isa => 'Elive::Entity::Group::Members',
 __PACKAGE__->_alias(groupMembers => 'members', freeze => 1);
 __PACKAGE__->_alias(entry => 'members');
 
+has 'domain' => (is => 'rw', isa => 'Any',
+		 documentation => 'ldap domain?');
+
 has 'dn' => (is => 'rw', isa => 'Str',
 	       documentation => 'LDAP Domain (where applicable)');
 
@@ -200,7 +203,8 @@ sub expand_members {
 	}
 
 	foreach (@elements) {
-	    push(@members, $_) unless $seen{u => $_}++;
+	    push(@members, $_)
+		unless ref || m{^\*} || $seen{u => $_}++;
 	}
     }
 
