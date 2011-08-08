@@ -59,7 +59,7 @@ SKIP: {
     my $server_details;
     my $server_version;
 
-    my $min_version =  '9.0.0';
+    my $min_version =  '9.5.0';
     my $min_version_num = version->new($min_version)->numify;
 
     my $max_version =  '10.0.1';
@@ -73,7 +73,13 @@ SKIP: {
     my $server_version_num = version->new($server_version)->numify;
     ok($server_version_num >= $min_version_num, "Elluminate Live! server is $min_version or higher");
 
-    if ($server_version_num > $max_version_num) {
+    if ($server_version_num < $min_version_num) {
+	diag "************************";
+	diag "Note: Elluminate Live! server version is ".qv($server_version);
+	diag "      This Elive release ($Elive::VERSION) supports Elluminate Live! ".qv($min_version)." - ".qv($max_version);
+	diag "************************";
+    }
+    elsif ($server_version_num > $max_version_num) {
 	diag "************************";
 	diag "Note: Elluminate Live! server version is ".qv($server_version);
 	diag "      This Elive release ($Elive::VERSION) has been tested against ".qv($min_version)." - ".qv($max_version);
