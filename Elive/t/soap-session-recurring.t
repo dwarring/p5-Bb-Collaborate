@@ -3,6 +3,7 @@ use warnings; use strict;
 use Test::More tests => 6;
 use Test::Exception;
 use Test::Builder;
+use version;
 
 use lib '.';
 use t::Elive;
@@ -30,13 +31,25 @@ SKIP: {
 
     my %result = t::Elive->test_connection();
     my $auth = $result{auth};
+    my $skippable = 5;
 
     my $connection_class = $result{class};
-    skip ($result{reason} || 'skipping live tests', 5)
+    skip ($result{reason} || 'skipping live tests', $skippable)
 	if $connection_class->isa('t::Elive::MockConnection');
 
     $connection = $connection_class->connect(@$auth);
     Elive->connection($connection);
+
+    my $min_version = '9.5.0';
+    my $min_version_num = version->new($min_version)->numify;
+    my $server_version = Elive->server_details->version;
+    my $server_version_num = version->new($server_version)->numify;
+
+    if ($server_version_num < $min_version_num) {
+	my $reason = "Sessions not available for Elluminate Live $server_version (< $min_version)"; 
+	diag "Skipping session tests: $reason";
+	skip($reason, $skippable)
+    }
 
     my $session_start = Elive::Util::next_quarter_hour();
     my $session_end = Elive::Util::next_quarter_hour($session_start);

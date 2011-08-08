@@ -27,12 +27,27 @@ SKIP: {
     my %result = t::Elive->test_connection( only => 'real');
     my $auth = $result{auth};
 
-    skip ($result{reason} || 'skipping live tests', 30)
+    my $skippable = 30;
+
+    skip ($result{reason} || 'skipping live tests', $skippable)
 	unless $auth;
 
     my $connection_class = $result{class};
     my $connection = $connection_class->connect(@$auth);
     Elive->connection($connection);
+
+    my $min_version = '9.5.0';
+    my $min_version_num = version->new($min_version)->numify;
+    my $server_version = Elive->server_details->version;
+    my $server_version_num = version->new($server_version)->numify;
+
+    if ($server_version_num < $min_version_num) {
+	my $reason = "Sessions not available for Elluminate Live $server_version (< $min_version)"; 
+	diag "Skipping session tests: $reason";
+	skip($reason, $skippable)
+    }
+
+
     #
     # ELM 3.3.4 / 10.0.2 includes significant bug fixes
     our $elm_3_3_4_or_better =  (version->declare( $connection->server_details->version )->numify
