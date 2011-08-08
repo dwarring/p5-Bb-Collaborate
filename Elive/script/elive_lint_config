@@ -105,7 +105,7 @@ sub main {
 
     if (my @default = map {_get_elems($_, 'default')} @adapters) {
 	#
-	# elluminate v 9.5
+	# elluminate 9.5+
 	#
 	@adapters = @default;
 
@@ -134,8 +134,11 @@ sub main {
     }
     else {
 	#
-	# elluminate v9.0 - 9.1
+	# elluminate v8.0 - 9.1
 	#
+	delete $required_commands{createSession};
+	delete $required_commands{updateSession};
+
 	my ($command_adapter)
 	    = (grep {my ($class) = _get_elems($_, 'class');
 		     $class =~ m{CommandAdapter}}
@@ -171,6 +174,8 @@ sub main {
 	}
     }
 
+    print "\n";
+
     my @missing = sort grep {!exists $found{$_}} (keys %required_commands);
 
     foreach (@missing) {
@@ -180,7 +185,7 @@ sub main {
     die join("\n", '',@errors)
 	if @errors;
 
-    print "\nNo errors found\n";
+    print "No errors found\n";
     return 0;
 }
 
