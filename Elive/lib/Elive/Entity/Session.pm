@@ -454,7 +454,11 @@ sub retrieve {
     my $connection = $opt{connection} || $class->connection
 	or die "not connected";
 
+    my $meeting = Elive::Entity::Meeting->retrieve( $id_string, reuse => 1, %opt )
+	or return;
+
     my $self = $class->construct({id => $id_string}, connection => $connection);
+    $self->meeting( $meeting );
 
     return $self;
 }
