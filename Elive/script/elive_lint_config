@@ -18,14 +18,20 @@ elive_lint_config
 
 =head1 DESCRIPTION
 
-This script can be run on an elluminate server site configuration file to
-perform some rough checks on the basic setup.
+This script can be run on Elluminate Live server site configuration files
+to perform some rough checks on the basic setup.
 
-In particular, some adapter definitions may be missing. This seems to
+In particular, some command adapter definitions may be missing. This seems to
 depend on the sites vintage, manual edits, and the general upgrade history.
 
-It may be useful to rerun this script after upgrading either Elluminate Live
-or Elive, or creating new site instances.
+It may be useful to rerun this script after upgrading either Elluminate Live,
+or creating new site instances.
+
+=head1 BUGS AND LIMITATIONS
+
+Missing commands seemed to be more of a problem on older versions of Elluminate
+Live! up to about 9.5 (ELM 3.0). So this script is more likley to be of benefit
+for older versions of Elluminate Live!.
 
 =head1 SEE ALSO
 
@@ -42,7 +48,7 @@ sub main {
 
     my $help;
 
-    print "Elive ${Elive::VERSION} - Server Configuration Linter\n";
+    print "Elive ${Elive::VERSION} - Elluminate Live! configuration checker\n";
 
     (GetOptions(
 	 'help|?' => \$help,
@@ -53,7 +59,7 @@ sub main {
 
     print "Checking: $config_file\n";
 
-    my %required_adapters = %{ Elive::Connection::SDK->known_commands };
+    my %required_commands = %{ Elive::Connection::SDK->known_commands };
     my %found;
 
     my $config = XMLin($config_file,
@@ -95,7 +101,7 @@ sub main {
 
     my @adapters = _get_elems($config, qw/elm adapters adapter/);
 
-    print "Adapters: ";
+    print "Adapter Commands: ";
 
     if (my @default = map {_get_elems($_, 'default')} @adapters) {
 	#
@@ -146,7 +152,7 @@ sub main {
 
 	    my ($name, $value) = @$_;
 	    next unless $name =~ s{^command\:}{};
-	    next unless exists $required_adapters{$name};
+	    next unless exists $required_commands{$name};
 	    print "[$name]";
 
 	    if (exists $found{$name}) {
@@ -165,7 +171,7 @@ sub main {
 	}
     }
 
-    my @missing = sort grep {!exists $found{$_}} (keys %required_adapters);
+    my @missing = sort grep {!exists $found{$_}} (keys %required_commands);
 
     foreach (@missing) {
 	push(@errors, "missing adapter command: $_");
