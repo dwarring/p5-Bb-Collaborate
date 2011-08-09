@@ -1,8 +1,7 @@
 Revision history for Elive
 
-1.08    tba
+1.08    9th August 2011
         [compatibility]
-
         I regression tested against Elluminate 9.0 to check results.
         - Recording and groups had some problems and failing tests
         - I skipped all tests that involve Elive::Entity::Session. It
@@ -18,7 +17,6 @@ Revision history for Elive
           added tests to soap-user.t to capture this behaviour.
 
        [bug fixes]
-
        - Elive::Entity::Session - the retrieve() method now returns null when
          an attempt is made to access a non-existent meeting. This fix was
          sufficient pass all Elive::View::Session tests on Elluminate 9.0.
