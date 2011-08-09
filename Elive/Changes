@@ -1,5 +1,10 @@
 Revision history for Elive
 
+1.09    tba
+        [testing]
+        removed $TEST_AUTHOR check from all script-*.t tests
+        script-elive_raise_meeting.t - skip elm3 tests for Elluminate < 9.5
+
 1.08    9th August 2011
         [compatibility]
         I regression tested against Elluminate 9.0 to check results.
@@ -17,7 +22,7 @@ Revision history for Elive
           added tests to soap-user.t to capture this behaviour.
 
        [bug fixes]
-       - Elive::Entity::Session - the retrieve() method now returns null when
+       - Elive::Entity::Session - the retrieve() method now returns undef when
          an attempt is made to access a non-existent meeting. This fix was
          sufficient pass all Elive::View::Session tests on Elluminate 9.0.
 
@@ -40,8 +45,8 @@ Revision history for Elive
         [enhancements]
         elive_raise_meeting - added -all_moderators option
         [refactoring]
-        - renamed class Elive::Array to Elive::DAO::Array. Use of old
-          class produces a depreciated warning.
+        - renamed class Elive::Array to Elive::DAO::Array. The old class name
+          can still be referenced , but now produces a depreciated warning.
         [testing]
         - corrected occasional bogus failures (invalid ID generation) in
           mock tests.
