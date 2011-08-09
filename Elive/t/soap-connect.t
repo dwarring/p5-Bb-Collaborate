@@ -59,8 +59,11 @@ SKIP: {
     my $server_details;
     my $server_version;
 
-    my $min_version =  '9.5.0';
+    my $min_version =  '9.0.0';
     my $min_version_num = version->new($min_version)->numify;
+
+    my $min_recommended_version =  '9.5.0';
+    my $min_recommended_version_num = version->new($min_recommended_version)->numify;
 
     my $max_version =  '10.0.1';
     my $max_version_num = version->new($max_version)->numify;
@@ -75,13 +78,24 @@ SKIP: {
 
     if ($server_version_num < $min_version_num) {
 	diag "************************";
-	diag "Note: Elluminate Live! server version is ".qv($server_version);
+	diag "Note: this Elluminate Live! server version is ".qv($server_version);
 	diag "      This Elive release ($Elive::VERSION) supports Elluminate Live! ".qv($min_version)." - ".qv($max_version);
+        diag "      The recommended version is $min_recommended_version or better";
+	diag "************************";
+    }
+    elsif ($server_version_num < $min_recommended_version_num) {
+	diag "************************";
+	diag "Note: this Elluminate Live! server version is ".qv($server_version);
+	diag "      A number Elive classes are not fully operational, including:";
+	diag "        * Elive::Entity::Session";
+	diag "        * Elive::Entity::Recording";
+	diag "        * Elive::Entity::Group";
+        diag "      The recommended version is $min_recommended_version or better";
 	diag "************************";
     }
     elsif ($server_version_num > $max_version_num) {
 	diag "************************";
-	diag "Note: Elluminate Live! server version is ".qv($server_version);
+	diag "Note: this Elluminate Live! server version is ".qv($server_version);
 	diag "      This Elive release ($Elive::VERSION) has been tested against ".qv($min_version)." - ".qv($max_version);
 	diag "      You might want to check CPAN for a more recent version of Elive.";
 	diag "************************";

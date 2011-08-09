@@ -173,7 +173,7 @@ SKIP: {
 	    raiseHandOnEnter => 0,
 	    maxTalkers => 2,
 	    inSessionInvitation => 1,
-	    boundaryMinutes => 30,
+	    boundaryMinutes => 15,
 	    fullPermissions => 1,
 	    supervised => 1,
 	    seats => 2,

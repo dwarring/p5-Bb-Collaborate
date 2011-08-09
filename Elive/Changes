@@ -2,9 +2,26 @@ Revision history for Elive
 
 1.08    tba
         [compatibility]
+
+        I regression tested against Elluminate 9.0 to check results.
+        - Recording and groups had some problems and failing tests
+        - I skipped all tests that involve Elive::Entity::Session. It
+          wasn't usable (as expected).
+        - Elive::View::Session worked pretty well, after one minor bug fix
+          (see below).
+        - I made some modifications to the soap-connect.t to treat 9.0 as the
+          mininum supported version and 9.5+ as the recommended version.
+
         Under Elive 10.0.1+ the getUser command (Elive::Entity::User retrieve
-        method) matches on both userId and loginName. Changed _readback method
-        and added tests to capture this behaviour.
+        method) matches on both userId and loginName.
+        - I relaxed the _readback() consistancy checks to allow this.  Also,
+          added tests to soap-user.t to capture this behaviour.
+
+       [bug fixes]
+
+       - Elive::Entity::Session - the retrieve() method now returns null when
+         an attempt is made to access a non-existent meeting. This fix was
+         sufficient pass all Elive::View::Session tests on Elluminate 9.0.
 
 1.07    7th August 2011
         [compatibility]
