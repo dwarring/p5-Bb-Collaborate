@@ -32,6 +32,9 @@ ok($group_types->{domain}, 'group has domain property (early ELM 3.0 compat');
 #
 my $user_types = Elive::Entity::User->property_types;
 is($user_types->{userId}, 'Str', 'non-numeric userIds permitted (LDAP compat)');
+#
+# User 'domain' and 'group' were present in early ELM 3.x, but appear to be stillborn
+#
 ok($user_types->{domain}, 'user has domain property (early ELM 3.0 compat');
 ok($user_types->{groups}, 'user has groups property (early ELM 3.0 compat');
 

@@ -132,7 +132,9 @@ dies_ok(
     );
 
 $admin_user = undef;
-$admin_user = $class->retrieve([$admin_id]);
+#
+# ELM 9.0 dies if user has been deleted
+$admin_user = eval { $class->retrieve([$admin_id]) };
 #
 # Delete behaves differently on different versions of elm
 #

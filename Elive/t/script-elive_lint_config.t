@@ -8,11 +8,6 @@ use English qw(-no_match_vars);
 use lib '.';
 use t::Elive;
 
-if ( not $ENV{TEST_AUTHOR} ) {
-    my $msg = 'Author test.  Set $ENV{TEST_AUTHOR} to a true value to run.';
-    plan( skip_all => $msg );
-}
-
 eval "use Test::Script::Run 0.04";
 
 if ( $EVAL_ERROR ) {

@@ -5,6 +5,8 @@ use File::Spec;
 use Test::More;
 use Test::Exception;
 use English qw(-no_match_vars);
+use version;
+use Test::Builder;
 
 use lib '.';
 use t::Elive;
@@ -12,11 +14,6 @@ use t::Elive;
 use Elive;
 use Elive::View::Session;
 use Elive::Entity::Session;
-
-if ( not $ENV{TEST_AUTHOR} ) {
-    my $msg = 'Author test.  Set $ENV{TEST_AUTHOR} to a true value to run.';
-    plan( skip_all => $msg );
-}
 
 eval "use Test::Script::Run 0.04";
 
@@ -26,6 +23,8 @@ if ( $EVAL_ERROR ) {
 }
 
 plan(tests => 160);
+
+our $t = Test::Builder->new;
 
 local ($ENV{TERM}) = 'dumb';
 
@@ -69,6 +68,17 @@ SKIP: {
     my $connection = $connection_class->connect(@$auth)
 	or die "failed to connect?";
 
+    my $min_elm3_version =  '9.5.0';
+    my $server_details = $connection->server_details;
+    my $server_version = $server_details->version;
+
+    my $have_elm3 = do {
+	my $min_elm3_version_num = version->new($min_elm3_version)->numify;
+	my $server_version_num = version->new($server_version)->numify;
+
+	$server_version_num >= $min_elm3_version_num;
+    };
+
     my $preload = Elive::Entity::Preload->upload(
 	{
 	    type => 'whiteboard',
@@ -78,6 +88,13 @@ SKIP: {
 	}, connection => $connection);
 
     foreach my $class (qw{Elive::View::Session Elive::Entity::Session}) {
+
+	if ($class eq 'Elive::Entity::Session' && ! $have_elm3) {
+	    diag "*** Skipping class: $class (Elluminate Live! version $server_version < $min_elm3_version)";
+	    $t->skip("Elluminate Live! version $server_version < $min_elm3_version")
+		for (1..74);
+	    next;
+	}
 
 	diag "*** Testing class: $class";
 
