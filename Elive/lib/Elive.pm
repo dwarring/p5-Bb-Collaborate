@@ -300,8 +300,18 @@ elive_query is an example simple sql-like script. It is a basic program
 for listing and retrieving entities. It serves as a simple demonstration
 script, and can be used to confirm basic operation of Elive.
 
+    % perl elive_query http://myserver.com/test -user rrmeo_sdk
+    Password: connecting to http://myserver.com/test...ok
+    Elive query 1.xx - type 'help' for help
+
+    elive> select address,version from serverDetails
+    address             |version
+    --------------------|-------
+    elluminate.rrmeo.com|10.0.1 
+    elive> ^D
+
 It server a secondary function of querying entity metadata. For example,
-to show the C<user> entity:
+to show the C<meeting> entity:
 
     % elive_query
     Elive query 1.xx  - type 'help' for help
@@ -312,6 +322,7 @@ to show the C<user> entity:
     elive> show meeting
     meeting: Elive::Entity::Meeting:
       meetingId          : pkey Int        
+      adapter            : Str       -- adapter used to create the meeting
       allModerators      : Bool      -- all participants can moderate
       deleted            : Bool            
       end                : HiResDate -- meeting end time
@@ -332,7 +343,8 @@ For more information, type the command: C<elive_raise_meeting --help>
 
 =head2 elive_lint_config
 
-A utility script that checks your Elluminate server configuration. Please
+A utility script that checks your Elluminate server configuration. This
+is more likely to be of use for Elluminate I<Live!> prior to 10.0. Please
 see the README file.
 
 =head1 SEE ALSO
