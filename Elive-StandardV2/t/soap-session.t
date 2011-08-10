@@ -44,7 +44,7 @@ SKIP: {
 	openChair => 1,
 	mustBeSupervised => 0,
 	permissionsOn => 1,
-	chairList => [$connection->user],
+	chairList => [qw(alice bob)],
 	groupingList => [qw(mechanics sewing)],
     );
 
@@ -93,7 +93,7 @@ SKIP: {
     }
 
     my $session_url;
-    lives_ok(sub {$session_url = $session->session_url(userId => 'bob', displayName => 'Robert')}, 'Can generate session Url for some user');
+    lives_ok(sub {$session_url = $session->session_url(userId => 'bob', displayName => 'Robert')}, 'Can generate session Url for charList user');
     diag "session url: $session_url";
 
     my $attendances;

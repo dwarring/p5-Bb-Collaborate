@@ -18,13 +18,13 @@ Elive::StandardV2 - Perl bindings for the Elluminate Live Standard Bridge (V2) [
 
 =head1 VERSION
 
-Version 0.01_3
+Version 0.01_4
 
 ** DEVELOPER RELEASE - UNDER CONSTRUCTION **
 
 =cut
 
-our $VERSION = '0.01_3';
+our $VERSION = '0.01_4';
 
 use 5.008003;
 
@@ -57,7 +57,7 @@ use 5.008003;
 
     my $session = Elive::StandardV2::Session->insert(\%session_data);
 
-    my $url = $session->web_url( userId => 'bob');
+    my $url = $session->session_url( userId => 'bob', displayName => 'Robert');
     print "bob's session link is: $url\n";
 
 =head1 DESCRIPTION

@@ -64,7 +64,7 @@ __PACKAGE__->params(
 
     my $session = Elive::StandardV2::Session->insert(\%session_data);
 
-    my $url = $session->url( userId => 'bob');
+    my $url = $session->session_url( userId => 'bob', displayName => 'Robert');
     print "bob's session link is: $url\n";
 
 =cut
@@ -590,14 +590,12 @@ sub session_url {
     $params{sessionId} = $session_id;
 
     my $user_id = $opt{userId}
-	or croak "missing required field: user_id";
+	or croak "missing required field: userId";
 
     $params{userId} = $user_id;
 
-    my $display_name = $opt{displayName}
-	or croak "missing required field: display_name";
-
-    $params{displayName} = $display_name;
+    $params{displayName} = $opt{displayName}
+    if defined $opt{displayName};
 
     my $som = $connection->call('buildSessionUrl' => %{ $class->_freeze(\%params) });
 
