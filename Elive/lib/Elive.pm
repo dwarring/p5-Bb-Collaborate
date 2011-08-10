@@ -300,14 +300,14 @@ elive_query is an example simple sql-like script. It is a basic program
 for listing and retrieving entities. It serves as a simple demonstration
 script, and can be used to confirm basic operation of Elive.
 
-    % perl elive_query http://myserver.com/test -user rrmeo_sdk
+    % perl elive_query http://myserver.com/test -user sdk_user
     Password: connecting to http://myserver.com/test...ok
     Elive query 1.xx - type 'help' for help
 
     elive> select address,version from serverDetails
-    address             |version
-    --------------------|-------
-    elluminate.rrmeo.com|10.0.1 
+    address     |version
+    ------------|-------
+    myserver.com|10.0.1 
     elive> ^D
 
 It server a secondary function of querying entity metadata. For example,
