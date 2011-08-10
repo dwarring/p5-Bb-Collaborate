@@ -1,6 +1,15 @@
 Revision history for Elive
 
 1.09    tba
+        [compatibility]
+        Further support for Elluminate Live version >= 9.0.0 < 9.5.0
+        - elive_raise_meeting: Reintroduced automatic selection of session
+          class based on version (see rev 0.96), but this time against
+          earlier Elluminate Live! versions
+          -- Elive::Entity::Session (-user elm3) is the default for
+             Elluminate Live! >= 9.5.0
+          -- Elive::View::Session (-use elm2) is otherwise the default
+
         [testing]
         removed $TEST_AUTHOR check from all script-*.t tests
         script-elive_raise_meeting.t - skip elm3 tests for Elluminate < 9.5
@@ -190,7 +199,7 @@ Revision history for Elive
 0.96    29th June 2011
         elive_raise_meeting:
         - default session class to Elive::Entity::Session (elm3) for
-          server version >= 10.0.1, Elive::Session::Class (elm2) otherwise
+          server version >= 10.0.1, Elive::View::Session (elm2) otherwise
         - added further elm3 options: -follow -recording_resolution -profile
         - fixed long standing nit - not picking up $ELIVE_DEBUG (also fixed
           in elive_query).

@@ -12,7 +12,7 @@ use Elive::Entity::Preloads;
 
 =head1 NAME
 
-Elive::View::Session - Session view class
+Elive::View::Session - Session view and insert/update via ELM 2.x
 
 =head1 DESCRIPTION
 

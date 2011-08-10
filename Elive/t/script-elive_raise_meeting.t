@@ -90,8 +90,8 @@ SKIP: {
     foreach my $class (qw{Elive::View::Session Elive::Entity::Session}) {
 
 	if ($class eq 'Elive::Entity::Session' && ! $have_elm3) {
-	    diag "*** Skipping class: $class (Elluminate Live! version $server_version < $min_elm3_version)";
-	    $t->skip("Elluminate Live! version $server_version < $min_elm3_version")
+	    diag "*** Skipping class $class for Elluminate Live! version $server_version < $min_elm3_version";
+	    $t->skip("$class for Elluminate Live! version $server_version < $min_elm3_version")
 		for (1..74);
 	    next;
 	}
