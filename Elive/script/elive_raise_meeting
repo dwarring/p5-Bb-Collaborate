@@ -138,7 +138,7 @@ my $debug;
 my $facilitator_id;
 my $start_str;
 my $end_str;
-my $meeting_name;
+my $meeting_name = 'elive test meeting';
 my $meeting_password;
 my $max_talkers;
 my $max_cameras;

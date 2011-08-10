@@ -1,6 +1,11 @@
 Revision history for Elive
 
-1.09    tba
+1.10    11th August
+        [bugs]
+        - elive_raise_meeting: re-added default for meeting name (left out
+          with Elive 1.09.
+
+1.09    10th August 2011
         [compatibility]
         Further support for Elluminate Live version >= 9.0.0 < 9.5.0
         - elive_raise_meeting: Reintroduced automatic selection of session
