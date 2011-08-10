@@ -34,17 +34,17 @@ elive_raise_meeting
 
  [url]                        # web address and site instance path,
                               # E.g.: http://myserver.com/mysite 
- -user someAdminUser          # SDK/SOAP username
- -pass somePass               # SDK/SOAP password
+ -user <username>             # SDK/SOAP username
+ -pass <password>             # SDK/SOAP password
 
 =head2 Basic Options
 
- -name         'meeting name'
- -facilitator  userId
- -meeting_pass otherpass      # meeting password
+ -name         <meeting name> # set meeting name
+ -facilitator  <userId>
+ -meeting_pass <password>     # set meeting password
  -start  '[YYYY-MM-DD ]HH:MM' # start time
  -end    '[YYYY-MM-DD ]HH:MM' # end time
- -occurs {days|weeks}=n       # repeat over n days/weeks (elm2)
+ -occurs {days|weeks}=<n>     # repeat over n days/weeks (elm2)
 
 =head2 Moderators and Participants
 
@@ -66,9 +66,9 @@ elive_raise_meeting
 
  -boundary     0|15|30|..     # minutes participants can arrive before or
                               # leave after the scheduled meeting times.
- -max_talkers  n              # max no. of simultaneous talkers
- -max_cameras  n              # max no. of simultaneous cameras (elm3)
- -seats        n              # number of seats to reserve on server
+ -max_talkers  <n>            # max no. of simultaneous talkers
+ -max_cameras  <n>            # max no. of simultaneous cameras (elm3)
+ -seats        <n>            # number of seats to reserve on server
  -profile_display      none|mod|all       # profiles to display (elm3)
                               # none, mod (moderators only), or all
  -recording_status     off|on|manual      # set recording status
@@ -88,16 +88,16 @@ elive_raise_meeting
  -[no]supervised              # moderator can see private messages
  -[no]all_moderators          # all participants can moderate (elm3)
 
- -user_notes      'some text'
- -moderator_notes 'some text'
- -cost_center     'code'
- -exit_url=http://somesite.com  # URL to visit on meeting exit (elm3)
+ -user_notes      <text>
+ -moderator_notes <text>
+ -cost_center     <code>
+ -exit_url        <address>   # URL to visit on meeting exit (elm3)
 
 =head2 Preloads
 
- -upload              local_file     # upload a local file
- -import_from_server  remote_file    # import a server side file
- -add_preload         preload_id,... # associate with existing preloads
+ -upload             <local_file>     # upload a local file
+ -import_from_server <remote_file>    # import a server side file
+ -add_preload        <preload_id>,... # associate with existing preloads
 
  Where preload files can include:
 
@@ -138,7 +138,7 @@ my $debug;
 my $facilitator_id;
 my $start_str;
 my $end_str;
-my $meeting_name = 'elive test meeting';
+my $meeting_name;
 my $meeting_password;
 my $max_talkers;
 my $max_cameras;
@@ -186,7 +186,7 @@ sub main {
 	'end=s' => \$end_str,
 	'moderators|moderator=s{,}' => \@moderators,
 	'participants|participant|others|other=s{,}' => \@participants,
-	'meeting_password|meeting_pass=s' => \$meeting_password,
+	'meeting_password|meeting_pass|session_password|session_pass=s' => \$meeting_password,
 	'max_talkers=i' => \$max_talkers,
 	'max_cameras=i' => \$max_cameras,
 	'raise_hands!' => \$raise_hands,
@@ -228,36 +228,6 @@ sub main {
     ($url = shift @ARGV)
 	or pod2usage("missing url argument");
 
-    if (defined $recording_status) {
-	$recording_status = lc($recording_status);
-	#
-	# accept some of the other symonymns for the various modes as
-	# seen in documentation and elluminate's web interface.
-	#
-	$recording_status =~ s{^none|disabled$}{off}x;
-	$recording_status =~ s{^manual$}{remote}x;
-	$recording_status =~ s{^auto(matic)?$}{on}x;
-
-	die pod2usage("-recording_status must be on/auto, off/none/disabled or manual/remote\n")
-	    unless $recording_status =~ m{^on|off|remote$}x;
-    }
-
-    if (defined $recording_resolution) {
-	$recording_resolution = uc $recording_resolution;
-
-	die ("-recording_resolution must be: cg|cc|mg|mc|fg|fc\n")
-	    unless $recording_resolution =~ m{^[CMF][GC]$}x;
-    }
-
-    if (defined $profile_display) {
-	$profile_display = lc $profile_display;
-
-	die ("-profile_display must be: none|mod|all\n")
-	    unless $profile_display =~ m{^(none|mod|all)$}x;
-    }
-
-    my ($recurrence_count, $recurrence_days) = _get_occurrences(\%occurs);
-
     Elive->debug($debug) if defined $debug;
     # debug may also be set via $ENV{ELIVE_DEBUG}
     $debug = Elive->debug;
@@ -298,11 +268,41 @@ sub main {
 
     warn "Session class: $class\n" if $debug;
 
-    my $can_insert = eval "use $class";
+    eval "use $class";
     die "unable to load class $class: $@" if $@;
 
     die "class $class: does not implement the 'insert' method"
 	unless eval{ $class->can('insert') };
+
+    if (defined $recording_status) {
+	$recording_status = lc($recording_status);
+	#
+	# accept some of the other symonymns for the various modes as
+	# seen in documentation and elluminate's web interface.
+	#
+	$recording_status =~ s{^none|disabled$}{off}x;
+	$recording_status =~ s{^manual$}{remote}x;
+	$recording_status =~ s{^auto(matic)?$}{on}x;
+
+	die pod2usage("-recording_status must be on/auto, off/none/disabled or manual/remote\n")
+	    unless $recording_status =~ m{^on|off|remote$}x;
+    }
+
+    if (defined $recording_resolution) {
+	$recording_resolution = uc $recording_resolution;
+
+	die ("-recording_resolution must be: cg|cc|mg|mc|fg|fc\n")
+	    unless $recording_resolution =~ m{^[CMF][GC]$}x;
+    }
+
+    if (defined $profile_display) {
+	$profile_display = lc $profile_display;
+
+	die ("-profile_display must be: none|mod|all\n")
+	    unless $profile_display =~ m{^(none|mod|all)$}x;
+    }
+
+    my ($recurrence_count, $recurrence_days) = _get_occurrences(\%occurs);
 
     my $start = $start_str
 	? Date::Parse::str2time($start_str)
@@ -322,52 +322,6 @@ sub main {
 	: Elive->login;
 
     $facilitator_id ||= $facilitator->userId;
-    #
-    # Ensure that the facilitator is included as a moderator, but not as
-    # a regular participant
-    #
-    push (@moderators, $facilitator_id)
-	unless grep {$_ eq $facilitator_id} @moderators;
-
-    @participants = grep {$_ ne $facilitator_id} @participants;
-
-    # participants can also be passed in argv (old usage)
-    my @args = grep {$_ ne $facilitator_id} @ARGV;
-
-    my @participants = (
-	parse_participants(\@moderators, role => 2),
-	parse_participants(\@participants, role => 3),
-	parse_participants(\@args),
-	);
-    #
-    # collate by type
-    #
-    my @users;
-    my @groups;
-    my @guests;
-
-    foreach my $participant (@participants) {
-
-	my $type = $participant->type;
-
-	if (! $type ) {
-	    push (@users, $participant);
-	}
-	elsif ($type == 1) {
-	    push (@groups, $participant);
-	}
-	elsif ($type == 2) {
-	    push (@guests, $participant); 
-	}
-	else {
-	    warn "don't know how to handle participant type: $type";
-	}
-    }
-    #
-    # Vet participants
-    #
-    @users = _get_users(@users) if @users;
-    @groups = _get_groups(@groups) if @groups;
 
     my %session_data = (
 	name => $meeting_name,
@@ -441,7 +395,9 @@ sub main {
 	$session_data{recurrenceDays} = $recurrence_days || 1;
     }
 
-    $session_data{participants} = [@users, @groups, @guests];
+    if (@moderators || @participants || @ARGV) {
+	$session_data{participants} = build_participants(\@moderators, \@participants, \@ARGV);
+    }
 
     my $uploaded_preload;
     $uploaded_preload = Elive::Entity::Preload->upload($upload)
@@ -523,54 +479,113 @@ sub parse_participants {
 
 ########################################################################
 
+sub build_participants {
+    my ($moderators, $others, $args) = @_;
+
+    my @participants = (
+	parse_participants($moderators, role => 2),
+	parse_participants($others, role => 3),
+	parse_participants($args),
+	);
+    #
+    # collate by type
+    #
+    my @users;
+    my @groups;
+    my @guests;
+
+    foreach my $participant (@participants) {
+
+	my $type = $participant->type;
+
+	if (! $type ) {
+	    push (@users, $participant);
+	}
+	elsif ($type == 1) {
+	    push (@groups, $participant);
+	}
+	elsif ($type == 2) {
+	    push (@guests, $participant); 
+	}
+	else {
+	    warn "don't know how to handle participant type: $type";
+	}
+    }
+    #
+    # Vet participants
+    #
+    @users = _get_users(@users) if @users;
+    @groups = _get_groups(@groups) if @groups;
+
+    return [@users, @groups, @guests];
+}
+
+########################################################################
+
 sub show_participants {
     my ($session) = @_;
 
-    my $participant_objs = $session->participants;
+    my $participants = $session->participants;
 
-    my @participants_display = map  {
-	my $type = $_->type;
-	my $str;
+    my @moderators = (map { _display_participant($_) }
+		      grep {$_->is_moderator} 
+		      @$participants);
 
-	if (! $type)  {
-	    my $user_obj = $_->user;
-	    my $loginName = $user_obj->loginName;
-	    my $email = $user_obj->email;
+    my @others = (map { _display_participant($_) }
+		      grep { ! $_->is_moderator} 
+		      @$participants);
 
-	    $str = ($loginName || $user_obj->userId);
-	    $str .= ' <'.$email.'>'
-		if $email;
-	}
-	elsif ($type == 1) {
-	    my $group_obj = $_->group;
-	    my $id = $group_obj->groupId;
-	    my $name = $group_obj->name;
+    print "moderators: ".join(', ', @moderators)."\n"
+	if @moderators;
 
-	    $str = '*'.$id;
-	    $str .= ' <group:'.$name.'>'
-		if $name;
-	}
-	elsif ($type == 2) {
-	    my $guest_obj = $_->guest;
-	    my $loginName = $guest_obj->loginName;
-	    my $displayName = $guest_obj->displayName;
+    print "participants: ".join(', ', @others)."\n"
+	if @others;
 
-	    $str = $displayName;
-	    $str .= ' ('.$loginName.')'
-		if $loginName;
-	}
-	else {
-	    warn "unknown participant type $type: ignored";
-	    $str = ''
-	}
-	$str;
-    } @$participant_objs;
-
-    print "participants: ".join(', ', @participants_display)."\n";
     return;
 }
 
 ########################################################################
+
+sub _display_participant {
+    my $participant = shift;
+
+    my $type = $participant->type;
+    my $str;
+
+    if (! $type)  {
+	my $user_obj = $participant->user;
+	my $loginName = $user_obj->loginName;
+	my $email = $user_obj->email;
+
+	$str = ($loginName || $user_obj->userId);
+	$str .= ' <'.$email.'>'
+	    if $email;
+    }
+    elsif ($type == 1) {
+	my $group_obj = $participant->group;
+	my $id = $group_obj->groupId;
+	my $name = $group_obj->name;
+
+	$str = '*'.$id;
+	$str .= ' <group:'.$name.'>'
+	    if $name;
+    }
+    elsif ($type == 2) {
+	my $guest_obj = $participant->guest;
+	my $loginName = $guest_obj->loginName;
+	my $displayName = $guest_obj->displayName;
+
+	$str = $displayName;
+	$str .= ' ('.$loginName.')'
+	    if $loginName;
+    }
+    else {
+	warn "unknown participant type $type: ignored";
+	$str = ''
+    }
+
+    return $str;
+}
 
 sub _get_users {
     my @users_in = @_;
