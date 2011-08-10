@@ -11,7 +11,7 @@ use Scalar::Util;
 
 =head1 NAME
 
-Elive::StandardV2::_List - Abstract Base for lists.
+Elive::StandardV2::_List - Base class for lists.
 
 =head1 DESCRIPTION
 
