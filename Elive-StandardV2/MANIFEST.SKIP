@@ -16,6 +16,7 @@ Makefile.old
 \.#
 \.log$
 \.tmp$
+\.releaserc
 ^preload\.txt$
 #
 # Devel::Cover junk
