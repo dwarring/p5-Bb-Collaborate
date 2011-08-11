@@ -60,7 +60,7 @@ elive_raise_meeting
                     or group-id.
 
     'Display Name(loginName)'
-                  - a guest login.
+                  - a guest login, e.g. "Robert(bob@example.com)"
 
 =head2 Meeting Setup
 

@@ -56,7 +56,7 @@ sub _build_array {
 		my $opt = $1;
 
 		if ($opt =~ m{^(participant|other)(s?)$}) {
-		$cur_role = 3;
+		    $cur_role = 3;
 		}
 		elsif ($opt =~ m{^moderator(s?)$}) {
 		    $cur_role = 2;
@@ -64,17 +64,16 @@ sub _build_array {
 		else {
 		    die "unknown option '$_' in participant list (expected: '-participant', '-moderator' or '-other'";
 		}
-
-		next;
 	    }
+	    else {
+		my $participant = $_;
+		$participant = $element_class->new($participant)
+		    unless ref && Scalar::Util::blessed($_) && $_->isa($element_class);
 
-	    my $participant = $_;
-	    $participant = $element_class->new($participant)
-		unless ref && Scalar::Util::blessed($_) && $_->isa($element_class);
+		$participant->role($cur_role) if $cur_role;
 
-	    $participant->role($cur_role) if $cur_role;
-
-	    push (@args, $participant);
+		push (@args, $participant);
+	    }
 	}
     }
 

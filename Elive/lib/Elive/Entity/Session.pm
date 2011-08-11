@@ -594,7 +594,7 @@ Each participant in the list can be one of several things:
 
 =item * A pre-fetched group object of type L<Elive::Entity::Group>
 
-=item * An invited guest, in the format: C<Display Name(loginName)>
+=item * An invited guest, in the format: C<Display Name (loginName)>, e.g. C<Robert (bob@example.com)>
 
 =back
 

@@ -1,5 +1,11 @@
 Revision history for Elive
 
+1.11    tba
+        [documentation]
+        Elive::Entity::InvitedGuest - the current convention is to use
+        valid email addresses for the invited guest login. Changed pod
+        and participant tests to reflect this.
+
 1.10    11th August
         [bugs]
         - elive_raise_meeting: re-added default for meeting name (left out

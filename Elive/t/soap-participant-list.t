@@ -280,7 +280,7 @@ SKIP: {
     ($group) = grep {$_->retrieve($_); @{ $_->members } } @groups;
 
     if ($group) {
-	my $invited_guest = 'Robert(bob)';
+	my $invited_guest = 'Robert(bob@acme.org)';
 	diag "using group ".$group->name;
 	lives_ok(sub {$participant_list->update({ participants => [$group, $participant1, $invited_guest]})}, 'setting of participant groups - lives');
     }

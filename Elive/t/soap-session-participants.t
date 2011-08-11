@@ -211,7 +211,7 @@ SKIP: {
 		    # include a smattering of random invited guests
 		    #	
 		    my $guest_name = t::Elive::generate_id();
-		    my $guest_spec = sprintf("%s (%s)", $guest_name, lc $ guest_name );
+		    my $guest_spec = sprintf('%s@test.org (%s)', $guest_name, lc $ guest_name );
 		    $expected_guests{$guest_spec}++;
 
 		    push (@big_user_list, $guest_spec);

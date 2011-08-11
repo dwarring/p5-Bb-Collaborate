@@ -158,7 +158,7 @@ SKIP: {
 	    my $moderator_notes = 'test-moderator-notes';
 	    my $exit_url;
 	    my $preload_id = $preload->preloadId;
-	    my $invited_guest = 'Robert(bob)';
+	    my $invited_guest = 'Robert(bob@test.org)';
 
 	    my $start_str = sprintf("%04d-%02d-%02d %02d:%02d", $start[5]+1900, $start[4]+1, $start[3], $start[2], $start[1]);
 	    my $end_str = sprintf("%04d-%02d-%02d %02d:%02d", $end[5]+1900, $end[4]+1, $end[3], $end[2], $end[1]);

@@ -103,7 +103,7 @@ is($participant_list->participants->[0]->user->loginName, 'test_user',
 my $participant_list_2 = Elive::Entity::ParticipantList->construct(
     {
 	meetingId => 234567,
-	participants => '1111;2222=2;alice=3;Robert(bob);*the_team'
+	participants => '1111;2222=2;alice=3;Robert(bob@test.org);*the_team'
     });
 
 my $participants_2 = $participant_list_2->participants;
@@ -115,7 +115,7 @@ is($participants_2->[1]->role->roleId, 2, 'participant list role[1] (explicit)')
 is($participants_2->[2]->user->userId,'alice', 'participant list user[2] (alphanumeric - ldap compat)');
 
 is($participants_2->[3]->type, 2, 'Invited guest detected');
-is_deeply($participants_2->[3]->guest, {loginName => 'bob',
+is_deeply($participants_2->[3]->guest, {loginName => 'bob@test.org',
 				   displayName => 'Robert'},
 	  'invited guest contents');
 ok( ! $participants_2->[3]->is_moderator(1), 'cannot promote guest to moderator');

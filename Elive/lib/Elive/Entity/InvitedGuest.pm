@@ -13,8 +13,12 @@ __PACKAGE__->collection_name('InvitedGuests');
 
 has 'invitedGuestId' => (is => 'rw', isa => 'Int');
 __PACKAGE__->_alias(id => 'invitedGuestId');
-has 'loginName' => (is => 'rw', isa => 'Str');
-has 'displayName' => (is => 'rw', isa => 'Str');
+
+has 'loginName' => (is => 'rw', isa => 'Str',
+		    documentation => "Guest's login name (usually an email address)");
+
+has 'displayName' => (is => 'rw', isa => 'Str',
+		      documentation => "Guest's display name");
 
 coerce 'Elive::Entity::InvitedGuest' => from 'HashRef'
           => via {Elive::Entity::InvitedGuest->new($_)};
@@ -36,7 +40,7 @@ meetings via the L<Elive::Entity::Participant> entity.
 
 =head2 stringify
 
-Serialize a guest as <displayName> (loginName): e.g. 'Robert (bob)'
+Serialize a guest as <displayName> (<loginName>): e.g. C<Robert (bob@acme.com)>.
 
 =cut
 
