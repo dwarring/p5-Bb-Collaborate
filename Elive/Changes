@@ -1,12 +1,22 @@
 Revision history for Elive
 
+1.12    15th August 2011
+        [bug fixes]
+        Elive::DAO / Elive::Entity::Recording - the 'updateRecording' command
+        can return a null response (observed under ELM 3.3.4). Added code to
+        Elive::DAO to check for empty update responses and defensively refetch
+        the raw data to complete the update and update checks.
+        [documentation]
+        Elive::Entity::Recording - tidied up upload() and insert() pod
+        examples.
+
 1.11    12th August 2011
         [documentation]
         Elive::Entity::InvitedGuest - the login name, by convention, should
-        be an email address. Changed pod and tests to reflect this.
+        be an email address. Changed pod and some tests to reflect this.
 
 1.10    11th August 2011
-        [bugs]
+        [bug fixes]
         - elive_raise_meeting: re-added default for meeting name (left out
           with Elive 1.09).
 
@@ -73,7 +83,7 @@ Revision history for Elive
 1.05    1st August 2011
         [bug fixes]
         Elive::Entity::Session - corrected handling of invited guests in
-          insert() and update () methods
+        insert() and update () methods
         - Corrected SOAP delimiter for invited guests list from ',' to ';'
         - Disallow promotion of Invited guests to moderator, ie
           $participant->is_moderator(1) has no effect when the participant
@@ -174,7 +184,7 @@ Revision history for Elive
         - Further raised minimum perl version 5.8.1 to 5.8.3
         - Pod::Usage minimum version set to 1.36
         Elive::Entity::Preload
-        - $fh->binmode => binmode $fh for 5.8.3 IO::Handle compatability
+        - `$fh->binmode` => `binmode $fh` for 5.8.3 IO::Handle compatability
         Elive::Util
         - Minor refactoring of _freeze() method to avoid occasional SEGVs
           during DEMOLISH of objects in program exit global destruction
@@ -194,7 +204,7 @@ Revision history for Elive
         - Raised minimum perl version from the default 5.0.5 to 5.8.1. This
           is the earliest versions reporting reliable smoke test results.
         - corrected Scalar::Util::weaken() handling of copy objects to
-          work on perl 5.13.3 - monor nit from smoke tests.
+          work on perl 5.13.3 - minor nit from smoke tests.
         Elive::Entity::Session
         - further documentation, particularly on working with preloads
         Elive::Entity::Preload

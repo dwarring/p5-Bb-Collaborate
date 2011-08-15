@@ -213,19 +213,19 @@ sub download {
 
 This method lets you import recordings to an Elluminate Server.
 
-You'll need supply binary data. generate a recording-Id and, optionally,
+You'll need supply binary data, a generated recording-Id and, optionally,
 an associated meeting: 
 
     use Elive;
     use Elive::Entity::Recording;
 
-    sub demo_import {
-        #
-        # demo subroutine to load a recording file to an Elluminate server
-        # - assumes that we are already connected to the server
-        #
-        my $recording_file = shift;   # path to recording file
-        my %opt = @_;
+    sub example_upload {
+	#
+	# demo subroutine to upload a recording file to an Elluminate server
+	# - assumes that we are already connected to the server
+	#
+	my $recording_file = shift;   # path to recording file
+	my %opt = @_;
 
 	# get the binary data from somewhere
 
@@ -243,29 +243,28 @@ an associated meeting:
 	my ($seconds, $microseconds) = Time::HiRes::gettimeofday();
 	my $recordingId = sprintf("%d%d_upload", $seconds, $microseconds/1000);
 
-        my %recording_data = (
-            recordingId => $recordingId,
-            version => $opt{version},
-	);
+	my %recording_data = (
+	    data => $binary_data,
+	    recordingId => $recordingId,
+	    version => $opt{version},
+	    );
 
-        if (my $meeting = $opt{meeting}) {
-            #
-            # associate the recording with this meeting
-            #
-            $recording_data{meetingId} = $meeting->meetingId;
-            $recording_data{roomName}  = $meeting->name;
-            $recording_data{facilitator} = $meeting->facilitatorId;
-        }
+	if (my $meeting = $opt{meeting}) {
+	    #
+	    # associate the recording with this meeting
+	    #
+	    $recording_data{meetingId} = $meeting->meetingId;
+	    $recording_data{roomName}  = $meeting->name;
+	    $recording_data{facilitator} = $meeting->facilitatorId;
+	}
 
-        $recording_data{version} ||= Elive->server_details->version;
-        $recording_data{facilitator} ||= Elive->login;
+	$recording_data{version} ||= Elive->server_details->version;
+	$recording_data{facilitator} ||= Elive->login;
 
 	my $recording = Elive::Entity::Recording->upload( \%recording_data );
 
-        return $recording;
+	return $recording;
     }
-
-Upload data from a client and create a recording.
 
 Note: the C<facilitator>, when supplied must match the facilitator for the given C<meetingId>.
 
@@ -304,11 +303,12 @@ sub upload {
 
 =head2 insert
 
-The C<insert()> method is of use when you are not uploading recording data,
-but placing the recording files yourself.
+The C<insert()> method is typically used to describe files that are
+present in the site's recording directory.
 
-You'll typically only need to insert recordings yourself if you are importing
-or recovering recordings that have not been closed cleanly.
+You'll may need to insert recordings yourself if you are importing large
+volumes of recording files or to recover recordings that have
+not been closed cleanly.
 
     sub demo_recording_insert {
         my $import_filename = shift;
@@ -323,7 +323,7 @@ or recovering recordings that have not been closed cleanly.
 	#        ${instancesRoot}/${instanceName}/WEB-INF/resources/recordings
 	# where $instanceRoot is typically /opt/ElluminateLive/manager/tomcat
 	#
-	my $bytes = somehow_upload_recording($import_filename);
+	my $bytes = import_recording($import_filename); # implementation dependant
 
 	my $recording = Elive::Entity::Recording->insert({
 	    recordingId => $recordingId,
@@ -335,13 +335,6 @@ or recovering recordings that have not been closed cleanly.
 	    size => $bytes,
        });
     }
-
-    sub somehow_upload_recording {
-        my $import_filename = shift;
-        # ssh? rsync? copy from removable disk?...
-        die "stub";
-    }
-
 
 The Recording C<insert> method, unlike other entities, requires that you supply
 a primary key. This is then used to determine the name of the file to look for

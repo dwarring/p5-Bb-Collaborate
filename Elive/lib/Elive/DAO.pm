@@ -1280,20 +1280,30 @@ sub update {
     my $class = ref($self);
 
     my @rows = $class->_readback($som, \%updates, $self->connection, %opt);
+    my $data = $rows[0];
 
-    if (@rows && Elive::Util::_reftype($rows[0]) eq 'HASH') {
-	#
-	# refresh the object from the database read-back
-	#
-	my $obj = $self->construct($rows[0], connection => $self->connection, overwrite => 1, copy => $self->_is_copy);
+    unless ($data && Elive::Util::_reftype($data) eq 'HASH') {
 
-	unless (_refaddr($obj) eq _refaddr($self)) {
-	    warn $obj->url." (obj=$obj, self=$self) - not in cache, nor is it a copy."
-		unless $self->_is_copy;
-	    # clone the result
-	    %{$self} = %{ Elive::Util::_clone($obj) };
-	    $self->__set_db_data( Elive::Util::_clone($obj->_db_data), connection => $self->connection, copy => 1);
-	}
+	warn "no data in update response - having to re-fetch (grrrr!)"
+	    if $class->debug;
+
+	$data = $class->retrieve( $self->stringify, raw => 1)
+	    or die "unable to get update results";
+
+	$class->_readback_check(\%updates, [$data], %opt);
+    }
+
+    #
+    # refresh the object from the database read-back
+    #
+    my $obj = $self->construct($data, connection => $self->connection, overwrite => 1, copy => $self->_is_copy);
+
+    unless ($obj->_refaddr eq $self->_refaddr) {
+	warn $obj->url." (obj=$obj, self=$self) - not in cache, nor is it a copy."
+	    unless $self->_is_copy;
+	# clone the result
+	%{$self} = %{ Elive::Util::_clone($obj) };
+	$self->__set_db_data( Elive::Util::_clone($obj->_db_data), connection => $self->connection, copy => 1);
     }
 
     return $self;
