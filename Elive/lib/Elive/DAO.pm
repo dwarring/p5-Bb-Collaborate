@@ -144,7 +144,7 @@ sub entity_name {
 
 =head2 collection_name
 
-    my $collection_name = MyApp::Entity::User->collecion_name
+    my $collection_name = MyApp::Entity::User->collection_name
     ok($collection_name eq 'users');
 
 =cut
