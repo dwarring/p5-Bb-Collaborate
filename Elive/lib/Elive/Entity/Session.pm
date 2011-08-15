@@ -572,7 +572,7 @@ sub revert {
 
 A simple input list of participants might look like:
 
-    @participants = (qw{alice bob, *perl_prog_tut_1});
+    @participants = (qw{alice bob *perl_prog_tut_1});
 
 By default, all users/groups/guest in the list are added as unprivileged regular participants.
 
@@ -621,7 +621,7 @@ You can also fully construct the participant list.
     use Elive::Entity::Participants;
     my $participants_obj = Elive::Entity::Participants->new(\@participants);
 
-    $participants_obj->add(-other => \@latecomers);
+    $participants_obj->add(-other => @latecomers);
 
     Elive::Entity::Session->create({
                      # ... other options

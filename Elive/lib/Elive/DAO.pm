@@ -70,9 +70,9 @@ sub BUILDARGS {
 	    if (my $type = $types->{$prop}) {
 		if (ref($value)) {
 		    #
-		    # inspect the item to see if we need to uncoerce back to
-		    # a simpler type. For example we may have been passed an
-		    # object, rather than just its primary key.
+		    # inspect the item to see if we need to stringify an
+		    # object to obtain a simple string. The property is
+		    # likely to be a foreign key.
 		    #
 		    $value = Elive::Util::string($value, $type)
 			unless Elive::Util::inspect_type($type)->is_ref;
