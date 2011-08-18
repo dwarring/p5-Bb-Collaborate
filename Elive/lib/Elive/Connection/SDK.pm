@@ -201,7 +201,6 @@ sub soap {
 	    if ($debug);
 
 	$soap = SOAP::Lite->new();
-
 	$soap->proxy($proxy);
 
 	$self->_soap($soap);
@@ -257,7 +256,7 @@ sub _preamble {
     </h:BasicAuth>
 EOD
 
-return (@preamble, SOAP::Header->type(xml => $auth));
+    return (@preamble, SOAP::Header->type(xml => $auth));
 };
 
 =head2 login
@@ -299,12 +298,16 @@ sub server_details {
 
     unless ($server_details) {
 
-	$server_details = Elive::Entity::ServerDetails->get(connection => $self);
+	$server_details = Elive::Entity::ServerDetails->list(connection => $self);
 
 	$self->_server_details($server_details);
     }
 
-    return $server_details;
+    #
+    # this site could be running multiple servers
+    #
+
+    return wantarray ? @$server_details : $server_details->[0];
 }
 
 =head2 version

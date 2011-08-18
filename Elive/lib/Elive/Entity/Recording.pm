@@ -241,7 +241,7 @@ an associated meeting:
 
 	use Time::HiRes();
 	my ($seconds, $microseconds) = Time::HiRes::gettimeofday();
-	my $recordingId = sprintf("%d%d_upload", $seconds, $microseconds/1000);
+	my $recordingId = sprintf("%d%04d_upload", $seconds, $microseconds/1000);
 
 	my %recording_data = (
 	    data => $binary_data,

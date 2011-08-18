@@ -1,5 +1,20 @@
 Revision history for Elive
 
+1.13    19th August 2011
+        Improved support for sites running multiple session servers.
+        [enhancements]
+        - Elive::Connection::SDK - the server_details() method now returns a
+          list of values when used in a list context.
+        - Elive::DAO - avoid attempting to cache weak (keyless) entities. This
+          is for Elive::StandardV2's benefit, e.g. the serverVersions entity.
+        [pod]
+        - Elive::Entity::ServerDetails - documented the  list() method. This
+          is useful for sites that running multiple session servers.
+        [testing]
+        - script-elive_query.t - removed serverDetails singleton test (its not
+          always).
+        - soap-session-participants.t - fixed planning
+
 1.12    15th August 2011
         [bug fixes]
         Elive::DAO / Elive::Entity::Recording - the 'updateRecording' command

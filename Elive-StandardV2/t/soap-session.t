@@ -41,7 +41,7 @@ SKIP: {
 	creatorId => $connection->user,
 	startTime =>  $session_start . '000',
 	endTime => $session_end . '000',
-	openChair => 1,
+	openChair => 0,
 	mustBeSupervised => 0,
 	permissionsOn => 1,
 	chairList => [qw(alice bob)],

@@ -105,11 +105,14 @@ sub stringify {
     return $data
 	unless $data && Elive::Util::_reftype($data);
 
+    my @primary_key = $class->primary_key
+	or return; # weak entity - e.g. Elive::StandardV2::ServerVersions
+
     my $types = $class->property_types;
 
     my $string = join('/', map {Elive::Util::_freeze($data->{$_},
 						     $types->{$_})}
-		      $class->primary_key);
+		      @primary_key);
 
     return $string;
 }
@@ -513,7 +516,9 @@ is used internally to uniquely identify and cache objects across repositories.
 sub url {
     my $self = shift;
     my $connection = shift || $self->connection;
-    return $self->_restful_url($connection, $self->stringify);
+    my $path = $self->stringify
+	or return;
+    return $self->_restful_url($connection, $path);
 }
 
 =head2 construct
@@ -621,9 +626,10 @@ sub __set_db_data {
 	if (Scalar::Util::blessed $struct) {
 	    if ($connection && $struct->can('connection')) {
 
-		if (!$opt{copy} && $struct->can('url')) {
-
-		    my $obj_url = $struct->url($connection);
+		if (!$opt{copy}
+		    && $struct->can('url')
+		    && (my $obj_url = $struct->url($connection))
+		    ) {
 
 		    my $cache_access;
 

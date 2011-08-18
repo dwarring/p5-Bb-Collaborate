@@ -19,7 +19,7 @@ if ( $EVAL_ERROR ) {
 
 local ($ENV{TERM}) = 'dumb';
 
-plan(tests => 24);
+plan(tests => 23);
 
 my $script_name = 'elive_query';
 
@@ -85,7 +85,7 @@ SKIP: {
     my %result = t::Elive->test_connection(only => 'real');
     my $auth = $result{auth};
 
-    skip ($result{reason} || 'skipping live tests', 14)
+    skip ($result{reason} || 'skipping live tests', 13)
 	unless $auth && @$auth >= 3;
 
     my ($url, $user, $pass) = @$auth;
@@ -133,11 +133,9 @@ SKIP: {
 	my $data;
 	my @guff;
 
-	lives_ok(sub {($data, @guff) = YAML::Load($stdout)}, 'output is parsable YAML');
+	lives_ok(sub {($data, @_guff) = YAML::Load($stdout)}, 'output is parsable YAML');
 	isa_ok($data, 'HASH', 'result');
 	ok($data->{ServerDetails}{serverDetailsId}, 'hash structure contains ServerDetails.serverDetailsId');
-
-	ok(!@guff, 'single result returned for singleton entity');
 
     };
 

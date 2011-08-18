@@ -7,11 +7,11 @@ Elive - Elluminate Live! (c) Command Toolkit bindings
 
 =head1 VERSION
 
-Version 1.12
+Version 1.13
 
 =cut
 
-our $VERSION = '1.12';
+our $VERSION = '1.13';
 
 use 5.008003;
 
@@ -93,10 +93,8 @@ BEGIN {
 
 =head2 connect
 
-     my $e1 = Elive->connect('http://myServer.com/test1', 'user1', 'pass1');
-
-     Elive->connect('http://myServer.com/test2', 'user2', 'pass2');
-     my $e2 = Elive->connection;
+     Elive->connect('http://myServer.com/test', some_user => 'some_pass');
+     my $connection = Elive->connection;
 
 Connects to an Elluminate server instance. Dies if the connection could not
 be established. If, for example, the SOAP connection or user login failed.
@@ -105,7 +103,7 @@ The login user must either be an Elluminate I<Live!> system administrator
 account, or a user that has been configured to access the Command Toolkit
 via web services.
 
-See also: The L<README> file; L<Elive::Connection::SDK>.
+See also: the Elive C<README> file, L<Elive::Connection::SDK>.
 
 =cut
 

@@ -11,6 +11,33 @@ use Scalar::Util;
 
 Elive::Entity::ServerDetails - Server Details entity class
 
+=head1 DESCRIPTION
+
+Gets details on available I<Elluminate Live!> session servers
+
+=cut
+
+=head1 METHODS
+
+=cut
+
+=head2 get
+
+    my $server = Elive::Entity::ServerDetails->get();
+    printf("server %s is running Elluminate Live! version %s\n", $server->name, $server->version);
+
+=cut
+
+=head2 list
+
+    my $servers = Elive::Entity::ServerDetails->list();
+
+    foreach my $server (@$servers) {
+        printf("server %s is running Elluminate Live! version %s\n", $server->name, $server->version);
+    }
+
+This C<list> method can be used when your site has multiple session servers.
+
 =cut
 
 __PACKAGE__->entity_name('ServerDetails');

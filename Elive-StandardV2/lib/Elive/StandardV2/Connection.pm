@@ -205,11 +205,11 @@ sub server_configuration {
 	try {require Elive::StandardV2::ServerConfiguration}
 	catch {die $_};
 
-	$server_configuration = Elive::StandardV2::ServerConfiguration->get(connection => $self);
+	$server_configuration = Elive::StandardV2::ServerConfiguration->list(connection => $self);
 	$self->_server_configuration($server_configuration);
     }
 
-    return $server_configuration;
+    return wantarray ? @$server_configuration: $server_configuration->[0];
 }
 
 =head2 server_versions
@@ -228,11 +228,11 @@ sub server_versions {
 	try {require Elive::StandardV2::ServerVersions}
 	catch {die $_};
 
-	$server_versions = Elive::StandardV2::ServerVersions->get(connection => $self);
+	$server_versions = Elive::StandardV2::ServerVersions->list(connection => $self);
 	$self->_server_versions($server_versions);
     }
 
-    return $server_versions;
+    return wantarray ? @$server_versions : $server_versions->[0];
 }
 
 sub _preamble {

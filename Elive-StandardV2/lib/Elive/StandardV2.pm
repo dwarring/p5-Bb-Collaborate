@@ -6,7 +6,7 @@ use Mouse::Util::TypeConstraints;
 
 use Try::Tiny;
 
-use Elive '1.05';
+use Elive '1.13';
 
 extends 'Elive::DAO';
 
@@ -18,13 +18,13 @@ Elive::StandardV2 - Perl bindings for the Elluminate Live Standard Bridge (V2) [
 
 =head1 VERSION
 
-Version 0.01_4
+Version 0.01_5
 
 ** DEVELOPER RELEASE - UNDER CONSTRUCTION **
 
 =cut
 
-our $VERSION = '0.01_4';
+our $VERSION = '0.01_5';
 
 use 5.008003;
 
