@@ -191,7 +191,8 @@ SKIP: {
        'participant_list reset - single participant has moderator role');
 
     if ( !$participant2 )  {
-	$t->skip('not enough participants to run long-list test');
+	$t->skip('not enough participants to run long-list test')
+	    for (1 .. 3);
     }
     else { 
 	#
