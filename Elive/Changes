@@ -11,8 +11,8 @@ Revision history for Elive
         - Elive::Entity::ServerDetails - documented the  list() method. This
           is useful for sites that running multiple session servers.
         [testing]
-        - script-elive_query.t - removed serverDetails singleton test (its not
-          always).
+        - script-elive_query.t - removed serverDetails singleton test (there
+          can be multiple servers).
         - soap-session-participants.t - fixed planning
 
 1.12    15th August 2011
