@@ -69,7 +69,14 @@ SKIP: {
     my $max_version_num = version->new($max_version)->numify;
 
     ok ($server_details = Elive->server_details, 'got server details');
+
+    unless ($server_details) {
+	diag "** Unable to get server details - is the session server (elive) running? **";
+	die "unable to get server details - aborting test";
+    }
+
     isa_ok($server_details, 'Elive::Entity::ServerDetails','server_details');
+
     ok($server_version = $server_details->version, 'got server version');
     diag ('Elluminate Live! version: '.qv($server_version));
 

@@ -7,11 +7,11 @@ Elive - Elluminate Live! (c) Command Toolkit bindings
 
 =head1 VERSION
 
-Version 1.13
+Version 1.14
 
 =cut
 
-our $VERSION = '1.13';
+our $VERSION = '1.14';
 
 use 5.008003;
 
@@ -47,11 +47,10 @@ participants:
 
     my $session = Elive::Entity::Session->insert({
 	 name           => $meeting_name,
-	 facilitatorId  => Elive->login,
 	 start          => $start . '000',
 	 end            => $end   . '000',
-         participants   => $users,
          restricted     => 1,
+         participants   => $users,
          add_preload    => $whiteboard_preload,
 	 });
 

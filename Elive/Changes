@@ -1,5 +1,21 @@
 Revision history for Elive
 
+1.14    21st August 2011
+        [bug fixes]
+        Improved handling of inaccessable server details. This is usually
+        an indication that the Session Server (elive) is not running or is
+        unreachable.
+        - Elive::Connection::SDK - was dieing with 'Can't call method
+          "version" on an undefined value'. Now produces the more meaningful
+          'Unable to get server details is the Session Server (elive) running?'
+        - elive_query: now produces a warning and continues
+        - elive_raise_meeting: now dies with this error (unable to determine
+          version) unless the '-use elm2 or -use elm3' options are present.
+        [testing]
+        General improvements to error messages and handling when the server
+        details are inaccessable - the underlying problem should now be more
+        obvious to the tester.
+
 1.13    19th August 2011
         Improved support for sites running multiple session servers.
         [enhancements]

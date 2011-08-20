@@ -259,14 +259,16 @@ sub main {
 
     our $connection = Elive->connect($url, $username, $password);
 
-    my $server_version = $connection->server_details->version;
-    my $server_version_num = version->new($server_version)->numify;
 
     $class ||= do {
 	#
 	# use hasn't specified elluminate compatibility, or which session
 	# class to use. Work it out from their Elluminate server version.
 	#
+	my $server_version = eval {$connection->version}
+	or die ($@ || "unable to get server details version\n");
+
+	my $server_version_num = version->new($server_version)->numify;
 	my $elm3_min_version_num = version->declare( '9.5.0' )->numify;
 
 	warn "Elluminate Live! version: $server_version_num (elm3 min: $elm3_min_version_num)\n" if $debug;

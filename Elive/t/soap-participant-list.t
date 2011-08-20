@@ -35,7 +35,10 @@ SKIP: {
     Elive->connection($connection);
     #
     # ELM 3.3.4 / 10.0.2 includes significant bug fixes
-    our $elm_3_3_4_or_better =  (version->declare( $connection->server_details->version )->numify
+    my $server_details =  Elive->server_details
+	or die "unable to get server details - is the elive server running?";
+
+    our $elm_3_3_4_or_better =  (version->declare( $server_details->version )->numify
 				 > version->declare( '10.0.1' )->numify);
 
     my $meeting_start = time();
