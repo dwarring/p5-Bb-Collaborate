@@ -90,7 +90,7 @@ sub connect {
     my $self = $class->SUPER::_connect($url, $user, $pass, %opt);
     bless $self, $class;
 
-    $self->server_configuration; # ping
+    $self->scheduling_manager; # ping
 
     return $self;
 }

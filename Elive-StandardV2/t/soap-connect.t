@@ -54,20 +54,20 @@ SKIP: {
     my $min_version_num = '3.3.2';
     my $max_version_num = '3.3.5';
 
-    ok(my $server_version = $scheduling_manager->version, 'got server version');
-    ok(my $server_manager = $scheduling_manager->manager, 'got server manager');
+    ok(my $scheduler_version = $scheduling_manager->version, 'got server version');
+    ok(my $scheduler_manager = $scheduling_manager->manager, 'got server manager');
 
-    my ($server_version_num) = ($server_version =~ m{^([\d\.]+)});
-    diag ("Elluminate Live! manager: $server_version_num version: $server_version_num");
-    ok($server_version_num ge $min_version_num, "Elluminate Live! server is $min_version_num or higher");
+    my ($scheduler_version_num) = ($scheduler_version =~ m{^([\d\.]+)});
+    diag ("Elluminate Live! manager $scheduler_version_num");
+    ok($scheduler_version_num ge $min_version_num, "Elluminate Live! server is $min_version_num or higher");
 
     my $tested_managers = 'ELM';
     my $manager = $scheduling_manager->manager;
 
-    if ($server_version_num gt $max_version_num
+    if ($scheduler_version_num gt $max_version_num
 	|| $manager !~ m{^($tested_managers)$}) {
 	diag "************************";
-	diag "Note: Elluminate Live! server version is ".$server_version_num;
+	diag "Note: Elluminate Live! server version is ".$scheduler_version_num;
 	diag "      This Elive::StandardV2 release ($Elive::StandardV2::VERSION) has been tested against $tested_managers on 3.3.2 - ".$max_version_num;
 	diag "      You might want to check CPAN for a more recent version of Elive::StandardV2.";
 	diag "************************";
@@ -78,11 +78,17 @@ SKIP: {
     isa_ok($server_configuration, 'Elive::StandardV2::ServerConfiguration','server_configuration');
 
 
-    my $server_versions;
-    lives_ok (sub{$server_versions = $connection->server_versions}, 'get server_versions - lives');
-    isa_ok($server_versions, 'Elive::StandardV2::ServerVersions','server_versions');
+    my $server_version;
+    lives_ok (sub{$server_version = $connection->server_versions}, 'get server_versions - lives');
+    if ($server_version) {
+	isa_ok($server_version, 'Elive::StandardV2::ServerVersions','server_versions');
 
-    diag 'server version '.$server_versions->versionName.' ('.$server_versions->versionId.')';
+	diag 'Elluminate Live! server '.$server_version->versionName.' ('.$server_version->versionId.')';
+    }
+    else {
+	diag "unable to get server versions - is the Session Server running?";
+	$t->skip ("unable to get server version - skipping");
+    }
 
     $connection->disconnect;
 }
