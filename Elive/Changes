@@ -1,10 +1,19 @@
 Revision history for Elive
 
+1.15    tba
+        [refactoring]
+        Allowing for possibility of Elive::DAO as a stand-alone module.
+        General cleanliness and separation of concerns.
+         - Created Elive::DAO::_Base
+        - Changed parent class for Elive::DAO and Elive::DAO::_Array from
+          Elive to Elive::DAO::_Base
+        - Set $Elive::DAO::Version = '0.01'
+
 1.14    21st August 2011
         [bug fixes]
-        Improved handling of inaccessable server details. This is usually
-        an indication that the Session Server (elive) is not running or is
-        unreachable.
+        Improved detection and handling of inaccessable server details.
+        This is usually an indication that the Session Server (elive) is
+        not running or is unreachable.
         - Elive::Connection::SDK - was dieing with 'Can't call method
           "version" on an undefined value'. Now produces the more meaningful
           'Unable to get server details is the Session Server (elive) running?'

@@ -51,7 +51,7 @@ Establishes a logical SOAP connection.
 sub connect {
     my ($class, $url, $user, $pass, %opt) = @_;
     #
-    # for backwards compatibility
+    # default connection - for backwards compatibility
     #
     require Elive::Connection::SDK;
     return Elive::Connection::SDK->connect($url, $user => $pass, %opt);

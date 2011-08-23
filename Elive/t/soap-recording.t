@@ -78,8 +78,7 @@ SKIP: {
     my $connection_class = $result{class};
     my $connection = $connection_class->connect(@$auth);
     Elive->connection($connection);
-
-
+    
     my $server_details =  Elive->server_details
 	or skip ("unable to get server details - is the elive server running?", 19);
 
@@ -92,9 +91,9 @@ SKIP: {
     lives_ok( sub {
 	$recording = Elive::Entity::Recording->upload(
 	    {
-		recordingId =>  $recording_id,
+		recordingId => $recording_id,
 		roomName => $room_name,
-		version => Elive->server_details->version,
+		version => $server_details->version,
 		data => $data[0],
 		open => 0,
 	    },
@@ -123,7 +122,7 @@ SKIP: {
     ok(do{grep {$_->recordingId eq $recording_id} @$recordings},
        'uploaded recording found in recordings');
 
-    my $version = version->parse(Elive->server_details->version)->numify;
+    my $version = version->parse($server_details->version)->numify;
     if ($version <= '9.005000') {
 	$t->skip("recording downloads - not supported for Elluminate Live! <= 9.50 ($version)")
 	    for 1..3;

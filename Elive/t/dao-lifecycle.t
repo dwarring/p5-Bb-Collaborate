@@ -5,8 +5,6 @@ use Test::Warn;
 
 package main;
 
-my $meta_data_tab = \%Elive::Meta_Data;
-
 use Elive;
 use Elive::Connection;
 use Elive::Entity;
@@ -16,6 +14,8 @@ use Scalar::Util;
 
 use lib '.';
 use t::Elive::MockConnection;
+
+my $meta_data_tab = \%Elive::DAO::_Base::Meta_Data;
 
 my $URL1 = 'http://test1.org';
 

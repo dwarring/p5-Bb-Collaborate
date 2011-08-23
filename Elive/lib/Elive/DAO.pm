@@ -4,7 +4,9 @@ use warnings; use strict;
 use Mouse;
 use Mouse::Util::TypeConstraints;
 
-use parent 'Elive';
+our $VERSION = '0.01';
+
+use parent 'Elive::DAO::_Base';
 
 use YAML;
 use Scalar::Util qw{weaken};
@@ -25,7 +27,7 @@ BEGIN {
     __PACKAGE__->mk_classdata('_isa');
 };
 
-foreach my $accessor (qw{_connection _db_data _deleted _is_copy}) {
+foreach my $accessor (qw{_object_connection _db_data _deleted _is_copy}) {
     __PACKAGE__->has_metadata($accessor);
 }
 
@@ -478,16 +480,21 @@ instance, or the default connection that will be used.
 
 sub connection {
     my $self = shift;
-
     my $connection;
+    $connection = $self->_object_connection(@_) if ref $self;
+    $connection ||= $self->_connection(@_);;
+    return $connection;
+}
 
-    if (ref($self)) {
-	$self->_connection(shift)
-	    if @_;
-	$connection = $self->_connection;
+sub disconnect {
+    my ($class, %opt) = @_;
+
+    if (my $connection = $class->connection) {
+	$connection->disconnect;
+	$class->connection(undef);
     }
 
-    return $connection || $self->SUPER::connection;
+    return;
 }
 
 sub _restful_url {

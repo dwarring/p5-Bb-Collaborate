@@ -15,6 +15,7 @@ lib/Elive/Array.pm
 lib/Elive/Connection.pm
 lib/Elive/Connection/SDK.pm
 lib/Elive/DAO.pm
+lib/Elive/DAO/_Base.pm
 lib/Elive/DAO/Array.pm
 lib/Elive/DAO/Singleton.pm
 lib/Elive/Entity.pm

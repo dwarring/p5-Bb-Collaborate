@@ -7,11 +7,11 @@ Elive - Elluminate Live! (c) Command Toolkit bindings
 
 =head1 VERSION
 
-Version 1.14
+Version 1.15
 
 =cut
 
-our $VERSION = '1.14';
+our $VERSION = '1.15';
 
 use 5.008003;
 
@@ -20,7 +20,7 @@ use Scalar::Util;
 
 use YAML;
 use Carp;
-use Try::Tiny;
+use Elive::Entity;
 
 =head1 EXAMPLE
 
@@ -83,11 +83,6 @@ Command Toolkit.
 
 =cut
 
-our $DEBUG;
-BEGIN {
-    $DEBUG = $ENV{ELIVE_DEBUG};
-}
-
 =head1 METHODS
 
 =head2 connect
@@ -107,25 +102,8 @@ See also: the Elive C<README> file, L<Elive::Connection::SDK>.
 =cut
 
 sub connect {
-    my ($class, $url, $login_name, $pass, %opts) = @_;
-
-    die "usage: ${class}->new(url, [login_name] [, pass])"
-	unless ($class && $url);
-
-    try {require Elive::Connection};
-    catch { die $_};
-
-    my $connection = Elive::Connection->connect(
-	$url,
-	$login_name,
-	$pass,
-	debug => $class->debug,
-	%opts,
-	);
-
-    $class->connection($connection);
-
-    return $connection;
+    my $class = shift;
+    return Elive::Entity->connect(@_);
 }
 
 =head2 connection
@@ -137,7 +115,10 @@ Returns the default Elive connection handle.
 
 =cut
 
-__PACKAGE__->mk_classdata('connection');
+sub connection {
+    my $class = shift;
+    return Elive::Entity->connection(@_);
+}
 
 =head2 login
 
@@ -181,14 +162,8 @@ do this prior to exiting your program.
 =cut
 
 sub disconnect {
-    my ($class, %opt) = @_;
-
-    if (my $connection = $class->connection) {
-	$connection->disconnect;
-	$class->connection(undef);
-    }
-
-    return;
+    my $self = shift;
+    return Elive::Entity->disconnect;
 }
 
 =head2 debug
@@ -205,66 +180,8 @@ sub disconnect {
 =cut
 
 sub debug {
-    my ($class, $level) = @_;
-
-    if (defined $level) {
-	$DEBUG = $level;
-    }
-
-    return $DEBUG || 0;
-}
-
-our %Meta_Data;
-
-#
-# create metadata properties. NB this will be stored inside out to
-# ensure our object is an exact image of the data.
-#
-
-sub _refaddr {
-    my $self = shift;
-    return Scalar::Util::refaddr( $self );
-}
-
-=head2 has_metadata
-
-Associate an inside-out property with objects of a given class.
-
-=cut
-
-sub has_metadata {
-
     my $class = shift;
-    my $accessor = shift;
-
-    my $accessor_fun = $class->can($accessor);
-
-    unless ($accessor_fun) {
-
-	no strict 'refs';
-
-	$accessor_fun = sub {
-	    my $self = shift;
-	    my $ref = $self->_refaddr
-		or return;
-
-	    if (@_) {
-		$Meta_Data{ $ref }{ $accessor } = $_[0];
-	    }
-
-	    return $Meta_Data{ $ref }{ $accessor };
-	};
-
-	*{$class.'::'.$accessor} = $accessor_fun;
-    }
-
-    return $accessor_fun;
-}
-
-sub DEMOLISH {
-    my $self = shift;
-    delete $Meta_Data{Scalar::Util::refaddr($self)};
-    return;
+    Elive::DAO::_Base->debug(@_);
 }
 
 =head1 ERROR MESSAGES

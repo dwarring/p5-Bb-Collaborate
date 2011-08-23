@@ -155,8 +155,6 @@ Returns the default Elive connection handle.
 
 =cut
 
-__PACKAGE__->mk_classdata('connection');
-
 =head2 update
 
 Abstract method to commit outstanding object updates to the server.

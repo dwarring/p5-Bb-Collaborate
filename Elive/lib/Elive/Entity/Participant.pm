@@ -4,7 +4,7 @@ use warnings; use strict;
 use Mouse;
 use Mouse::Util::TypeConstraints;
 
-extends 'Elive::DAO';
+extends 'Elive::Entity';
 
 use Scalar::Util;
 

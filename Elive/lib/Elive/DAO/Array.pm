@@ -4,7 +4,7 @@ use warnings; use strict;
 use Mouse;
 use Mouse::Util::TypeConstraints;
 
-use parent qw{Elive};
+use parent qw{Elive::DAO::_Base};
 
 use Scalar::Util;
 use Elive::Util;

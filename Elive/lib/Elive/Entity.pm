@@ -2,6 +2,7 @@ package Elive::Entity;
 use warnings; use strict;
 use Mouse;
 use Mouse::Util::TypeConstraints;
+use Try::Tiny;
 
 extends 'Elive::DAO';
 
@@ -37,6 +38,41 @@ sub data_classes {
       Elive::View::Session
       Elive::Entity::User
    );
+}
+
+=head2 connect
+
+     Elive->connect('http://myServer.com/test', some_user => 'some_pass');
+     my $connection = Elive->connection;
+
+Connects to an Elluminate server instance. Dies if the connection could not
+be established. If, for example, the SOAP connection or user login failed.
+
+The login user must either be an Elluminate I<Live!> system administrator
+account, or a user that has been configured to access the Command Toolkit
+via web services.
+
+=cut
+
+sub connect {
+    my ($class, $url, $login_name, $pass, %opts) = @_;
+
+    die "usage: ${class}->new(url, [login_name] [, pass])"
+	unless ($class && $url);
+
+    try {require Elive::Connection::SDK};
+    catch { die $_};
+
+    my $connection = Elive::Connection::SDK->connect(
+	$url,
+	$login_name => $pass,
+	debug => $class->debug,
+	%opts,
+	);
+
+    $class->_connection($connection);
+
+    return $connection;
 }
 
 #
