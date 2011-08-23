@@ -486,6 +486,13 @@ sub connection {
     return $connection;
 }
 
+=head2 disconnect
+
+Disconnects and diassociates an Elluminate connection from this class. It is
+recommended that you do this prior to exiting your program.
+
+=cut
+
 sub disconnect {
     my ($class, %opt) = @_;
 
