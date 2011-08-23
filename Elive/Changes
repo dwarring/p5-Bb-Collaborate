@@ -1,10 +1,17 @@
 Revision history for Elive
 
-1.15    tba
+1.15    24th August 2011
+        [enhancements]
+        More work on inaccessable server details. This can actually indictate
+        that either the session manager or license manager are not running
+        and reachable.
+        - Elive::Connection::SDK - error message changed to "Unable to get
+          server details. Are all services running?"
         [refactoring]
-        Allowing for possibility of Elive::DAO as a stand-alone module.
-        General cleanliness and separation of concerns.
-         - Created Elive::DAO::_Base
+        Elive is no longer a base class for Elive::DAO. This is largely for
+        Elive::StandardV2's benefit, which can now base itself directly on
+        Elive::DAO rather than Elive.
+         - Created new module Elive::DAO::_Base
         - Changed parent class for Elive::DAO and Elive::DAO::_Array from
           Elive to Elive::DAO::_Base
         - Set $Elive::DAO::Version = '0.01'
