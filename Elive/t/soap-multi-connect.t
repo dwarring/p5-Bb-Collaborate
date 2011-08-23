@@ -43,14 +43,14 @@ SKIP: {
 
     ok($connection, 'got first connection');
     isa_ok($connection, 'Elive::Connection','connection')
-	or exit(1);
+	or die "unable to get first connection";
 
     my $connection_class_2 = $result_2{class};
     my $connection_2 = $connection_class_2->connect(@$auth_2);
 
     ok($connection_2, 'got second connection');
     isa_ok($connection_2, 'Elive::Connection','connection')
-	or exit(1);
+	or die "unable to get second connection";
 
     isnt($connection->url, $connection_2->url, 'connections have distinct urls');
     ok(my $user = $connection->login, 'connection login');
@@ -70,7 +70,9 @@ SKIP: {
     is(uc($user->loginName), uc($auth->[1]), 'login name for first connection as expected');
     is(uc($user_2->loginName), uc($auth_2->[1]), 'login name for second connection as expected');
 
-    ok(my $server_details = $connection->server_details, 'can get connection login');
+    ok(my $server_details = $connection->server_details, 'can get server details');
+    die "unable to get server details - are all services running?"
+	unless $server_details;
     isa_ok($server_details, 'Elive::Entity::ServerDetails','server_details');
 
     ok(!$user->is_changed, 'login not yet changed');

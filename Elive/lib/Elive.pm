@@ -146,10 +146,8 @@ Returns the server details for the default connection.
 sub server_details {
     my ($class, %opt) = @_;
 
-    my $connection = $opt{connection} || $class->connection;
-
-    die "not connected"
-	unless $connection;
+    my $connection = $opt{connection} || $class->connection
+	or die "not connected";
 
     return $connection->server_details;
 }

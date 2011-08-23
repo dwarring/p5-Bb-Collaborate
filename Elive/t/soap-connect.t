@@ -71,7 +71,7 @@ SKIP: {
     ok ($server_details = Elive->server_details, 'got server details');
 
     unless ($server_details) {
-	diag "** Unable to get server details - is the session server (elive) running? **";
+	diag "** Unable to get server details - are all services running? **";
 	die "unable to get server details - aborting test";
     }
 

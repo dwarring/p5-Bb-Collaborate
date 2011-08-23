@@ -136,7 +136,7 @@ SKIP: {
     my $min_version = '9.5.0';
     my $min_version_num = version->new($min_version)->numify;
     my $server_details =  Elive->server_details
-	or die "unable to get server details - is the elive server running?";
+	or die "unable to get server details - are all services running?";
     my $server_version = $server_details->version;
     my $server_version_num = version->new($server_version)->numify;
 

@@ -319,7 +319,7 @@ Return the Elluminate I<Live!> Manager version
 sub version {
     my $self = shift;
     my $server_details = $self->server_details
-	or die "Unable to get server details is the Session Server (elive) running?\n";
+	or die "Unable to get server details. Are all services running?\n";
     return $server_details->version;
 }
 

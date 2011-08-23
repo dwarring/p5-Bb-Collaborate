@@ -235,7 +235,7 @@ SKIP: {
 
     dies_ok(sub {$preloads[0]->retrieve([$preload_id])}, 'attempted retrieval of deleted preload - dies');
     my $server_details =  Elive->server_details
-	or die "unable to get server details - is the elive server running?";
+	or die "unable to get server details - are all services running?";
 
     my $version = version->parse($server_details->version)->numify;
     if ($version >= '10') {
