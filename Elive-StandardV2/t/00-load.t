@@ -3,10 +3,10 @@ use strict;
 use warnings;
 use Test::More;
 
-use Elive; # to get version
+use Elive::DAO; # to get version
 use Elive::StandardV2; # to get version
 
-diag( "Testing Elive::StandardV2 $Elive::StandardV2::VERSION, Elive $Elive::VERSION, Perl $], $^X" );
+diag( "Testing Elive::StandardV2 $Elive::StandardV2::VERSION, Elive::DAO $Elive::DAO::VERSION, Perl $], $^X" );
 
 my $MODULE = 'Test::Strict';
 eval "use $MODULE";

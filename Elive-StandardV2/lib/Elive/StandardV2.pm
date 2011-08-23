@@ -6,8 +6,7 @@ use Mouse::Util::TypeConstraints;
 
 use Try::Tiny;
 
-use Elive '1.13';
-
+use Elive::DAO '0.01';
 extends 'Elive::DAO';
 
 use Carp;
