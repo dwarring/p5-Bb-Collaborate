@@ -27,7 +27,7 @@ BEGIN {
     __PACKAGE__->mk_classdata('_isa');
 };
 
-foreach my $accessor (qw{_object_connection _db_data _deleted _is_copy}) {
+foreach my $accessor (qw{_db_data _deleted _is_copy}) {
     __PACKAGE__->has_metadata($accessor);
 }
 
@@ -477,14 +477,6 @@ Return a connection. Either the actual connection associated with a entity
 instance, or the default connection that will be used.
 
 =cut
-
-sub connection {
-    my $self = shift;
-    my $connection;
-    $connection = $self->_object_connection(@_) if ref $self;
-    $connection ||= $self->_connection(@_);;
-    return $connection;
-}
 
 =head2 disconnect
 

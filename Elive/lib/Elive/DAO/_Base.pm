@@ -14,8 +14,6 @@ BEGIN {
     $DEBUG = $ENV{ELIVE_DEBUG};
 }
 
-__PACKAGE__->mk_classdata('_connection');
-
 sub debug {
     my ($class, $level) = @_;
 
@@ -71,6 +69,18 @@ sub has_metadata {
     }
 
     return $accessor_fun;
+}
+
+__PACKAGE__->mk_classdata('_connection');
+__PACKAGE__->has_metadata('_object_connection');
+
+sub connection {
+    my $self = shift;
+    my $connection;
+    $connection = $self->_object_connection(@_)
+	if ref $self;
+    $connection ||= $self->_connection(@_);;
+    return $connection;
 }
 
 sub DEMOLISH {
