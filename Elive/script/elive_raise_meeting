@@ -135,37 +135,15 @@ my $class;
 my $username;
 my $password;
 my $debug;
-my $facilitator_id;
 my $start_str;
 my $end_str;
-my $meeting_name = 'elive test meeting';
-my $meeting_password;
-my $max_talkers;
-my $max_cameras;
-my $profile_display;
-my $recording_status;
-my $recording_resolution;
-my $raise_hands;
 my $import;
-my $private;
-my $restricted;
 my $upload;
 my $preload_opt;
 my $url;
 my $help;
-my $boundary = 15;
-my $seats;
-my $permissions;
-my $supervised;
-my $invites;
-my $follow_moderator;
-my $all_moderators;
-my $moderator_notes;
-my $user_notes;
-my $cost_center;
 my @moderators;
 my @participants;
-my $exit_url;
 my $dump;
 
 my %occurs;
@@ -177,43 +155,51 @@ sub main {
 
     local(@ARGV) = @_;
 
+    my %session_data = (
+	name => 'elive test meeting',
+	boundaryMinutes => 15,
+	);
+
     GetOptions(
-	'name|meeting_name=s' => \$meeting_name,
 	'username|user=s' => \$username,
 	'password|pass=s' => \$password,
-	'facilitator=s' => \$facilitator_id,
 	'start=s' => \$start_str,
 	'end=s' => \$end_str,
+
 	'moderators|moderator=s{,}' => \@moderators,
 	'participants|participant|others|other=s{,}' => \@participants,
-	'meeting_password|meeting_pass|session_password|session_pass=s' => \$meeting_password,
-	'max_talkers=i' => \$max_talkers,
-	'max_cameras=i' => \$max_cameras,
-	'raise_hands!' => \$raise_hands,
-	'private!' => \$private,
-	'restricted!' => \$restricted,
-	'supervised!' => \$supervised,
-	'permissions!' => \$permissions,
-	'all_moderators!' => \$all_moderators,
-	'debug=i' => \$debug,
-	'help|?' => \$help,
 	'upload=s' => \$upload,
 	'import_from_server|import=s' => \$import,
 	'add_preload|use_preload=i' => \$preload_opt,
-	'profile|profile_display=s' => \$profile_display,
-	'recording|recording_status=s' => \$recording_status,
-	'recording_resolution=s' => \$recording_resolution,
-	'boundary=i' => \$boundary,
-	'seats=i' => \$seats,
-	'invites|invitations!' => \$invites,
-	'follow|follow_moderator!' => \$follow_moderator,
         'occurs=i%' => \%occurs,
-	'v|version' => \$version,
-	'user_notes=s' => \$user_notes,
-	'moderator_notes=s' => \$moderator_notes,
-	'cost_center|cost_centre=s' => \$cost_center,
 	'use=s' => \$class,
-	'exit_url=s' => \$exit_url,
+
+	'all_moderators!' => \$session_data{allModerators},
+	'boundary=i' => \$session_data{boundaryMinutes},
+	'cost_center|cost_centre=s' => \$session_data{cost_center},
+	'exit_url=s' => \$session_data{redirectURL},
+	'facilitator=s' => \$session_data{facilitatorId},
+	'follow|follow_moderator!' => \$session_data{followModerator},
+	'invites|invitations!' => \$session_data{inSessionInvitation},
+	'meeting_password|meeting_pass|session_password|session_pass=s' => \$session_data{password},
+	'max_cameras=i' => \$session_data{videoWindow},
+	'max_talkers=i' => \$session_data{maxTalkers},
+	'moderator_notes=s' => \$session_data{moderator_notes},
+	'name|meeting_name=s' => \$session_data{name},
+	'private!' => \$session_data{privateMeeting},
+	'permissions!' => \$session_data{fullPermissions},
+	'profile|profile_display=s' => \$session_data{profile},
+	'raise_hands!' => \$session_data{raiseHandOnEnter},
+	'restricted!' => \$session_data{restrictedMeeting},
+	'recording_resolution=s' => \$session_data{recordingResolution},
+	'recording|recording_status=s' => \$session_data{recordingStatus},
+	'seats=i' => \ $session_data{seats},
+	'supervised!' => \$session_data{supervised},
+	'user_notes=s' => \$session_data{user_notes},
+
+	'v|version' => \$version,
+	'debug=i' => \$debug,
+	'help|?' => \$help,
 	'dump=s' => \$dump,
     )
 	or die pod2usage(1);
@@ -259,7 +245,6 @@ sub main {
 
     our $connection = Elive->connect($url, $username, $password);
 
-
     $class ||= do {
 	#
 	# use hasn't specified elluminate compatibility, or which session
@@ -288,32 +273,34 @@ sub main {
     die "class $class: does not implement the 'insert' method"
 	unless eval{ $class->can('insert') };
 
-    if (defined $recording_status) {
-	$recording_status = lc($recording_status);
+    for ($session_data{recordingStatus}) {
+	next unless defined;
+	$_ = lc $_;
 	#
 	# accept some of the other symonymns for the various modes as
 	# seen in documentation and elluminate's web interface.
 	#
-	$recording_status =~ s{^none|disabled$}{off}x;
-	$recording_status =~ s{^manual$}{remote}x;
-	$recording_status =~ s{^auto(matic)?$}{on}x;
+	s{^none|disabled$}{off}x;
+	s{^manual$}{remote}x;
+	s{^auto(matic)?$}{on}x;
 
 	die pod2usage("-recording_status must be on/auto, off/none/disabled or manual/remote\n")
-	    unless $recording_status =~ m{^on|off|remote$}x;
+	    unless m{^on|off|remote$}x;
     }
 
-    if (defined $recording_resolution) {
-	$recording_resolution = uc $recording_resolution;
-
+    for ($session_data{recordingResolution}) {
+	next unless defined;
+	$_ = uc $_;
 	die ("-recording_resolution must be: cg|cc|mg|mc|fg|fc\n")
-	    unless $recording_resolution =~ m{^[CMF][GC]$}x;
+	    unless m{^[CMF][GC]$}x;
     }
 
-    if (defined $profile_display) {
-	$profile_display = lc $profile_display;
+    for ($session_data{profile}) {
+	next unless defined;
+	$_ = lc $_;
 
 	die ("-profile_display must be: none|mod|all\n")
-	    unless $profile_display =~ m{^(none|mod|all)$}x;
+	    unless m{^(none|mod|all)$}x;
     }
 
     my ($recurrence_count, $recurrence_days) = _get_occurrences(\%occurs);
@@ -331,78 +318,9 @@ sub main {
 
     my $upload_data;
 
-    my $facilitator = $facilitator_id
-	? _get_user($facilitator_id)
-	: Elive->login;
-
-    $facilitator_id ||= $facilitator->userId;
-
-    my %session_data = (
-	name => $meeting_name,
-	facilitatorId => $facilitator,
-	start => $start . '000',
-	end => $end . '000',
-	);
-
-    $session_data{recordingStatus} = $recording_status
-	if defined $recording_status;
-
-    $session_data{recordingResolution} = $recording_resolution
-	if defined $recording_resolution;
-
-    $session_data{profile} = $profile_display
-	if defined $profile_display;
-
-    $session_data{password} = $meeting_password
-	if defined $meeting_password;
-
-    $session_data{seats} = $seats
-	if defined $seats;
-
-    $session_data{privateMeeting} = $private
-	if defined $private;
-
-    $session_data{maxTalkers}  = $max_talkers
-	if defined $max_talkers;
-
-    $session_data{videoWindow}  = $max_cameras
-	if defined $max_cameras;
-
-    $session_data{raiseHandOnEnter} = $raise_hands
-	if defined $raise_hands;
-
-    $session_data{inSessionInvitation}  = $invites
-	if defined $invites;
-
-    $session_data{followModerator}  = $follow_moderator
-	if defined $follow_moderator;
-
-    $session_data{fullPermissions} = $permissions
-	if defined $permissions;
-
-    $session_data{allModerators} = $all_moderators
-	if defined $all_moderators;
-
-    $session_data{supervised} = $supervised
-	if defined $supervised;
-
-    $session_data{boundaryMinutes} = $boundary
-	if defined $boundary;
-
-    $session_data{user_notes} = $user_notes
-	if defined $user_notes;
-
-    $session_data{moderator_notes} = $moderator_notes
-	if defined $moderator_notes;
-
-    $session_data{cost_center} = $cost_center
-	if defined $cost_center;
-
-    $session_data{restrictedMeeting} = $restricted
-	if defined $restricted;
-
-    $session_data{redirectURL} = $exit_url
-	if $exit_url;
+    $session_data{facilitatorId} ||= Elive->login;
+    $session_data{start} = $start . '000',
+    $session_data{end} = $end . '000';
 
     if ($recurrence_count > 1) {
 	$session_data{recurrenceCount} = $recurrence_count;
@@ -437,8 +355,8 @@ sub main {
 
 	$imported_preload = Elive::Entity::Preload->import_from_server({
 	    fileName => $import,
-	    ownerId => $facilitator,
-								      });
+	    ownerId => $session_data{facilitatorId} || Elive->login,
+	});
 
 	printf("imported '%s' preload: %s (%s)\n",
 	       $imported_preload->type, $imported_preload->name, $imported_preload->mimeType);
@@ -448,6 +366,12 @@ sub main {
 
     $session_data{add_preload} = \@preloads if @preloads;
     my $ptmp = Elive::Entity::Participants->new($session_data{participants});
+
+    foreach (grep {! defined $session_data{$_} } keys %session_data) {
+	delete $session_data{$_};
+    }
+
+    warn YAML::Dump {session_data => \%session_data} if Elive->debug;
 
     my @sessions = $class->insert(\%session_data);
 
@@ -480,9 +404,7 @@ sub parse_participants {
 	    warn "$@\n";
 	    next;
 	}
-	#
-	# Ignore the facilitator. we're going to add them later
-	#
+
 	$participant->role( $opt{role} ) if $opt{role};
 
 	push (@participants, $participant);
