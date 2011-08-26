@@ -18,7 +18,7 @@ use Try::Tiny;
 
 my $MODULE = 'Test::Taint';
 eval "use $MODULE";
-plan skip_all => "$MODULE not available for taint tests"
+plan skip_all => "$MODULE required for taint tests"
     if $@;
 
 plan tests => 15;
@@ -46,10 +46,9 @@ taint(my $password_tainted = $password_untainted);
 
 untainted_ok($password_untainted, 'tainted sanity 1');
 tainted_ok($password_tainted, 'tainted sanity 2');
-# this is used internallly to test for taintedness
-ok( Scalar::Util::tainted($password_tainted), 'tainted sanity 3');
+ok( Elive::Util::_tainted($password_tainted), 'tainted sanity 3');
 my $password_ref = Elive::Util::_clone({pass => $password_tainted});
-ok( Scalar::Util::tainted($password_ref->{pass}), 'Elive::Util::clone preserves tainting');
+ok( Elive::Util::_tainted($password_ref->{pass}), 'Elive::Util::clone preserves tainting');
 
 my %insert_data = (
     loginName => 'some_test_user',

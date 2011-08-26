@@ -9,6 +9,8 @@ use Clone;
 use YAML;
 use Try::Tiny;
 
+our $VERSION = '0.01';
+
 use Elive::Util::Type;
 
 =head1 NAME
@@ -65,7 +67,7 @@ sub _freeze {
 		# perl program is running in taint mode
 		#
 		die "attempt to freeze tainted data (type $type): $_"
-		    if Scalar::Util::tainted($_);
+		    if _tainted($_);
 		#
 		# l-r trim
 		#
@@ -223,6 +225,10 @@ sub _reftype {
 
 sub _clone {
     return Clone::clone(shift);
+}
+
+sub _tainted {
+    return grep { Scalar::Util::tainted($_) } @_;
 }
 
 #
