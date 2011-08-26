@@ -1,9 +1,13 @@
 Revision history for Elive
 
-1.16    tba
+1.16    27th August 2011
+        [enhancements]
+        - Elive::Entity::Session - The ELM 3.x SessionInsert and SessionUpdate
+          commands often return a null response rather that an error message
+          which was then leading to low level failures while unpacking. Catch
+          this and return (as far as possible) a more meaningful error message.
         [refactoring]
-        elive_query: cleanup to directly set session data from getoptions(),
-        where possible.
+        - elive_query: cleaned up code for succinctness.
 
 1.15    24th August 2011
         [enhancements]

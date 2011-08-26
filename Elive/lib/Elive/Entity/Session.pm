@@ -287,6 +287,9 @@ sub _unpack_as_list {
 
     my $results_list = $class->SUPER::_unpack_as_list($data);
 
+    die "no response received for session insert/update - check parameters?\n"
+	unless @$results_list && $results_list->[0];
+
     my %result ;
     (my $meetings,
      @result{qw{serverParameters meetingParameters participantList}})
@@ -1093,15 +1096,11 @@ The maximum number of cameras.
 
 =over 4
 
-=item * meeting telephony is not yet supported
-
-=back
+=item * Meeting telephony is not yet supported
 
 Maintaining the L<Elive::Entity::Session> abstraction may involve fetches from
 several entities. This is mostly transparent, but does have some implications
 for the C<list> method:
-
-=over 4
 
 =item * You can only filter on core meeting properties (C<name>, C<start>, C<end>, C<password>, C<deleted>, C<faciltatorId>, C<privateMeeting>, C<allModerators>, C<restrictedMeeting> and C<adapter>).
 

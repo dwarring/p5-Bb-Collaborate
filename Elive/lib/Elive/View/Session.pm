@@ -233,10 +233,12 @@ sub derivable {
 
 =head1 BUGS AND LIMITATIONS
 
-The C<insert()> and C<update()> methods in this class are undergoing
-depreciation.
+The C<insert()> and C<update()> methods in this class rely on older ELM 2.x
+commands. These do not support a number of newer ELM 3.x features including
+restricted meetings, invited guests exit URLs and a number of other newer
+options and flags - these are listed in L<elive_raise_meeting>.
 
-Sites running ELM 3.0 / Elluminate Live 9.5 or newer should consider
+Sites running ELM 3.0 / Elluminate Live 9.5 or newer may want to consider
 using L<Elive::Entity::Session>, which implements the newer C<createSession>
 and C<updateSession> commands.
 

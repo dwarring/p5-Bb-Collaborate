@@ -31,7 +31,7 @@ do {
     my ( $result, $stdout, $stderr ) = run_script ($script_name, ['--help'] );
 
     is($stderr, '', "$script_name --help: no errors");
-    ok($stdout =~ m{usage:}ix, "$script_name --help: stdout =~ 'usage:...''");
+    like($stdout, qr{usage:}ix, "$script_name --help: stdout =~ 'usage:...''");
 };
 
 do {
@@ -41,8 +41,8 @@ do {
 
     my ( $result, $stdout, $stderr ) = run_script($script_name, ['--invalid-opt']  );
 
-    ok($stderr =~ m{unknown \s+ option}ix, "$script_name invalid option error");
-    ok($stdout =~ m{usage:}ix, "$script_name invalid option usage");
+    like($stderr, qr{unknown \s+ option}ix, "$script_name invalid option error");
+    like($stdout, qr{usage:}ix, "$script_name invalid option usage");
 
 };
 
@@ -53,7 +53,7 @@ do {
 
     my ( $result, $stdout, $stderr ) = run_script($script_name, [-c => 'blah blah'] );
 
-    ok($stderr =~ m{unrecognised \s command: \s blah}ixs, "$script_name -c '<invalid command>': error as expected");
+    like($stderr, qr{unrecognised \s command: \s blah}ixs, "$script_name -c '<invalid command>': error as expected");
     is($stdout, '', "$script_name -c '<invalid command>': no output");
 };
 
@@ -65,7 +65,7 @@ do {
     my ($result, $stdout, $stderr) = run_script ($script_name, [-c => 'describe user']);
 
     is($stderr, '', "$script_name -c 'describe user': no errors");
-    ok($stdout =~ m{user: \s+ Elive::Entity::User .* userId \s+ : \s+ pkey \s+ Str}ixs, "$script_name -c 'describe user': looks like dump of users entity");
+    like($stdout, qr{user: \s+ Elive::Entity::User .* userId \s+ : \s+ pkey \s+ Str}ixs, "$script_name -c 'describe user': looks like dump of users entity");
 
 };
 
@@ -76,7 +76,7 @@ do {
 
     my ( $result, $stdout, $stderr ) = run_script($script_name, [-c => 'describe crud'] );
 
-    ok($stderr =~ m{unknown \s+ entity: \s+ crud}ix, "$script_name: describe <unknown> error");
+    like($stderr, qr{unknown \s+ entity: \s+ crud}ix, "$script_name: describe <unknown> error");
     is($stdout, '', "$script_name: describe <unknown> error - no output");
 };
 
@@ -105,7 +105,7 @@ SKIP: {
 	     -pass => $pass,
 	     -c => "select $selection from serverDetails"]);
        
-	ok($stdout =~ m{serverDetailsId .* \w+ }ixs, "$script_name 'select $selection from serverDetails expected output");
+	like($stdout, qr{serverDetailsId .* \w+ }ixs, "$script_name 'select $selection from serverDetails expected output");
 	
     };
 
@@ -128,7 +128,7 @@ SKIP: {
 	     -c => 'select serverDetailsId from serverDetails']);
 
        
-	ok($stderr =~ m{^connecting}i, "$script_name -c 'connecting...' message");
+	like($stderr, qr{^connecting}i, "$script_name -c '..' connecting message");
 
 	my $data;
 	my @guff;
@@ -188,7 +188,7 @@ SKIP: {
 	     -c => 'select * from session where id='.$session_id]);
 
        
-	ok($stderr =~ m{^connecting}i, "$script_name -c 'connecting...' message");
+	like($stderr, qr{^connecting}i, "$script_name -c '..' connecting message");
 
 	my $data;
 	my @guff;
