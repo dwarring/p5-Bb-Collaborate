@@ -176,7 +176,7 @@ sub main {
 
 	'all_moderators!' => \$session_data{allModerators},
 	'boundary=i' => \$session_data{boundaryMinutes},
-	'cost_center|cost_centre=s' => \$session_data{cost_center},
+	'cost_center|cost_centre=s' => \$session_data{costCenter},
 	'exit_url=s' => \$session_data{redirectURL},
 	'facilitator=s' => \$session_data{facilitatorId},
 	'follow|follow_moderator!' => \$session_data{followModerator},
@@ -184,7 +184,7 @@ sub main {
 	'meeting_password|meeting_pass|session_password|session_pass=s' => \$session_data{password},
 	'max_cameras=i' => \$session_data{videoWindow},
 	'max_talkers=i' => \$session_data{maxTalkers},
-	'moderator_notes=s' => \$session_data{moderator_notes},
+	'moderator_notes=s' => \$session_data{moderatorNotes},
 	'name|meeting_name=s' => \$session_data{name},
 	'private!' => \$session_data{privateMeeting},
 	'permissions!' => \$session_data{fullPermissions},
@@ -195,7 +195,7 @@ sub main {
 	'recording|recording_status=s' => \$session_data{recordingStatus},
 	'seats=i' => \ $session_data{seats},
 	'supervised!' => \$session_data{supervised},
-	'user_notes=s' => \$session_data{user_notes},
+	'user_notes=s' => \$session_data{userNotes},
 
 	'v|version' => \$version,
 	'debug=i' => \$debug,
