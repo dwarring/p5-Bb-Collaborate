@@ -18,7 +18,7 @@ use Elive::Entity::Session;
 eval "use Test::Script::Run 0.04";
 
 if ( $EVAL_ERROR ) {
-    my $msg = 'Test::Script::Run required to run scripts';
+    my $msg = 'Test::Script::Run 0.04+ required to run scripts';
     plan( skip_all => $msg );
 }
 

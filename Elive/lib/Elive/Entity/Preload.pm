@@ -313,11 +313,11 @@ sub update {return shift->_not_available}
 sub _guess_mimetype {
     my ($class, $filename) = @_;
 
-    our $mime_types ||= MIME::Types->new;
     my $mime_type;
     my $guess;
 
     unless ($filename =~ m{\.elpx?}x) { # plan
+	our $mime_types ||= MIME::Types->new;
 	$mime_type = $mime_types->mimeTypeOf($filename);
 
 	$guess = $mime_type->type

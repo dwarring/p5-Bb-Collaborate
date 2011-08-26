@@ -374,7 +374,10 @@ sub insert {
     my $facilitatorId = $data{facilitatorId};
 
     $participants->add(-moderators => $facilitatorId);
-
+    #
+    # our freeze method breaks this down into guests, moderator and
+    # participants. Pass the participants as well, just for the readback
+    #
     $data{participants} = $participants->tidied;
 
     my @objs = $class->SUPER::insert( \%data, command => 'createSession', %opt );
@@ -423,7 +426,10 @@ sub update {
 	    unless Scalar::Util::blessed( $participants );
 
 	$participants->add(-moderators => $facilitatorId);
-
+	#
+	# our freeze method breaks this down into guests, moderator and
+	# participants. Pass the participants as well, just for the readback
+	#
 	$update_data{participants} = $participants->tidied;
 
 	return $self->SUPER::update( \%update_data, %opt, changed => $changed );

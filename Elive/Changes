@@ -1,5 +1,10 @@
 Revision history for Elive
 
+1.16    tba
+        [refactoring]
+        elive_query: cleanup to directly set session data from getoptions(),
+        where possible.
+
 1.15    24th August 2011
         [enhancements]
         More work on inaccessable server details. This can actually indictate

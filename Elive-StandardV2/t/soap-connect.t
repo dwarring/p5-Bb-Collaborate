@@ -86,7 +86,7 @@ SKIP: {
 	diag 'Elluminate Live! server '.$server_version->versionName.' ('.$server_version->versionId.')';
     }
     else {
-	diag "unable to get server versions - is the Session Server running?";
+	diag "unable to get server versions - are all servers running?";
 	$t->skip ("unable to get server version - skipping");
     }
 
