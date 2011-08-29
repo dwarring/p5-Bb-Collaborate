@@ -98,7 +98,7 @@ SKIP: {
 
     my $attendances;
 
-    dies_ok(sub {$attendances = $session->attendance('')}, 'session attendance sans date - dies');
+    lives_ok(sub {$attendances = $session->attendance('')}, 'session attendance sans date - lives');
 
     my $today = $session_start - 7200;
     lives_ok(sub {$attendances = $session->attendance($today . '000')}, 'session attendance with date - lives');

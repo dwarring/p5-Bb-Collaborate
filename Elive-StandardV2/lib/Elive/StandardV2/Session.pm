@@ -99,7 +99,7 @@ If you don't specify a value, the default is taken from the C<Restrict Session A
 =cut
 
 has 'accessType' => (is => 'rw', isa => 'Int',
-	       documentation => '1=n/a, 2=restricted, 3=public',
+	       documentation => '1=private (n/a), 2=restricted, 3=public',
     );
 
 =head2 allowInSessionInvites (Bool)
@@ -621,6 +621,8 @@ Reports on session attendance for a given day. It returns a reference to an arra
 
 sub attendance {
     my ($self, $start_time, %opt) = @_;
+
+    $start_time ||= $self->startTime;
 
     return Elive::StandardV2::SessionAttendance->list(
 	filter=> {
