@@ -36,7 +36,7 @@ elive_query
 
 =head1 DESCRIPTION
 
-Simple read-only query shell/REPL for Elive (Elluminate Live Perl bindings).
+Simple read-only query shell for Elive (Elluminate Live Perl bindings).
 
 =head2 Entity Data Queries
 
@@ -403,6 +403,8 @@ sub _show {
     return;
 }
 
+########################################################################
+
 sub _select {
     my ($entity_class, $props, %opt) = @_;
 
@@ -553,6 +555,8 @@ sub _select {
     return;
 }
 
+########################################################################
+
 sub _fetch_row_aref {
     my $props = shift;
     my $derivable = shift;
@@ -568,6 +572,8 @@ sub _fetch_row_aref {
     return \@vals;
 }
 
+########################################################################
+
 sub _fetch_row_href {
     my $props = shift;
     my $derivable = shift;
@@ -582,6 +588,8 @@ sub _fetch_row_href {
 
     return \%vals;
 }
+
+########################################################################
 
 sub _getopt {
 
@@ -615,29 +623,28 @@ sub _getopt {
     return ($url, %options);
 }
 
+########################################################################
+
 sub _connect {
     my ($adapter_class, $url, %options) = @_;
 
     my $username = $options{username};
     my $password = $options{password};
 
-    unless ($username && $password) {
+    my $uri_obj = URI->new($url, 'http');
+    if (my $userinfo = $uri_obj->userinfo) {
 	#
-	# look for credentials encoded in the uri
-	#
-	my $uri_obj = URI->new($url, 'http');
-	my $userinfo = $uri_obj->userinfo; # credentials supplied in URI
+	# credentials supplied in URI
 
-	if ($userinfo) {
-	    my ($uri_user, $uri_pass) = split(':', $userinfo, 2);
-	    $username ||= URI::Escape::uri_unescape($uri_user);
-	    $password ||= URI::Escape::uri_unescape($uri_pass)
-		if $uri_pass;
-	}
+	my ($uri_user, $uri_pass) = split(':', $userinfo, 2);
+	$username ||= URI::Escape::uri_unescape($uri_user);
+	$password ||= URI::Escape::uri_unescape($uri_pass)
+	    if $uri_pass;
+
+	$url =~ s{\Q${userinfo}\E\@}{};
     }
 
     $username ||= Elive::Util::prompt('Username: ');
-
     $password ||= Elive::Util::prompt('Password: ', password => 1);
 
     print STDERR "connecting to $url...";
