@@ -80,10 +80,10 @@ CONFIGURING SDK ACCESS
                     </permissions>
                     ...
 
-ADDITIONAL TESTING
+LIVE TESTING
 
     There are additional live tests in t/soap-*.t and t/script-*t. By default,
-    these are either skipped or run offline.
+    these are either skipped or run offline as mock tests.
 
     These may be run against a live server by setting up the environment
     variables, and running tests, as shown below:
@@ -110,12 +110,12 @@ ADDITIONAL TESTING
     The User and Group update tests can only be run on sites that have not
     been configured for LDAP.
 
-    WARNING: These tests will both create and delete various entities
+    WARNING: Live testing will both create and delete various entities
     instances. For this reason you should be wary of running the live
     tests on production sites.
 
-    Consider restricting live testing to designated development and test
-    sites, or newly created site instances!
+    Consider restricting any live testing to designated development and
+    test sites, or newly created site instances!
 
 POST INSTALLATION
 
