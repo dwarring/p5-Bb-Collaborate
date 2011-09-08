@@ -1,11 +1,19 @@
 Revision history for Elive
 
+1.17    9th September 2011
+        [bug fixes]
+        - Elive::Entity::Participant - changed user, group, guest and
+          role properties to strictly hold only objects. For example,
+          user property was "isa => 'Elive::Entity::User|Str'" but is
+          now "isa => 'Elive::Entity::User'".
+
 1.16    27th August 2011
         [enhancements]
         - Elive::Entity::Session - The ELM 3.x SessionInsert and SessionUpdate
           commands often return a null response rather that an error message
-          which was then leading to low level failures while unpacking. Catch
-          this and return (as far as possible) a more meaningful error message.
+          which was then leading to messy failures while unpacking. Catch
+          this earlier and return (as far as possible) a more meaningful
+          error message.
         [refactoring]
         - elive_query: cleaned up code for succinctness.
 

@@ -1,6 +1,6 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 70;
+use Test::More tests => 71;
 use Test::Warn;
 
 use Carp; $SIG{__DIE__} = \&Carp::confess;
@@ -119,6 +119,7 @@ is_deeply($participants_2->[3]->guest, {loginName => 'bob@test.org',
 				   displayName => 'Robert'},
 	  'invited guest contents');
 ok( ! $participants_2->[3]->is_moderator(1), 'cannot promote guest to moderator');
+is( $participants_2->[3]->stringify, 'Robert (bob@test.org)', 'guest stringification');
 
 is($participants_2->[4]->type, 1, 'Group detected');
 is_deeply($participants_2->[4]->group, {groupId => 'the_team'},
@@ -219,10 +220,12 @@ my $participant_list_5 = Elive::Entity::ParticipantList->construct(
         meetingId => $meeting,
         participants => ['1122=2', '1123',
                          -moderators => [2222, $participant_class->construct(2223)],
-			 -others => '3333', $participant_class->construct('3334=2'), ]
+			 -others => '3333', $participant_class->construct('3334=2'),
+			 -moderators => 4444, '*admins',
+	    ]
 	});
 
-is($participant_list_5->participants->stringify, '1122=2;1123=3;2222=2;2223=2;3333=3;3334=3', "participants stringification");
+is($participant_list_5->participants->stringify, '*admins=2;1122=2;1123=3;2222=2;2223=2;3333=3;3334=3;4444=2', "participants stringification");
 
 my $participant_list_6 = Elive::Entity::ParticipantList->construct(
     {

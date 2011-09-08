@@ -30,25 +30,25 @@ on a participating user, including their type and participation role.
 
 __PACKAGE__->entity_name('Participant');
 
-has 'user' => (is => 'rw', isa => 'Elive::Entity::User|Str',
+has 'user' => (is => 'rw', isa => 'Elive::Entity::User',
 		documentation => 'User (type=0)',
 		coerce => 1,
     );
 
-has 'group' => (is => 'rw', isa => 'Elive::Entity::Group|Str',
+has 'group' => (is => 'rw', isa => 'Elive::Entity::Group',
 	       documentation => 'Group of attendees (type=1)',
 	       coerce => 1,
     );
 # for the benefit of createSession and updateSession commands
 __PACKAGE__->_alias(participant => 'user' );
 
-has 'guest' => (is => 'rw', isa => 'Elive::Entity::InvitedGuest|Str',
+has 'guest' => (is => 'rw', isa => 'Elive::Entity::InvitedGuest',
 		documentation => 'Guest (type=2)',
 		coerce => 1,
     );
 __PACKAGE__->_alias( invitedGuestId => 'guest' );
 
-has 'role' => (is => 'rw', isa => 'Elive::Entity::Role|Str',
+has 'role' => (is => 'rw', isa => 'Elive::Entity::Role',
 	       documentation => 'Role level of the meeting participant',
 	       coerce => 1,
     );
@@ -189,7 +189,7 @@ sub is_moderator {
 	my $is_moderator = shift;
 	$role_id = $is_moderator? 2 : 3;
 
-	$self->role( Elive::Entity::Role->new( $role_id ) )
+	$self->role( $role_id )
 	    unless $role_id == $self->role->stringify;
     }
     else {
