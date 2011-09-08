@@ -4,7 +4,7 @@ use warnings; use strict;
 use Mouse;
 use Mouse::Util::TypeConstraints;
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 use parent 'Elive::DAO::_Base';
 
@@ -647,7 +647,7 @@ sub __set_db_data {
 			die "attempted overwrite of object with unsaved changes ($obj_url)"
 			    if !$opt{overwrite} && $cached->is_changed;
 
-			die "cache type conflict. $obj_url contains an ".ref($cached)." object, but wanted ".ref($struct)
+			die "cache type conflict. $obj_url contains an ".ref($cached)." object, but requested ".ref($struct)
 			    unless $cached->isa(ref($struct));
 
 
@@ -1456,7 +1456,7 @@ sub retrieve {
 	    );
 
 	if ( my $cached = $class->live_entity($obj_url) ) {
-	    die "cache type conflict. $obj_url contains an ".ref($cached)." object, but wanted $class"
+	    die "cache type conflict. $obj_url contains an ".ref($cached)." object, but requested $class"
 		unless $cached->isa($class);
 
 	    warn "retrieve from cache $obj_url (".ref($cached).")"

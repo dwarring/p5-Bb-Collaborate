@@ -120,7 +120,7 @@ elive_raise_meeting
 
 =head1 DESCRIPTION
 
-Creates a meeting (session) on an Elluminate I<Live!> server
+Creates a meeting (session) on an Elluminate I<Live!> server.
 
 =head1 SEE ALSO
 
@@ -206,10 +206,10 @@ sub main {
 
     pod2usage(0) if $help;
 
-    do {
+    if ($version) {
 	print "Elive v${Elive::VERSION} (c) 2009-2011\n";
 	exit(0);
-    } if $version;
+    };
 
     ($url = shift @ARGV)
 	or pod2usage("missing url argument");
@@ -284,14 +284,14 @@ sub main {
 	s{^manual$}{remote}x;
 	s{^auto(matic)?$}{on}x;
 
-	die pod2usage("-recording_status must be on/auto, off/none/disabled or manual/remote\n")
+	die pod2usage("-recording_status must be: on/auto, off/none/disabled or manual/remote\n")
 	    unless m{^on|off|remote$}x;
     }
 
     for ($session_data{recordingResolution}) {
 	next unless defined;
 	$_ = uc $_;
-	die ("-recording_resolution must be: cg|cc|mg|mc|fg|fc\n")
+	die("-recording_resolution must be one of: 'cg', 'cc', 'mg', 'mc', 'fg' or 'fc'\n")
 	    unless m{^[CMF][GC]$}x;
     }
 
@@ -299,7 +299,7 @@ sub main {
 	next unless defined;
 	$_ = lc $_;
 
-	die ("-profile_display must be: none|mod|all\n")
+	die ("-profile_display must be one of: 'none', 'gmod' or 'all'\n")
 	    unless m{^(none|mod|all)$}x;
     }
 
@@ -313,7 +313,7 @@ sub main {
 	? Date::Parse::str2time($end_str)
 	: $start + 30 * 60;
 
-    die "end time must be later than start time\n"
+    die "end time ($end_str) is not later than start time ($start_str)\n"
 	unless ($end > $start);
 
     my $upload_data;
@@ -342,7 +342,7 @@ sub main {
 	pod2usage("non numeric preload id")
 	    unless $preload_opt =~ m{^\d+$}x;
 
-	$existing_preload = Elive::Entity::Preload->retrieve([$preload_opt]);
+	$existing_preload = Elive::Entity::Preload->retrieve( $preload_opt );
 	
 	die "no existing preload: $preload_opt\n"
 	    unless $existing_preload;
@@ -387,6 +387,8 @@ sub main {
 
     return @sessions;
 }
+
+########################################################################
 
 sub parse_participants {
     my $spec = shift;
@@ -523,6 +525,8 @@ sub _display_participant {
     return $str;
 }
 
+########################################################################
+
 sub _get_users {
     my @users_in = @_;
 
@@ -649,6 +653,8 @@ sub _get_occurrences {
 
     return ($recurrence_count, $recurrence_days);
 }
+
+########################################################################
 
 sub _echo_sessions {
     my @sessions = @_;

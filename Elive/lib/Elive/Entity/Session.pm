@@ -132,7 +132,6 @@ sub _alias {
 
     die 'usage: $entity_class->_alias(alias, prop, %opts)'
 	unless ($entity_class
-
 		&& $from && !ref($from)
 		&& $to && !ref($to));
 
@@ -938,7 +937,7 @@ Here's an alphabetical list of all available session properties
 
 =head2 adapter (String)
 
-This is a read only property. This property is read-only and should always have the value C<default> for sessions created via L<Elive::Entity::Session>.
+This property is read-only. It should always have the value C<default> for sessions created via L<Elive::Entity::Session>.
 
 =head2 allModerators (Bool)
 

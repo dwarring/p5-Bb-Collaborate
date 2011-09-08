@@ -6,6 +6,8 @@ use Try::Tiny;
 
 extends 'Elive::DAO';
 
+our $VERSION = '0.01';
+
 =head1 NAME
 
     Elive::Entity - Base class for Elive Entities
