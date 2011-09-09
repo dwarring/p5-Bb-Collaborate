@@ -1,6 +1,6 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 71;
+use Test::More tests => 74;
 use Test::Warn;
 
 use Carp; $SIG{__DIE__} = \&Carp::confess;
@@ -108,6 +108,14 @@ my $participant_list_2 = Elive::Entity::ParticipantList->construct(
 
 my $participants_2 = $participant_list_2->participants;
 is(scalar @$participants_2, 5, 'Participant count as expected');
+
+do {
+    my ($_guests,$_moderators,$_participants) = $participants_2->tidied;
+    is_deeply($_guests, ['Robert (bob@test.org)'], '...tidied guests');
+    is_deeply($_moderators, ['2222'], '...tidied moderators');
+    is_deeply($_participants, ['*the_team', '1111', 'alice'], '...tidied participants');
+};
+
 is($participants_2->[0]->user->userId, 1111, 'participant list user[0]');
 is($participants_2->[0]->role->roleId, 3, 'participant list role[0] (defaulted)');
 is($participants_2->[1]->user->userId, 2222, 'participant list user[1]');
