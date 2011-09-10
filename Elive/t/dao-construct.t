@@ -1,6 +1,6 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 74;
+use Test::More tests => 77;
 use Test::Warn;
 
 use Carp; $SIG{__DIE__} = \&Carp::confess;
@@ -30,22 +30,36 @@ my $participant_list = Elive::Entity::ParticipantList->construct(
 		user => {userId => 223344,
 			 loginName => 'test_user2',
 		},
-		role => {roleId => 3},
+		role => {roleId => 3}, # sans coercement
 	    },
-	    
 	    {
 		user => {userId => 'dave',
 			 loginName => 'test_user2',
 		},
-		role => {roleId => 3},
+		role => 3,             # with coercement
 	    }
-	    
 	    ],
     },
     );
 
 isa_ok($participant_list, 'Elive::Entity::ParticipantList', 'participant');
 is($participant_list->stringify, "123456", 'participant list stringifies to meeting id');
+
+is_deeply($participant_list->participants->[-1], {
+    		user => {userId => 'dave',
+			 loginName => 'test_user2',
+		},
+		role => {roleId => 3},,
+	  }, "construction/coercement sanity");
+
+$participant_list->participants->[-1]->role(2);
+
+is_deeply($participant_list->participants->[-1]->role, {roleId => 2},
+	  "set/get sanity");
+
+$participant_list->participants->[-1]->role(3);
+is_deeply($participant_list->participants->[-1]->role, {roleId => 3},
+	  "revert sanity");
 
 can_ok($participant_list, 'meetingId');
 can_ok($participant_list, 'participants');
