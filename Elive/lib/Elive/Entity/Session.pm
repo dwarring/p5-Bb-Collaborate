@@ -742,7 +742,7 @@ Preloads may be both uploaded from the client or server:
 
 The type of the preload can be C<whiteboard>, C<media> or C<plan>. Each
 preload also has a C<mimeType> property. Both are guessed from the file
-extension, or you can supply, these yourself:
+extension, or you can supply, these details yourself:
 
     $preload2 =  Elive::Entity::Preload->upload({
                      name => 'slide2.wbd',
@@ -789,15 +789,8 @@ an error. The C<check_preload> method might help here.
     $session->add_preload( $preload )
         unless $session->check_preload( $preload );
 
-Preloads are not automatically deleted when you delete session, if you want to
-delete them, you can do this yourself:
-
-    my $preloads = $session->list_preloads;
-    $session->delete;
-    $_->delete for (@$preloads);
-
-But you'd only want to delete the preload if it's not being shared with other
-active sessions!
+Preloads are automatically garbage collected by ELM, if they are not
+associated with any sessions, or the sessions have been deleted.
 
 Please see also L<Elive::Entity::Preload>.
 
