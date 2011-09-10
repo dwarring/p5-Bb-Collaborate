@@ -210,7 +210,7 @@ L<README> file.
 
 elive_query is an example simple sql-like script. It is a basic program
 for listing and retrieving entities. It serves as a simple demonstration
-script, and can be used to confirm basic operation of Elive.
+script, and can be used to confirm basic connectivity and operation of Elive.
 
     % perl elive_query http://myserver.com/test -user sdk_user
     Password: connecting to http://myserver.com/test...ok
@@ -245,13 +245,15 @@ to show the C<meeting> entity:
       restrictedMeeting  : Bool      -- Restricted meeting
       start              : HiResDate -- meeting start time
 
+for more information, please see L<elive_query>, or  or type the command: C<elive_query --help>
+
 =head2 elive_raise_meeting
 
 This is a demonstration script to create a meeting, set options, assign
-participants and upload meeting preloads (whiteboard and media files to be
-used to used for the meeting.
+participants and upload meeting preloads (whiteboard, plan and media files)
+to be used to used for the meeting.
 
-For more information, type the command: C<elive_raise_meeting --help>
+For more information, see L<elive_raise_meeting> or type the command: C<elive_raise_meeting --help>
 
 =head2 elive_lint_config
 
@@ -267,17 +269,17 @@ see the README file.
 
 =item L<Elive::Connection::SDK> - Elluminate SOAP connection
 
-=item L<Elive::Entity::Session>
+=item L<Elive::Entity::Session> - Sessions (or meetings)
 
-=item L<Elive::Entity::Group>
+=item L<Elive::Entity::Group> - Groups of Users
 
-=item L<Elive::Entity::Preload>
+=item L<Elive::Entity::Preload> - Preload Content (whiteboard, multimedia and meeting plans)
 
-=item L<Elive::Entity::Recording>
+=item L<Elive::Entity::Recording> - Session Recordings
 
-=item L<Elive::Entity::Report>
+=item L<Elive::Entity::Report> - Management Reports
 
-=item L<Elive::Entity::User>
+=item L<Elive::Entity::User> - Users and Logins
 
 =back
 
