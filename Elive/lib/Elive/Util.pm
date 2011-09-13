@@ -9,7 +9,7 @@ use Clone;
 use YAML;
 use Try::Tiny;
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 use Elive::Util::Type;
 
@@ -149,7 +149,7 @@ sub _thaw {
 #               used to clean up numbers for data storage or comparison
 
 sub _tidy_decimal {
-    my $i = shift;
+    my ($i) = @_;
     #
     # well a number really. don't convert or sprintf etc
     # to avoid overflow. Just normalise it for potential

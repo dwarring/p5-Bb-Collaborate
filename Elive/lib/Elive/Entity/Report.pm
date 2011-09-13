@@ -6,6 +6,7 @@ use Mouse::Util::TypeConstraints;
 
 extends 'Elive::Entity';
 
+use SOAP::Lite;  # contains SOAP::Data package
 use Elive::Entity::Role;
 
 __PACKAGE__->entity_name('Report');
@@ -22,7 +23,7 @@ has 'description' => (is => 'rw', isa => 'Str',
 	      documentation => 'report description');
 __PACKAGE__->_alias(reportDescription => 'description', freeze => 1);
 
-has 'xml' => (is => 'rw', isa => 'Str', required => 1,
+has 'xml' => (is => 'rw', isa => 'Str',
 	      documentation => 'report content');
 __PACKAGE__->_alias(reportDefinition => 'xml', freeze => 1);
 
@@ -47,9 +48,9 @@ on the Elluminate server under the 'Reports' tab.
 Please note that the C<list> method (C<listReports> command) does not return the body
 of the report. The report object needs to be refetched via the C<retrieve> method.
 
-For example, to export all reports on a connected server:
+For example, the following code snippet exports all reports for a site:
 
-    my $reports = Elive::Entity::Report->list(
+    my $reports = Elive::Entity::Report->list;
     my @report_ids = map {$_->reportId} @$reports;
 
     foreach my $reportId (@report_ids) {
@@ -58,10 +59,10 @@ For example, to export all reports on a connected server:
 	# listed objects don't have the report body, refetch them.
 	#
 
-        my $rpt = Elive::Entity::Report->retrieve([$reportId]);
+        my $rpt = Elive::Entity::Report->retrieve( $reportId );
 
 	my $name = $rpt->name;
-	$name =~ s/[^\w]//g;
+	$name =~ s/[^\w]//g; # sanitise
 	my $export_file = "/tmp/report_${reportId}_${name}.xml";
 
 	open (my $dump_fh, '>', $export_file)
@@ -77,6 +78,61 @@ For example, to export all reports on a connected server:
 
 =cut
 
+sub BUILDARGS {
+    my $class = shift;
+    my $spec = shift;
+    my %opt = @_;
+
+    die "usage: $class->new(\$hashref)"
+	unless Elive::Util::_reftype($spec) eq 'HASH';
+
+    my %args = %$spec;
+
+    $args{ownerId} ||= do {
+
+	my $connection = $opt{connection} || $class->connection
+	    or die "not connected";
+
+	$connection->login->userId;
+    };
+
+    if (my $xml = delete $args{xml}
+	|| delete $args{reportDefinition}) {
+	#
+	# need to strip this to avoid insert/update barfing
+	#
+	$xml =~ s/^.*\<jasperReport /<jasperReport /s;
+	$xml =~ s/[\s\n]*$//; # tidy-up tail
+	$args{xml} = $xml;
+    }
+
+    return \%args;
+}
+
+=head insert
+
+Insert a new Jasper report.
+
+=cut
+
+sub insert {
+    my ($class, $_spec, %opt) = @_;
+
+    my $insert_data = $class->BUILDARGS($_spec, %opt);
+
+    $opt{command} ||= 'addReport';
+
+##    use YAML; warn YAML::Dump({report_insert_data => $class->_freeze(\%insert_data)});
+
+    return $class->SUPER::insert( $class->_freeze($insert_data), %opt);
+}
+
+=head2 list
+
+List reports.
+
+=cut
+
 =head2 update
 
 Updates an existing report.
@@ -84,16 +140,48 @@ Updates an existing report.
 =cut
 
 sub update {
-    my ($self, $update_data, @args) = @_;
+    my ($self, $_spec, %opt) = @_;
+
+    my $update_data = $self->BUILDARGS($_spec, %opt);
 
     #
-    # always need to supply these fields to the update adapter,
+    # always need to supply these fields to the update command,
     # whether or not they've actually changed.
     #
     my %changed;
     @changed{$self->is_changed, 'name','description','xml','ownerId'} = undef;
 
-    return $self->SUPER::update($update_data, @args, changed => [keys %changed]);
+    return $self->SUPER::update($update_data, %opt, changed => [keys %changed]);
+}
+
+=head2 delete
+
+    my $report = Elive::Entity::Report->retrieve( $report_id );
+    $report->delete if $report;
+
+Deletes a report.
+
+=cut
+
+sub delete {
+    #
+    # response seems to be returned as true/false rather than a record.
+    # hence the need to roll our own
+    #
+    my ($self, %opt) = @_;
+
+    my $som = $self->connection->call('deleteReport' 
+				      => %{$self->_freeze({reportId => $self->reportId})
+				      });
+
+    my $results = $self->_get_results($som, $self->connection);
+    #
+    # code this so it'll soldier on if the report response ever gets
+    # 'fixed' and starts to return a record rather than true/false
+    #
+    my $deleted = $results && $results->[0];
+
+    return $self->_deleted($deleted);
 }
 
 1;

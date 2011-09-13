@@ -4,7 +4,7 @@ use warnings; use strict;
 use Mouse;
 use Mouse::Util::TypeConstraints;
 
-our $VERSION = '0.03';
+our $VERSION = '0.04';
 
 use parent 'Elive::DAO::_Base';
 
@@ -1361,10 +1361,7 @@ sub list {
 
     my $som = $connection->call($command, @params);
 
-    my $results = $class->_get_results(
-	$som,
-	$connection,
-	);
+    my $results = $class->_get_results($som,$connection);
 
     my $rows = $class->_process_results( $results );
 
@@ -1396,10 +1393,7 @@ sub _fetch {
 
     my $som = $connection->call($command, %{$db_query_frozen});
 
-    my $results = $class->_get_results(
-	$som,
-	$connection,
-	);
+    my $results = $class->_get_results($som, $connection);
 
     my $rows = $class->_process_results( $results );
     return $rows if $opt{raw};
@@ -1537,12 +1531,8 @@ sub delete {
 
     my $som = $self->connection->call($command, @params);
 
-    my $results = $self->_get_results(
-	$som,
-	$self->connection,
-	);
-
-    my $rows = $self->_process_results( $results );
+    my $results = $self->_get_results($som, $self->connection);
+    my $rows = $self->_process_results($results);
 
     #
     # Umm, we did get a read-back of the record, but the contents
