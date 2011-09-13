@@ -95,7 +95,7 @@ SKIP: {
     }
     else {
 	$t->skip('skipping live report update tests')
-	    for (1..4);
+	    for (1..5);
     }
 
     Elive->disconnect;

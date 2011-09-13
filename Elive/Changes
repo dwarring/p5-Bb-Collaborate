@@ -1,10 +1,12 @@
 Revision history for Elive
 
 1.18    tba
-        [enhancements]
-        Elive::Entity::Report - general TLC. Added insert() and delete()
-        methods. corrected update() method. Added tests for all of the
-        above.
+        [bug fixes & enhancements]
+        Elive::Entity::Report - general TLC: 
+        - added insert() and delete() methods
+        - corrected update() method.
+        - changed ownerId property from Int to Str for LDAP compatibility
+        - Added tests for all of the above.
 
 1.17    9th September 2011
         [bug fixes]

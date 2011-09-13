@@ -1,6 +1,6 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 9;
+use Test::More tests => 10;
 use Test::Warn;
 
 =pod
@@ -15,6 +15,7 @@ package main;
 use Elive::Entity::Group;
 use Elive::Entity::User;
 use Elive::Entity::Recording;
+use Elive::Entity::Report;
 use Elive::Entity::MeetingParameters;
 use Elive::Entity::ServerParameters;
 
@@ -30,6 +31,8 @@ ok($group_types->{domain}, 'group has domain property (early ELM 3.0 compat');
 # User Ids can be non-numeric when configured to use LDAP for 
 # user management
 #
+my $report_types = Elive::Entity::Report->property_types;
+is($report_types->{ownerId}, 'Str', 'non-numeric report ownerIds permitted (LDAP compat)');
 my $user_types = Elive::Entity::User->property_types;
 is($user_types->{userId}, 'Str', 'non-numeric userIds permitted (LDAP compat)');
 #

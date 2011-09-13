@@ -33,7 +33,7 @@ has 'role' => (is => 'rw', isa => 'Elive::Entity::Role',
 
 has 'parentId' => (is => 'rw', isa => 'Int');
 
-has 'ownerId' => (is => 'rw', isa => 'Int');
+has 'ownerId' => (is => 'rw', isa => 'Str');
 __PACKAGE__->_alias(reportOwner => 'ownerId', freeze => 1);
 
 =head1 NAME
