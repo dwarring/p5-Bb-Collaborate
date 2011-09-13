@@ -109,7 +109,16 @@ sub BUILDARGS {
     return \%args;
 }
 
-=head insert
+=head2 insert
+
+	my %report_data = (
+	    name => "My Test Report",
+	    description => 'Just trying a report insert',
+	    xml => $xml_text,
+	    );
+
+	my $report = Elive::Entity::Report->insert(\%report_data);
+
 
 Insert a new Jasper report.
 
@@ -129,11 +138,18 @@ sub insert {
 
 =head2 list
 
+    my $all_reports = Elive::Entity::Report->list();
+
 List reports.
+
+Note: This command does not return the C<xml>. Please see the example in
+the L<DESCRIPTION> section.
 
 =cut
 
 =head2 update
+
+    $report->update({xml => $updated_xml_text});
 
 Updates an existing report.
 
