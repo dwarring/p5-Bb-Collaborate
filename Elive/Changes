@@ -3,8 +3,9 @@ Revision history for Elive
 1.18    tba
         [bug fixes & enhancements]
         Elive::Entity::Report - general TLC: 
-        - added insert() and delete() methods
-        - corrected update() method.
+        - fixed example pod
+        - fixed delete() method
+        - further work insert() and update() methods.
         - changed ownerId property from Int to Str for LDAP compatibility
         - Added tests for all of the above.
 

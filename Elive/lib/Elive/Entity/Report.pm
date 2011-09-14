@@ -6,7 +6,6 @@ use Mouse::Util::TypeConstraints;
 
 extends 'Elive::Entity';
 
-use SOAP::Lite;  # contains SOAP::Data package
 use Elive::Entity::Role;
 
 __PACKAGE__->entity_name('Report');
@@ -96,31 +95,32 @@ sub BUILDARGS {
 	$connection->login->userId;
     };
 
-    if (my $xml = delete $args{xml}
-	|| delete $args{reportDefinition}) {
-	#
-	# need to strip this to avoid insert/update barfing
-	#
-	$xml =~ s/^.*\<jasperReport /<jasperReport /s;
-	$xml =~ s/[\s\n]*$//; # tidy-up tail
-	$args{xml} = $xml;
-    }
-
     return \%args;
 }
 
+=head2 list
+
+    my $all_reports = Elive::Entity::Report->list();
+
+List reports.
+
+Note: This command does not return the C<XML>. Please see the example in
+the L<DESCRIPTION> section.
+
+=cut
+
+=head2 retrieve
+
+    my $report = Elive::Entity::Report->retrieve( $report_id );
+    my $report_xml = $report->xml;
+
+Retrieves a report, including the C<XML> content.
+
+=cut
+
 =head2 insert
 
-	my %report_data = (
-	    name => "My Test Report",
-	    description => 'Just trying a report insert',
-	    xml => $xml_text,
-	    );
-
-	my $report = Elive::Entity::Report->insert(\%report_data);
-
-
-Insert a new Jasper report.
+The C<insert> method is not available for reports.
 
 =cut
 
@@ -131,27 +131,12 @@ sub insert {
 
     $opt{command} ||= 'addReport';
 
-##    use YAML; warn YAML::Dump({report_insert_data => $class->_freeze(\%insert_data)});
-
     return $class->SUPER::insert( $class->_freeze($insert_data), %opt);
 }
 
-=head2 list
-
-    my $all_reports = Elive::Entity::Report->list();
-
-List reports.
-
-Note: This command does not return the C<xml>. Please see the example in
-the L<DESCRIPTION> section.
-
-=cut
-
 =head2 update
 
-    $report->update({xml => $updated_xml_text});
-
-Updates an existing report.
+The C<update> method is not available for reports.
 
 =cut
 
@@ -192,8 +177,7 @@ sub delete {
 
     my $results = $self->_get_results($som, $self->connection);
     #
-    # code this so it'll soldier on if the report response ever gets
-    # 'fixed' and starts to return a record rather than true/false
+    # this command responds with true/false, rather than a report record.
     #
     my $deleted = $results && $results->[0];
 

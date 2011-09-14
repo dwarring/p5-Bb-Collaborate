@@ -107,9 +107,6 @@ LIVE TESTING
     ELIVE_TEST_GROUP_UPDATES - set this to true to enable insert and update
                of groups on a live site (t/soap-group.t).
 
-    ELIVE_TEST_REPORT_UPDATES - set this to true to enable insert and update
-               of reports on a live site (t/soap-group.t).    
-
     The User and Group update tests can only be run on sites that have not
     been configured for LDAP.
 
