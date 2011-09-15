@@ -117,12 +117,18 @@ sub _retrieve_all {
 				       %opt);
 }
 
+=head2 retrieve
+
+    my $meeting_participants = Elive::Entity::ParticipantList->retrieve($meeting_id);
+
+Retrieves the participant list for a meeting.
+
 =head2 update
 
 This method updates meeting participants.
 
     my $participant_list
-         = Elive::Entity::ParticipantList->retrieve([$meeting_id]);
+         = Elive::Entity::ParticipantList->retrieve($meeting_id);
     $participant_list->participants->add($alice->userId, $bob->userId);
     $participant_list->update;
 
@@ -237,7 +243,7 @@ sub _readback_check {
 sub _build_elm2x_participants {
     my ($self, $users, $groups, $guests) = @_;
     #
-    # Take our best short at passing participants via the elm 2.x
+    # Take our best shot at passing participants via the elm 2.x
     # setParticipantList and updateParticipantList commands. These have
     # some restrictions on the handling of groups and invited guests.
     #
@@ -345,8 +351,7 @@ sub insert {
 
 =head2 list
 
-The list method is not available for participant lists. You'll need
-to retrieve on a meeting id.
+The list method is not available for participant lists.
 
 =cut
 

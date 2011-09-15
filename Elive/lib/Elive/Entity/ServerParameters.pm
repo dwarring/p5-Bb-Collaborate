@@ -106,6 +106,14 @@ The server parameters entity contains additional meeting options.
 
 =cut
 
+=head2 retrieve
+
+    my $server_paremeters = Elive::Entity::ServerParameters->retrieve($meeting_id);
+
+Retrieves the server parameters for a meeting.
+
+=cut
+
 =head2 insert
 
 The insert method is not applicable. The meeting server parameters entity
@@ -126,8 +134,7 @@ sub delete {return shift->_not_available}
 
 =head2 list
 
-The list method is not available for meeting parameters. You'll need
-to create a meeting, then retrieve on meeting id
+The list method is not available for meeting parameters.
 
 =cut
 

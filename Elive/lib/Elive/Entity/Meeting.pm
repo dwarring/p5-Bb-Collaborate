@@ -149,7 +149,7 @@ C<recurrenceDays> parameters.
 
 =head2 delete
 
-    my $meeting = Elive::Entity::Meeting->retrieve([$meeting_id]);
+    my $meeting = Elive::Entity::Meeting->retrieve($meeting_id);
     $meeting->delete
 
 Delete the meeting.
@@ -171,15 +171,18 @@ them yourself, E.g.:
 
     $meeting->delete;
 
-=item With Elluminate 9.5 onwards simply sets the I<deleted> property to true.
+=item With Elluminate 9.5 onwards, deleted meeting may remain retrievable, but with the I<deleted> property to true.
 
-Meetings, Meeting Parameters, Server Parameters and recordings remain
-accessible via the SOAP interface.
+Meetings, Meeting Parameters, Server Parameters and recordings may remain
+accessible via the SOAP interface for a short period of time until they
+are garbage collected by ELM.
 
-You'll need to remember to check for deleted meetings:
+You'll may need to check for deleted meetings:
 
-    my $meeting =  Elive::Entity::Meeting->retrieve([$meeting_id]);
-    my $is_live = $meeting->deleted;
+    my $meeting =  Elive::Entity::Meeting->retrieve($meeting_id);
+    if ($meeting && ! $meeting->deleted) {
+        # ...
+    }
 
 or filter them out when listing meetings:
 
@@ -213,12 +216,6 @@ For example, to list all meetings for a particular user over the next week:
    my $next_week = $now->clone->add(days => 7);
 
    my $meetings = Elive::Entity::Meeting->list_user_meetings_by_date(
-        [$user_id, $now->epoch.'000', $next_week->epoch.'000']
-       );
-
-   # equivalently:
-
-   my $meetings = Elive::Entity::Meeting->list_user_meetings_by_date(
         {userId => $user_id,
          startDate => $now->epoch.'000',
          endDate => $next_week->epoch.'000'}
@@ -237,10 +234,11 @@ sub list_user_meetings_by_date {
     }
     elsif ($reftype eq 'ARRAY'
 	   && $params->[0] && @$params <= 3) {
+	# older usage
 	@fetch_params{qw{userId startDate endDate}} = @$params;
     }
     else {
-	die 'usage: $class->user_meetings_by_date([$user, $start_date, $end_date])'
+	die 'usage: $class->user_meetings_by_date({userId=>$user, startDate=>$start_date, endDate=>$end_date})'
     }
 
     return $class->_fetch($class->_freeze(\%fetch_params),
@@ -251,11 +249,11 @@ sub list_user_meetings_by_date {
 
 =head2 add_preload
 
+    my $preload = Elive::Entity::Preload->upload( 'c:\tmp\intro.wbd');
     my $meeting = Elive::Entity::Meeting->retrieve($meeting_id);
-    $meeting->add_preload($preload_id);
+    $meeting->add_preload($preload);
 
-Associates a preload with a meeting. This preload must pre-exist in the
-database.
+Associates a preload with the given meeting-Id, or meeting object.
 
 =cut
 

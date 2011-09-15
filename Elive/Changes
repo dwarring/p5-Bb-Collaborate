@@ -1,13 +1,20 @@
 Revision history for Elive
 
-1.18    tba
+1.18    16th September 2011
+
+        [pod]
+        - Documented retrieve() method for meeting parameters, server
+          parameters, and participant lists
+        - Documented list() method for preloads
+        
         [bug fixes & enhancements]
-        Elive::Entity::Report - general TLC: 
-        - fixed example pod
-        - fixed delete() method
-        - further work insert() and update() methods.
-        - changed ownerId property from Int to Str for LDAP compatibility
-        - Added tests for all of the above.
+        Elive::Entity::Report
+        - changed ownerId from 'Int' to 'Str' for LDAP compatibility
+        - Added optional insert/update/delete tests
+        - fixed delete() method to passs tests
+        - insert/update of report body (xml) is still unreliable. Progressed
+          slightly and updated 'Bugs & Limitations' pod.
+        - fixed/updated example in pod
 
 1.17    9th September 2011
         [bug fixes]

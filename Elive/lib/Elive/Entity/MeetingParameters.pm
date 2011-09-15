@@ -99,6 +99,14 @@ This class contains a range of options for a previously created meeting.
 
 =cut
 
+=head2 retrieve
+
+    my $paremeters = Elive::Entity::MeetingParameters->retrieve($meeting_id);
+
+Retrieves the meeting parameters for a meeting.
+
+=cut
+
 =head2 insert
 
 The insert method is not applicable. The meeting parameters table is
@@ -119,8 +127,7 @@ sub delete {return shift->_not_available}
 
 =head2 list
 
-The list method is not available for meeting parameters. You'll need
-to create a meeting, then retrieve on meeting id
+The list method is not available for meeting parameters.
 
 =cut
 

@@ -267,7 +267,8 @@ sub import_from_server {
 
 my $preloads = Elive::Entity::Preload->list_meeting_preloads($meeting_id);
 
-Implements the listMeetingPreloads method
+Returns a list of preloads associated with the given meeting-Id or meeting
+object.
 
 =cut
 
@@ -281,6 +282,14 @@ sub list_meeting_preloads {
 
     return $self->_fetch({meetingId => $meeting_id}, %opt);
 }
+
+=head2 list
+
+   my $all_preloads = Elive::Entity::Preload->list();
+
+Lists all known preloads.
+
+=cut
 
 sub _thaw {
     my ($class, $db_data, %opt) = @_;
@@ -347,15 +356,17 @@ sub _readback_check {
 
 =over 4
 
-=item -- Under Elluminate 9.6.0 and LDAP, you may need to arbitrarily add a 'DomN:'
+=item * Under Elluminate 9.6.0 and LDAP, you may need to arbitrarily add a 'DomN:'
 prefix to the owner ID, when creating or updating a meeting.
 
     $preload->ownerId('Dom1:freddy');
 
-=item -- Elluminate 10.0 strips the file extension from the filename when
+=item * Elluminate 10.0 strips the file extension from the filename when
 whiteboard files are saved or uploaded (C<introduction.wbd> => C<introduction>).
 However, if the file lacks an extension to begin with, the request crashes with
 the confusing error message: C<"string index out of range: -1">.
+
+=item * As of ELM 3.3.5, The C<filter> option appears to have no affect when passed to the C<list()> method.
 
 =back
 

@@ -104,8 +104,7 @@ sub BUILDARGS {
 
 List reports.
 
-Note: This command does not return the C<XML>. Please see the example in
-the L<DESCRIPTION> section.
+Note: This command does not return the body of the report (C<xml> property).
 
 =cut
 
@@ -114,7 +113,7 @@ the L<DESCRIPTION> section.
     my $report = Elive::Entity::Report->retrieve( $report_id );
     my $report_xml = $report->xml;
 
-Retrieves a report, including the C<XML> content.
+Retrieves a report, including the body of the report (C<xml> property).
 
 =cut
 
@@ -143,14 +142,14 @@ The C<update> method is not available for reports.
 sub update {
     my ($self, $_spec, %opt) = @_;
 
-    my $update_data = $self->BUILDARGS($_spec, %opt);
-
+    my $update_data = $self->BUILDARGS($_spec, %opt)
+	if $_spec;
     #
     # always need to supply these fields to the update command,
     # whether or not they've actually changed.
     #
     my %changed;
-    @changed{$self->is_changed, 'name','description','xml','ownerId'} = undef;
+    @changed{$self->is_changed, 'name','description','xml', 'ownerId'} = undef;
 
     return $self->SUPER::update($update_data, %opt, changed => [keys %changed]);
 }
