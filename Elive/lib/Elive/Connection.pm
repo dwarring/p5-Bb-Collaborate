@@ -1,6 +1,8 @@
 package Elive::Connection;
 use warnings; use strict;
 
+our $VERSION = '0.01';
+
 use Carp;
 use File::Spec::Unix;
 use HTML::Entities;
