@@ -289,7 +289,7 @@ see the README file.
 
 =item L<elive_query> - simple interactive queries on Elive entities
 
-=item L<elive_raise_meeting> - sample script that create meetings via one-liners
+=item L<elive_raise_meeting> - sample script for command-line meeting creation
 
 =item L<elive_lint_config> - sanity checker for Elluminate server configurations
 
