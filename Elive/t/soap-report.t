@@ -93,10 +93,18 @@ SKIP: {
 	    }
 	}
 
-      SKIP: {
-	  skip 'reliable report content insert/update', 1;
-	  lives_ok(sub {$report->update({xml => $sample_xml})},
-		   'copy of live report - lives');
+      TODO: {
+	  #
+	  # Insert/update of full-length XML reports gives variable
+	  # results. Tested on various ELM 3.0 - 3.3.5
+	  #
+	  # Also to-do; further work on the readback. Reponse
+	  # XML may not exactly match the input XML.
+	  #
+	   local($TODO) = 'report content insert/update';
+
+	   lives_ok(sub {$report->update({xml => $sample_xml})},
+		    'copy of live report - lives');
 	};
 
 	lives_ok(sub {$report->delete}, 'report deletion - lives');
@@ -110,8 +118,6 @@ SKIP: {
 
 }
 
-# I've tried several versions, but have only been able to reliabily
-# insert/update small xml fragments, such as the sample below.
+# just try a trivial Jasper report.
 __DATA__
 <jasperReport name="EliveEmptyTestReportPleaseDelete"></jasperReport>
-
