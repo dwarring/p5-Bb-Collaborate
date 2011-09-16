@@ -124,6 +124,10 @@ __PACKAGE__->_alias(serverTeleconferencePIN => 'serverTelephonyPIN', freeze => 1
 
 __PACKAGE__->_alias(add_preload => 'preloadIds');
 
+=head1 METHODS
+
+=cut
+
 sub _alias {
     my ($entity_class, $from, $to, %opt) = @_;
 
