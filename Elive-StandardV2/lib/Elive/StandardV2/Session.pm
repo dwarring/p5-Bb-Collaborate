@@ -33,41 +33,10 @@ __PACKAGE__->params(
     groupingId => 'Str',
     presentationIds => 'Elive::StandardV2::_List',
     sessionId => 'Int',
+    recurrenceCount => 'Int',
+    recurrenceDays => 'Int',
     );
 
-=head1 EXAMPLE
-
-    use Elive::StandardV2;
-    use Elive::StandardV2::Session;
-    use Elive::Util;
-
-    my $connection = Elive::StandardV2->connect(
-                                'http://myserver/mysite',
-                                'some_user' => 'some_pass' );
-
-    # Sessions must start and end on the quarter hour.
-
-    my $session_start = Elive::Util::next_quarter_hour();
-    my $session_end = Elive::Util::next_quarter_hour( $session_start );
-
-    my %session_data = (
-	sessionName   => 'My Demo Session',
-	creatorId     => $connection->user,
-	startTime     => $session_start . '000',
-	endTime       => $session_end . '000',
-	openChair     => 1,
-	mustBeSupervised => 0,
-	permissionsOn => 1,
-        nonChairList  => [qw(alice bob)],
-	groupingList  => [qw(mechanics sewing)],
-    );
-
-    my $session = Elive::StandardV2::Session->insert(\%session_data);
-
-    my $url = $session->session_url( userId => 'bob', displayName => 'Robert');
-    print "bob's session link is: $url\n";
-
-=cut
 
 =head1 PROPERTIES
 
@@ -395,6 +364,88 @@ has 'versionId' => (is => 'rw', isa => 'Int',
 
 =cut
 
+sub _readback_check {
+    my ($class, $_updates_ref, $rows, @args) = @_;
+    my %updates = %$_updates_ref;
+    #
+    # cop out of checking start and end times for recurring
+    # sessions
+    #
+    if ($rows && @$rows > 1) {
+	delete $updates{startTime};
+	delete $updates{endTime};
+    }
+
+    return $class->SUPER::_readback_check( \%updates, $rows, @args);
+}
+
+=head2 insert
+
+    use Elive::StandardV2;
+    use Elive::StandardV2::Session;
+    use Elive::Util;
+
+    my $connection = Elive::StandardV2->connect(
+                                'http://myserver/mysite',
+                                'some_user' => 'some_pass' );
+
+    # Sessions must start and end on the quarter hour.
+
+    my $session_start = Elive::Util::next_quarter_hour();
+    my $session_end = Elive::Util::next_quarter_hour( $session_start );
+
+    my %session_data = (
+	sessionName   => 'My Demo Session',
+	creatorId     => $connection->user,
+	startTime     => $session_start . '000',
+	endTime       => $session_end . '000',
+	openChair     => 1,
+	mustBeSupervised => 0,
+	permissionsOn => 1,
+        nonChairList  => [qw(alice bob)],
+	groupingList  => [qw(mechanics sewing)],
+    );
+
+    my $session = Elive::StandardV2::Session->insert(\%session_data);
+
+    my $url = $session->session_url( userId => 'bob', displayName => 'Robert');
+    print "bob's session link is: $url\n";
+
+A series of sessions can be created using the C<recurrenceCount> and C<recurrenceDays> parameters.
+
+    #
+    # create three weekly sessions
+    #
+    my @sessions = Elive::StandardV2::Session->insert({
+                            ...,
+                            recurrenceCount => 3,
+                            recurrenceDays  => 7,
+                        });
+=cut
+
+=head2 update
+
+    $session->maxCameras(5);
+    $session->hideParticipantNames(0);
+    $session->update;
+
+    #
+    # ...or...
+    #
+    $session->update({maxCameras => 5, hideParticipantNames => 0});
+
+Updates a previous created session.
+
+=cut
+
+=head2 retrieve
+
+    my $session = Elive::StandardV2::Session->retrieve( $session_id );
+
+Retrieves a session.
+
+=cut
+
 =head2 list
 
     #
@@ -441,21 +492,6 @@ Returns an array of session objects. You may filter on:
 
 =back
  
-=head2 update
-
-    $session->maxCameras(5);
-    $session->hideParticipantNames(0);
-    $session->update;
-
-    #
-    # ...or...
-    #
-    $session->update({maxCameras => 5, hideParticipantNames => 0});
-
-Updates a previous created session.
-
-=cut
-
 =head2 delete
 
     $session->delete;
@@ -633,25 +669,5 @@ sub attendance {
 	%opt,
 	);
 }
-
-=head1 Not Yet Implemented
-
-=head2 recurrenceCount (Int)
-
-Number of sessions to schedule with the same setup information.
-May be a number between 1 and 99. May not be updated.
-
-Any recurring session must conform to the start and end date/time validation (as defined in Date & Time Values on page 7). If the validation fails for any single session, no sessions will be created, and an error will be returned.
-
-=cut
-
-=head2 recurrenceDays (Int)
-
-Used with the recurrenceCount parameter to specify the number of days between repeated sessions.
-
-The number of days specified here will be added to both the start and end date/times for each session scheduled in the recurrenceCount.
-May be a number between 1 and 7. Cannot be updated.
-
-=cut
 
 1;

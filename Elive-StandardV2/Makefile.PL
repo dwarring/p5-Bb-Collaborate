@@ -18,7 +18,7 @@ requires(
     'Carp'                         => 0,
     'File::Spec'                   => 0,
     'File::Basename'               => 0,
-    'Elive::DAO'                   => '0.01',
+    'Elive::DAO'                   => '0.02',
     'Elive::Util'                  => '0.01',
     'Mime::Base64'                 => 0,
     'Mouse'                        => 0.56,

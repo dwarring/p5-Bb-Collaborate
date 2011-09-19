@@ -12,7 +12,7 @@ use Elive::Util;
 
 =head1 NAME
 
-Elive::StandardV2::SessionTelephony - Elluminate SessionTelephony instance class
+Elive::StandardV2::SessionTelephony - Elluminate Session Telephony instance class
 
 =head1 DESCRIPTION
 

@@ -17,13 +17,13 @@ Elive::StandardV2 - Perl bindings for the Elluminate Live Standard Bridge (V2) [
 
 =head1 VERSION
 
-Version 0.01_6
+Version 0.01_7
 
 ** DEVELOPER RELEASE - UNDER CONSTRUCTION **
 
 =cut
 
-our $VERSION = '0.01_6';
+our $VERSION = '0.01_7';
 
 use 5.008003;
 
@@ -211,8 +211,12 @@ sub insert {
     my ($class, $data, %opt) = @_;
 
     $opt{command} ||= 'set'.$class->entity_name;
+    #
+    # allow for recurring sessions
+    #
+    my @sessions =  $class->SUPER::insert($data, %opt);
 
-    return $class->SUPER::insert($data, %opt);
+    return wantarray? @sessions : $sessions[0];
 }
 
 =head2 list
