@@ -757,9 +757,9 @@ extension, or you can supply, these details yourself:
 
 The C<import_from_server> method also has an extended form:
 
-    $preload2 =  Elive::Entity::Preload->import_from_server({
+    $preload3 =  Elive::Entity::Preload->import_from_server({
                      fileName =>'/home/uploads/slide3.wbd.tmp123'
-                     data => $content,
+                     ownerId => 357147617360,
                      type => 'preload',
                      mimeType => 'application/octet-stream',
                    });
