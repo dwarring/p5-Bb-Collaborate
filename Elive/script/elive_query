@@ -29,7 +29,7 @@ elive_query
     -pass somepass          # SDK/SOAP password
     -c 'select ....'        # execute command(s), then exit
     -debug=n                # 1=some, 2=verbose, 3=verbose + soap
-    -dump=yaml              # serialise results as YAML::Syck
+    -dump=yaml              # serialise results as YAML
     -? -help                # obtain help
     -v -version             # print Elive version
     -adapter type           # E.g. -adapter standardv2 (See Elive::StandardV2)
