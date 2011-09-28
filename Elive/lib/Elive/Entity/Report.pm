@@ -142,7 +142,8 @@ The C<update> method is not available for reports.
 sub update {
     my ($self, $_spec, %opt) = @_;
 
-    my $update_data = $self->BUILDARGS($_spec, %opt)
+    my $update_data;
+    $update_data = $self->BUILDARGS($_spec, %opt)
 	if $_spec;
     #
     # always need to supply these fields to the update command,
