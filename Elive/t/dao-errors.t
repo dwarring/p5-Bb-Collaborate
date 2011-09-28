@@ -43,8 +43,7 @@ lives_ok(
     );
 
 unless ($user_obj) {
-    diag "dont' have user object - unable to continue testing";
-    exit(1);
+    die "dont' have user object - unable to continue testing";
 }
 
 $user_obj->loginName( $user_obj->loginName .'x' );
