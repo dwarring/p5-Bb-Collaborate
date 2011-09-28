@@ -6,7 +6,7 @@ use Mouse::Util::TypeConstraints;
 
 our $VERSION = '0.04';
 
-use parent 'Elive::DAO::_Base';
+use base 'Elive::DAO::_Base';
 
 use YAML;
 use Scalar::Util qw{weaken};
@@ -16,16 +16,14 @@ use URI;
 
 use Elive::Util qw{0.01};
 
-BEGIN {
-    __PACKAGE__->mk_classdata('_entities' => {});
-    __PACKAGE__->mk_classdata('_aliases');
-    __PACKAGE__->mk_classdata('_derivable' => {});
-    __PACKAGE__->mk_classdata('_entity_name');
-    __PACKAGE__->mk_classdata('_primary_key' => []);
-    __PACKAGE__->mk_classdata('_params' => {});
-    __PACKAGE__->mk_classdata('collection_name');
-    __PACKAGE__->mk_classdata('_isa');
-};
+__PACKAGE__->mk_classdata('_entities' => {});
+__PACKAGE__->mk_classdata('_aliases');
+__PACKAGE__->mk_classdata('_derivable' => {});
+__PACKAGE__->mk_classdata('_entity_name');
+__PACKAGE__->mk_classdata('_primary_key' => []);
+__PACKAGE__->mk_classdata('_params' => {});
+__PACKAGE__->mk_classdata('collection_name');
+__PACKAGE__->mk_classdata('_isa');
 
 foreach my $accessor (qw{_db_data _deleted _is_copy}) {
     __PACKAGE__->has_metadata($accessor);
