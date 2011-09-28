@@ -11,6 +11,7 @@ require SOAP::Lite;
 use URI;
 use URI::Escape qw{};
 use Try::Tiny;
+use YAML::Syck;
 
 use parent qw{Class::Accessor Class::Data::Inheritable};
 

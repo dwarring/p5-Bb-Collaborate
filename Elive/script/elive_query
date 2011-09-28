@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 package Elive::script::elive_query;
 use warnings; use strict;
-use YAML;
+use YAML::Syck;
 use Carp;
 use Getopt::Long qw{};
 
@@ -29,7 +29,7 @@ elive_query
     -pass somepass          # SDK/SOAP password
     -c 'select ....'        # execute command(s), then exit
     -debug=n                # 1=some, 2=verbose, 3=verbose + soap
-    -dump=yaml              # serialise results as YAML
+    -dump=yaml              # serialise results as YAML::Syck
     -? -help                # obtain help
     -v -version             # print Elive version
     -adapter type           # E.g. -adapter standardv2 (See Elive::StandardV2)
@@ -478,7 +478,7 @@ sub _select {
     }
     elsif ($opt{dump} && $opt{dump} =~ /^(yaml)$/i) {
 	foreach my $row (@$rows) {
-	    print YAML::Dump({$entity_name => _fetch_row_href($props, \%derivable, $row)});
+	    print YAML::Syck::Dump({$entity_name => _fetch_row_href($props, \%derivable, $row)});
 	}
     }
     else {

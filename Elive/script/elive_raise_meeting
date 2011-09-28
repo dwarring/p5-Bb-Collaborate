@@ -20,7 +20,7 @@ use Elive::View::Session;
 use URI;
 use URI::Escape;
 
-use YAML;
+use YAML::Syck;
 
 =head1 NAME
 
@@ -371,7 +371,7 @@ sub main {
 	delete $session_data{$_};
     }
 
-    warn YAML::Dump {session_data => \%session_data} if Elive->debug;
+    warn YAML::Syck::Dump {session_data => \%session_data} if Elive->debug;
 
     my @sessions = $class->insert(\%session_data);
 
@@ -695,7 +695,7 @@ sub _yaml_dump_sessions {
 		$_ => $val,
 	    } (sort (@props, keys %derivable)));
 
-	print YAML::Dump {$entity_name => \%vals};
+	print YAML::Syck::Dump {$entity_name => \%vals};
 
     }
 

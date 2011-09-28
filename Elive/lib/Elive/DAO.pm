@@ -346,7 +346,7 @@ sub _cmp_col {
 	$cmp = $t->stringify($v1) cmp $t->stringify($v2);
     }
     elsif ($type =~ m{^Ref|Any}ix) {
-	$cmp = YAML::Syck::Dump($v1) cmp YAML::Dump($v2);
+	$cmp = YAML::Syck::Dump($v1) cmp YAML::Syck::Dump($v2);
     }
     else {
 	#
@@ -1652,7 +1652,7 @@ sub DEMOLISH {
 	    Carp::carp("$class $self_string destroyed without saving or reverting changes to: "
 		 . join(', ', @changed));
 
-	    use YAML::Syck; warn YAML::Dump {self => $self, db_data => $db_data}
+	    warn YAML::Syck::Dump {self => $self, db_data => $db_data}
 	    if ($self->debug||0) >= 6;
 	}
 	#
