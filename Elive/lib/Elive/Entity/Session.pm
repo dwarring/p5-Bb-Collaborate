@@ -850,8 +850,8 @@ For more information, please see L<Elive::Entity::Recording>.
 
 =head2 Recurring Sessions - Parameters
 
-The C<create> command has a number of additional parameters that can assist
-with setting up blocks of recurring meetings:
+The C<create> command has a number of additional parameters for
+setting up blocks of recurring meetings:
 
 =head3 until C<(HiResDate)>
 
