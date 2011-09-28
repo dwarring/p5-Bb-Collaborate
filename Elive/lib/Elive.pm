@@ -18,7 +18,7 @@ use 5.008003;
 use parent qw{Class::Data::Inheritable};
 use Scalar::Util;
 
-use YAML;
+use YAML::Syck;
 use Carp;
 use Elive::Entity;
 

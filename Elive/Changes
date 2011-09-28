@@ -2,7 +2,8 @@ Revision history for Elive
 
 1.19    28th September 2011
         [bug fixes]
-        - fixed Elive::DAO to compile under perl 5.12.x. 
+        - Replaced YAML with YAML::Syck. This fixed some puzzling
+          compilation failures under 5.12.x and 5.14.2.
 
 1.18    16th September 2011
 

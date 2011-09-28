@@ -6,7 +6,7 @@ use Term::ReadLine;
 use IO::Interactive;
 use Scalar::Util;
 use Clone;
-use YAML;
+use YAML::Syck;
 use Try::Tiny;
 
 our $VERSION = '0.02';
@@ -321,7 +321,7 @@ sub string {
     #
     # Nothing else worked; dump it.
     #
-    return YAML::Dump($obj);
+    return YAML::Syck::Dump($obj);
 }
 
 =head2 next_quarter_hour

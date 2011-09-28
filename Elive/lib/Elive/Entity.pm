@@ -126,7 +126,7 @@ sub _unpack_as_list {
 
     }
 
-    warn "$class result: ".YAML::Dump($result)
+    warn "$class result: ".YAML::Syck::Dump($result)
 	if ($class->debug >= 2);
 
     return $results_list;

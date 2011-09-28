@@ -109,9 +109,9 @@ SKIP: {
 	
     };
 
-    eval {require YAML};
-    # YAML is a Elive prequesite
-    die "unable to load YAML - can't continue: $@"
+    eval {require YAML::Syck};
+    # YAML::Syck is a Elive prequesite
+    die "unable to load YAML::Syck - can't continue: $@"
 	if $@;
 
     do {
@@ -133,7 +133,7 @@ SKIP: {
 	my $data;
 	my @guff;
 
-	lives_ok(sub {($data, @_guff) = YAML::Load($stdout)}, 'output is parsable YAML');
+	lives_ok(sub {($data, @_guff) = YAML::Syck::Load($stdout)}, 'output is parsable YAML');
 	isa_ok($data, 'HASH', 'result');
 	ok($data->{ServerDetails}{serverDetailsId}, 'hash structure contains ServerDetails.serverDetailsId');
 
@@ -193,7 +193,7 @@ SKIP: {
 	my $data;
 	my @guff;
 
-	lives_ok(sub {($data, @guff) = YAML::Load($stdout)}, 'session query output is parsable YAML');
+	lives_ok(sub {($data, @guff) = YAML::Syck::Load($stdout)}, 'session query output is parsable YAML');
 	isa_ok($data, 'HASH', 'result');
 
 	ok(!@guff, 'single result returned for single row query');
