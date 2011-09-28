@@ -79,7 +79,7 @@ sub connection {
     my $connection;
     $connection = $self->_object_connection(@_)
 	if ref $self;
-    $connection ||= $self->_connection(@_);;
+    $connection ||= $self->_connection(@_);
     return $connection;
 }
 
