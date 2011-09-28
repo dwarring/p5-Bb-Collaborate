@@ -6,7 +6,7 @@ use Mouse::Util::TypeConstraints;
 
 our $VERSION = '0.04';
 
-use base 'Elive::DAO::_Base';
+use parent 'Elive::DAO::_Base';
 
 use YAML::Syck;
 use Scalar::Util qw{weaken};
