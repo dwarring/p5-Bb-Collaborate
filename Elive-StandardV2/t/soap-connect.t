@@ -58,7 +58,7 @@ SKIP: {
     ok(my $scheduler_manager = $scheduling_manager->manager, 'got server manager');
 
     my ($scheduler_version_num) = ($scheduler_version =~ m{^([\d\.]+)});
-    diag ("Elluminate Live! manager $scheduler_version_num");
+    note ("Elluminate Live! manager $scheduler_version_num");
     ok($scheduler_version_num ge $min_version_num, "Elluminate Live! server is $min_version_num or higher");
 
     my $tested_managers = 'ELM';
@@ -83,7 +83,7 @@ SKIP: {
     if ($server_version) {
 	isa_ok($server_version, 'Elive::StandardV2::ServerVersions','server_versions');
 
-	diag 'Elluminate Live! server '.$server_version->versionName.' ('.$server_version->versionId.')';
+	note 'Elluminate Live! server '.$server_version->versionName.' ('.$server_version->versionId.')';
     }
     else {
 	diag "unable to get server versions - are all servers running?";

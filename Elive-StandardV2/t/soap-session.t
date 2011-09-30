@@ -53,7 +53,7 @@ SKIP: {
     isa_ok($session, $class, 'session');
     ok(my $session_id = $session->sessionId, 'Insert returned session id');
 
-    diag "session-id: $session_id";
+    note "session-id: $session_id";
 
     foreach (keys %session_data) {
 	#
@@ -94,7 +94,7 @@ SKIP: {
 
     my $session_url;
     lives_ok(sub {$session_url = $session->session_url(userId => 'bob', displayName => 'Robert')}, 'Can generate session Url for charList user');
-    diag "session url: $session_url";
+    note "session url: $session_url";
 
     my $attendances;
 
