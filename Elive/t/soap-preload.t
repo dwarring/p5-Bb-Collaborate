@@ -267,8 +267,8 @@ SKIP: {
     if ($ENV{ELIVE_TEST_PRELOAD_SERVER_PATH}) {
 	# untaint
 	my ($path_on_server) = ($ENV{ELIVE_TEST_PRELOAD_SERVER_PATH} =~ m{(.*)});
-	diag 'running preload import tests ($ELIVE_TEST_PRELOAD_SERVER_PATH set)';
-	diag "importing server-side file: $path_on_server";
+	note 'running preload import tests ($ELIVE_TEST_PRELOAD_SERVER_PATH set)';
+	note "importing server-side file: $path_on_server";
 	my $basename = File::Basename::basename($path_on_server);
 	my $imported_preload;
 
@@ -286,7 +286,7 @@ SKIP: {
 
 	isa_ok($imported_preload, 'Elive::Entity::Preload', 'imported preload');
 
-	diag 'imported preload has size: '.$imported_preload->size.' and type '.$imported_preload->type.' ('.$imported_preload->mimeType.')';
+	note 'imported preload has size: '.$imported_preload->size.' and type '.$imported_preload->type.' ('.$imported_preload->mimeType.')';
 
 	is($imported_preload->name, $basename, 'imported preload name as expected');
 	ok($imported_preload->size > 0, 'imported preload has non-zero size');
@@ -301,7 +301,7 @@ SKIP: {
 
 	isa_ok($imported_preload, 'Elive::Entity::Preload', 'imported preload');
 
-	diag 'imported preload has size: '.$imported_preload->size.' and type '.$imported_preload->type.' ('.$imported_preload->mimeType.')';
+	note 'imported preload has size: '.$imported_preload->size.' and type '.$imported_preload->type.' ('.$imported_preload->mimeType.')';
 
 	is($imported_preload->name, $basename, 'imported preload name as expected');
 	ok($imported_preload->size > 0, 'imported preload has non-zero size');

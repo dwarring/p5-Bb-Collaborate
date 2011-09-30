@@ -96,7 +96,7 @@ SKIP: {
 	    next;
 	}
 
-	diag "*** Testing class: $class";
+	note "*** Testing class: $class";
 
 	my @meeting_args = (
 	    $auth->[0],
@@ -146,7 +146,7 @@ SKIP: {
 
       REPEATED_MEETING:
 	do {
-	    diag("\t-- Testing Basic Options");
+	    note ("\t-- Testing Basic Options");
 	    my $weeks = 1;
 	    my $time = time();
 	    my $start_time = $time + 3600;
@@ -270,7 +270,7 @@ SKIP: {
 
       FLAGS_ON:
 	do {
-	    diag("\t-- Testing Flags On");
+	    note ("\t-- Testing Flags On");
 
 	    my @flags_on_args = (
 		map {'-'.$_} @flags
@@ -304,7 +304,7 @@ SKIP: {
 
       FLAGS_OFF:
 	do {
-	    diag("\t-- Testing Flags Off");
+	    note ("\t-- Testing Flags Off");
 
 	    my @flags_off_args = (
 		map {'-no'.$_} @flags
@@ -339,7 +339,7 @@ SKIP: {
 
       OPTIONS:
 	do {
-	    diag("\t-- Testing Options");
+	    note ("\t-- Testing Options");
 
 	    my %option_values = (
 		boundary => [0, 15, 30],

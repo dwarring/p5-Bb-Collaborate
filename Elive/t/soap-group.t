@@ -34,7 +34,7 @@ my $connection_class = $result{class};
 my $connection = $connection_class->connect(@$auth);
 Elive->connection($connection);
 
-diag "group test url: ".$connection->url;
+note "group test url: ".$connection->url;
 
 my @usernames = qw(test_user1 test_user2 test_user3 alice bob trev);
 my @users;

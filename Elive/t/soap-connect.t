@@ -30,7 +30,7 @@ SKIP: {
 	# exercise a direct connection from Elive main. No preload
 	# of connection or entity classes.
 	#
-	diag ("connecting: user=$auth->[1], url=$auth->[0]");
+	note ("connecting: user=$auth->[1], url=$auth->[0]");
 	
 	$connection = Elive->connect(@$auth);
     }
@@ -38,7 +38,7 @@ SKIP: {
 	eval "require $connection_class";
 	die $@ if $@;
 
-	diag ("connecting: user=$auth->[1], url=$auth->[0]");
+	note ("connecting: user=$auth->[1], url=$auth->[0]");
 
 	$connection = $connection_class->connect(@$auth);
 	Elive->connection($connection);
@@ -78,7 +78,7 @@ SKIP: {
     isa_ok($server_details, 'Elive::Entity::ServerDetails','server_details');
 
     ok($server_version = $server_details->version, 'got server version');
-    diag ('Elluminate Live! version: '.qv($server_version));
+    note ('Elluminate Live! version: '.qv($server_version));
 
     my $server_version_num = version->new($server_version)->numify;
     ok($server_version_num >= $min_version_num, "Elluminate Live! server is $min_version or higher");

@@ -289,7 +289,7 @@ SKIP: {
 
     if ($group1 && $group2) {
 	my $invited_guest = 'Robert(bob)';
-	diag "using groups: <".$group1->name.">, <".$group2->name.">";
+	note "using groups: <".$group1->name.">, <".$group2->name.">";
 	lives_ok(sub {$session->update({ participants => [$group1, $group2, $participant1, $invited_guest]})}, 'setting of participant groups - lives');
     }
     else {

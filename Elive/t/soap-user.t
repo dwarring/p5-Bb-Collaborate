@@ -32,7 +32,7 @@ my $connection_class = $result{class};
 my $connection = $connection_class->connect(@$auth);
 Elive->connection($connection);
 
-diag "user test url: ".$connection->url;
+note "user test url: ".$connection->url;
 
 my $user_login_name = 'soap-user.t-' . t::Elive::generate_id();
 

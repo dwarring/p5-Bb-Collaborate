@@ -68,7 +68,7 @@ SKIP: {
 	sub {my $_p = Elive::Entity::ParticipantList->insert(
 		 {meetingId => $meeting->meetingId,
 		  participants => $participants_deep_ref});
-	     diag ("participants=".$_p->participants->stringify);
+	     note ("participants=".$_p->participants->stringify);
 	},
 	'insert of participant deep list - lives');
 
@@ -88,7 +88,7 @@ SKIP: {
 
     $participant_list->update({participants => Elive->login->userId.'=2'});
 
-    diag ("participants=".$participant_list->participants->stringify);
+    note ("participants=".$participant_list->participants->stringify);
 
     is($participant_list->participants->stringify, Elive->login->userId.'=2',
        'participant string list - set correctly');
@@ -284,7 +284,7 @@ SKIP: {
 
     if ($group) {
 	my $invited_guest = 'Robert(bob@acme.org)';
-	diag "using group ".$group->name;
+	note "using group ".$group->name;
 	lives_ok(sub {$participant_list->update({ participants => [$group, $participant1, $invited_guest]})}, 'setting of participant groups - lives');
     }
     else {
