@@ -50,19 +50,16 @@ ok( Elive::Util::_tainted($password_tainted), 'tainted sanity 3');
 my $password_ref = Elive::Util::_clone({pass => $password_tainted});
 ok( Elive::Util::_tainted($password_ref->{pass}), 'Elive::Util::clone preserves tainting');
 
+my $user_login_name = 'soap-taint-mode.t-' . t::Elive::generate_id();
+
 my %insert_data = (
-    loginName => 'some_test_user',
+    loginName => $user_login_name,
     loginPassword => $password_tainted,
     email => 'test@acme.org',
     role => 3,
     firstName => 'test',
     lastName => 'user'
     );
-
-if (my $existing_user = try {$class->get_by_loginName($insert_data{loginName})}) {
-    diag "deleting existing user: $insert_data{loginName}";
-    $existing_user->delete;
-}
 
 my $pleb_user;
 
