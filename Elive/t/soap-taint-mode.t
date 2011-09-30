@@ -39,6 +39,8 @@ my $connection_class = $result{class};
 my $connection = $connection_class->connect(@$auth);
 Elive->connection($connection);
 
+note "taint url: ".$connection->url;
+
 taint_checking_ok();
 
 my $password_untainted = 'secret_'.t::Elive::generate_id();
