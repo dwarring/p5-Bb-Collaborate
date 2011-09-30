@@ -10,7 +10,7 @@ use MIME::Base64;
 use Try::Tiny;
 
 use Carp;
-use YAML;
+use YAML::Syck;
 
 use Elive::Connection;
 use base qw{Elive::Connection};
@@ -275,7 +275,7 @@ sub _check_for_errors {
 	 && (my $error_resp = $body->{DefaultAdapterErrorResponse}))  {
 
 	unless (Elive::Util::_reftype( $error_resp ) eq 'HASH') {
-	    Carp::cluck ("Unexpected response: ". YAML::Dump($body));
+	    Carp::cluck ("Unexpected response: ". YAML::Syck::Dump($body));
 	    croak "error parsing DefaultAdapterErrorResponse";
 	}
 

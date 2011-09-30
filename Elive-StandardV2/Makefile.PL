@@ -26,7 +26,7 @@ requires(
     'Try::Tiny'                    => 0,
     'URI'                          => 0,
     'XML::Simple'                  => 0,
-    'YAML'                         => 0,
+    'YAML::Syck'                   => 0,
     );
 
 recommends(
