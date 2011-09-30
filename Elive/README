@@ -11,7 +11,7 @@ enable access to SOAP web services. Please see the server configuration section.
 
 COMPATIBILITY
 
-    The Elive distribution only supports only self hosted Elluminate Live!
+    The Elive distribution supports only self hosted Elluminate Live!
     servers.
 
     - works best with ELM (Elluminate Live Manager) version 3.0 - 3.3.5 and
@@ -35,8 +35,7 @@ CONFIGURING SDK ACCESS
     granted access to the SDK.
 
     If you wish to to grant access to non-administrator users and/or
-    revoke administrator access, you'll need to manually change this
-    in your site instance configuration.
+    LDAP users , you'll need to edit your site instance configuration.
 
     To do this, firstly stop the site using the Elluminate Live Instance
     Manager (http://yourserver/elmcontrol).
@@ -79,6 +78,9 @@ CONFIGURING SDK ACCESS
                       <!-- -- ADD THIS -->
                     </permissions>
                     ...
+                   </proxy>
+                   ...
+               </proxymanager>
 
 LIVE TESTING
 
