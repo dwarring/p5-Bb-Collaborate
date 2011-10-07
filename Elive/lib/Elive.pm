@@ -206,11 +206,9 @@ L<README> file.
 
 =head1 SCRIPTS
 
-=head2 elive_query
+=head2 elive_query - simple query shell
 
-elive_query is an example simple sql-like script. It is a basic program
-for listing and retrieving entities. It serves as a simple demonstration
-script, and can be used to confirm basic connectivity and operation of Elive.
+elive_query is a script for issuing basic sql-like queries on entities. It serves as a simple demonstration script, and can be used to confirm connectivity and operation of Elive.
 
     % perl elive_query http://myserver.com/test -user sdk_user
     Password: connecting to http://myserver.com/test...ok
@@ -222,7 +220,7 @@ script, and can be used to confirm basic connectivity and operation of Elive.
     myserver.com|10.0.1 
     elive> ^D
 
-It server a secondary function of querying entity metadata. For example,
+It serves a secondary function of querying entity metadata. For example,
 to show the C<meeting> entity:
 
     % elive_query
@@ -247,15 +245,14 @@ to show the C<meeting> entity:
 
 for more information, please see L<elive_query>, or  or type the command: C<elive_query --help>
 
-=head2 elive_raise_meeting
+=head2 elive_raise_meeting - meeting creation
 
-This is a demonstration script to create a meeting, set options, assign
-participants and upload meeting preloads (whiteboard, plan and media files)
-to be used to used for the meeting.
+This is a demonstration script for creating meetings. This includes the setting
+of meeting options, assigning participants and uploading of preloads (whiteboard, plan and media files).
 
 For more information, see L<elive_raise_meeting> or type the command: C<elive_raise_meeting --help>
 
-=head2 elive_lint_config
+=head2 elive_lint_config - configuration file checker
 
 A utility script that checks your Elluminate server configuration. This
 is more likely to be of use for Elluminate I<Live!> prior to 10.0. Please
@@ -289,9 +286,9 @@ see the README file.
 
 =item L<elive_query> - simple interactive queries on Elive entities
 
-=item L<elive_raise_meeting> - sample script for command-line meeting creation
+=item L<elive_raise_meeting> - command-line meeting creation
 
-=item L<elive_lint_config> - sanity checker for Elluminate server configurations
+=item L<elive_lint_config> - Elluminate Live! configuration checker
 
 =back
 

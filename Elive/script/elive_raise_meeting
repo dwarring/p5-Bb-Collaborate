@@ -24,7 +24,7 @@ use YAML::Syck;
 
 =head1 NAME
 
-elive_raise_meeting
+elive_raise_meeting - Elluminate Live! Manager (ELM) meeting creation
 
 =head1 SYNOPSIS
 
@@ -177,13 +177,13 @@ sub main {
 	'all_moderators!' => \$session_data{allModerators},
 	'boundary=i' => \$session_data{boundaryMinutes},
 	'cost_center|cost_centre=s' => \$session_data{costCenter},
-	'exit_url=s' => \$session_data{redirectURL},
+	'exit_url|redirect_url=s' => \$session_data{redirectURL},
 	'facilitator=s' => \$session_data{facilitatorId},
 	'follow|follow_moderator!' => \$session_data{followModerator},
 	'invites|invitations!' => \$session_data{inSessionInvitation},
 	'meeting_password|meeting_pass|session_password|session_pass=s' => \$session_data{password},
-	'max_cameras=i' => \$session_data{videoWindow},
-	'max_talkers=i' => \$session_data{maxTalkers},
+	'max_cameras=i|cameras|video_window' => \$session_data{videoWindow},
+	'max_talkers|talkers=i' => \$session_data{maxTalkers},
 	'moderator_notes=s' => \$session_data{moderatorNotes},
 	'name|meeting_name=s' => \$session_data{name},
 	'private!' => \$session_data{privateMeeting},
@@ -248,7 +248,7 @@ sub main {
     $class ||= do {
 	#
 	# use hasn't specified elluminate compatibility, or which session
-	# class to use. Work it out from their Elluminate server version.
+	# class to use. Guess it from their Elluminate server version.
 	#
 	my $server_version = eval {$connection->version}
 	or die ($@ || "unable to get server details version\n");
@@ -278,7 +278,7 @@ sub main {
 	$_ = lc $_;
 	#
 	# accept some of the other symonymns for the various modes as
-	# seen in documentation and elluminate's web interface.
+	# seen in documentation and Elluminate's web interface.
 	#
 	s{^none|disabled$}{off}x;
 	s{^manual$}{remote}x;

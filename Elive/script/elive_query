@@ -19,7 +19,7 @@ use URI::Escape;
 
 =head1 NAME
 
-elive_query
+elive_query - simple query shell for Elluminate Live! Manager (ELM)
 
 =head1 SYNOPSIS
 
@@ -36,11 +36,11 @@ elive_query
 
 =head1 DESCRIPTION
 
-Simple read-only query shell for Elive (Elluminate Live Perl bindings).
+Simple read-only query shell for Elluminate Live! Manager (ELM).
 
 =head2 Entity Data Queries
 
-This example script lets you do simple queries, in a vaguely SQL like manner.
+This script lets you do simple queries, in a vaguely SQL like manner.
 For example:
 
     % elive_query -user admin http://myserver.com/mysite

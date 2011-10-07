@@ -9,7 +9,7 @@ use Pod::Usage;
 
 =head1 NAME
 
-elive_lint_config
+elive_lint_config - Elluminate Live! Manager (ELM) configuration file checker
 
 =head1 SYNOPSIS
 
@@ -30,7 +30,7 @@ or creating new site instances.
 =head1 BUGS AND LIMITATIONS
 
 Missing commands seemed to be more of a problem on older versions of Elluminate
-Live! up to about 9.5 (ELM 3.0). So this script is more likley to be of benefit
+Live! up to about 9.5 (ELM 3.0). So this script is more likely to be of benefit
 for older versions of Elluminate Live!.
 
 =head1 SEE ALSO
