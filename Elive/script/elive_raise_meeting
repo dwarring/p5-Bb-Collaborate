@@ -15,6 +15,7 @@ use Elive::Util;
 use Elive::Entity::Preload;
 use Elive::Entity::User;
 use Elive::Entity::Participant;
+use Elive::Entity::Session;
 use Elive::View::Session;
 
 use URI;
@@ -182,7 +183,7 @@ sub main {
 	'follow|follow_moderator!' => \$session_data{followModerator},
 	'invites|invitations!' => \$session_data{inSessionInvitation},
 	'meeting_password|meeting_pass|session_password|session_pass=s' => \$session_data{password},
-	'max_cameras=i|cameras|video_window' => \$session_data{videoWindow},
+	'max_cameras|cameras|video_window=i' => \$session_data{videoWindow},
 	'max_talkers|talkers=i' => \$session_data{maxTalkers},
 	'moderator_notes=s' => \$session_data{moderatorNotes},
 	'name|meeting_name=s' => \$session_data{name},
