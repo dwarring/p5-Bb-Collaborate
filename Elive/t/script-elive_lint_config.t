@@ -28,7 +28,7 @@ my $script_name = 'elive_lint_config';
 do {
     my ( $result, $stdout, $stderr ) = run_script($script_name, ['--help'] );
     is($stderr, '', "$script_name --help: stderr empty");
-    ok($stdout =~ m{usage:}ix, "$script_name --help: stdout =~ 'usage:...''");
+    like($stdout, qr{usage:}ix, "$script_name --help: stdout =~ 'usage:...''");
 };
 
 #
@@ -38,8 +38,8 @@ do {
 do {
     my ( $result, $stdout, $stderr ) = run_script($script_name, ['--invalid-opt'] );
 
-    ok($stderr =~ m{unknown \s+ option}ix, "$script_name invalid option message");
-    ok($stdout =~ m{usage:}ix, "$script_name invalid option usage");
+    like($stderr, qr{unknown \s+ option}ix, "$script_name invalid option message");
+    like($stdout, qr{usage:}ix, "$script_name invalid option usage");
 
 };
 
