@@ -42,7 +42,7 @@ Revision history for Elive
 
 1.15    24th August 2011
         [enhancements]
-        More work on inaccessable server details. This can actually indictate
+        More work on inaccessable server details. This can indicate
         that either the session manager or license manager are not running
         and reachable.
         - Elive::Connection::SDK - error message changed to "Unable to get

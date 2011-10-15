@@ -52,7 +52,7 @@ unshift(@{$group1->members}, pop(@{$group1->members}));
 ok(!$group1->is_changed, 'shuffling members not recognised as change');
 
 $group1->set('members' => [@{$group1->members}]);
-ok(!$group1->is_changed, 're-initalise members - not recognised as a change');
+ok(!$group1->is_changed, 're-initialise members - not recognised as a change');
 
 $group1->revert;
 
@@ -66,8 +66,8 @@ my $group2 = Elive::Entity::Group->construct({
 ok(!$group2->is_changed, 'is_changed returns false before change');
 
 push(@{$group2->members}, 104);			 
-ok($group2->is_changed, 'adding array member recognised as a change');
+ok($group2->is_changed, 'adding initial member recognised as a change');
 
 $group2->{members} = [];
-ok(!$group2->is_changed, 'is_changed returns false after backout out change');
+ok(!$group2->is_changed, 'is_changed returns false after reinitialisation');
 

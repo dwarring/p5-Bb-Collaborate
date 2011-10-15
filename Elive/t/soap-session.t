@@ -62,7 +62,7 @@ lives_ok( sub {
     $class->_readback_check(
 	{id => 12345, participants => 'bob=3;alice=2'},
 	[{id => 12345, participantList => {meetingId => 12345, participants => 'alice=2;bob=3'}}]
-	)}, 'readback is order independant');
+	)}, 'readback - participants are order independant');
 
 lives_ok( sub {
     $class->_readback_check(
@@ -213,7 +213,7 @@ SKIP: {
 	$session_id = $session->id;
     };
 
-    # drop out of scope to impicitly cull objects and clear object cache
+    # drop out of scope to implicitly cull objects and clear object cache
 
     do {
 
@@ -251,7 +251,7 @@ sub _create_preload {
 	type => 'whiteboard',
 	name => 'test.wbd',
 	ownerId => Elive->login,
-	data => 'junk dsadksadkl a dfflkdsfnmsdfsd xddsfhsfsdfxssl sd',
+	data => 'unreadable junk dsadksadkl a dfflkdsfnmsdfsd xddsfhsf sd',
     });
 }
 

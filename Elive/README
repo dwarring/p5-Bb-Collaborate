@@ -1,21 +1,22 @@
-Elluminate Live! (c) is software for virtual online classrooms. It is suitable
-for meetings, demonstrations web conferences, seminars, general training and
-support.
+Elluminate Live! (c) is software for virtual online classrooms. It is
+suitable for meetings, demonstrations web conferences, seminars, general
+training and support.
 
-Elive is a set of Perl bindings and entity definitions for the entity commands
-in the Command Toolkit. You can, for example, use it to manage users, groups
-meetings and meeting participants.
+Elive is a set of Perl bindings and entity definitions for entities in the
+Elluminate Live! Manager (ELM) Database. You can, for example, use it to
+manage users, groups meetings and meeting participants.
 
-Some manual configuration may be required on your Elluminate Live! server to
-enable access to SOAP web services. Please see the server configuration section.
+Some manual configuration may be required on your Elluminate Live! server
+to enable access to SOAP web services. Please see the server configuration
+section.
 
 COMPATIBILITY
 
     The Elive distribution supports only self hosted Elluminate Live!
-    servers.
+    servers that use the Elluminate Live! Manager (ELM).
 
-    - works best with ELM (Elluminate Live Manager) version 3.0 - 3.3.5 and
-      Elluminate Live! version 9.5 - 10.0.1
+    - works best with ELM versions 3.0 - 3.3.5 and Elluminate Live!
+      versions 9.5 - 10.0.1
 
     - does not support access to externally hosted servers deployed with SAS
       (Session Administration System).
@@ -84,8 +85,8 @@ CONFIGURING SDK ACCESS
 
 LIVE TESTING
 
-    There are additional live tests in t/soap-*.t and t/script-*t. By default,
-    these are either skipped or run offline as mock tests.
+    There are additional live tests in t/soap-*.t and t/script-*t. By
+    default, these are either skipped or run offline as mock tests.
 
     These may be run against a live server by setting up the environment
     variables, and running tests, as shown below:
@@ -141,7 +142,7 @@ POST INSTALLATION
     See also elive_raise_meeting. This is a utility script that creates
     Elluminate meetings.
 
-        % elive_raise_meeting --user admin_user http://myserver/mysite -name 'Test'
+        % elive_raise_meeting http://some_user@myserver/mysite -name 'Test'
 
 TROUBLESHOOTING
 
@@ -206,8 +207,9 @@ SUPPORT AND DOCUMENTATION
     See the Elluminate Live documentation. In particular, this package
     follows the entities and relationships described in DatabaseSchema.pdf.
 
-    You will find a copy on the installation disk; or if you have access to the
-    server, you will will typically find this in /opt/Elluminate/documentation. 
+    You will find a copy on the installation disk; or if you have access to
+    the  server, you will will typically find this in
+    /opt/Elluminate/documentation. 
 
     After installing, you can find documentation for this module with the
     perldoc command.

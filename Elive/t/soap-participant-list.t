@@ -258,7 +258,7 @@ SKIP: {
 	@users_seen{ @user_ids_in } = undef;
 	my @expected_users = sort keys %users_seen;
 
-	$participant_list = Elive::Entity::ParticipantList->retrieve([$meeting->meetingId]);
+	$participant_list = Elive::Entity::ParticipantList->retrieve($meeting->meetingId);
 	my $participants = $participant_list->participants;
 
 	my @actual_users = sort map {$_->user->userId} @$participants;

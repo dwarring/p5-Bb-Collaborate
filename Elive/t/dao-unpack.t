@@ -1,4 +1,5 @@
 #!perl -T
+use warnings; use strict;
 
 =head1 NAME
 
@@ -12,7 +13,6 @@ to arrays.
 
 =cut
 
-use warnings; use strict;
 use Test::More tests => 8;
 use Test::Warn;
 
