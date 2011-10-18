@@ -56,7 +56,7 @@ sub stringify {
     my $arr  = shift || $self;
     my $type = shift || $self->element_class;
 
-    $arr = [split(';', $arr)]
+    $arr = [split(',', $arr)]
 	if defined $arr && !Scalar::Util::reftype($arr);
 
     return join(',', sort map {Elive::Util::string($_, $type)} @$arr)

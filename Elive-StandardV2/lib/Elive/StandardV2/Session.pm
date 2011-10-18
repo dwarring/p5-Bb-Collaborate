@@ -184,7 +184,6 @@ For single server configurations, this value must be between 1 and C<maxAvailabl
 For multiple server configurations, this must be between 1 and versionMaxFilmersLimit for the version you are using (as returned from the L<Elive::StandardV2::ServerVersions> C<get()> command).
 
 If you don't specify a value, the default is taken from the C<Maximum Simultaneous Cameras> setting in the Default Session Preferences.
-No
 
 =cut
 

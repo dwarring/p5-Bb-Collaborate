@@ -25,25 +25,25 @@ sub BUILDARGS {
 	# Assume a single string arguments represents the local path of a file
 	# to be uploaded.
 	#
-	my $preload_path = $spec;
+	my $content_path = $spec;
 
-	open ( my $fh, '<', $preload_path)
-	    or die "unable to open preload file $preload_path";
+	open ( my $fh, '<', $content_path)
+	    or die "unable to open content file $content_path";
 
 	binmode $fh;
 	my $content = do {local $/; <$fh>};
 
 	close $fh;
 
-	die "upload file is empty: $preload_path"
+	die "content file is empty: $content_path"
 	    unless length $content;
 
-	my $filename = File::Basename::basename( $preload_path );
-	croak "unable to determine a basename for preload path: $preload_path"
-	    unless length $preload_path;
+	my $filename = File::Basename::basename( $content_path );
+	croak "unable to determine a basename for content path: $content_path"
+	    unless length $filename;
 
 	%args = (
-	    filename => $preload_path,
+	    filename => $content_path,
 	    content => $content,
 	);
     }

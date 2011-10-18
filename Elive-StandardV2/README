@@ -2,15 +2,18 @@ Perl bindings for the Elluminate Live Standard Bridge V2 API.
 
 ** DEVELOPER RELEASE - UNDER CONSTRUCTION **
 
-Elluminate Live! (c) is software for virtual online classrooms. It is suitable
-for meetings, demonstrations web conferences, seminars and IT deployment,
-training and support.
+Elluminate Live! (c) is software for virtual online classrooms. It is
+suitable for meetings, demonstrations web conferences, seminars and
+general training and support.
 
 Elive-StandardV2 is a set of Perl bindings and entity definitions for the
 Elluminate Standard Bridge V2 SOAP services ('standardv2' adapter).
 
-This is a newer alternative to the Command Toolkit, as supported by the
+This is an alternative to the Command Toolkit, as supported by the
 Elive::Entity classess ('default' adapter).
+
+You will need to ensure that the Standard V2 bridge is enabled and that
+the SDK user has been set up. Please see the Server Configuration section.
 
 INSTALLATION
 ============
@@ -35,9 +38,9 @@ Bridge V2 ...' in the 'Bridge Selection' section.
 
 You will then be asked to enter the SDK username and password. 
 
-TESTING
+LIVE TESTING
 
-    There are additional live tests in t/1?-soap-*.t. By default, these
+    There are additional live tests in t/soap-*.t. By default, these
     either skipped or run offline.
 
     These may be run against a live server by setting up the environment
@@ -45,8 +48,8 @@ TESTING
 
         perl Makefile.PL
         make
-        export ELIVE_TEST_URL=http://sdk_user@some_server.com/some_test_instance
-        export ELIVE_TEST_PASS=some_password
+        export ELIVE_TEST_URL=http://sdk_user@myserver.com/some_instance
+        export ELIVE_TEST_PASS=secret
         make test
 
     WARNING: These tests will both create and delete various entities
@@ -61,12 +64,12 @@ POST INSTALLATION
     The elive_query script can be used to check basic operation of Elive
     and access to your Elluminate server(s).
 
-        % elive_query --adapter=standardv2 --user sdk_user http://myserver/mysite
+        % elive_query --adapter=standardv2 http://sdk_user@myserver/mysite
         Password: ******
 
     You can then try a simple query:
 
-        elive> select * from serverVersions                                     
+        elive> select * from serverVersions   
                       
         versionId|versionMaxFilmersLimit|versionMaxTalkersLimit|versionName
         ---------|----------------------|----------------------|-----------
