@@ -13,7 +13,7 @@ Elive::Entity::ServerDetails - Server Details entity class
 
 =head1 DESCRIPTION
 
-Gets details on available I<Elluminate Live!> session servers
+Gets details on available Elluminate I<Live!> session servers
 
 =cut
 

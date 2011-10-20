@@ -84,22 +84,22 @@ sub BUILDARGS {
 =head2 web_url
 
 Utility method to return various website links for the recording. This is
-available as both class level and object level methods.
-
-    #
-    # Class level access.
-    #
-    my $url = $recording->web_url(
-                     recording_id => $recording_id,
-                     action => 'play',
-                     connection => $my_connection);  # optional
-
+available as both object and class level methods.
 
     #
     # Object level.
     #
     my $recording = Elive::Entity::Recording->retrieve($recording_id);
     my $url = recording->web_url(action => 'play');
+
+    #
+    # Class level access.
+    #
+    my $url = $recording->web_url(
+                     action => 'play',
+                     recording_id => $recording_id,
+                     connection => $my_connection);  # optional
+
 
 =cut
 
@@ -155,7 +155,7 @@ See also L<http://wikipedia.org/wiki/JNLP>.
 sub buildJNLP {
     my ($self, %opt) = @_;
 
-    my $connection = $self->connection
+    my $connection = $self->connection || $opt{connection}
 	or die "not connected";
 
     my $recording_id = $opt{recording_id} || $self->recordingId;
@@ -192,7 +192,7 @@ sub download {
     die "unable to get a recording_id"
 	unless $recording_id;
 
-    my $connection = $self->connection
+    my $connection = $self->connection || $opt{connection}
 	or die "not connected";
 
     my $som = $connection->call('getRecordingStream',

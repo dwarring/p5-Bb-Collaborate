@@ -166,8 +166,6 @@ sub update {
 	) or die "meeting not found: ".$meeting_id;
 
     my ($users, $groups, $guests) = $self->participants->_group_by_type;
-    # underlying adapter does not yet support groups or guests as
-    # participants.
 
     $self->_build_elm2x_participants ($users, $groups, $guests);
     #
@@ -362,7 +360,7 @@ sub _thaw {
 
     $db_data = Elive::Util::_clone( $db_data );  # take a copy
     #
-    # the soap record has a Participant property that can either
+    # the SOAP record has a Participant property that can either
     # be of type user or group. However, Elive has separate 'user'
     # and 'group' properties. Resolve here.
     #

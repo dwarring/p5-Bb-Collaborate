@@ -1106,7 +1106,7 @@ sub _readback {
 
     my $results = $class->_get_results($som, $connection);
     #
-    # Check that the return response has our inserts
+    # Check that the return response has our inserts/updates
     #
     my $rows = $class->_process_results( $results );
     $class->_readback_check($sent_data, $rows, %opt);
@@ -1150,12 +1150,12 @@ provided. It is generated for you and returned with the newly created object.
 =cut
 
 sub insert {
-    my ($class, $insert_data, %opt) = @_;
+    my ($class, $_insert_data, %opt) = @_;
 
     my $connection = $opt{connection} || $class->connection
 	or die "not connected";
 
-    my %insert_data = %$insert_data;
+    my %insert_data = %$_insert_data;
     my %params = %{delete $opt{param} || {}};
 
     my $data_params = $class->_freeze({%insert_data, %params});
@@ -1166,7 +1166,7 @@ sub insert {
 
     my $som = $connection->call($command, %$data_params);
 
-    my @rows = $class->_readback($som, $insert_data, $connection, %opt);
+    my @rows = $class->_readback($som, $_insert_data, $connection, %opt);
 
     my @objs = (map {$class->construct( $_, connection => $connection )}
 		@rows);

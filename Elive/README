@@ -1,16 +1,16 @@
 Elluminate Live! (c) is software for virtual online classrooms. It is
-suitable for meetings, demonstrations web conferences, seminars, general
-training and support.
+suitable for meetings, demonstrations web conferences, seminars and
+general training and support.
 
 Elive is a set of Perl bindings and definitions for entities in the
 Elluminate Live! Manager (ELM) database. You can, for example, use it to
 manage users, groups meetings and meeting participants.
 
-Elive connects to Elluminate Live! servers via SOAP web services and
-utilises the Command Toolkit services.
+Elive connects to Elluminate Live! servers via SOAP services and
+utilises the Command Toolkit services ('default' adapter).
 
 Some manual configuration may be required on your Elluminate Live! server
-to configure access. Please see the server configuration section.
+to configure access. Please see the Server Configuration section.
 
 COMPATIBILITY
 

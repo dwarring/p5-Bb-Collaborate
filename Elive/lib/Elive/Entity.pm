@@ -21,7 +21,7 @@ Elluminate live API.
 
 =head2 data_classes
 
-returns a list of all entity classes
+returns a list of all entity instance classes
 
 =cut
 
