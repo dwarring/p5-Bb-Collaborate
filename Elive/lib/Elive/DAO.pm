@@ -1083,6 +1083,9 @@ sub set {
 		    unless  Elive::Util::inspect_type($type)->is_ref;
 	    }
 
+	    die (ref($self)." - attempt to set attribute $_ to tainted data")
+		if Elive::Util::_tainted($value);
+
 	    $self->$_($value);
 	}
 	else {

@@ -22,7 +22,7 @@ eval "use $MODULE";
 plan skip_all => "$MODULE not available for taint tests"
     if $@;
 
-plan tests => 14;
+plan tests => 15;
 #
 # restrict our user tests to the mock connections. Live updates
 # are just to dangerous. There is also the possibility that the
@@ -32,7 +32,7 @@ plan tests => 14;
 
 SKIP: {
 
-    my $skippable = 14;
+    my $skippable = 15;
 
     my %result = t::Elive->test_connection(only => 'real');
     my $auth = $result{auth};
@@ -66,11 +66,11 @@ SKIP: {
     lives_ok( sub {$session = $class->insert(\%session_data);},
 	     'insert with no tainted data - lives');
 
+    isa_ok($session, $class, 'session');
+
     $session_data{name} = $session_name_tainted;
     dies_ok( sub {$class->insert(\%session_data);},
 	     'insert with tainted Str data - dies');
-
-    isa_ok($session, $class, 'session');
 
     my $user_notes_untainted = 'this is a test';
     my $user_notes_tainted = $user_notes_untainted;
@@ -86,9 +86,11 @@ SKIP: {
 
     dies_ok(sub {$session->update(\%update_data)}, 'update with tainted data - dies');
 
+    lives_ok(sub {$session->revert}, 'revert tainted data - lives');
+
     my $session_id = $session->sessionId;
 
-    $session = undef;
+    $session->_db_data(undef);
 
     dies_ok (sub {Elive::Entity::Session->list(filter => "name = '$session_name_tainted'")},
 	'List with tainted filter - dies');
