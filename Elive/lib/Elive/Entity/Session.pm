@@ -399,7 +399,7 @@ sub insert {
     $session->boundaryTime(15);
     $session->update;
 
-Updates session properties
+Updates session properties, using the C<updateSession> command.
 
 =cut
 
@@ -891,7 +891,7 @@ Day of the week the monthly session should be scheduled in.
 
 For C<repeatEvery> value = 2, which days sessions should be scheduled.
 
-=head3 timeZone C<Str>
+=head3 timeZone C<(Str)>
 
 An optional alternate time-zone name to use for for the scheduling
 calculations (E.g. C<Australia/Melbourne>).
@@ -932,158 +932,158 @@ for today (starting in 5 minutes), tomorrow and the following day:
 
 Here's an alphabetical list of all available session properties
 
-=head2 adapter (String)
+=head2 adapter C<(Str)>
 
 This property is read-only. It should always have the value C<default> for sessions created via L<Elive::Entity::Session>.
 
-=head2 allModerators (Bool)
+=head2 allModerators C<(Bool)>
 
 All participants can moderate.
 
-=head2 boundaryMinutes (Int)
+=head2 boundaryMinutes C<(Int)>
 
-Session boundary time (minutes).
+Session boundary time C<(minutes)>.
 
-=head2 costCenter (Str)
+=head2 costCenter C<(Str)>
 
 User defined cost center.
 
-=head2 deleted (Bool)
+=head2 deleted C<(Bool)>
 
 True if the session has been deleted.
 
-=head2 enableTelephony (Bool)
+=head2 enableTelephony C<(Bool)>
 
 Telephony is enabled
 
-=head2 end (HiResDate)
+=head2 end C<(HiResDate)>
 
-The session end time (milliseconds). This can be constructed by appending
+The session end time C<(milliseconds)>. This can be constructed by appending
 '000' to a unix ten digit epoch date.
 
-=head2 facilitatorId (Str)
+=head2 facilitatorId C<(Str)>
 
 The userId of the facilitator who created the session. They will
 always have moderator access.
 
-=head2 followModerator (Bool)
+=head2 followModerator C<(Bool)>
 
 Whiteboard slides are locked to moderator view.
 
-=head2 fullPermissions (Bool)
+=head2 fullPermissions C<(Bool)>
 
 Whether participants can perform activities (e.g. use the whiteboard) before
 the supervisor arrives.
 
-=head2 id (Int)
+=head2 id C<(Int)>
 
 The sessionId (meetingId).
 
-=head2 inSessionInvitation (Bool)
+=head2 inSessionInvitation C<(Bool)>
 
 Whether moderators can invite other individuals from within the online session
 
-=head2 maxTalkers (Int)
+=head2 maxTalkers C<(Int)>
 
 The maximum number of simultaneous talkers.
 
-=head2 moderatorNotes (Str)
+=head2 moderatorNotes C<(Str)>
 
 General notes for moderators. These are not uploaded to the live session).
 
-=head2 moderatorTelephonyAddress (Str)
+=head2 moderatorTelephonyAddress C<(Str)>
 
 Either a PHONE number or SIP address for the moderator for telephone.
 
-=head2 moderatorTelephonyPIN (Str)
+=head2 moderatorTelephonyPIN C<(Str)>
 
 PIN for moderator telephony
 
-=head2 name (Str)
+=head2 name C<(Str)>
 
 Session name.
 
-=head2 participantTelephonyAddress (Str)
+=head2 participantTelephonyAddress C<(Str)>
 
 Either a PHONE number or SIP address for the participants for telephone.
 
-=head2 participantTelephonyPIN (Str)
+=head2 participantTelephonyPIN C<(Str)>
 
 PIN for participants telephony.
 
-=head2 participants (Array)
+=head2 participants C<(Array)>
 
 A list of users, groups and invited guest that are attending the session,
 along with their access levels (moderator or participant). See
 L<Working with Participants>.
 
-=head2 password (Str)
+=head2 password C<(Str)>
 
 A password for the session.
 
-=head2 privateMeeting (Str)
+=head2 privateMeeting C<(Str)>
 
 Whether to hide the session (meeting) from the public schedule.
 
-=head2 profile (Str)
+=head2 profile C<(Str)>
 
 Which user profiles are displayed on mouse-over: C<none>, C<mod>
 (moderators only) or C<all>.
 
-=head2 raiseHandOnEnter (Bool)
+=head2 raiseHandOnEnter C<(Bool)>
 
 Raise hands automatically when users join the session.
 
-=head2 recordingObfuscation (Bool)
+=head2 recordingObfuscation C<(Bool)>
 
-=head2 recordingResolution (Str)
+=head2 recordingResolution C<(Str)>
 
 Resolution of session recording. Options are: C<CG>:course gray,
 C<CC>:course color, C<MG>:medium gray, C<MC>:medium color, C<FG>:fine gray,
 or C<FC>:fine color
 
-=head2 recordingStatus (Str)
+=head2 recordingStatus C<(Str)>
 
 Recording status; C<on>, C<off> or C<remote> (start/stopped by moderator)
 
-=head2 redirectURL (Str)
+=head2 redirectURL C<(Str)>
 
 URL to redirect users to after the online session is over.
 
-=head2 restrictedMeeting (Bool)
+=head2 restrictedMeeting C<(Bool)>
 
 Restrict session to only invited participants.
 
-=head2 seats (Int)
+=head2 seats C<(Int)>
 
 Specify the number of seats to reserve on the server.
 
-=head2 serverTelephonyAddress (Str)
+=head2 serverTelephonyAddress C<(Str)>
 
 Either a PHONE number or SIP address for the server.
 
-=head2 serverTelephonyPIN (Str)
+=head2 serverTelephonyPIN C<(Str)>
 
 PIN for the server.
 
-=head2 start (HiResDate)
+=head2 start C<(HiResDate)>
 
 Session start time. This can be constructed by appending '000' to a unix ten
 digit epoch date.
 
-=head2 supervised (Bool)
+=head2 supervised C<(Bool)>
 
 Whether the moderator can see private messages.
 
-=head2 telephonyType (Str)
+=head2 telephonyType C<(Str)>
 
 This can be either C<SIP> or C<PHONE>.
 
-=head2 userNotes (Str)
+=head2 userNotes C<(Str)>
 
 General notes for users. These are not uploaded to the live session).
 
-=head2 videoWindow (Int)
+=head2 videoWindow C<(Int)>
 
 The maximum number of cameras.
 
@@ -1109,7 +1109,7 @@ participant list.
 
 =head1 SEE ALSO
 
-Please see L<Elive::View::Session>. This provides an identical interface,
+L<Elive::View::Session> - provides an identical interface,
 but implements C<insert> and C<update> using ELM 2.x compatible commands.
 
 =cut
