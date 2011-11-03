@@ -32,11 +32,13 @@ sub _build_array {
     my $spec = shift;
 
     my $type = Elive::Util::_reftype( $spec );
-    $spec = [$spec] if ($type && $type ne 'ARRAY');
 
     my @participants;
 
     if ($type) {
+	$spec = [$spec]
+	    unless $type eq 'ARRAY';
+
 	@participants = @$spec;
     }
     elsif (defined $spec) {

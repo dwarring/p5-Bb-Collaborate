@@ -124,13 +124,13 @@ sub BUILDARGS {
 
 	$roleId = 3 unless defined $roleId;
 
-	if (! $is_group ) {
-	    $parse{user} = {userId => $id};
-	    $parse{type} = 0;
-	}
-	else {
+	if ( $is_group ) {
 	    $parse{group} = {groupId => $id};
 	    $parse{type} = 1;
+	}
+	else {
+	    $parse{user} = {userId => $id};
+	    $parse{type} = 0;
 	}
 
 	$parse{role}{roleId} = $roleId;

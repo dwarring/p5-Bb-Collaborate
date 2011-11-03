@@ -391,41 +391,16 @@ sub main {
 
 ########################################################################
 
-sub parse_participants {
-    my $spec = shift;
-    my %opt = @_;
-
-    my @participants;
-
-    foreach my $spec (map {split(';',$_)} @$spec) {
-
-	my $participant = eval {
-	    Elive::Entity::Participant->new($spec)
-	};
-
-	if ($@) {
-	    warn "$@\n";
-	    next;
-	}
-
-	$participant->role( $opt{role} ) if $opt{role};
-
-	push (@participants, $participant);
-    }
-
-    return @participants;
-}
-
-########################################################################
-
 sub build_participants {
     my ($moderators, $others, $args) = @_;
 
-    my @participants = (
-	parse_participants($moderators, role => 2),
-	parse_participants($others, role => 3),
-	parse_participants($args),
+    my @participants_spec = (
+	@$args,
+	-moderators => @$moderators,
+	-others => @$others
 	);
+
+    my $participants = Elive::Entity::Participants->new( \@participants_spec );
     #
     # collate by type
     #
@@ -433,7 +408,7 @@ sub build_participants {
     my @groups;
     my @guests;
 
-    foreach my $participant (@participants) {
+    foreach my $participant (@$participants) {
 
 	my $type = $participant->type;
 
