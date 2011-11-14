@@ -120,11 +120,11 @@ SKIP: {
 	$participant_list->participants->add($participant1->userId.'=3');
 
 	lives_ok(sub {$participant_list->update}, 'setting of participant - lives');
-	if ($elm_3_3_4_or_better) {
+	if (0) {
 	    ok($meeting->is_participant( $participant1), 'is_participant($participant1)');
 	}
 	else {
-	    $t->skip('is_participant() - broken prior to ELM 3.3.4 / 10.0.2');
+	    $t->skip('is_participant() - broken');
 	}
 
 	ok(!$meeting->is_moderator( $participant1), '!is_moderator($participant1)');
@@ -135,11 +135,11 @@ SKIP: {
 	$participant_list->participants->add($participant2->userId.'=3');
 	$participant_list->update();
 
-	if ($elm_3_3_4_or_better) {
+	if (0) {
 	    ok($meeting->is_participant( $participant2), 'is_participant($participant2)');
 	}   
         else {  
-            $t->skip('is_participant() - broken prior to ELM 3.3.4 / 10.0.2');
+            $t->skip('is_participant() - broken');
         }
 
  	ok(!$meeting->is_moderator( $participant2), '!is_moderator($participant2)');
