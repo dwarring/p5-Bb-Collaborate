@@ -61,8 +61,8 @@ participants:
 =head1 DESCRIPTION
 
 Elive is a set of Perl bindings and entity definitions for quick and easy
-integration with the Elluminate I<Live!> application. It can be used to
-automate a range of tasks including setting up meetings and participants,
+integration with the Elluminate I<Live!> Manager application. It can be used
+to automate a range of tasks including setting up meetings and participants,
 managing users and groups.
 
 =head1 BACKGROUND
@@ -72,14 +72,14 @@ Elluminate I<Live!> (c) is software for virtual online classrooms.
 It is suitable for meetings, demonstrations web conferences, seminars
 and IT deployment, training and support.
 
-Most actions that can be performed via the web interface can also be
-achieved via SOAP web services. This is known as the I<Command Toolkit> and
-is detailed in chapter 4 of the Elluminate I<Live!> Software Developers
-Kit (SDK).
+Most management functions that can be performed via the web interface can
+also be achieved via SOAP web services. This is known as the
+I<Command Toolkit> and is detailed in chapter 4 of the Elluminate I<Live!>
+Software Developers Kit (SDK).
 
-Users, Meetings and other resources are stored in a management database.
-These can be accessed and manipulated via the Entity Commands in the
-Command Toolkit.
+Users, Meetings and other resources are stored in the Elluminate I<Live!>
+Manager (ELM) database. These can be entered, accessed and manipulated via
+the Entity Commands in the Command Toolkit.
 
 =cut
 
@@ -330,9 +330,8 @@ David Warring, C<< <david.warring at gmail.com> >>
 
 =item * Elive does not support hosted (SAS) systems
 
-The Elive distribution only supports the Elluminate SDK which is implemented
-by ELM (Elluminate Live Manager) session manager. This SDK is not supported by
-SAS (Session Administration System).
+The Elive distribution only supports the ELM (Elluminate I<Live!> Manager) SDK.
+The SAS (Session Administration System) is not supported.
 
 =back
 

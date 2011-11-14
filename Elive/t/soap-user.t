@@ -104,7 +104,7 @@ if ($elm_3_3_4_or_better || $is_mock_connection) {
 
 }
 else {
-    $t->skip('skipping retrive by loginName for Elive < 10.0.1')
+    $t->skip('skipping retrieve by loginName for Elive < 10.0.1')
 	for (1 .. 2);
 }
 
