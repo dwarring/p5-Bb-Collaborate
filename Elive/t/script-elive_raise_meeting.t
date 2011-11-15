@@ -181,7 +181,7 @@ SKIP: {
 	    elsif ($class eq 'Elive::Entity::Session') {
 		$exit_url = 'http://perlmonks.org';
 		$basic_meeting_args{-exit_url} = $exit_url;
-		diag "$class - cant (yet) do repeating meetings";
+		note "$class - cant (yet) do repeating meetings";
 	    }
 	    else {
 		die "unknown class: $class";

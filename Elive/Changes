@@ -1,9 +1,17 @@
 Revision history for Elive
 
-1.20    tba
+1.20    15th October 2011
+
+        [upgrades]
+        - regressions from eLive 10.0.2, which is in limited release
+          (tested against ELM 3.3.2 - 3.3.4)
+
+        [security]
+        - Elive::DAO->set() - now dies when passed tainted data
+
         [refactoring]
-        elive_raise_meeting: replaced parse_participants() subroutine with
-        Elive::Entity::Participants->new(..., -moderators..., -others...);
+        - elive_raise_meeting: replaced parse_participants() subroutine with
+          Elive::Entity::Participants->new(..., -moderators..., -others...);
 
 1.19    28th September 2011
         [bug fixes]
