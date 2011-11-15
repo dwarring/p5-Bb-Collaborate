@@ -7,9 +7,9 @@ dao-unpack.t
 
 =head1 DESCRIPTION
 
-The unpacking pass precedes thawing. It involves interpreting both
-'Collection and 'Map' within the data. These are both converted back
-to arrays.
+The unpacking pass precedes thawing. It involves interpreting simple data
+and C<Collection> and C<Map> containers within the data. These are all
+converted to arrays by the Elive::DAO->_unpack_as_list() method.
 
 =cut
 
@@ -170,6 +170,6 @@ do {
 	}
    }];
 
-    is_deeply($group_collection_unpacked, $expected, 'Nested group unppacking');
+    is_deeply($group_collection_unpacked, $expected, 'Nested group unpacking');
 };
 

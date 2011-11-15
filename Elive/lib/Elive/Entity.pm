@@ -1,7 +1,7 @@
 package Elive::Entity;
 use warnings; use strict;
+
 use Mouse;
-use Mouse::Util::TypeConstraints;
 use Try::Tiny;
 
 extends 'Elive::DAO';
@@ -10,12 +10,12 @@ our $VERSION = '0.02';
 
 =head1 NAME
 
-    Elive::Entity - Base class for Elive Entities
+Elive::Entity - Base class for Elive Entities
 
 =head1 DESCRIPTION
 
-This is the base class for bindings to the command adapter, the default
-Elluminate live API.
+This is the base class for Elluminate C<Live!> Command Toolkit entity
+specific classes.
 
 =cut
 
@@ -220,8 +220,45 @@ sub _unpack_results {
 
 =head1 SEE ALSO
 
- Elive::DAO
- Mouse
+=head2 Ancestor Classes
+
+=over 4
+
+=item L<Elive::DAO> - base class
+
+=item L<Mouse> - Lightweight L<Moose> like class system
+
+=back
+
+=head2 Derived Classes
+
+=over 4
+
+=item Elive::Entity::Group
+
+=item Elive::Entity::MeetingParameters
+
+=item Elive::Entity::Meeting
+
+=item Elive::Entity::ParticipantList
+
+=item Elive::Entity::Preload
+
+=item Elive::Entity::Recording
+
+=item Elive::Entity::Report
+
+=item Elive::Entity::ServerDetails
+
+=item Elive::Entity::ServerParameters
+
+=item Elive::Entity::Session
+
+=item Elive::View::Session
+
+=item Elive::Entity::User
+
+=back
 
 =cut
 
