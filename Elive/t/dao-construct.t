@@ -1,6 +1,6 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 77;
+use Test::More tests => 81;
 use Test::Warn;
 
 use Carp; $SIG{__DIE__} = \&Carp::confess;
@@ -130,26 +130,56 @@ do {
     is_deeply($_participants, ['*the_team', '1111', 'alice'], '...tidied participants');
 };
 
-is($participants_2->[0]->user->userId, 1111, 'participant list user[0]');
-is($participants_2->[0]->role->roleId, 3, 'participant list role[0] (defaulted)');
+do {
+    my $user_participant = $participants_2->[0];
+
+    ok( ! $user_participant->type, "participant type (user)");
+    ok(     $user_participant->user
+       && ! $user_participant->group
+       && ! $user_participant->guest, "participant user/group/guest (user)");
+
+    is($user_participant->user->userId, 1111, 'participant list user[0]');
+    is($user_participant->role->roleId, 3, 'participant list role[0] (defaulted)');
+};
+
 is($participants_2->[1]->user->userId, 2222, 'participant list user[1]');
 is($participants_2->[1]->role->roleId, 2, 'participant list role[1] (explicit)');
 is($participants_2->[2]->user->userId,'alice', 'participant list user[2] (alphanumeric - ldap compat)');
 
-is($participants_2->[3]->type, 2, 'Invited guest detected');
-is_deeply($participants_2->[3]->guest, {loginName => 'bob@test.org',
-				   displayName => 'Robert'},
-	  'invited guest contents');
-ok( ! $participants_2->[3]->is_moderator(1), 'cannot promote guest to moderator');
-is( $participants_2->[3]->stringify, 'Robert (bob@test.org)', 'guest stringification');
+do {
+    my $guest_participant = $participants_2->[3];
+    is($guest_participant->type, 2, 'Invited guest detected');
+    ok(    ! $guest_participant->user
+	&& ! $guest_participant->group
+	&&   $guest_participant->guest, "participant user/group/guest (guest)");
 
-is($participants_2->[4]->type, 1, 'Group detected');
-is_deeply($participants_2->[4]->group, {groupId => 'the_team'},
-	  'group contents');
-ok( $participants_2->[4]->is_moderator(1), 'can promote group to moderators');
-ok( $participants_2->[4]->is_moderator && $participants_2->[4]->role->roleId == 2, 'group promotion persistance');
-ok( ! $participants_2->[4]->is_moderator(0), 'can demote group to participants');
-ok( ! $participants_2->[4]->is_moderator && $participants_2->[4]->role->roleId == 3, 'group demotion persistance');
+    use YAML; diag YAML::Dump {guest => {user => $guest_participant->user,
+					  group => $guest_participant->group,
+					  guest => $guest_participant->guest,
+				}};
+
+    is_deeply($guest_participant->guest, {loginName => 'bob@test.org',
+					    displayName => 'Robert'},
+	      'invited guest contents');
+    ok( ! $guest_participant->is_moderator(1), 'cannot promote guest to moderator');
+    is( $guest_participant->stringify, 'Robert (bob@test.org)', 'guest stringification');
+};
+
+do {
+    my $group_participant = $participants_2->[4];
+
+    is($group_participant->type, 1, 'Group detected');
+    ok(    ! $group_participant->user
+	&&   $group_participant->group
+	&& ! $group_participant->guest, "participant user/group/guest (group)");
+    
+    is_deeply($group_participant->group, {groupId => 'the_team'},
+	      'group contents');
+    ok( $group_participant->is_moderator(1), 'can promote group to moderators');
+    ok( $group_participant->is_moderator && $group_participant->role->roleId == 2, 'group promotion persistance');
+    ok( ! $group_participant->is_moderator(0), 'can demote group to participants');
+    ok( ! $group_participant->is_moderator && $group_participant->role->roleId == 3, 'group demotion persistance');
+};
 
 my $participant_list_3 = Elive::Entity::ParticipantList->construct(
     {

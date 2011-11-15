@@ -655,18 +655,15 @@ L<Elive::Entity::Participant>. Each participant contains one of:
 
 =back
 
-These are dereferenced via the C<user>, C<group> or C<guest> methods.For
-example, to print the list of participants for a session:
+Each participant will contain either an C<user>, C<group> or C<guest>object
+For example, to print the list of participants for a session:
 
     my $session = Elive::Entity::Session->retrieve($session_id);
     my $participants = $session->participants;
 
     foreach my $participant (@$participants) {
 
-	my $type = $participant->type;
-
-	if (! $type)  {
-	    my $user = $participant->user;
+	if (my $user = $participant->user)  {
 	    my $loginName = $user->loginName;
 	    my $email = $user->email;
 
@@ -674,8 +671,7 @@ example, to print the list of participants for a session:
 	    print ' <'.$email.'>'
 		if $email;
 	}
-	elsif ($type == 1) {
-	    my $group = $participant->group;
+	elsif (my $group = $participant->group) {
 	    my $id = $group->groupId;
 	    my $name = $group->name;
 
@@ -683,8 +679,7 @@ example, to print the list of participants for a session:
 	    print ' <'.$name.'>'
 		if $name;
 	}
-	elsif ($type == 2) {
-	    my $guest = $participant->guest;
+	elsif (my $guest = $participant->guest) {
 	    my $loginName = $guest->loginName;
 	    my $displayName = $guest->displayName;
 
