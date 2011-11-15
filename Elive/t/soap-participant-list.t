@@ -120,12 +120,6 @@ SKIP: {
 	$participant_list->participants->add($participant1->userId.'=3');
 
 	lives_ok(sub {$participant_list->update}, 'setting of participant - lives');
-	if (0) {
-	    ok($meeting->is_participant( $participant1), 'is_participant($participant1)');
-	}
-	else {
-	    $t->skip('is_participant() - broken');
-	}
 
 	ok(!$meeting->is_moderator( $participant1), '!is_moderator($participant1)');
 
@@ -135,12 +129,16 @@ SKIP: {
 	$participant_list->participants->add($participant2->userId.'=3');
 	$participant_list->update();
 
-	if (0) {
-	    ok($meeting->is_participant( $participant2), 'is_participant($participant2)');
-	}   
-        else {  
-            $t->skip('is_participant() - broken');
-        }
+    TODO: {
+          #
+          # is_participant() give variable results on various ELM versions
+          # ELM 3.0 - 3.3.4 - best to treat is as broken
+          #
+           local($TODO) = 'reliable - is_participant()';
+
+	   ok($meeting->is_participant( $participant1), 'is_participant($participant1)');
+	   ok($meeting->is_participant( $participant2), 'is_participant($participant2)');
+       }
 
  	ok(!$meeting->is_moderator( $participant2), '!is_moderator($participant2)');
 
