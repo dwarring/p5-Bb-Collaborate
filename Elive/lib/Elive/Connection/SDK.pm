@@ -312,7 +312,7 @@ sub server_details {
 
 =head2 version
 
-Return the Elluminate I<Live!> Manager version
+Return the Elluminate I<Live!> Server version
 
 =cut
 
