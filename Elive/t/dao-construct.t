@@ -153,11 +153,6 @@ do {
 	&& ! $guest_participant->group
 	&&   $guest_participant->guest, "participant user/group/guest (guest)");
 
-    use YAML; diag YAML::Dump {guest => {user => $guest_participant->user,
-					  group => $guest_participant->group,
-					  guest => $guest_participant->guest,
-				}};
-
     is_deeply($guest_participant->guest, {loginName => 'bob@test.org',
 					    displayName => 'Robert'},
 	      'invited guest contents');
