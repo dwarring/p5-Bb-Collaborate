@@ -117,12 +117,6 @@ SKIP: {
 	$session->participants->add($participant1->userId.'=3');
 
 	lives_ok(sub {$session->update}, 'setting of participant - lives');
-	if ($elm_3_3_4_or_better) {
-	    ok($session->is_participant( $participant1), 'is_participant($participant1)');
-	}
-	else {
-	    $t->skip('is_participant() - broken prior to ELM 3.3.4 / 10.0.2');
-	}
 
 	ok(!$session->is_moderator( $participant1), '!is_moderator($participant1)');
 
@@ -132,12 +126,16 @@ SKIP: {
 	$session->participants->add($participant2->userId.'=3');
 	$session->update();
 
-	if ($elm_3_3_4_or_better) {
-	    ok($session->is_participant( $participant2), 'is_participant($participant2)');
-	}   
-        else {  
-            $t->skip('is_participant() - broken prior to ELM 3.3.4 / 10.0.2');
-        }
+      TODO: {
+          #
+          # is_participant() give variable results on various ELM versions
+          # ELM 3.0 - 3.3.4 - best to treat is as broken
+          #
+	  local($TODO) = 'reliable - is_participant()';
+	  
+	  ok($session->is_participant( $participant1), 'is_participant($participant1)');
+	  ok($session->is_participant( $participant2), 'is_participant($participant2)');
+	}
 
  	ok(!$session->is_moderator( $participant2), '!is_moderator($participant2)');
 
