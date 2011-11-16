@@ -688,6 +688,7 @@ For example, to print the list of participants for a session:
 		if $loginName;
 	}
 	else {
+            my $type = $participant->type;
 	    die "unknown participant type: $type"; # elm 4.x? ;-)
 	}
 
