@@ -85,7 +85,7 @@ SKIP: {
     my %result = t::Elive->test_connection(only => 'real');
     my $auth = $result{auth};
 
-    skip ($result{reason} || 'skipping live tests', 13)
+    skip ($result{reason} || 'skipping live tests', 16)
 	unless $auth && @$auth >= 3;
 
     my ($url, $user, $pass) = @$auth;
