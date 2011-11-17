@@ -19,7 +19,7 @@ if ( $EVAL_ERROR ) {
 
 local ($ENV{TERM}) = 'dumb';
 
-plan(tests => 23);
+plan(tests => 26);
 
 my $script_name = 'elive_query';
 
@@ -125,18 +125,30 @@ SKIP: {
 	     -user => $user,
 	     -pass => $pass,
 	     -dump => 'yaml',
-	     -c => 'select serverDetailsId from serverDetails']);
+	     -c => 'select serverDetailsId,version from serverDetails']);
 
        
 	like($stderr, qr{^connecting}i, "$script_name -c '..' connecting message");
 
 	my $data;
-	my @guff;
+	my @_others;
 
-	lives_ok(sub {($data, @_guff) = YAML::Syck::Load($stdout)}, 'output is parsable YAML');
+	#
+	# there can potentially be several servers. Pick one and make
+	# sure it's known to us.
+	#
+	lives_ok(sub {($data, @_others) = YAML::Syck::Load($stdout)}, 'output is parsable YAML');
 	isa_ok($data, 'HASH', 'result');
-	ok($data->{ServerDetails}{serverDetailsId}, 'hash structure contains ServerDetails.serverDetailsId');
 
+	my $server_details_id = $data->{ServerDetails}{serverDetailsId};
+	my $server_version = $data->{ServerDetails}{version};
+
+	ok($server_details_id, 'hash structure contains ServerDetails.serverDetailsId');
+	ok($server_version, 'hash structure contains ServerDetails.version');
+
+	my ($server_details) = grep {$_->serverDetailsId eq $server_details_id} ($connection->server_details);
+	ok( $server_details, 'server details fetch via soap query');
+	is ($server_details->version, $server_version, 'matching serverDetails.id');
     };
 
     do {
