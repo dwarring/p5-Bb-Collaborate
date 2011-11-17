@@ -23,12 +23,6 @@ plan skip_all => "$MODULE not available for taint tests"
     if $@;
 
 plan tests => 17;
-#
-# restrict our user tests to the mock connections. Live updates
-# are just to dangerous. There is also the possibility that the
-# live site is running LDAP, in which case user access becomes
-# read only.
-#
 
 SKIP: {
 
