@@ -8,6 +8,7 @@ use Elive;
 use Elive::Connection;
 use Elive::Entity;
 use Elive::Entity::User;
+use Elive::Entity::Role;
 use Elive::Entity::Meeting;
 use Elive::Entity::Recording;
 use Elive::Entity::Session;
@@ -36,6 +37,8 @@ my $user1 = Elive::Entity::User->construct({
      },
     );
 
+my $role2 = Elive::Entity::Role->construct({roleId => 2});
+
 isa_ok($user1, 'Elive::Entity::User');
 ok(!$user1->is_changed, 'freshly constructed user - !changed');
 is($user1->userId, $USER_ID, 'user - userId accessor');
@@ -49,15 +52,15 @@ do {
     ok($user1->role->_db_data, 'user role has db data');
 
     ok( !$user1->role->is_changed, 'sub record (role) before change');
-    ok($user1->role->{roleId}++, 'found an incremented role');
+    ok($user1->role($role2), "role change");
 
-    ok($user1->role->is_changed,  'sub record (role) after change');
+    ok(!$user1->role->is_changed,  'sub record (role) replaced, not changed');
 
     ok($user1->is_changed, 'sub record primary key change - detected in main record');
 
-    lives_ok( sub {$user1->role->revert}, 'sub record revert - lives');
+    lives_ok( sub {$user1->revert}, 'sub record revert - lives');
     is( $user1->role->{roleId}, 1, 'sub record (role) value after revert');
-    ok( !$user1->role->is_changed, 'sub record (role) is_changed() after revert');
+    ok( !$user1->is_changed, 'is_changed() after revert');
 
     $user1->set(loginName => $user1->loginName . '_1');
 

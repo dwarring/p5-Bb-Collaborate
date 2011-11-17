@@ -4,7 +4,7 @@ use warnings; use strict;
 use Mouse;
 use Mouse::Util::TypeConstraints;
 
-our $VERSION = '0.04';
+our $VERSION = '0.05';
 
 use parent 'Elive::DAO::_Base';
 
@@ -1002,7 +1002,7 @@ sub is_changed {
 	#
 	# not mapped to a stored data value. scratch object?, sub entity?
 	#
-	warn ref($self)."->is_changed called on non-database object (".$self->stringify.")\n";
+	Carp::carp( ref($self)."->is_changed called on non-database object (".$self->stringify.")\n" );
 	return;
     }
 
@@ -1013,12 +1013,30 @@ sub is_changed {
 
 	my $new = $self->$prop;
 	my $old = $db_data->$prop;
+	my $type = $property_types->{$prop};
+
+	die (ref($self)." - attribute $_ contains tainted data")
+	    if Elive::Util::_tainted($new) || Elive::Util::_tainted($old);
 
 	if (defined ($new) != defined ($old)
-	    || $self->_cmp_col($property_types->{$prop}, $new, $old)) {
+	    || $self->_cmp_col($type, $new, $old)) {
 
 	    push (@updated_properties, $prop);
 	}
+    }
+
+    #
+    # warn if we catch a primary key modification, after the fact
+    #
+    my %primary_key = map {$_ => 1} ($self->primary_key);
+    my @primary_key_updates = grep { exists $primary_key{$_} } @updated_properties;
+    foreach my $prop (@primary_key_updates) {
+
+	my $type = $property_types->{$prop};
+        my $old_str = Elive::Util::string($db_data->$prop => $type);
+	my $new_str = Elive::Util::string($self->$prop => $type);
+
+	Carp::carp( ref($self).": primary key field has been modified $prop: $old_str => $new_str" );
     }
 
     return @updated_properties;
@@ -1061,8 +1079,7 @@ sub set {
 	    if (defined $old_val && !defined $data{$_}) {
 		die "attempt to delete primary key";
                }
-	    elsif ($self->_cmp_col($type,
-				   $old_val, $data{$_})) {
+	    elsif ($self->_cmp_col($type, $old_val, $data{$_})) {
 		die "attempt to update primary key";
 	    }
 	}
@@ -1708,7 +1725,11 @@ The following are all equivalent, and are all ok:
 
 =head1 SEE ALSO
 
-L<Mouse>
+=over 4
+
+=item L<Mouse> (base class) - Lightweight L<Moose> like class system
+
+=back
 
 =cut
 

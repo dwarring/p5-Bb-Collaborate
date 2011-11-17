@@ -1,5 +1,12 @@
 Revision history for Elive
 
+1.21    tba
+
+        [security]
+        Elive::DAO->is_changed() now
+        - detects tainted data and dies, if detected
+        - warns when a primary key has been updated.
+
 1.20    15th October 2011
 
         [upgrades]

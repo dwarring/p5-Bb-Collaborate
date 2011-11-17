@@ -1,6 +1,6 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 12;
+use Test::More tests => 13;
 use Test::Warn;
 
 use Elive;
@@ -42,6 +42,15 @@ warnings_like(
     sub {$user_1->_db_data->is_changed},
     qr{is_changed called on non-database object},
     'calling is_changed on non-database object produces a warning'
+    );
+
+
+non_pkey_changed();
+
+warnings_like(
+    \&pkey_changed,
+    qr(rimary key field has been modified),
+    "is_changed warning following pkey update"
     );
 
 my $user_2;
@@ -143,6 +152,29 @@ sub set_unknown_property {
 	});
     $user->set(junk2 => 'xyz');
     return $user;
+}
+
+sub non_pkey_changed {
+    my $user = Elive::Entity::User->construct
+	({  userId => 5678,
+	    loginName => 'user',
+	    loginPassword => 'pass',
+	});
+    $user->{loginPassword} = 'pass2';
+    $user->is_changed;
+    $user->revert;
+}
+
+sub pkey_changed {
+    my $user = Elive::Entity::User->construct
+	({  userId => 5678,
+	    loginName => 'user',
+	    loginPassword => 'pass',
+	});
+    $user->{userId} = 998877;
+    $user->is_changed;
+    $user->{userId} = 5678;
+
 }
 
 sub thaw_with_bad_preload_type {
