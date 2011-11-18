@@ -1098,9 +1098,13 @@ The maximum number of cameras.
 
 =item * Meeting telephony is not yet supported
 
+=back
+
 Maintaining the L<Elive::Entity::Session> abstraction may involve fetches from
 several entities. This is mostly transparent, but does have some implications
 for the C<list> method:
+
+=over 4
 
 =item * You can only filter on core meeting properties (C<name>, C<start>, C<end>, C<password>, C<deleted>, C<faciltatorId>, C<privateMeeting>, C<allModerators>, C<restrictedMeeting> and C<adapter>).
 
