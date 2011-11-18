@@ -1,8 +1,10 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 33;
+use Test::More tests => 34;
 use Test::Exception;
 use Test::Builder;
+use List::Util;
+use Test::Warn;
 
 use lib '.';
 use t::Elive;
@@ -27,7 +29,7 @@ SKIP: {
     my %result = t::Elive->test_connection( only => 'real');
     my $auth = $result{auth};
 
-    skip ($result{reason} || 'skipping live tests', 33)
+    skip ($result{reason} || 'skipping live tests', 34)
 	unless $auth;
 
     my $connection_class = $result{class};
@@ -276,14 +278,15 @@ SKIP: {
 
     splice(@groups, 10) if @groups > 10;
 
+    my $invited_guest = 'Robert(bob@acme.org)';
+    warnings_like(sub {$participant_list->update({ participants => [$participant1, $invited_guest]})}, qr{ignoring}, 'participant guest - "ignored" warning under elm 2.x');
     #
     # you've got to refetch the group to populate the list of recipients
-    ($group) = grep {$_->retrieve($_); @{ $_->members } } @groups;
+    ($group) = List::Util::first {$_->retrieve($_); @{ $_->members } } @groups;
 
     if ($group) {
-	my $invited_guest = 'Robert(bob@acme.org)';
 	note "using group ".$group->name;
-	lives_ok(sub {$participant_list->update({ participants => [$group, $participant1, $invited_guest]})}, 'setting of participant groups - lives');
+	warnings_like(sub {$participant_list->update({ participants => [$participant1, $group]})}, qr{client side expansion}, 'participant groups - expansion warning under elm 2.x');
     }
     else {
 	$t->skip('no candidates found for group tests');

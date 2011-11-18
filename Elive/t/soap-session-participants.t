@@ -3,6 +3,7 @@ use warnings; use strict;
 use Test::More tests => 30;
 use Test::Exception;
 use Test::Builder;
+use List::Util;
 
 use lib '.';
 use t::Elive;
@@ -283,7 +284,7 @@ SKIP: {
 
     #
     # you've got to refetch the group to populate the list of recipients
-    my ($group1, $group2) = grep {$_->retrieve($_); @{ $_->members } } @groups;
+    my ($group1, $group2) = List::Util::first {$_->retrieve($_); @{ $_->members } } @groups;
 
     if ($group1 && $group2) {
 	my $invited_guest = 'Robert(bob)';

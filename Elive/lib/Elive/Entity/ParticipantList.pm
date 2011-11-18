@@ -256,7 +256,7 @@ sub _build_elm2x_participants {
 	#
 	# Best we can do with groups is to expand members
 	#
-	carp "client side expansion of group: $group_spec\n";
+	carp "client side expansion of group: $group_spec";
 	my $role = delete $groups->{ $group_spec };
 	(my $group_id = $group_spec) =~ s{^\*}{};
 
