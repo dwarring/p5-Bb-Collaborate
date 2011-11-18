@@ -1,6 +1,6 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 13;
+use Test::More tests => 14;
 use Test::Warn;
 
 use Elive;
@@ -10,6 +10,7 @@ use Elive::Entity::User;
 use Elive::Entity::Meeting;
 use Elive::Entity::Preload;
 use Elive::Entity::Recording;
+use Elive::Entity::Participant;
 
 use lib '.';
 use t::Elive::MockConnection;
@@ -103,6 +104,13 @@ warnings_like(
     "thawing unknown media type gives warning"
     );
 
+guest_participant_valid();
+
+warnings_like( \&guest_participant_with_forced_moderator_role,
+	       qr{ignoring moderator role},
+	       'guest participant with forced moderator role gives warning'
+    );
+
 exit(0);
 
 ########################################################################
@@ -192,3 +200,34 @@ sub thaw_with_bad_recording_status {
 
     return Elive::Entity::MeetingParameters->_thaw($preload_data);
 }
+
+sub guest_participant_valid {
+    my $participant = Elive::Entity::Participant->construct(
+      {
+	  type => 2,
+	  guest => {
+	      invitedGuestId => 1111,
+	      loginName => 'bob@acme.com',
+	      displayName => 'Robert'
+	  },
+	  role => 3,
+      });
+    $participant->stringify;
+};
+
+sub guest_participant_with_forced_moderator_role {
+    my $participant = Elive::Entity::Participant->construct(
+      {
+	  type => 2,
+	  guest => {
+	      invitedGuestId => 2222,
+	      loginName => 'bob@acme.com',
+	      displayName => 'Robert'
+	  },
+	  role => 2,
+      });
+};
+
+
+
+

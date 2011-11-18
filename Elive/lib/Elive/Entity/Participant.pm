@@ -212,13 +212,17 @@ sub stringify {
     my $data = shift || $self;
 
     $data = $self->BUILDARGS($data);
+    my $role_id = Elive::Entity::Role->stringify( $data->{role} );
 
     if ($data->{type} && $data->{type} == 2) {
 	# guest => 'displayName(loginName)'
-	return Elive::Entity::InvitedGuest->stringify($data->{guest});
-    }
+	my $guest_str =  Elive::Entity::InvitedGuest->stringify($data->{guest});
 
-    my $role_id = Elive::Entity::Role->stringify($data->{role});
+	Carp::carp ("ignoring moderator role for invited guest: $guest_str")
+	    if defined $role_id && $role_id <= 2;
+
+	return $guest_str;
+    }
 
     if (! $data->{type} ) {
 	# user => 'userId'

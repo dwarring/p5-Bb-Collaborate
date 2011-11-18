@@ -112,7 +112,7 @@ is($participant_list->participants->[0]->user->loginName, 'test_user',
    'participant dereference');
 
 #
-# test participant list parsing and coercement
+# test preformatted participant list
 #
 my $participant_list_2 = Elive::Entity::ParticipantList->construct(
     {
@@ -267,12 +267,13 @@ my $participant_list_5 = Elive::Entity::ParticipantList->construct(
         meetingId => $meeting,
         participants => ['1122=2', '1123',
                          -moderators => [2222, $participant_class->construct(2223)],
-			 -others => '3333', $participant_class->construct('3334=2'),
+			 -participants => '3333', $participant_class->construct('3334=2'),
 			 -moderators => 4444, '*admins',
+			 -others => '5555', '6666=2'
 	    ]
 	});
 
-is($participant_list_5->participants->stringify, '*admins=2;1122=2;1123=3;2222=2;2223=2;3333=3;3334=3;4444=2', "participants stringification");
+is($participant_list_5->participants->stringify, '*admins=2;1122=2;1123=3;2222=2;2223=2;3333=3;3334=3;4444=2;5555=3;6666=3', "participants stringification");
 
 my $participant_list_6 = Elive::Entity::ParticipantList->construct(
     {

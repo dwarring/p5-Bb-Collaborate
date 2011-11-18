@@ -2,12 +2,19 @@ Revision history for Elive
 
 1.21    tba
 
-        [security]
-        Elive::DAO->is_changed() now
-        - detects tainted data and dies, if detected
-        - warns when a primary key has been updated.
+	[enhancements]
+        Elive::Entity::Participant:
+        - now produces a warning if an attempt is made to assign a
+          moderator role to an invited guest.
 
-1.20    15th October 2011
+        [security]
+        Elive::DAO:
+        - added taintness checks to the is_changed() method; which mow dies
+          if any tainted data is detected. This complements the current
+          taintness checks in the set() method.
+        - is_changed now warns if a primary key has been updated.
+
+1.20    15th November 2011
 
         [upgrades]
         - regressions from eLive 10.0.2, which is in limited release
@@ -30,7 +37,7 @@ Revision history for Elive
         [bug fixes]
         Elive::Entity::Report
         - changed ownerId from 'Int' to 'Str' for LDAP compatibility
-        - fixed delete() method to passs tests
+        - fixed delete() method to pass tests
 
         [enhancements]
         Elive::Entity::Report
