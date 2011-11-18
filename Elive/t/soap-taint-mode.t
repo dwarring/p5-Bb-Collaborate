@@ -105,7 +105,7 @@ SKIP: {
     is( try {$sessions->[0]->sessionId}, $session_id, 'listed sessionId as expected');
     $sessions = undef;
 
-    ok ($session = Elive::Entity::Session->retrieve([$session_id]),
+    ok ($session = Elive::Entity::Session->retrieve($session_id),
 	'Refetch of session');
 
     lives_ok(sub {$session->delete},'session deletion - lives');

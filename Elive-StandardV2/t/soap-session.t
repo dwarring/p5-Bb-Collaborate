@@ -83,7 +83,7 @@ SKIP: {
     is( try {$sessions->[0]->sessionId}, $session_id, 'listed sessionId as expected');
     $sessions = undef;
 
-    ok ($session = Elive::StandardV2::Session->retrieve([$session_id]),
+    ok ($session = Elive::StandardV2::Session->retrieve($session_id),
 	'Refetch of session');
 
     foreach (keys %update_data) {
@@ -106,7 +106,7 @@ SKIP: {
     lives_ok(sub {$session->delete},'session deletion - lives');
 
     my $deleted_session;
-    try {$deleted_session = Elive::StandardV2::Session->retrieve([$session_id])};
+    try {$deleted_session = Elive::StandardV2::Session->retrieve($session_id)};
 
     ok($@ || !$deleted_session, "can't retrieve deleted session");
 }

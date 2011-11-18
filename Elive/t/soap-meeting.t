@@ -71,7 +71,7 @@ SKIP: {
 	inSessionInvitation => 1,
 	);
 
-    my $meeting_params = Elive::Entity::MeetingParameters->retrieve([$meeting->meetingId]);
+    my $meeting_params = Elive::Entity::MeetingParameters->retrieve($meeting->meetingId);
 
     isa_ok($meeting_params, 'Elive::Entity::MeetingParameters', 'meeting_params');
 
@@ -103,7 +103,7 @@ SKIP: {
 	seats => 2,
     );
 
-    my $server_params = Elive::Entity::ServerParameters->retrieve([$meeting->meetingId]);
+    my $server_params = Elive::Entity::ServerParameters->retrieve($meeting->meetingId);
 
     isa_ok($server_params, 'Elive::Entity::ServerParameters', 'server_params');
 
@@ -163,23 +163,17 @@ SKIP: {
     #
 
     lives_ok(sub {$meeting->delete},'meeting deletion');
-    #
-    # This is an assertion of server behaviour. Just want to verify that
-    # meeting deletion cascades. I.e. meeting & server parameters are deleted
-    # when the meeting is deleted.
-    #
-    $meeting_params = undef;
 
     $meeting = undef;
 
+    #
+    # The meeting should either have been immediately deleted, or marked as
+    # deleted for later garbage collection
+    #
     my $deleted_meeting;
-    eval {$deleted_meeting = Elive::Entity::Meeting->retrieve([$meeting_id])};
-    #
-    # Change in policy with elluminate 9.5.1. Deleted meetings remain
-    # retrievable, they just have the deleted flag set
-    #
-    ok($@ || ($deleted_meeting && $deleted_meeting->deleted),
-       'cascaded delete of meeting parameters');
+    eval {$deleted_meeting = Elive::Entity::Meeting->retrieve($meeting_id)};
+    ok($@ || !$deleted_meeting || $deleted_meeting->deleted,
+       'meeting deletion enacted');
 }
 
 Elive->disconnect;

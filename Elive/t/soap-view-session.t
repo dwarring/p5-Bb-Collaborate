@@ -175,9 +175,11 @@ SKIP: {
 	lives_ok(sub {$session->delete},'session deletion');
 
 	my $deleted_session;
-	eval {$deleted_session = Elive::View::Session->retrieve([$session_id])};
+	eval {$deleted_session = Elive::View::Session->retrieve($session_id)};
 
-	ok($@ || ($deleted_session && $deleted_session->deleted),
+	#
+	# the session has either been marked for garbage collection or deleted
+	ok($@ || !$deleted_session || $deleted_session->deleted,
 	   'session showing as deleted');
     };
 }

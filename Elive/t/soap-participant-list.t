@@ -72,7 +72,7 @@ SKIP: {
 	},
 	'insert of participant deep list - lives');
 
-    my $participant_list = Elive::Entity::ParticipantList->retrieve([$meeting->meetingId]);
+    my $participant_list = Elive::Entity::ParticipantList->retrieve($meeting->meetingId);
 
     isa_ok($participant_list, 'Elive::Entity::ParticipantList', 'participant_list');
     is($participant_list->participants->stringify, Elive->login->userId.'=2',

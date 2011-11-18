@@ -38,8 +38,7 @@ do {
 	},
 	);
 
-    my $user1_again = Elive::Entity::User->retrieve([11111],
-						    reuse => 1);
+    my $user1_again = Elive::Entity::User->retrieve(11111, reuse => 1);
 
     is(_ref($user1), _ref($user1_again), 'basic entity reuse');
 

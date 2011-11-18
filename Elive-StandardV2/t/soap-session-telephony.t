@@ -64,7 +64,7 @@ SKIP: {
 
     $session_telephony = undef;
 
-    lives_ok(sub {$session_telephony = Elive::StandardV2::SessionTelephony->retrieve([$session])},
+    lives_ok(sub {$session_telephony = Elive::StandardV2::SessionTelephony->retrieve($session)},
 	     'retrieve session telephony (direct) lives');
 
     foreach (keys %telephony_data) {

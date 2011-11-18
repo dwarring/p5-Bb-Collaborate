@@ -160,7 +160,7 @@ sub update {
 	or die "unable to get meetingId";
 
     my $meeting = Elive::Entity::Meeting
-	->retrieve([$meeting_id],
+	->retrieve($meeting_id,
 		   reuse => 1,
 		   connection => $self->connection,
 	) or die "meeting not found: ".$meeting_id;
@@ -180,7 +180,7 @@ sub update {
     #
     $self->revert;
     my $class = ref($self);
-    $self = $class->retrieve([$self->id], connection => $self->connection);
+    $self = $class->retrieve($self->id, connection => $self->connection);
 
     $class->_readback_check({meetingId => $self->meetingId,
 			     participants => $participants},
@@ -339,7 +339,7 @@ sub insert {
 
     my $meeting_id = delete $data->{meetingId}
     or die "can't insert participant list without meetingId";
-    my $self = $class->retrieve([$meeting_id], reuse => 1)
+    my $self = $class->retrieve($meeting_id, reuse => 1)
 	or die "No such meeting: $meeting_id";
 
     $self->update($data, %opt);

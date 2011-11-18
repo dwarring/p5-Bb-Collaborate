@@ -71,7 +71,7 @@ SKIP: {
 
     $preloads[0] = undef;
 
-    ok($preloads[0] = Elive::Entity::Preload->retrieve([$preload_id]), 'preload retrieval');
+    ok($preloads[0] = Elive::Entity::Preload->retrieve($preload_id), 'preload retrieval');
 
     #
     # try upload from a file
@@ -233,7 +233,7 @@ SKIP: {
 
     $session->delete;
 
-    dies_ok(sub {$preloads[0]->retrieve([$preload_id])}, 'attempted retrieval of deleted preload - dies');
+    dies_ok(sub {$preloads[0]->retrieve($preload_id)}, 'attempted retrieval of deleted preload - dies');
     my $server_details =  Elive->server_details
 	or die "unable to get server details - are all services running?";
 

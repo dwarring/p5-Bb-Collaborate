@@ -163,7 +163,7 @@ sub _safety_check {
 
 =head2 update
 
-    my $user_obj = Elive::Entity::user->retrieve([$user_id]);
+    my $user_obj = Elive::Entity::user->retrieve($user_id);
 
     $user_obj->update(role => 0); # make the user an app admin
     $user_obj->lastName('Smith');
@@ -189,12 +189,12 @@ sub update {
 
 Implements the C<changePassword> SDK method.
 
-    my $user = Elive::Entity::User->retrieve([$user_id]);
+    my $user = Elive::Entity::User->retrieve($user_id);
     $user->change_password($new_password);
 
 This is equivalent to:
 
-    my $user = Elive::Entity::User->retrieve([$user_id]);
+    my $user = Elive::Entity::User->retrieve($user_id);
     $user->update({loginPassword => $new_password});    
 
 =cut
@@ -220,6 +220,14 @@ sub change_password {
 
 Delete user objects. As a safeguard, you need to pass C<force =E<gt> 1> to delete
 system administrator accounts, or the login user.
+
+Note that a deleted user, will have its deleted property immediately set,
+but may remain accessable for a short period of time until garbage collected.
+
+So to check for a deleted user:
+
+    my $user = Elive::Entity::User->retrieve( $user_id ); 
+    my $user_is_deleted = !$user || $user->deleted;
 
 =cut
 

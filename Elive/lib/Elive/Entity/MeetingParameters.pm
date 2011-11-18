@@ -75,7 +75,7 @@ please see L<Elive::Entity::Session>.
     use Elive::Entity::MeetingParameters;
 
     my $meeting_params
-        = Elive::Entity::MeetingParameters->retrieve([$meeting_id]);
+        = Elive::Entity::MeetingParameters->retrieve($meeting_id);
 
     $meeting_params->update({
            maxTalkers => 3,

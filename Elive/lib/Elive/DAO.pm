@@ -452,14 +452,14 @@ entities, this is the primary key:
 Arrays of sub-items evaluated, in a string context, to a semi-colon separated
 string of the individual values sorted.
 
-    my $group = Elive::Entity::Group->retrieve([98765]);
+    my $group = Elive::Entity::Group->retrieve(98765);
     if ($group->members->stringify eq "11223344;2222222") {
          ....
     }
 
 In particular meeting participants stringify to userId=role, eg
 
-    my $participant_list = Elive::Entity::ParticipantList->retrieve([98765]);
+    my $participant_list = Elive::Entity::ParticipantList->retrieve(98765);
     if ($participant_list->participants->stringify eq "11223344=3;2222222=2") {
          ....
     }
@@ -1693,15 +1693,15 @@ with unsaved changes.
 You can also reuse objects from this cache by passing C<reuse => 1> to the
 C<fetch> method. 
 
-    my $user = Elive::Entity::User->retrieve([11223344]);
+    my $user = Elive::Entity::User->retrieve(11223344);
     #
     # returns the same reference, but refetches from the database
     #
-    my $user_copy = Elive::Entity::User->retrieve([11223344]);
+    my $user_copy = Elive::Entity::User->retrieve(11223344);
     #
     # same as above, however don't refetch if we already have a copy
     #
-    my $user_copy2 = Elive::Entity::User->retrieve([11223344], reuse => 1);
+    my $user_copy2 = Elive::Entity::User->retrieve(11223344, reuse => 1);
 
 You can access the in-memory cache using the C<live_entity> and C<live_entities>
 methods.
@@ -1713,8 +1713,8 @@ You may choose to use the accessors, or work directly with the object data.
 
 The following are all equivalent, and are all ok:
 
-    my $p_list = Elive::Entity::ParticipantList->retrieve([98765]);
-    my $user = Elive::Entity::User->retrieve([11223344]);
+    my $p_list = Elive::Entity::ParticipantList->retrieve(98765);
+    my $user = Elive::Entity::User->retrieve(11223344);
 
     $p_list->participants->add($user);
     push (@{ $p_list->participants        }, $user);

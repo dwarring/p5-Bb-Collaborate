@@ -171,7 +171,7 @@ them yourself, E.g.:
 
     $meeting->delete;
 
-=item With Elluminate 9.5 onwards, deleted meeting may remain retrievable, but with the I<deleted> property to true.
+=item deleted meeting may remain retrievable, but with the I<deleted> property to true.
 
 Meetings, Meeting Parameters, Server Parameters and recordings may remain
 accessible via the SOAP interface for a short period of time until they
@@ -522,7 +522,7 @@ available as both class level and object level methods.
     #
     # Object level.
     #
-    my $meeting = Elive::Entity::Meeting->retrieve([$meeting_id]);
+    my $meeting = Elive::Entity::Meeting->retrieve($meeting_id);
     my $url = meeting->web_url(action => 'join');
 
 =cut
@@ -559,7 +559,7 @@ sub web_url {
 
 =head2 parameters
 
-    my $meeting = Elive::Entity::Meeting->retrieve([$meeting_id]);
+    my $meeting = Elive::Entity::Meeting->retrieve($meeting_id);
     my $meeting_parameters = $meeting->parameters;
 
 Utility method to return the meeting parameters associated with a meeting.
@@ -571,7 +571,7 @@ sub parameters {
     my ($self, @args) = @_;
 
     return Elive::Entity::MeetingParameters
-	->retrieve([$self->meetingId],
+	->retrieve($self->meetingId,
 		   reuse => 1,
 		   connection => $self->connection,
 		   @args,
@@ -580,7 +580,7 @@ sub parameters {
 
 =head2 server_parameters
 
-    my $meeting = Elive::Entity::Meeting->retrieve([$meeting_id]);
+    my $meeting = Elive::Entity::Meeting->retrieve($meeting_id);
     my $server_parameters = $meeting->server_parameters;
 
 Utility method to return the server parameters associated with a meeting.
@@ -592,7 +592,7 @@ sub server_parameters {
     my ($self, @args) = @_;
 
     return Elive::Entity::ServerParameters
-	->retrieve([$self->meetingId],
+	->retrieve($self->meetingId,
 		   reuse => 1,
 		   connection => $self->connection,
 		   @args,
@@ -601,7 +601,7 @@ sub server_parameters {
 
 =head2 participant_list
 
-    my $meeting = Elive::Entity::Meeting->retrieve([$meeting_id]);
+    my $meeting = Elive::Entity::Meeting->retrieve($meeting_id);
     my $participant_list = $meeting->participant_list;
     my $participants = $meeting->participants;
 
@@ -614,7 +614,7 @@ sub participant_list {
     my ($self, @args) = @_;
 
     return Elive::Entity::ParticipantList
-	->retrieve([$self->meetingId],
+	->retrieve($self->meetingId,
 		   reuse => 1,
 		   connection => $self->connection,
 		   @args,

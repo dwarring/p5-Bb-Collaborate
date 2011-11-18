@@ -59,7 +59,7 @@ for my $class(qw{Elive::Connection t::Elive::MockConnection}) {
 # Check for basic caching
 #
     my $group_c1_from_cache
-	= Elive::Entity::Group->retrieve([$K1],connection => $C1, reuse => 1);
+	= Elive::Entity::Group->retrieve($K1,connection => $C1, reuse => 1);
     
     is(Scalar::Util::refaddr($group_c1), Scalar::Util::refaddr($group_c1_from_cache),
        'basic cacheing on connection 1');
@@ -82,7 +82,7 @@ for my $class(qw{Elive::Connection t::Elive::MockConnection}) {
     is($group_c2->url, $group2_url, 'group 2 url');
 
     my $group_c2_from_cache
-	= Elive::Entity::Group->retrieve([$K1], connection => $C2, reuse => 1);
+	= Elive::Entity::Group->retrieve($K1, connection => $C2, reuse => 1);
     
     is(Scalar::Util::refaddr($group_c2), Scalar::Util::refaddr($group_c2_from_cache),
     'basic cacheing on connection 1');
@@ -90,7 +90,7 @@ for my $class(qw{Elive::Connection t::Elive::MockConnection}) {
     isnt(Scalar::Util::refaddr($group_c1), Scalar::Util::refaddr($group_c2),
     'distinct caches maintained on connections with distinct urls');
 
-    my $group_c2_dup_from_cache = Elive::Entity::Group->retrieve([$K1], connection => $C2_dup, reuse => 1);
+    my $group_c2_dup_from_cache = Elive::Entity::Group->retrieve($K1, connection => $C2_dup, reuse => 1);
 
     is(Scalar::Util::refaddr($group_c2_dup_from_cache), Scalar::Util::refaddr($group_c2_from_cache),
     'connections with common urls share a common cache');

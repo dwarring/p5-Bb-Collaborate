@@ -513,6 +513,14 @@ Deletes a completed or unwanted session from the Elluminate server.
     my $session = Elive::Entity::Session->retrieve( $session_id );
     $session->delete;
 
+Note that a session, will have its deleted property immediately set to true,
+but may remain accessable for a short period of time until garbage collected.
+
+So to check for a deleted session:
+
+    my $session = Elive::Entity::Session->retrieve( $session_id ); 
+    my $session_is_deleted = !$session || $session->deleted;
+
 =cut
 
 sub delete {

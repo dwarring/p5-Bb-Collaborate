@@ -124,7 +124,7 @@ SKIP: {
 	    is($ret_meeting_name, $meeting_name, 'echoed meeting name as expected');
 
 	    my $meeting;
-	    ok($meeting = $class->retrieve([$ret_meeting_id], connection => $connection), 'retrieve');
+	    ok($meeting = $class->retrieve($ret_meeting_id, connection => $connection), 'retrieve');
 
 	    unless ($meeting) {
 		die "unable to retrieve meeting: $ret_meeting_id - aborting";
@@ -221,7 +221,7 @@ SKIP: {
 		is($ret_meeting_name, $meeting_name, "week $week: echoed meeting name as expected");
 
 		my $meeting;
-		ok($meeting = $class->retrieve([$ret_meeting_id], connection => $connection), "week $week: retrieve");
+		ok($meeting = $class->retrieve($ret_meeting_id, connection => $connection), "week $week: retrieve");
 
 		unless ($meeting) {
 		    die "unable to retrieve meeting: $ret_meeting_id - aborting";
@@ -286,7 +286,7 @@ SKIP: {
 	    my ($ret_meeting_name, $ret_meeting_id) = ($stdout =~ $meeting_response_re);
 
 	    my $meeting;
-	    ok($meeting = $class->retrieve([$ret_meeting_id], connection => $connection), "meeting retrieve");
+	    ok($meeting = $class->retrieve($ret_meeting_id, connection => $connection), "meeting retrieve");
 
 	    unless ($meeting) {
 		die "unable to retrieve meeting: $ret_meeting_id - aborting";
@@ -321,7 +321,7 @@ SKIP: {
 	    my ($ret_meeting_name, $ret_meeting_id) = ($stdout =~ $meeting_response_re);
 
 	    my $meeting;
-	    ok($meeting = $class->retrieve([$ret_meeting_id], connection => $connection), "meeting retrieve");
+	    ok($meeting = $class->retrieve($ret_meeting_id, connection => $connection), "meeting retrieve");
 
 	    unless ($meeting) {
 		die "unable to retrieve meeting: $ret_meeting_id - aborting";
@@ -372,7 +372,7 @@ SKIP: {
 		my ($ret_meeting_name, $ret_meeting_id) = ($stdout =~ $meeting_response_re);
 
 		my $meeting;
-		ok($meeting = $class->retrieve([$ret_meeting_id], connection => $connection), "meeting retrieve");
+		ok($meeting = $class->retrieve($ret_meeting_id, connection => $connection), "meeting retrieve");
 
 		unless ($meeting) {
 		    die "unable to retrieve meeting: $ret_meeting_id - aborting";

@@ -50,7 +50,7 @@ SKIP: {
     #
 
     lives_ok(
-	     sub {$login_refetch = Elive::Entity::User->retrieve([$login->userId], reuse => 1)},
+	     sub {$login_refetch = Elive::Entity::User->retrieve($login->userId, reuse => 1)},
 	     're-retrieve of updated object with reuse - lives');
 
     is(Scalar::Util::refaddr($login), Scalar::Util::refaddr($login_refetch),
@@ -59,13 +59,13 @@ SKIP: {
     ok($login->is_changed, 'login object still showing as changed');
 
     dies_ok(
-	     sub {$login_refetch = Elive::Entity::User->retrieve([$login->userId], reuse => 0)},
+	     sub {$login_refetch = Elive::Entity::User->retrieve($login->userId, reuse => 0)},
 	     're-retrieve of updated object without reuse - dies');
 
     my $login_raw_data;
 
     lives_ok(
-	     sub {$login_raw_data = Elive::Entity::User->retrieve([$login->userId], raw => 1)},
+	     sub {$login_raw_data = Elive::Entity::User->retrieve($login->userId, raw => 1)},
 	     'retrieval of raw data - lives');
 
     ok(!Scalar::Util::blessed($login_raw_data), 'raw retrieval returns unblessed data');
@@ -85,11 +85,11 @@ SKIP: {
     my $user_id = $login->userId;
     my $user_refetched;
 
-    lives_ok(sub {$user_refetched = Elive::Entity::User->retrieve([$login])}, 'refetch by object - lives');
+    lives_ok(sub {$user_refetched = Elive::Entity::User->retrieve($login)}, 'refetch by object - lives');
     isa_ok($user_refetched,'Elive::Entity::User', 'user refetched by object');
     is($user_refetched->userId, $user_id, "user refetch by object, as expected");
 
-    lives_ok(sub {$user_refetched = Elive::Entity::User->retrieve([$user_id])}, 'refetch by id - lives');
+    lives_ok(sub {$user_refetched = Elive::Entity::User->retrieve($user_id)}, 'refetch by id - lives');
     isa_ok($user_refetched,'Elive::Entity::User', 'user refetched by primary key');
     is($user_refetched->userId, $user_id, "user refetch by id, as expected");
 }

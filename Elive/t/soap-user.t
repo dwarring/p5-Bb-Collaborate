@@ -134,11 +134,12 @@ dies_ok(
 $admin_user = undef;
 #
 # ELM 9.0 dies if user has been deleted
-$admin_user = eval { $class->retrieve([$admin_id]) };
+$admin_user = eval { $class->retrieve($admin_id) };
 #
-# Delete behaves differently on different versions of elm
+# The user should either have been immediately deleted or marked as
+# deleted for later gardbage collection.
 #
-ok(!$admin_user || $admin_user->deleted,'admin user deleted');
+ok(!$admin_user || $admin_user->deleted, 'admin user deleted');
 
 lives_ok(sub {$pleb_user->delete},"delete regular user - lives");
 

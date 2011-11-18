@@ -515,7 +515,7 @@ This can then be used to get or set the session's telephony characterisitics.
 sub telephony {
     my ($self, %opt) = @_;
 
-    return Elive::StandardV2::SessionTelephony->retrieve([$self],
+    return Elive::StandardV2::SessionTelephony->retrieve($self,
 							 reuse => 1,
 							 connection => $self->connection,
 							 %opt,
