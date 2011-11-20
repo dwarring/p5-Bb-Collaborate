@@ -1159,7 +1159,6 @@ sub _to_aliases {
              },
              connection => $con,   # connection to use,
              command => $cmd,      # soap command to use
-             param => \%params,    # additional soap params,
              );
 
     print "inserted user with id: ".$new_user->userId."\n";
