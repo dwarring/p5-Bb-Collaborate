@@ -33,15 +33,15 @@ Add additional elements
 
 coerce 'Elive::StandardV2::_List' => from 'ArrayRef'
           => via {
-	      my @participants = grep {$_ ne ''} map {split(',')} @$_;
-	      Elive::StandardV2::_List->new(\@participants);
+	      my @items = grep {$_ ne ''} map {split(',')} @$_;
+	      Elive::StandardV2::_List->new(\@items);
 };
 
 coerce 'Elive::StandardV2::_List' => from 'Str'
           => via {
-	      my @participants = grep {$_ ne ''} split(',');
+	      my @items = grep {$_ ne ''} split(',');
 
-	      Elive::StandardV2::_List->new(\@participants);
+	      Elive::StandardV2::_List->new(\@items);
           };
 
 =head2 stringify
@@ -61,6 +61,5 @@ sub stringify {
 
     return join(',', sort map {Elive::Util::string($_, $type)} @$arr)
 }
-
 
 1;

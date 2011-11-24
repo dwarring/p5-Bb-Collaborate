@@ -537,8 +537,15 @@ sub set_presentation {
     $session_id ||= $class->sessionId
 	if Scalar::Util::blessed($class);
 
-    croak 'usage: $'.(ref($class)||$class).'->set_presentation(\@presentation_ids)'
-	unless Scalar::Util::reftype( $presentation_ids ) eq 'ARRAY';
+    for ($presentation_ids) {
+	croak 'usage: $'.(ref($class)||$class).'->set_presentation(\@presentation_ids)'
+	    unless defined;
+	#
+	# coerce a single value to an array
+	#
+	$_ = [$_]
+	    if Elive::Util::_reftype($_) ne 'ARRAY';
+    }
 
     my $connection = $opt{connection} || $class->connection
 	or croak "Not connected";
@@ -574,8 +581,15 @@ sub set_multimedia {
     $session_id ||= $class->sessionId
 	if Scalar::Util::blessed($class);
 
-    croak 'usage: $'.(ref($class)||$class).'->set_multimedia(\@multimedia_ids)'
-	unless Scalar::Util::reftype( $multimedia_ids ) eq 'ARRAY';
+    for ($multimedia_ids) {
+	croak 'usage: $'.(ref($class)||$class).'->set_multimedia(\@multimedia_ids)'
+	    unless defined;
+	#
+	# coerce a single value to an array
+	#
+	$_ = [$_]
+	    if Elive::Util::_reftype($_) ne 'ARRAY';
+    }
 
     my $connection = $opt{connection} || $class->connection
 	or croak "Not connected";

@@ -3,16 +3,17 @@ abstract: 'Perl bindings for the Elluminate Live Standard Bridge (V2) [TRIAL]'
 author:
   - 'David Warring <david.warring@gmail.com>'
 build_requires:
-  ExtUtils::MakeMaker: 6.42
+  ExtUtils::MakeMaker: 6.56
   Test::Builder: 0
   Test::Exception: 0
   Test::More: 0
   Test::Warn: 0
   version: 0
 configure_requires:
-  ExtUtils::MakeMaker: 6.42
+  ExtUtils::MakeMaker: 6.56
 distribution_type: module
-generated_by: 'Module::Install version 1.01'
+dynamic_config: 1
+generated_by: 'Module::Install version 1.04'
 license: perl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
@@ -32,7 +33,6 @@ requires:
   Elive::Util: 0.01
   File::Basename: 0
   File::Spec: 0
-  Mime::Base64: 0
   Mouse: 0.56
   SOAP::Lite: 0.712
   Try::Tiny: 0
@@ -42,4 +42,5 @@ requires:
   perl: 5.8.3
 resources:
   license: http://dev.perl.org/licenses/
+  repository: https://dwarring@elive.svn.sourceforge.net/svnroot/elive/trunk/Elive-StandardV2
 version: 0.01_8

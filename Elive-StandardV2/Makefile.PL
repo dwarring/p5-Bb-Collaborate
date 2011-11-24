@@ -7,7 +7,7 @@ use inc::Module::Install;
 name           ('Elive-StandardV2');
 module_name    ('Elive::StandardV2');
 author         ('David Warring <david.warring@gmail.com>');
-all_from   ('lib/Elive/StandardV2.pm');
+all_from       ('lib/Elive/StandardV2.pm');
 license	       ('perl');
 install_script ();
 
@@ -20,7 +20,6 @@ requires(
     'File::Basename'               => 0,
     'Elive::DAO'                   => '0.04',
     'Elive::Util'                  => '0.01',
-    'Mime::Base64'                 => 0,
     'Mouse'                        => 0.56,
     'SOAP::Lite'                   => 0.712,
     'Try::Tiny'                    => 0,

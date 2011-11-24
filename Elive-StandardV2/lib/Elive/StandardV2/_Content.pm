@@ -20,7 +20,7 @@ sub BUILDARGS {
 
     my %args;
 
-    if ($spec && ! ref($spec) ) {
+    if (defined $spec && ! ref($spec) ) {
 	#
 	# Assume a single string arguments represents the local path of a file
 	# to be uploaded.
