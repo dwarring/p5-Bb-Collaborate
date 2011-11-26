@@ -23,7 +23,6 @@ requires(
     'HTML::Entities'               => 0,
     'IO::Interactive'              => 0,
     'MIME::Types'                  => 0,
-    'MIME::Base64'                 => 0,
     'Mouse'                        => 0.81,
     'Pod::Usage'                   => 1.33,  # for elive_raise_meeting
     'parent'                       => 0,
