@@ -99,7 +99,7 @@ LIVE TESTING
         export ELIVE_TEST_PASS=some_password
         make test
 
-    There's also some additional envirnoment variables that may be set
+    There's also some additional environment variables that may be set
     to further extend the range of tests:
 
     ELIVE_TEST_PRELOAD_SERVER_PATH - absolute path of an existing preload
