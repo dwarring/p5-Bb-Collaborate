@@ -222,7 +222,7 @@ Delete user objects. As a safeguard, you need to pass C<force =E<gt> 1> to delet
 system administrator accounts, or the login user.
 
 Note that a deleted user, will have its deleted property immediately set,
-but may remain accessable for a short period of time until garbage collected.
+but may remain accessible for a short period of time until garbage collected.
 
 So to check for a deleted user:
 

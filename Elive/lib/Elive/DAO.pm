@@ -457,7 +457,7 @@ string of the individual values sorted.
          ....
     }
 
-In particular meeting participants stringify to userId=role, eg
+In particular meeting participants stringify to userId=role, e.g.
 
     my $participant_list = Elive::Entity::ParticipantList->retrieve(98765);
     if ($participant_list->participants->stringify eq "11223344=3;2222222=2") {
@@ -478,7 +478,7 @@ instance, or the default connection that will be used.
 
 =head2 disconnect
 
-Disconnects and diassociates an Elluminate connection from this class. It is
+Disconnects and disassociates an Elluminate connection from this class. It is
 recommended that you do this prior to exiting your program.
 
 =cut

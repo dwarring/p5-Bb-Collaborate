@@ -514,7 +514,7 @@ Deletes a completed or unwanted session from the Elluminate server.
     $session->delete;
 
 Note that a session, will have its deleted property immediately set to true,
-but may remain accessable for a short period of time until garbage collected.
+but may remain accessible for a short period of time until garbage collected.
 
 So to check for a deleted session:
 
@@ -845,7 +845,7 @@ want to delete associated recordings when you delete sessions:
     $_->delete for (@$recordings);
 
 However it is often customary to keep recordings for an extended period of
-time - they will remain accessable from the C<Recordings> web page on your
+time - they will remain accessible from the C<Recordings> web page on your
 Elluminate Live! web server.
 
 For more information, please see L<Elive::Entity::Recording>.
