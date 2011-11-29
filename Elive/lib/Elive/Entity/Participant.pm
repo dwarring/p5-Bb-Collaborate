@@ -244,7 +244,7 @@ L<Elive::Entity::ParticipantList>
 L<Elive::Entity::Participants>
 L<Elive::Entity::User>
 L<Elive::Entity::Group>
-L<Elive::Entity::InvitedGues>;
+L<Elive::Entity::InvitedGuest>;
 L<Elive::Entity::Role>
 
 =cut
