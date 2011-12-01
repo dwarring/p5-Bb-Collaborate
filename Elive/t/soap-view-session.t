@@ -172,7 +172,7 @@ SKIP: {
 
 	$session->update;
 
-	is( exception {$session->delete} => undef,,'session deletion');
+	is( exception {$session->delete} => undef, 'session deletion - lives');
 
 	my $deleted_session;
 	my $del_session_err = exception {$deleted_session = Elive::View::Session->retrieve($session_id)};

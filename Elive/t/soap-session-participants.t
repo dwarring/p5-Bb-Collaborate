@@ -299,7 +299,7 @@ SKIP: {
     # tidy up
     #
 
-    is( exception {$session->delete} => undef,'session deletion');
+    is( exception {$session->delete} => undef, 'session deletion - lives');
 }
 
 Elive->disconnect;
