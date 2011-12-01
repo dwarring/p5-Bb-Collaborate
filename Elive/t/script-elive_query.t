@@ -2,7 +2,7 @@
 use warnings;
 use File::Spec;
 use Test::More;
-use Test::Exception;
+use Test::Fatal;
 use English qw(-no_match_vars);
 
 use lib '.';
@@ -137,7 +137,7 @@ SKIP: {
 	# there can potentially be several servers. Pick one and make
 	# sure it's known to us.
 	#
-	lives_ok(sub {($data, @_others) = YAML::Syck::Load($stdout)}, 'output is parsable YAML');
+	is( exception {($data, @_others) = YAML::Syck::Load($stdout)} => undef, 'output is parsable YAML');
 	isa_ok($data, 'HASH', 'result');
 
 	my $server_details_id = $data->{ServerDetails}{serverDetailsId};
@@ -205,7 +205,7 @@ SKIP: {
 	my $data;
 	my @guff;
 
-	lives_ok(sub {($data, @guff) = YAML::Syck::Load($stdout)}, 'session query output is parsable YAML');
+	is( exception {($data, @guff) = YAML::Syck::Load($stdout)} => undef, 'session query output is parsable YAML');
 	isa_ok($data, 'HASH', 'result');
 
 	ok(!@guff, 'single result returned for single row query');

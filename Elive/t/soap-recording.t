@@ -2,7 +2,7 @@
 use warnings; use strict;
 use Test::Builder;
 use Test::More tests => 22;
-use Test::Exception;
+use Test::Fatal;
 
 use lib '.';
 use t::Elive;
@@ -88,7 +88,7 @@ SKIP: {
     note "uploading recording: $recording_id";
     my $recording;
 
-    lives_ok( sub {
+    is( exception {
 	$recording = Elive::Entity::Recording->upload(
 	    {
 		recordingId => $recording_id,
@@ -98,13 +98,13 @@ SKIP: {
 		open => 0,
 	    },
 	    )
-	      },
+	      } => undef,
 	      "upload recording - lives",
 	);
 
-    lives_ok( sub {
+    is( exception {
 	$recording->update({roomName => $room_name.' (updated)', open => 1})
-	      },
+	      } => undef,
 	      'Recording update - lives');
 
     isa_ok($recording, $class, 'uploaded recording');
@@ -141,25 +141,25 @@ SKIP: {
 
     my $recordingJNLP;
 
-    lives_ok(sub {
+    is( exception {
 	$recordingJNLP = $recording->buildJNLP(
 	    userId => Elive->login->userId,
 	    userIP => '192.168.0.1',
-	    )},
+	    )} => undef,
 	     "buildJNLP - lives",
 	);
 
     ok($recordingJNLP && !ref($recordingJNLP), 'got recording JNLP');
-    lives_ok(sub {XMLin($recordingJNLP)}, 'JNLP is valid XML (XHTML)');
+    is( exception {XMLin($recordingJNLP)} => undef, 'JNLP is valid XML (XHTML)');
     ok(my $web_url = $recording->web_url, 'got recording web_url()');
 		
     $recording = undef;
 
     ok($recording = Elive::Entity::Recording->retrieve($recording_id), 'recording retrieval');
 
-    lives_ok(sub {$recording->delete}, 'recording delete - lives');
+    is( exception {$recording->delete} => undef, 'recording delete - lives');
 
-    dies_ok(sub {Elive::Entity::Recording->retrieve($recording_id)}, "retrieval after delete as expected");
+    isnt( exception {Elive::Entity::Recording->retrieve($recording_id)} => undef, "retrieval after delete as expected");
 
 }
 

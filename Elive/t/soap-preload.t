@@ -1,7 +1,7 @@
 #!perl -T
 use warnings; use strict;
 use Test::More tests => 65;
-use Test::Exception;
+use Test::Fatal;
 use Test::Builder;
 use version;
 
@@ -123,7 +123,7 @@ SKIP: {
     is($preloads[3]->type, 'plan','expected type (plan)');
     is($preloads[3]->mimeType, 'application/octet-stream','expected mimeType for plan');
 
-    dies_ok(sub{$preloads[3]->update({name => 'test_plan.elpx updated'})}, 'preload update - not available');
+    isnt( exception {$preloads[3]->update({name => 'test_plan.elpx updated'})} => undef, 'preload update - not available');
 
     $data_download = $preloads[3]->download;
 
@@ -150,47 +150,47 @@ SKIP: {
 
     # preload 0,1 - added at session setup
 
-    lives_ok(sub {$check = $session->check_preload($preloads[0])},
+    is( exception {$check = $session->check_preload($preloads[0])} => undef,
 	     'session->check_preload - lives');
 
     ok($check, 'check_preload following session creation');
 
     # preload 2 - meeting level access
 
-    lives_ok(sub {$check = $session->meeting->check_preload($preloads[2])},
+    is( exception {$check = $session->meeting->check_preload($preloads[2])} => undef,
 	     'session->check_preloads - lives');
 
     ok(!$check, 'check_preload prior to add - returns false');
 
-    lives_ok(sub {$session->meeting->add_preload($preloads[2])},
+    is( exception {$session->meeting->add_preload($preloads[2])} => undef,
 	     'adding meeting preloads - lives');
 
-    lives_ok(sub {$check = $session->meeting->check_preload($preloads[2])},
+    is( exception {$check = $session->meeting->check_preload($preloads[2])} => undef,
 	     'meeting->check_preloads - lives');
 
     ok($check, 'check_meeting after add - returns true');
 
     # just to define what happens if we attempt to re-add a preload
-    dies_ok(sub {$check = $session->meeting->add_preload($preloads[2])},
+    isnt( exception {$check = $session->meeting->add_preload($preloads[2])} => undef,
 	     're-add of preload to session - dies');
 
     # preload 3 - session level access
 
-    lives_ok(sub {$check = $session->check_preload($preloads[3])},
+    is( exception {$check = $session->check_preload($preloads[3])} => undef,
 	     'session->check_preloads - lives');
 
     ok(!$check, 'check_preload prior to add - returns false');
 
-    lives_ok(sub {$session->update({add_preload => $preloads[3]})},
+    is( exception {$session->update({add_preload => $preloads[3]})} => undef,
 	     'adding meeting preloads - lives');
 
-    lives_ok(sub {$check = $session->check_preload($preloads[3])},
+    is( exception {$check = $session->check_preload($preloads[3])} => undef,
 	     'meeting->check_preloads - lives');
 
     ok($check, 'check_meeting after add - returns true');
 
     my $preloads_list;
-    lives_ok(sub {$preloads_list = $session->list_preloads},
+    is( exception {$preloads_list = $session->list_preloads} => undef,
 	     'list_session_preloads - lives');
 
     isa_ok($preloads_list, 'ARRAY', 'preloads list');
@@ -213,10 +213,10 @@ SKIP: {
     #
     # verify that we can remove a preload
     #
-    lives_ok( sub {$session->remove_preload($preloads[1])},
+    is( exception {$session->remove_preload($preloads[1])} => undef,
 	      'meeting->remove_preload - lives');
 
-    lives_ok(sub {$preloads[0]->delete}, 'preloads deletion - lives');
+    is( exception {$preloads[0]->delete} => undef, 'preloads deletion - lives');
     #
     # just directly delete the second preload
     #
@@ -224,16 +224,16 @@ SKIP: {
     #
 
     my $preloads_list_2;
-    lives_ok(sub {$preloads_list_2 = $session->list_preloads},
+    is( exception {$preloads_list_2 = $session->list_preloads} => undef,
              'list_meeting_preloads - lives');
 
     isa_ok($preloads_list_2, 'ARRAY', 'preloads list');
 
-    ok(@$preloads_list_2 == scalar(@preloads)-2, 'meeting still has expected number of preloads');
+    is(scalar(@$preloads_list_2), scalar(@preloads)-2, 'meeting still has expected number of preloads');
 
     $session->delete;
 
-    dies_ok(sub {$preloads[0]->retrieve($preload_id)}, 'attempted retrieval of deleted preload - dies');
+    isnt( exception {$preloads[0]->retrieve($preload_id)} => undef, 'attempted retrieval of deleted preload - dies');
     my $server_details =  Elive->server_details
 	or die "unable to get server details - are all services running?";
 
@@ -244,7 +244,7 @@ SKIP: {
     }
     else {
 
-	lives_ok( sub {
+	is( exception {
 	    push (@preloads, Elive::Entity::Preload->upload(
 		      {
 			  type => 'whiteboard',
@@ -253,7 +253,7 @@ SKIP: {
 			  mimeType => 'video/mpeg',
 			  data => $data[1],
 		  },
-		  ))},
+		  ))} => undef,
 		  'upload of preload with no extension - lives'
 	    );
 
@@ -272,7 +272,7 @@ SKIP: {
 	my $basename = File::Basename::basename($path_on_server);
 	my $imported_preload;
 
-	lives_ok( sub {
+	is( exception {
 	    $imported_preload = Elive::Entity::Preload->import_from_server(
 		{
 		    name => $basename,
@@ -280,7 +280,7 @@ SKIP: {
 		    fileName => $path_on_server,
 		},
 		);
-		  },
+		  } => undef,
 		  'import_from_server - lives',     
          );
 
@@ -290,14 +290,14 @@ SKIP: {
 
 	is($imported_preload->name, $basename, 'imported preload name as expected');
 	ok($imported_preload->size > 0, 'imported preload has non-zero size');
-	lives_ok (sub {$imported_preload->delete}, 'imported preload delete - lives');
+	is ( exception {$imported_preload->delete} => undef, 'imported preload delete - lives');
 
 	#
 	# try the short form as well
 	#
-	lives_ok( sub {
+	is( exception {
 	    $imported_preload = Elive::Entity::Preload->import_from_server( $path_on_server)
-		  }, 'import_from_server (short form) - lives');
+		  } => undef, 'import_from_server (short form) - lives');
 
 	isa_ok($imported_preload, 'Elive::Entity::Preload', 'imported preload');
 
@@ -305,7 +305,7 @@ SKIP: {
 
 	is($imported_preload->name, $basename, 'imported preload name as expected');
 	ok($imported_preload->size > 0, 'imported preload has non-zero size');
-	lives_ok (sub {$imported_preload->delete}, 'imported preload delete - lives');
+	is ( exception {$imported_preload->delete} => undef, 'imported preload delete - lives');
  }
     else {
 	$t->skip('skipping import_preload_test (set ELIVE_TEST_PRELOAD_SERVER_PATH to run)')

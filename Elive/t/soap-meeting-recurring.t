@@ -1,7 +1,7 @@
 #!perl -T
 use warnings; use strict;
 use Test::More tests => 7;
-use Test::Exception;
+use Test::Fatal;
 
 use lib '.';
 use t::Elive;
@@ -35,7 +35,7 @@ SKIP: {
     );
 
     my @meetings;
-    lives_ok (sub {@meetings = $class->insert(\%meeting_data)}, 'creation of recurring meeting - lives');
+    is ( exception {@meetings = $class->insert(\%meeting_data)} => undef, 'creation of recurring meeting - lives');
 
     ok(@meetings == 3, 'got three meeting occurrences')
 	or die "meeting is not recurring - aborting";

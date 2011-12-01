@@ -1,7 +1,7 @@
 #!perl
 use warnings; use strict;
 use Test::More tests => 11;
-use Test::Exception;
+use Test::Fatal;
 
 use lib '.';
 use t::Elive::StandardV2;
@@ -29,7 +29,7 @@ SKIP: {
 	# exercise a direct connection from Elive main. No preload
 	# of connection or entity classes.
 	#
-	diag ("connecting: user=$auth->[1], url=$auth->[0]");
+        note("connecting: user=$auth->[1], url=$auth->[0]");
 	
 	$connection = Elive::StandardV2::Connection->connect(@$auth);
     }
@@ -48,7 +48,7 @@ SKIP: {
 	or exit(1);
 
     my $scheduling_manager;
-    lives_ok (sub {$scheduling_manager = $connection->scheduling_manager},
+    is ( exception {$scheduling_manager = $connection->scheduling_manager} => undef,
 	      '$connection->scheduling_manager - lives');
     isa_ok($scheduling_manager, 'Elive::StandardV2::SchedulingManager','scheduling_manager');
     my $min_version_num = '3.3.2';
@@ -74,12 +74,12 @@ SKIP: {
     }
 
     my $server_configuration;
-    lives_ok (sub{$server_configuration = $connection->server_configuration}, 'get server_configuration - lives');
+    is ( exception {$server_configuration = $connection->server_configuration} => undef, 'get server_configuration - lives');
     isa_ok($server_configuration, 'Elive::StandardV2::ServerConfiguration','server_configuration');
 
 
     my $server_version;
-    lives_ok (sub{$server_version = $connection->server_versions}, 'get server_versions - lives');
+    is ( exception {$server_version = $connection->server_versions} => undef, 'get server_versions - lives');
     if ($server_version) {
 	isa_ok($server_version, 'Elive::StandardV2::ServerVersions','server_versions');
 

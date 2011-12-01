@@ -1,7 +1,7 @@
 #!perl -T
 use warnings; use strict;
 use Test::More tests => 23;
-use Test::Exception;
+use Test::Fatal;
 
 use lib '.';
 use t::Elive;
@@ -90,10 +90,10 @@ SKIP: {
     $user->revert;
     ok(!$user->is_changed, 'user revert');
 
-    lives_ok(sub {$connection->disconnect},
+    is( exception {$connection->disconnect} => undef,
 	     'disconnect first connection - lives');
 
-    lives_ok(sub {$connection_2->disconnect},
+    is( exception {$connection_2->disconnect} => undef,
 	     'disconnect second connection - lives');
     
 }

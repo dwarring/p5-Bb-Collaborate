@@ -1,7 +1,7 @@
 #!perl -T
 use warnings; use strict;
 use Test::More tests => 16;
-use Test::Exception;
+use Test::Fatal;
 
 use lib '.';
 use t::Elive;
@@ -38,7 +38,7 @@ SKIP: {
 	);
 
     my @sessions;
-    lives_ok (sub {@sessions = $class->insert({%session_schedule, %session_opts})}, 'creation of recurring sessions - lives');
+    is ( exception {@sessions = $class->insert({%session_schedule, %session_opts})} => undef, 'creation of recurring sessions - lives');
 
     ok(@sessions == 3, 'got three session occurences')
 	or die "session is not recurring - aborting test";

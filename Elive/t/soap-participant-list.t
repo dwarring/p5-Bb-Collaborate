@@ -1,7 +1,7 @@
 #!perl -T
 use warnings; use strict;
 use Test::More tests => 34;
-use Test::Exception;
+use Test::Fatal;
 use Test::Builder;
 use List::Util;
 use Test::Warn;
@@ -66,12 +66,12 @@ SKIP: {
 				  role => 2}];
     #
     # NB. not neccessary to insert prior to update, but since we allow it
-    lives_ok(
-	sub {my $_p = Elive::Entity::ParticipantList->insert(
+    is(
+	exception {my $_p = Elive::Entity::ParticipantList->insert(
 		 {meetingId => $meeting->meetingId,
 		  participants => $participants_deep_ref});
 	     note ("participants=".$_p->participants->stringify);
-	},
+	} => undef,
 	'insert of participant deep list - lives');
 
     my $participant_list = Elive::Entity::ParticipantList->retrieve($meeting->meetingId);
@@ -84,7 +84,7 @@ SKIP: {
     is($participant_list->participants->stringify, Elive->login->userId.'=1',
        'participant shallow list - set correctly');
 
-    lives_ok(sub {$participant_list->update()}, 'participant list update - lives');
+    is( exception {$participant_list->update()} => undef, 'participant list update - lives');
     is($participant_list->participants->stringify, Elive->login->userId.'=2',
        'participant list update - has reset moderator privileges');
 
@@ -100,7 +100,7 @@ SKIP: {
     #
     my ($participant1, $participant2, @participants);
 
-    lives_ok( sub {
+    is( exception {
 	#
 	# for datasets with 1000s of entries
 	($participant1,$participant2, @participants) = grep {$_->userId ne $meeting->facilitatorId} @{ Elive::Entity::User->list(filter => 'lastName = Sm*') };
@@ -108,7 +108,7 @@ SKIP: {
 	# for modest test datasets
 	($participant1,$participant2, @participants) = grep {$_->userId ne $meeting->facilitatorId} @{ Elive::Entity::User->list() }
 	    unless @participants;
-	      },
+	      } => undef,
 	      'get_users - lives');
 
     #
@@ -121,7 +121,7 @@ SKIP: {
 
 	$participant_list->participants->add($participant1->userId.'=3');
 
-	lives_ok(sub {$participant_list->update}, 'setting of participant - lives');
+	is( exception {$participant_list->update} => undef, 'setting of participant - lives');
 
 	ok(!$meeting->is_moderator( $participant1), '!is_moderator($participant1)');
 
@@ -156,8 +156,8 @@ SKIP: {
     $participant_list->reset();
 
     if (@participants) {
-	lives_ok( sub {$participant_list->update({participants => \@participants}),
-		  }, 'setting up a larger meeting - lives');
+	is( exception {$participant_list->update({participants => \@participants}) => undef,
+		  } => undef, 'setting up a larger meeting - lives');
     }
     else {
 	$t->skip('insufficent users to run large meeting tests');
@@ -171,13 +171,13 @@ SKIP: {
     ok(!$meeting->is_participant( $gate_crasher ), '!is_participant($gate_crasher)');
     ok(!$meeting->is_moderator( $gate_crasher ), '!is_moderator($gate_crasher)');
 
-    dies_ok(sub {
+    isnt( exception {
 	$participant_list->participants->add($gate_crasher.'=3');
 	$participant_list->update($gate_crasher.'=3');
-	    },
+	    } => undef,
 	    'add of unknown participant - dies');
 
-    lives_ok(sub {$participant_list->update({participants => []})},
+    is( exception {$participant_list->update({participants => []})} => undef,
 	     'clearing participants - lives');
 
     my $p = $participant_list->participants;
@@ -233,7 +233,7 @@ SKIP: {
 	# a long list. was a problem prior to elm 3.3.4
 	#
 
-	lives_ok(sub{
+	is( exception {
 	    my $participants_str = join(';', 
 					Elive->login->userId.'=2',
 					map {$_.'=3'} @big_user_list
@@ -245,7 +245,7 @@ SKIP: {
 	    my $som = $connection->call('setParticipantList' => %{Elive::Entity::ParticipantList->_freeze(\%params)});
 
 	    $connection->_check_for_errors( $som );
-		 },
+		 } => undef,
 		 'participants long-list test - lives'
 	    );
 	#
@@ -272,8 +272,8 @@ SKIP: {
     #
     # test groups of participants
     #
-    lives_ok( sub {
-	@groups = @{ Elive::Entity::Group->list() } },
+    is( exception {
+	@groups = @{ Elive::Entity::Group->list() } } => undef,
 	'list all groups - lives');
 
     splice(@groups, 10) if @groups > 10;
@@ -296,7 +296,7 @@ SKIP: {
     # tidy up
     #
 
-    lives_ok(sub {$meeting->delete},'meeting deletion');
+    is( exception {$meeting->delete} => undef, 'meeting deletion - lives');
 }
 
 Elive->disconnect;

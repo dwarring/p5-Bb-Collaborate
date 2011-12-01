@@ -1,7 +1,7 @@
 #!perl -T
 use warnings; use strict;
 use Test::More tests => 18;
-use Test::Exception;
+use Test::Fatal;
 use Test::Builder;
 
 my $t = Test::Builder->new();
@@ -133,7 +133,7 @@ do {
 	    for (1 .. 2);
     }
     else {
-	lives_ok(sub {$group2->update}, "group update - lives");
+	is( exception {$group2->update} => undef, "group update - lives");
 	is($group2->members->stringify, $expected_members_str, "members stringification (after update)");
     }
 
@@ -150,18 +150,16 @@ do {
 	    for (1);
     }
     else {
-	dies_ok(sub {$group2->update}, "attempt group update with circular reference - dies");
+	isnt( exception {$group2->update} => undef, "attempt group update with circular reference - dies");
     }
 
     $group2->revert;
 };
 
-lives_ok(sub {$group->delete; $group2->delete}, 'group delete - lives');
+is( exception {$group->delete; $group2->delete} => undef, 'group delete - lives');
 
 foreach (@inserted_users) {
     $_->delete;
 }
 
 Elive->disconnect;
-
-

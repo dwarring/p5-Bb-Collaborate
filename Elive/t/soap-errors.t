@@ -1,7 +1,7 @@
 #!perl -T
 use warnings; use strict;
 use Test::More tests => 5;
-use Test::Exception;
+use Test::Fatal;
 use version;
 
 use lib '.';
@@ -28,19 +28,18 @@ SKIP: {
 
     my $good_som;
     {
-	lives_ok( sub{$good_som = $connection->call('getServerDetails')}, 'legitimate soap call - lives...');
+	is( exception {$good_som = $connection->call('getServerDetails')} => undef, 'legitimate soap call - lives...');
     }
 
-    lives_ok( sub{$connection->_check_for_errors($good_som)}, '...and lives when checked');
+    is( exception {$connection->_check_for_errors($good_som)} => undef, '...and lives when checked');
 
    my $bad_som;
     {
 	local($connection->known_commands->{'unknownCommandXXX'}) = 'r';
-	lives_ok( sub{$bad_som = $connection->call('unknownCommandXXX')}, 'call to unknown command - intially lives...');
+	is( exception {$bad_som = $connection->call('unknownCommandXXX')} => undef, 'call to unknown command - intially lives...');
     }
 
-    dies_ok( sub{$connection->_check_for_errors($bad_som)}, '...but dies when checked');
-
+    isnt( exception {$connection->_check_for_errors($bad_som)} => undef, '...but dies when checked');
 
 }
 

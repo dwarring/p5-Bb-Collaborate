@@ -1,7 +1,7 @@
 #!perl -T
 use warnings; use strict;
 use Test::More tests => 22;
-use Test::Exception;
+use Test::Fatal;
 use Test::Builder;
 use version;
 
@@ -67,7 +67,7 @@ $pleb_user->update(\%update_data);
 # try out the changePassword. The password is never returned. The best we
 # can do is check that it lives.
 #
-lives_ok(sub {$pleb_user->change_password( t::Elive::generate_id() )},
+is( exception {$pleb_user->change_password( t::Elive::generate_id() )} => undef,
 	 'change_password - lives');
 
 foreach (keys %update_data) {
@@ -108,26 +108,26 @@ else {
 	for (1 .. 2);
 }
 
-lives_ok(
-    sub {
+is(
+    exception {
 	$admin_user->set('email' => 'bbill@test.org',
 			 role => 3,);
-    },
+    } => undef,
     "setter on live entity - lives"
     );
 
-dies_ok( sub{$admin_user->update}, "update of admin user without -force - dies");
-lives_ok( sub{$admin_user->update(undef, force => 1)}, "update of admin user with -force - lives");
+isnt( sub{$admin_user->update} => undef, "update of admin user without -force - dies");
+is( exception {$admin_user->update(undef, force => 1)} => undef, "update of admin user with -force - lives");
 #
 # restore the user's admin status
 #
 $admin_user->update({role => 0}, force => 1);
 
-dies_ok(sub {$admin_user->delete},"delete admin user without -force - dies");
-lives_ok(sub {$admin_user->delete(force => 1)},"delete admin user with -force - lives");
+isnt( exception {$admin_user->delete} => undef,"delete admin user without -force - dies");
+is( exception {$admin_user->delete(force => 1)} => undef,"delete admin user with -force - lives");
 
-dies_ok(
-    sub {$admin_user->set('email' => 'blinky@test.org')},
+isnt(
+    exception {$admin_user->set('email' => 'blinky@test.org')} => undef,
     "setter on deleted entity - dies"
     );
 
@@ -141,9 +141,9 @@ $admin_user = eval { $class->retrieve($admin_id) };
 #
 ok(!$admin_user || $admin_user->deleted, 'admin user deleted');
 
-lives_ok(sub {$pleb_user->delete},"delete regular user - lives");
+is( exception {$pleb_user->delete} => undef,"delete regular user - lives");
 
 my $login_user = $connection->login;
-dies_ok(sub {$login_user->delete},"delete login user - dies");
+isnt( exception {$login_user->delete} => undef,"delete login user - dies");
 
 Elive->disconnect;

@@ -1,7 +1,7 @@
 #!perl -T
 use warnings; use strict;
 use Test::More;
-use Test::Exception;
+use Test::Fatal;
 use Test::Builder;
 use Elive::StandardV2;
 use Elive::StandardV2::Session;
@@ -63,11 +63,11 @@ SKIP: {
 
     my $session;
 
-    lives_ok( sub {$session = $class->insert(\%session_data);},
+    is( exception {$session = $class->insert(\%session_data);} => undef,
 	     'insert with no tainted data - lives');
 
     $session_data{sessionName} = $session_name_tainted;
-    dies_ok( sub {$session = $class->insert(\%session_data);},
+    isnt( sub {$session = $class->insert(\%session_data);} => undef,
 	     'insert with tainted Str data - dies');
 
     isa_ok($session, $class, 'session');
@@ -79,11 +79,11 @@ SKIP: {
 	chairNotes => $chair_notes_tainted,
 	);
 
-    dies_ok(sub {$session->update(\%update_data)}, 'update with tainted Str data - dies');
+    isnt( exception {$session->update(\%update_data)} => undef, 'update with tainted Str data - dies');
 
     $update_data{chairNotes} = $chair_notes_untainted;
 
-    lives_ok(sub {$session->update(\%update_data)}, 'update with no tainted data - lives');
+    is( exception {$session->update(\%update_data)} => undef, 'update with no tainted data - lives');
 
     my $session_id = $session->sessionId;
 
@@ -91,10 +91,10 @@ SKIP: {
 
     my $sessions;
 
-    dies_ok (sub {$sessions = Elive::StandardV2::Session->list(filter => {sessionName => $session_name_tainted})},
+    isnt (sub {$sessions = Elive::StandardV2::Session->list(filter => {sessionName => $session_name_tainted})} => undef,
 	'List with tainted filter - dies');
   
-    lives_ok (sub {$sessions = Elive::StandardV2::Session->list(filter => {sessionName => $session_name_untainted})},
+    is ( exception {$sessions = Elive::StandardV2::Session->list(filter => {sessionName => $session_name_untainted})} => undef,
 	'List with untainted filter - lives');
   
     is(scalar @$sessions, 1, 'list returns unique session');
@@ -105,7 +105,7 @@ SKIP: {
     ok ($session = Elive::StandardV2::Session->retrieve($session_id),
 	'Refetch of session');
 
-    lives_ok(sub {$session->delete},'session deletion - lives');
+    is( exception {$session->delete} => undef, 'session deletion - lives');
 
 }
 

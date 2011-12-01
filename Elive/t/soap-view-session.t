@@ -1,7 +1,7 @@
 #!perl -T
 use warnings; use strict;
 use Test::More tests => 31;
-use Test::Exception;
+use Test::Fatal;
 use Test::Builder;
 
 use lib '.';
@@ -93,7 +93,7 @@ SKIP: {
 	# high level check of our aliasing. updating inSessionInvitations should
 	# be equivalent to updating inSessionInvitation
 	#
-	lives_ok( sub {$session->update({inSessionInvitations => 0})}, "update inSessionInvitations (alias) - lives");
+	is( exception {$session->update({inSessionInvitations => 0})} => undef, "update inSessionInvitations (alias) - lives");
 	ok( ! $session->inSessionInvitation, "update inSessionInvitation via alias - as expected" );
     
 	do {
@@ -102,14 +102,14 @@ SKIP: {
 	    # more detailed.
 	    #
 	    my $sessionJNLP;
-	    lives_ok(sub {$sessionJNLP = $session->buildJNLP(
+	    is( exception {$sessionJNLP = $session->buildJNLP(
 			      version => '8.0',
 			      displayName => 'Elive Test',
-			      )},
+			      )} => undef,
 		     '$session->buildJNLP - lives');
 
 	    ok($sessionJNLP && !ref($sessionJNLP), 'got session JNLP');
-	    lives_ok(sub {XMLin($sessionJNLP)}, 'JNLP is valid XML (XHTML)');
+	    is( exception {XMLin($sessionJNLP)} => undef, 'JNLP is valid XML (XHTML)');
 	};
 
 	ok(my $web_url = $session->web_url, 'got session web_url()');
@@ -119,7 +119,7 @@ SKIP: {
 	#
 	# try to gather some users as participants
 
-	lives_ok( sub {
+	is( exception {
 	    #
 	    # for datasets with 1000s of entries
 	    @participants = grep {$_->userId ne $session->facilitatorId} @{ Elive::Entity::User->list(filter => 'lastName = Sm*') };
@@ -127,7 +127,7 @@ SKIP: {
 	    # for modest test datasets
 	    @participants = grep {$_->userId ne $session->facilitatorId} @{ Elive::Entity::User->list() }
 	    unless @participants >= 2;
-		  },
+		  } => undef,
 		  'get_users - lives');
 
 	#
@@ -138,8 +138,8 @@ SKIP: {
 
 	if (@participants >= 2) {
 # see todo list in Elive::Entity::ParticipantList
-	    lives_ok( sub {$session->update({participants => \@participants}),
-		  }, 'setting participants - lives');
+	    is( exception {$session->update({participants => \@participants}),
+		  } => undef, 'setting participants - lives');
 
 	    ok( @{ $session->participants } >= @participants, 'session has the expected number of participants' );
 	}
@@ -172,14 +172,14 @@ SKIP: {
 
 	$session->update;
 
-	lives_ok(sub {$session->delete},'session deletion');
+	is( exception {$session->delete} => undef,,'session deletion');
 
 	my $deleted_session;
-	eval {$deleted_session = Elive::View::Session->retrieve($session_id)};
+	my $del_session_err = exception {$deleted_session = Elive::View::Session->retrieve($session_id)};
 
 	#
 	# the session has either been marked for garbage collection or deleted
-	ok($@ || !$deleted_session || $deleted_session->deleted,
+	ok($del_session_err || !$deleted_session || $deleted_session->deleted,
 	   'session showing as deleted');
     };
 }

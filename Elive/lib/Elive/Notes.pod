@@ -10,8 +10,8 @@ Elluminate site instances by default use McKoi - a lightweight pure
 Java/JDBC database.
 
 You might want to consider using other databases, such as  SQL Server,
-Oracle or MySQL. These are supported by Elluminate and have JDBC bridges
-available.
+Oracle or MySQL. These are supported by the Elluminate I<Live!> Manager (ELM)
+and have JDBC bridges available.
 
 Elluminate Live! also bundles JDBCScriptTool and JDBCQueryTool. At a pinch
 you can use either to obtain basic SQL access to McKoi databases.

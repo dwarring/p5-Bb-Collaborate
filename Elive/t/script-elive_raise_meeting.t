@@ -3,7 +3,7 @@ use strict;
 use warnings;
 use File::Spec;
 use Test::More;
-use Test::Exception;
+use Test::Fatal;
 use English qw(-no_match_vars);
 use version;
 use Test::Builder;
@@ -141,7 +141,7 @@ SKIP: {
 
 	    ok($duration >= 9 * 60 && $duration <= 61 * 60 , "sensible default duration");
 
-	    lives_ok(sub {$meeting->delete}, 'deletion - lives');
+	    is( exception {$meeting->delete} => undef, 'deletion - lives');
 	};
 
       REPEATED_MEETING:
@@ -257,7 +257,7 @@ SKIP: {
 
 		$last_meeting_start = $start;
 
-		lives_ok(sub {$meeting->delete}, "week $week: deletion - lives");
+		is( exception {$meeting->delete} => undef, "week $week: deletion - lives");
 	    }
 
 	    ok ($week == $weeks, "expected number of meeting repeats ($weeks)");
@@ -298,7 +298,7 @@ SKIP: {
 		ok($result, "meeting -${flag} as expected");
 	    }
 
-	    lives_ok(sub {$meeting->delete}, "deletion - lives");
+	    is( exception {$meeting->delete} => undef, "deletion - lives");
 
 	};
 
@@ -333,7 +333,7 @@ SKIP: {
 		ok(!$result, "meeting -no${flag} as expected");
 	    }
 
-	    lives_ok(sub {$meeting->delete}, "deletion - lives");
+	    is( exception {$meeting->delete} => undef, "deletion - lives");
 
 	};
 
@@ -386,7 +386,7 @@ SKIP: {
 		    is($result, $expected_value, "meeting run $run: -${option}, $expected_value");
 		}
 
-		lives_ok(sub {$meeting->delete}, "deletion - lives");
+		is( exception {$meeting->delete} => undef, "deletion - lives");
 
 	    }
 	}

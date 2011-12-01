@@ -1,7 +1,7 @@
 #!perl -T
 use warnings; use strict;
 use Test::More tests => 12;
-use Test::Exception;
+use Test::Fatal;
 use Test::Builder;
 use version;
 
@@ -66,18 +66,18 @@ SKIP: {
 	enableTelephony => 1,
 	);
 
-    lives_ok(sub {$session->update(\%telephony_data)},'telephony update - lives');
+    is( exception {$session->update(\%telephony_data)} => undef,'telephony update - lives');
 
     $session = undef;
 
-    lives_ok(sub {$session = Elive::Entity::Session->retrieve($session_id)},
+    is( exception {$session = Elive::Entity::Session->retrieve($session_id)} => undef,
 	     'retrieve session with telephony - lives');
 
     foreach (keys %telephony_data) {
 	is($session->$_, $telephony_data{$_}, "session telephony: $_ - as expected");
     }
 
-    lives_ok(sub {$session->delete},'session deletion - lives');
+    is( exception {$session->delete} => undef,'session deletion - lives');
 }
 
 Elive->disconnect;

@@ -1,7 +1,6 @@
 #!perl -T
 use warnings; use strict;
 use Test::More tests => 6;
-use Test::Exception;
 use Test::Builder;
 use version;
 

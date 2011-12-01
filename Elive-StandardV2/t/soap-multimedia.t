@@ -1,7 +1,7 @@
-#!perl
+#!perl -T
 use warnings; use strict;
 use Test::More tests => 3;
-use Test::Exception;
+use Test::Fatal;
 use Test::Builder;
 
 use lib '.';
@@ -30,7 +30,7 @@ SKIP: {
 
   TODO: {
       local $TODO = 'insert of preload';
-      lives_ok(sub {
+      is( exception {
 	  $multimedia = Elive::StandardV2::Multimedia->upload(
 	      {
 		filename => 'elive-standardv2-soap-session-multimedia-t.mpeg',
@@ -38,7 +38,7 @@ SKIP: {
                 description => 'created by t/soap-multimedia.t',
 		creatorId => 'elive-standardv2-tester',
 	      })
-	       },
+	       } => undef,
 	       'insert multimedia - lives'
 	  );
     }
@@ -52,7 +52,7 @@ SKIP: {
     # Body of tests to be adapted from Elive/t/soap-preload.t
     #
 
-    lives_ok(sub {$multimedia->delete},'multimedia deletion - lives');
+    is( exception {$multimedia->delete} => undef, 'multimedia deletion - lives');
 }
 
 Elive::StandardV2->disconnect;

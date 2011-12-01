@@ -1,7 +1,7 @@
 #!perl
 use warnings; use strict;
 use Test::More tests => 11;
-use Test::Exception;
+use Test::Fatal;
 use Test::Builder;
 use version;
 
@@ -48,7 +48,7 @@ SKIP: {
     my ($session) = $class->insert(\%session_data);
 
     my $session_telephony;
-    lives_ok(sub {$session_telephony = $session->telephony}, 'get session telephony - lives');
+    is( exception {$session_telephony = $session->telephony} => undef, 'get session telephony - lives');
 
     my %telephony_data = (
 	chairPhone => '(03) 5999 1234',
@@ -60,18 +60,18 @@ SKIP: {
 	sessionPIN => '1234',
 	);
 
-    lives_ok(sub {$session_telephony->update(\%telephony_data)},'telephony update - lives');
+    is( exception {$session_telephony->update(\%telephony_data)} => undef, 'telephony update - lives');
 
     $session_telephony = undef;
 
-    lives_ok(sub {$session_telephony = Elive::StandardV2::SessionTelephony->retrieve($session)},
+    is( exception {$session_telephony = Elive::StandardV2::SessionTelephony->retrieve($session)} => undef,
 	     'retrieve session telephony (direct) lives');
 
     foreach (keys %telephony_data) {
 	is($telephony_data{$_},  $session_telephony->$_, "session telephony: $_ - as expected");
     }
 
-    lives_ok(sub {$session->delete},'session deletion - lives');
+    is( exception {$session->delete} => undef,'session deletion - lives');
 
 }
 

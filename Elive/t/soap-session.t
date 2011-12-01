@@ -1,7 +1,7 @@
 #!perl -T
 use warnings; use strict;
 use Test::More tests => 62;
-use Test::Exception;
+use Test::Fatal;
 use Test::Warn;
 use Test::Builder;
 use version;
@@ -25,63 +25,63 @@ ok($class->can('start')
    && $class->can('meeting')
    , 'delegation sanity');
 
-lives_ok(sub {
+is( exception {
     $class->_readback_check(
 	{id => 12345, name => 'as expected'},
 	[{id => 12345, meeting => {meetingId => 12345, name => 'as expected'}}]
-	)}, 'readback on valid data -lives');
+	)} => undef, 'readback on valid data -lives');
 
 #
 # meeting password is not echoed in response
 #
-lives_ok(sub {
+is( exception {
     $class->_readback_check(
 	{id => 12345, name => 'as expected', password=>'ssshhh!'},
 	[{id => 12345, meeting => {meetingId => 12345, name => 'as expected', password => ''}}]
-	)}, 'readback ignores blank password');
+	)} => undef, 'readback ignores blank password');
 
-dies_ok(sub {
+isnt( exception {
     $class->_readback_check(
 	{id => 12345, name => 'expected meeting name'},
 	[{id => 12345, meeting => {meetingId => 12345, name => 'whoops!'}}]
-	)}, 'readback on invalid sub-record data - dies');
+	)} => undef, 'readback on invalid sub-record data - dies');
 
-dies_ok(sub {
+isnt( exception {
     $class->_readback_check(
 	{id => 12345, name => 'as expected'},
 	[{id => 99999, meeting => {meetingId => 12345, name => 'as expected'}}]
-	)}, 'readback on invalid primary key - dies');
+	)} => undef, 'readback on invalid primary key - dies');
 
-dies_ok(sub {
+isnt( exception {
     $class->_readback_check(
 	{id => 12345, name => 'as expected'},
 	[{id => 12345, meeting => {meetingId => 9999, name => 'as expected'}}]
-	)}, 'readback on valid sub-record primary key - dies');
+	)} => undef, 'readback on valid sub-record primary key - dies');
 
-lives_ok( sub {
+is( exception {
     $class->_readback_check(
 	{id => 12345, participants => 'bob=3;alice=2'},
 	[{id => 12345, participantList => {meetingId => 12345, participants => 'alice=2;bob=3'}}]
-	)}, 'readback - participants are order independant');
+	)} => undef, 'readback - participants are order independant');
 
-lives_ok( sub {
+is( exception {
     $class->_readback_check(
 	{id => 12345, participants => 'alice=2;bob=3'},
 	[{id => 12345, participantList => {meetingId => 12345, participants => 'alice=2;bob=3'}}]
-	)}, 'readback with expected recipients - lives');
+	)} => undef, 'readback with expected recipients - lives');
 
-dies_ok( sub {
+isnt( exception {
     $class->_readback_check(
 	{id => 12345, participants => 'bob=3;alice=2'},
 	[{id => 12345, participantList => {meetingId => 12345, participants => 'alice=2'}}]
-	)},
+	)} => undef,
 	 'readback with missing participants - dies');
 
-dies_ok( sub {
+isnt( exception {
     $class->_readback_check(
 	{id => 12345, participants => 'bob=3;alice=2'},
 	[{id => 12345, participantList => {meetingId => 12345, participants => 'alice=2;bob=3;gatecrasher=3'}}]
-	)}, 'readback with extraneous participants - dies');
+	)} => undef, 'readback with extraneous participants - dies');
 
 my $session_start = time();
 my $session_end = $session_start + 900;
@@ -173,7 +173,7 @@ SKIP: {
 	my $preload2 = _create_preload();
 	$update_data{preloadIds} = [$preload2];
 
-	lives_ok( sub{$session->update( \%update_data )}, 'session update - lives' );
+	is( exception {$session->update( \%update_data )} => undef, 'session update - lives' );
 
 	$preloads = undef;
 	$preloads = $session->list_preloads;
@@ -194,19 +194,19 @@ SKIP: {
 
 	do {
 	    my $sessionJNLP;
-	    lives_ok(sub {$sessionJNLP = $session->buildJNLP(
-			      version => '8.0',
-			      displayName => 'Elive Test',
-			      )},
+	    is ( exception {$sessionJNLP = $session->buildJNLP(
+			       version => '8.0',
+			       displayName => 'Elive Test',
+			       )} => undef,
 		     '$session->buildJNLP - lives');
 
 	    ok($sessionJNLP && !ref($sessionJNLP), 'got session JNLP');
-	    lives_ok(sub {XMLin($sessionJNLP)}, 'session JNLP is valid XML (XHTML)');
+	    is( exception {XMLin($sessionJNLP)} => undef, 'session JNLP is valid XML (XHTML)');
 	};
 	
 	ok($session->web_url, 'got session web_url()');
 
-	lives_ok( sub{$session->update()}, 'ineffective session update - lives' );
+	is( exception {$session->update()} => undef, 'ineffective session update - lives' );
 	$preload->delete;
 	$preload2->delete;
 

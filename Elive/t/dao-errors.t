@@ -1,7 +1,7 @@
 #!perl -T
 use warnings; use strict;
 use Test::More tests => 30;
-use Test::Exception;
+use Test::Fatal;
 
 package main;
 
@@ -17,11 +17,11 @@ use t::Elive::MockConnection;
 
 Elive->connection( t::Elive::MockConnection->connect() );
 
-dies_ok(
-    sub {
+isnt(
+    exception {
 	Elive::Entity::User->construct
 	    ({	loginName => 'user',
-		loginPassword => 'pass'})},
+		loginPassword => 'pass'})} => undef,
 ##    "can't construct Elive::Entity::User without value for primary key field: userId",
     "construct without primary key - dies"
     );
@@ -35,10 +35,10 @@ my %user_data =  (
 
 my $user_obj;
 
-lives_ok(
-    sub {
+is(
+    exception {
 	$user_obj = Elive::Entity::User->construct(\%user_data)
-    },
+    } => undef,
     "initial construction - lives"
     );
 
@@ -48,35 +48,35 @@ unless ($user_obj) {
 
 $user_obj->loginName( $user_obj->loginName .'x' );
 
-dies_ok(
-    sub {Elive::Entity::User->construct(\%user_data)},
+isnt(
+    exception {Elive::Entity::User->construct(\%user_data)} => undef,
     "reconstructing unsaved object - dies"
     );
 
 $user_obj->revert;
 
-lives_ok(
-    sub {Elive::Entity::User->construct(\%user_data)},
+is(
+    exception {Elive::Entity::User->construct(\%user_data)} => undef,
     "construction after reverting changes - lives"
     );
 
-lives_ok(
-    sub {$user_obj->set('email', 'bbill@test.org')},
+is(
+    exception {$user_obj->set('email', 'bbill@test.org')} => undef,
     "setter on non-key value - lives"
     );
 
-dies_ok(
-    sub {$user_obj->set(userId => undef)},
+isnt(
+    exception {$user_obj->set(userId => undef)} => undef,
     "clearing primary key field - dies"
     );
 
-dies_ok(
-    sub {$user_obj->set('userId', $user_obj->userId.'9')},
+isnt(
+    exception {$user_obj->set('userId', $user_obj->userId.'9')} => undef,
     "updating primary key field - dies"
     );
 
-lives_ok(
-    sub {$user_obj->set('userId', $user_obj->userId)},
+is(
+    exception {$user_obj->set('userId', $user_obj->userId)} => undef,
     "ineffective primary key update - lives"
     );
 
@@ -90,69 +90,69 @@ my %meeting_data = (meetingId => 1111111,
 
 my $meeting;
 
-lives_ok(
-    sub {$meeting = Elive::Entity::Meeting->construct(\%meeting_data)},
+is(
+    exception {$meeting = Elive::Entity::Meeting->construct(\%meeting_data)} => undef,
 	 'construct meeting with valid data - lives'
     );
 
-lives_ok(sub {$meeting->_readback_check( \%meeting_data, [\%meeting_data] )},
+is( exception {$meeting->_readback_check( \%meeting_data, [\%meeting_data] )} => undef,
 	 'readback on unchanged data - lives');
 
-dies_ok(
-    sub {
+isnt(
+    exception {
 	my %changed = %meeting_data;
 	$changed{meetingId}++;
 	$meeting->_readback_check( \%meeting_data, [\%changed] )
-    },
+    } => undef,
     'readback with changed Int property - dies');
 
-dies_ok(
-    sub {
+isnt(
+    exception {
 	my %changed = %meeting_data;
 	$changed{restrictedMeeting} = !$changed{restrictedMeeting};
 	$meeting->_readback_check( \%meeting_data, [\%changed] )
-    },
+    } => undef,
     'readback with changed Bool property - dies');
 
-dies_ok(
-    sub {
+isnt(
+    exception {
 	my %changed = %meeting_data;
 	$changed{name} .= 'x';
 	$meeting->_readback_check( \%meeting_data, [\%changed] )
-    },
+    } => undef,
     'readback with changed Str property - dies');
 
-dies_ok(
-    sub {
+isnt(
+    exception {
 	my %changed = %meeting_data;
 	$changed{start} .= '9';
 	$meeting->_readback_check( \%meeting_data, [\%changed] )
-    },
+    } => undef,
     'readback with changed hiResDate property - dies');
 
-lives_ok(
-    sub {
+is(
+    exception {
 	my %extra = %meeting_data;
 	$extra{adapter} = 'test';
 	$meeting->_readback_check( \%meeting_data, [\%extra] )
-    },
+    } => undef,
     'extra readback property - lives');
 
-lives_ok(
-    sub {
+is(
+    exception {
 	my %extra = %meeting_data;
 	$extra{adapter} = 'test';
 	$meeting->_readback_check( \%extra, [\%meeting_data] )
-    },
+    } => undef,
     'property missing from readback - lives');
 
-lives_ok(
-    sub {$meeting->set(password => undef)},
+is(
+    exception {$meeting->set(password => undef)} => undef,
     "setting optional field to undef - lives"
     );
 
-dies_ok(
-    sub {$meeting->set(start => undef)},
+isnt(
+    exception {$meeting->set(start => undef)} => undef,
     "setting required field to undef - dies"
     );
 
@@ -163,42 +163,42 @@ foreach (qw(meetingId name start end)) {
     my %bad_meeting_data = %meeting_data;
     delete $bad_meeting_data{$_};
 
-    dies_ok(
-	sub {Elive::Entity::Meeting->construct(\%bad_meeting_data)},
+    isnt(
+	exception {Elive::Entity::Meeting->construct(\%bad_meeting_data)} => undef,
 	"meeting without required $_ - dies"
 	);
 }
 
 foreach my $fld (qw/meetingId start/) {
-    dies_ok(
-	sub {
+    isnt(
+	exception {
 	    local $meeting_data{$fld} = 'non numeric data';
 	    Elive::Entity::Meeting->construct(\%meeting_data);
-	},
+	} => undef,
 	"meeting with non numeric $fld - dies"
 	);
 }
 
-lives_ok(
-	 sub {Elive::Entity::MeetingParameters->construct
+is(
+    exception {Elive::Entity::MeetingParameters->construct
 	     ({
 		 meetingId => 1111111,
 		 recordingStatus => 'remote',
-	      })},
-	      'meeting parameters - valid recordingStatus - lives',
+	      })} => undef,
+    'meeting parameters - valid recordingStatus - lives',
     );
 
-dies_ok(
-    sub {Elive::Entity::MeetingParameters->construct
+isnt(
+    exception {Elive::Entity::MeetingParameters->construct
 	     ({
 		 meetingId => 222222,
 		 recordingStatus => 'CRUD',
-	      })},
+	      })} => undef,
 	      'meeting parameters - invalid recordingStatus - dies',
     );       
 
-lives_ok(
-	 sub {Elive::Entity::Preload->construct
+is(
+    exception {Elive::Entity::Preload->construct
 	     ({
 		 preloadId => 333333,
 		 name => 'test.swf',
@@ -206,43 +206,43 @@ lives_ok(
 		 ownerId => 123456789000,
 		 size => 1024,
 		 type => 'media',
-	      })},
+	      })} => undef,
 	      'meeting parameters - valid type - lives',
-    );       
-
-dies_ok(
-	 sub {Elive::Entity::Preload->construct
-	     ({
-		 preloadId => 333333,
-		 name => 'test.swf',
-		 mimeType => 'mimeType=application/x-shockwave-flash',
-		 ownerId => 123456789000,
-		 size => 1024,
-		 type => 'crud',
-	      })},
-	      'meeting parameters - invalid type - dies',
     );
 
-lives_ok(
-    sub{Elive::Entity::MeetingParameters->_thaw
+isnt(
+    exception {Elive::Entity::Preload->construct
+		   ({
+		       preloadId => 333333,
+		       name => 'test.swf',
+		       mimeType => 'mimeType=application/x-shockwave-flash',
+		       ownerId => 123456789000,
+		       size => 1024,
+		       type => 'crud',
+		    })} => undef,
+    'meeting parameters - invalid type - dies',
+    );
+
+is(
+    exception {Elive::Entity::MeetingParameters->_thaw
 	    ({
 		MeetingParametersAdapter => {
 		    Id => 11111222233334444,
 		    RecordingStatus => 'REMOTE',
 		}})
-    },
+    } => undef,
     'thawing valid meeting struct parameters - lives',
     );
 
 
-dies_ok(
-    sub{Elive::Entity::MeetingParameters->_thaw
+isnt(
+    exception {Elive::Entity::MeetingParameters->_thaw
 	    ({
 		CrudAdapter => {
 		    Id => 11111222233334444,
 		    RecordingStatus => 'REMOTE',
 		}})
-    },
+    } => undef,
     'thawing invalid meeting struct parameters - dies',
     );
 

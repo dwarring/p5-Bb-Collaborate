@@ -1,7 +1,7 @@
 #!perl -T
 use warnings; use strict;
 use Test::More;
-use Test::Exception;
+use Test::Fatal;
 use Test::Builder;
 use Elive;
 use Elive::Entity::Session;
@@ -57,13 +57,13 @@ SKIP: {
 
     my $session;
 
-    lives_ok( sub {$session = $class->insert(\%session_data);},
+    is( exception {$session = $class->insert(\%session_data);} => undef,
 	     'insert with no tainted data - lives');
 
     isa_ok($session, $class, 'session');
 
     $session_data{name} = $session_name_tainted;
-    dies_ok( sub {$class->insert(\%session_data);},
+    isnt( exception {$class->insert(\%session_data);} => undef,
 	     'insert with tainted Str data - dies');
 
     my $user_notes_clean = 'this is a test';
@@ -74,30 +74,30 @@ SKIP: {
 	userNotes => $user_notes_clean,
 	);
 
-    lives_ok(sub {$session->update(\%update_data)}, 'update with clean Str data - lives');
+    is( exception {$session->update(\%update_data)} => undef, 'update with clean Str data - lives');
 
     $update_data{userNotes} = $user_notes_tainted;
 
-    dies_ok(sub {$session->update(\%update_data)}, 'update with tainted data - dies');
+    isnt( exception {$session->update(\%update_data)} => undef, 'update with tainted data - dies');
 
-    lives_ok(sub {$session->revert}, 'revert tainted data - lives');
+    is( exception {$session->revert} => undef, 'revert tainted data - lives');
 
     $session->{meeting}{name} = $session_name_tainted;
-    dies_ok(sub {$session->is_changed}, 'is_changed() on tainted data - dies');
+    isnt( exception {$session->is_changed} => undef, 'is_changed() on tainted data - dies');
 
     $session->{meeting}{name} = $session_name_clean;
-    lives_ok(sub {$session->is_changed}, 'is_changed() on clean data - lives');
+    is( exception {$session->is_changed} => undef, 'is_changed() on clean data - lives');
 
     my $session_id = $session->sessionId;
 
     $session->_db_data(undef);
 
-    dies_ok (sub {Elive::Entity::Session->list(filter => "name = '$session_name_tainted'")},
+    isnt( exception {Elive::Entity::Session->list(filter => "name = '$session_name_tainted'")} => undef,
 	'List with tainted filter - dies');
   
     my $sessions;
 
-    lives_ok (sub {$sessions = Elive::Entity::Session->list(filter => "name = '$session_name_clean'")},
+    is( exception {$sessions = Elive::Entity::Session->list(filter => "name = '$session_name_clean'")} => undef,
 	'List with clean filter - lives');
   
     is(scalar @$sessions, 1, 'list returns unique session');
@@ -108,7 +108,7 @@ SKIP: {
     ok ($session = Elive::Entity::Session->retrieve($session_id),
 	'Refetch of session');
 
-    lives_ok(sub {$session->delete},'session deletion - lives');
+    is( exception {$session->delete} => undef,'session deletion - lives');
 
 }
 

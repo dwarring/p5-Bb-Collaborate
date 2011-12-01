@@ -1,7 +1,7 @@
 #!perl
 use warnings; use strict;
 use Test::More tests => 25;
-use Test::Exception;
+use Test::Fatal;
 use Test::Builder;
 use version;
 use Try::Tiny;
@@ -93,22 +93,22 @@ SKIP: {
     }
 
     my $session_url;
-    lives_ok(sub {$session_url = $session->session_url(userId => 'bob', displayName => 'Robert')}, 'Can generate session Url for charList user');
+    is( exception {$session_url = $session->session_url(userId => 'bob', displayName => 'Robert')} => undef, 'Can generate session Url for charList user');
     note "session url: $session_url";
 
     my $attendances;
 
-    lives_ok(sub {$attendances = $session->attendance('')}, 'session attendance sans date - lives');
+    is( exception {$attendances = $session->attendance('')} => undef, 'session attendance sans date - lives');
 
     my $today = $session_start - 7200;
-    lives_ok(sub {$attendances = $session->attendance($today . '000')}, 'session attendance with date - lives');
+    is( exception {$attendances = $session->attendance($today . '000')} => undef, 'session attendance with date - lives');
 
-    lives_ok(sub {$session->delete},'session deletion - lives');
+    is( exception {$session->delete} => undef, 'session deletion - lives');
 
     my $deleted_session;
-    try {$deleted_session = Elive::StandardV2::Session->retrieve($session_id)};
+    my $del_error = exception {$deleted_session = Elive::StandardV2::Session->retrieve($session_id)};
 
-    ok($@ || !$deleted_session, "can't retrieve deleted session");
+    ok($del_error || !$deleted_session, "can't retrieve deleted session");
 }
 
 Elive::StandardV2->disconnect;

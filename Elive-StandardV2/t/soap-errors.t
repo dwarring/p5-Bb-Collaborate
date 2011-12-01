@@ -1,7 +1,7 @@
 #!perl
 use warnings; use strict;
 use Test::More tests => 6;
-use Test::Exception;
+use Test::Fatal;
 use Test::Builder;
 use version;
 
@@ -35,31 +35,31 @@ SKIP: {
 
     my $password = $connection->pass;
 
-    lives_ok( sub {
+    is( exception {
 	my $c2 = Elive::StandardV2::Connection->connect($connection->url, $connection->user, $password );
 	$c2->disconnect;
-	     }, 'connect/disconnect with good credentials - lives' );
+	     } => undef, 'connect/disconnect with good credentials - lives' );
 
-    dies_ok( sub {
+    isnt( exception {
 	# add some junk to the password
 	my $bad_password =  $password . t::Elive::StandardV2::generate_id();
 	Elive::StandardV2::Connection->connect($connection->url, $connection->user, $bad_password )
-	     }, 'attempted connect with bad password - dies' );
+	     } => undef, 'attempted connect with bad password - dies' );
 
     my $good_som;
     {
-	lives_ok( sub{$good_som = $connection->call('getSchedulingManager')}, 'legitimate soap call - lives...');
+	is( exception {$good_som = $connection->call('getSchedulingManager')} => undef, 'legitimate soap call - lives...');
     }
 
-    lives_ok( sub{$connection->_check_for_errors($good_som)}, '...and lives when checked');
+    is( exception {$connection->_check_for_errors($good_som)} => undef, '...and lives when checked');
 
    my $bad_som;
     {
 	local($connection->known_commands->{'unknownCommandXXX'}) = 'r';
-	lives_ok( sub{$bad_som = $connection->call('unknownCommandXXX')}, 'call to unknown command - intially lives...');
+	is( exception {$bad_som = $connection->call('unknownCommandXXX')} => undef, 'call to unknown command - intially lives...');
     }
 
-    dies_ok( sub{$connection->_check_for_errors($bad_som)}, '...but dies when checked');
+    isnt( exception {$connection->_check_for_errors($bad_som)} => undef, '...but dies when checked');
 }
 
 Elive::StandardV2->disconnect;
