@@ -48,14 +48,14 @@ sub main {
 
     my $help;
 
-    print "Elive ${Elive::VERSION} - Elluminate Live! configuration checker\n";
-
     (GetOptions(
 	 'help|?' => \$help,
 	)
-	&& (($help && pod2usage(1)) || (my $config_file = shift @ARGV))
+	&& (($help && pod2usage(0)) || (my $config_file = shift @ARGV))
 	&& (!@ARGV))
-	|| die pod2usage(1);
+	|| pod2usage(2);
+
+    print "Elive ${Elive::VERSION} - Elluminate Live! configuration checker\n";
 
     print "Checking: $config_file\n";
 

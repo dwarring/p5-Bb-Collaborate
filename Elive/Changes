@@ -1,24 +1,30 @@
 Revision history for Elive
 
-1.21    tba
+1.21    3rd November 2011
 
-	[enhancements]
+        [error handling]
         Elive::Entity::Participant:
         - now produces a warning if an attempt is made to assign a
           moderator role to an invited guest.
-
-        [security]
         Elive::DAO:
-        - added taintness checks to the is_changed() method; which mow dies
-          if any tainted data is detected. This complements the current
-          taintness checks in the set() method.
-        - is_changed now warns if a primary key has been updated.
+        - Added taintness checks to the is_changed() method; which mow dies
+          if any tainted data is detected.
+        - is_changed() now also warns if a primary key has been updated.
+        elive_raise_meeting, elive_query, elive_lint_config:
+        - Changed all scripts to report usage errors to STDERR and exit
+         with status code 2 [i.e. exit via pod2usage(2)].
+        elive_query:
+        - now dies immediately with status code 2, on error, when being
+          used non-interactively.
 
-1.20    15th November 2011
+        [testing]
+        - Replaced Test::Exception with Test::Fatal
+
+1.20    15th October 2011
 
         [upgrades]
         - regressions from eLive 10.0.2, which is in limited release
-          (tested against ELM 3.3.2 - 3.3.4)
+          (tested against ELM 3.3.2 - 3.3.5)
 
         [security]
         - Elive::DAO->set() - now dies when passed tainted data

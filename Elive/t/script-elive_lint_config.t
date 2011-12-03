@@ -8,7 +8,7 @@ use English qw(-no_match_vars);
 use lib '.';
 use t::Elive;
 
-eval "use Test::Script::Run 0.04";
+eval "use Test::Script::Run 0.04 qw{:all}";
 
 if ( $EVAL_ERROR ) {
     my $msg = 'Test::Script::Run 0.04+ required to run scripts';
@@ -17,7 +17,7 @@ if ( $EVAL_ERROR ) {
 
 local ($ENV{TERM}) = 'dumb';
 
-plan(tests => 4);
+plan(tests => 7);
 
 my $script_name = 'elive_lint_config';
 
@@ -27,8 +27,10 @@ my $script_name = 'elive_lint_config';
 
 do {
     my ( $result, $stdout, $stderr ) = run_script($script_name, ['--help'] );
-    is($stderr, '', "$script_name --help: stderr empty");
-    like($stdout, qr{usage:}ix, "$script_name --help: stdout =~ 'usage:...''");
+    my $status = last_script_exit_code();
+    is($status   => 0, "$script_name --help: zero exit status");
+    is($stderr   => '', "$script_name --help: stderr empty");
+    like($stdout => qr{usage:}ix, "$script_name --help: stdout =~ 'usage:...''");
 };
 
 #
@@ -37,9 +39,10 @@ do {
 
 do {
     my ( $result, $stdout, $stderr ) = run_script($script_name, ['--invalid-opt'] );
-
-    like($stderr, qr{unknown \s+ option}ix, "$script_name invalid option message");
-    like($stdout, qr{usage:}ix, "$script_name invalid option usage");
-
+    my $status = last_script_exit_code();
+    isnt($status   => 0, "$script_name invalid option: non-zero exit status");
+    is($stdout   => '', "$script_name invalid option: stdout empty");
+    like($stderr => qr{unknown \s+ option}ix, "$script_name invalid option: message");
+    like($stderr => qr{usage:}ix, "$script_name invalid option: usage");
 };
 

@@ -203,7 +203,7 @@ sub main {
 	'help|?' => \$help,
 	'dump=s' => \$dump,
     )
-	or die pod2usage(1);
+	or pod2usage(2);
 
     pod2usage(0) if $help;
 
@@ -285,7 +285,7 @@ sub main {
 	s{^manual$}{remote}x;
 	s{^auto(matic)?$}{on}x;
 
-	die pod2usage("-recording_status must be: on/auto, off/none/disabled or manual/remote\n")
+	pod2usage("-recording_status must be: on/auto, off/none/disabled or manual/remote\n")
 	    unless m{^on|off|remote$}x;
     }
 

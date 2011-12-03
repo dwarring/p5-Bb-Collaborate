@@ -93,10 +93,10 @@ sub main {
     our %entity_collections;
     #
     # this may barf if /dev/tty can't be opened. E.g. when executing from cron
-    our $is_tty = eval { IO::Interactive::is_interactive() };
+    our $interactive = eval { IO::Interactive::is_interactive() };
 
     our $term;
-    if ($is_tty) {
+    if ($interactive) {
 	$term = eval { Term::ReadLine->new('elive shell') }
     }
 
@@ -166,7 +166,7 @@ sub main {
     my $has_command_opts = @command_opts;
 
     print "Elive query $elive_version (c) 2009 - 2011 ${server_version_str}. Type 'help' for help\n"
-	if $is_tty && !$has_command_opts;
+	if $interactive && !$has_command_opts;
 
     my $cmd;
     my $keyw;
@@ -176,11 +176,13 @@ sub main {
 
     while (($keyw||'') ne 'quit') {
 
+	my $valid = 1;
+
 	if ($has_command_opts) {
 	    $cmd = shift( @command_opts );
 	}
 	else {
-	    $cmd = $is_tty && $term? $term->readline($prompt): <STDIN>;
+	    $cmd = $interactive && $term? $term->readline($prompt): <STDIN>;
 	}
 
 	last unless defined $cmd;
@@ -247,10 +249,11 @@ sub main {
 		elsif ($keyw =~ m{^(show|describe)$}ix) {
 
 		    if (my ($entity_name) = ($args =~ m{^ \s* (\w+) \s* $}x)) {
-			_show({%entities, %entity_collections}, $entity_name);
+			$valid = _show({%entities, %entity_collections}, $entity_name);
 		    }
 		    else {
 			print 'usage: describe '.join('|', sort keys %entities)."\n";
+			$valid = 0;
 		    }
 		}
 		elsif (lc($keyw) eq 'select') {
@@ -258,7 +261,7 @@ sub main {
 		    warn "args: $args\n"
 			if (Elive->debug);
 
-		    my $valid;
+		    $valid = 0;
 
 		    if ($args =~ m{^
                           (.+?) \s+
@@ -329,12 +332,15 @@ sub main {
 		}
 		elsif ($keyw !~ m{^(quit)$}x) {
 		    print STDERR "unrecognised command: $keyw, type 'help' for help\n";
+		    $valid = 0;
 		}
 	    }
 	    else {
 		print STDERR "unrecognised command  - type 'help' for help\n";
+		$valid = 0;
 	    }
 	}
+	exit 2 if !$valid && (!$interactive || $has_command_opts); 
     }
 
     Elive->disconnect;
@@ -400,7 +406,7 @@ sub _show {
 	print "${sp}  (also selectable: ".join(', ', sort @derivable_cols).")\n"
     }
 
-    return;
+    return 1;
 }
 
 ########################################################################
@@ -605,7 +611,7 @@ sub _getopt {
 			     'help|?',
 			     'version|v',
 			     'help|?'
-	) or die pod2usage(1);
+	) or pod2usage(2);
 
     pod2usage(0) if ($options{help});
 
