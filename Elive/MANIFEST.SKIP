@@ -16,6 +16,8 @@ Makefile.old
 ^pm_to_blib$
 # distributions - packed and unpacked
 ^Elive-
+# Avoid configuration metadata file
+^MYMETA\.
 # Temp, old and emacs backup files.
 ~$
 .*#$
@@ -47,6 +49,6 @@ Makefile.old
 #
 \.gz$
 #
-# cygwin
+# cygwin (heh!)
 #
 \.stackdump$
