@@ -107,11 +107,14 @@ SKIP: {
 	      } => undef,
 	      'get_users - lives');
 
+    note 'got '.(scalar @participants).' participants';
+
     #
     # only want a handful
     #
-    splice(@participants, 10)
-	if (@participants > 10);
+    my @participants_sample = @participants > 10
+	? @participants[0 .. 9]
+	: @participants;
 
     if (@participants) {
 
@@ -130,7 +133,7 @@ SKIP: {
       TODO: {
           #
           # is_participant() give variable results on various ELM versions
-          # ELM 3.0 - 3.3.4 - best to treat is as broken
+          # ELM 3.0 - 3.3.4 under LDAP - best to treat is as broken
           #
 	  local($TODO) = 'reliable - is_participant()';
 	  
@@ -151,8 +154,8 @@ SKIP: {
 
     $session->revert();
 
-    if (@participants) {
-	is( exception {$session->update({participants => \@participants}) => undef,
+    if (@participants_sample) {
+	is( exception {$session->update({participants => \@participants_sample}) => undef,
 		  } => undef, 'setting up a larger session - lives');
     }
     else {
@@ -244,7 +247,7 @@ SKIP: {
 	my @user_ids_in = map {$_->userId} @users_in;
 
 	#
-	# retrieve via elm 2x getParticipantList command
+	# retrieve via elm 2.x getParticipantList command
 	#
 	$participant_list = Elive::Entity::ParticipantList->retrieve($session->id, copy => 1);
 	my $participants = $participant_list->participants;
