@@ -44,7 +44,7 @@ Note: This is a epoch date, but to the nearest millsecond.  You can convert it t
 has 'attendeeJoinedAt' => (is => 'rw', isa => 'HiResDate', required => 1,
 		documentation => 'date/time attendee joined the session');
 
-=head2 attendeeJoinedAt (HiResDate)
+=head2 attendeeLeftAt (HiResDate)
 
 The date and time that the attendee left the session.
 
