@@ -44,8 +44,8 @@ sub data_classes {
 
 =head2 connect
 
-     Elive->connect('http://myServer.com/test', some_user => 'some_pass');
-     my $connection = Elive->connection;
+     Elive::Entity->connect('http://myServer.com/test', some_user => 'some_pass');
+     my $connection = Elive::Entity->connection;
 
 Connects to an Elluminate server instance. Dies if the connection could not
 be established. If, for example, the SOAP connection or user login failed.
