@@ -18,6 +18,8 @@ use Elive::Entity;
 use Elive::Entity::User;
 use Elive::Entity::ServerDetails;
 
+use YAML::Syck;
+
 use t::Elive::MockSOM;
 
 __PACKAGE__->mk_accessors( qw{mockdb server_details_id} );
@@ -134,7 +136,7 @@ sub call {
 	    $params{$primary_key[0]} ||= $self->server_details_id
 		if $entity_name eq 'serverDetails';
 
-	    warn YAML::Dump {cmd => $cmd, params => \%params}
+	    warn YAML::Syck::Dump {cmd => $cmd, params => \%params}
 	    if ($self->debug||0) >= 3;
 
 	    if ($crud eq 'c') {

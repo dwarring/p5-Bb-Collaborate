@@ -17,8 +17,7 @@ SKIP: {
     my %result = t::Elive->test_connection();
     my $auth = $result{auth};
 
-    skip ($result{reason} || 'skipping live tests',
-	19)
+    skip ($result{reason} || 'skipping live tests', 19)
 	unless $auth && @$auth;
 
     my $connection_class = $result{class};
