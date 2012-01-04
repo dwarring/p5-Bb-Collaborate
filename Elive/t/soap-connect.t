@@ -1,6 +1,7 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 10;
+use Test::More tests => 11;
+use Test::Fatal;
 use version;
 
 use lib '.';
@@ -10,14 +11,14 @@ use Elive;
 # don't 'use' anything here! We're testing Elive's ability to load the
 # other required classes (Elive::Connection, Elive::Entity::User etc)
 
-our $t = Test::Builder->new;
+our $t = Test::More->builder;
 
 SKIP: {
 
     my %result = t::Elive->test_connection(noload => 1);
     my $auth = $result{auth};
 
-    skip ($result{reason} || 'skipping live tests', 9)
+    skip ($result{reason} || 'skipping live tests', 10)
 	unless $auth && @$auth;
 
     my $connection_class = $result{class};
@@ -31,7 +32,8 @@ SKIP: {
 	#
 	note ("connecting: user=$auth->[1], url=$auth->[0]");
 	
-	$connection = Elive->connect(@$auth);
+	is( exception {$connection = Elive->connect(@$auth)} => undef,
+	      'Elive->connect(...) - lives');
     }
     else {
 	eval "require $connection_class";
@@ -39,13 +41,17 @@ SKIP: {
 
 	note ("connecting: user=$auth->[1], url=$auth->[0]");
 
-	$connection = $connection_class->connect(@$auth);
+	is( exception {$connection = $connection_class->connect(@$auth)} => undef,
+	      "${connection_class}->connect(...) - lives");
 	Elive->connection($connection);
     }
 
     ok($connection, 'got connection');
-    isa_ok($connection, $connection_class,'connection')
-	or exit(1);
+
+    BAIL_OUT("unable to connect - aborting further tests")
+	unless $t->is_passing;
+
+    isa_ok($connection, $connection_class,'connection');
 
     my $login;
     ok ($login = Elive->login, 'got login');
