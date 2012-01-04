@@ -42,7 +42,7 @@ sub test_connection {
 	}
 
 	if ($user && $pass && $url !~ m{^mock:}i) {
-	    $result{auth} = [$url, $user, $pass, type => 'StandardV2'];
+	    $result{auth} = [map {m{(.*)};$1} ($url, $user, $pass, type => 'StandardV2')];
 	    if (my $debug = Elive::StandardV2->debug) {
 		push (@{$result{auth}}, debug => $debug);
 	    }
