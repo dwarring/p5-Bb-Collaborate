@@ -5,6 +5,7 @@ use Test::Fatal;
 
 use Elive;
 use Elive::Entity::Session;
+use Elive::Util;
 
 use lib '.';
 use t::Elive;
@@ -22,11 +23,26 @@ eval "use $MODULE";
 plan skip_all => "$MODULE not available for taint tests"
     if $@;
 
-plan tests => 17;
+plan tests => 19;
+
+taint_checking_ok();
+
+do {
+    my $string = 'gfdsgdfrg %^&%*( fdsfs';
+
+    is(exception {Elive::Util::_freeze($string, 'Str')} => undef,
+       '_freeze of untainted data -lives');
+
+    taint($string);
+
+    isnt(exception {Elive::Util::_freeze($string, 'Str')} => undef,
+       '_freeze of tainted data -lives');
+
+};
 
 SKIP: {
 
-    my $skippable = 17;
+    my $skippable = 16;
 
     my %result = t::Elive->test_connection(only => 'real');
     my $auth = $result{auth};
@@ -37,8 +53,6 @@ SKIP: {
     my $connection_class = $result{class};
     my $connection = $connection_class->connect(@$auth);
     Elive->connection($connection);
-
-    taint_checking_ok();
 
     my $session_start = time();
     my $session_end = $session_start + 15 * 10;

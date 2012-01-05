@@ -1,6 +1,6 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 39;
+use Test::More tests => 41;
 use Test::Warn;
 use Scalar::Util;
 
@@ -19,31 +19,33 @@ use Carp; $SIG{__DIE__} = \&Carp::confess;
 
 Elive->connection( t::Elive::MockConnection->connect() );
 
-is(Elive::Util::_freeze('123456', 'Int'), '123456', 'simple Int');
-is(Elive::Util::_freeze('+123456', 'Int'), '123456', 'Int with plus sign');
-is(Elive::Util::_freeze('00123456', 'Int'), '123456', 'Int with leading zeros');
+is(Elive::Util::_freeze('123456', 'Int') => '123456', 'simple Int');
+is(Elive::Util::_freeze('+123456', 'Int') => '123456', 'Int with plus sign');
+is(Elive::Util::_freeze('00123456', 'Int') => '123456', 'Int with leading zeros');
 
-is(Elive::Util::_freeze('-123456', 'Int'), '-123456', 'Int negative');
-is(Elive::Util::_freeze('-00123456', 'Int'), '-123456', 'Int negative, leading zeros');
-is(Elive::Util::_freeze('+00123456', 'Int'), '123456', 'Int plus sign leading zeros');
+is(Elive::Util::_freeze('-123456', 'Int') => '-123456', 'Int negative');
+is(Elive::Util::_freeze('-00123456', 'Int') => '-123456', 'Int negative, leading zeros');
+is(Elive::Util::_freeze('+00123456', 'Int') => '123456', 'Int plus sign leading zeros');
+is(Elive::Util::_freeze('  123456  ', 'Int') => 123456, 'Int L/R trim');
+is(Elive::Util::_freeze('123x456', 'Int') => undef, 'Invalid Int');
 
-is(Elive::Util::_freeze('01234567890000', 'HiResDate'), '1234567890000', 'high precision date');
+is(Elive::Util::_freeze('01234567890000', 'HiResDate') => '1234567890000', 'high precision date');
 
-is(Elive::Util::_freeze(0, 'Int'), '0', 'Int zero');
-is(Elive::Util::_freeze('-0', 'Int'), '0', 'Int minus zero');
-is(Elive::Util::_freeze('+0', 'Int'), '0', 'Int plus zero');
-is(Elive::Util::_freeze('0000', 'Int'), '0', 'Int multiple zeros');
+is(Elive::Util::_freeze(0, 'Int') => '0', 'Int zero');
+is(Elive::Util::_freeze('-0', 'Int') => '0', 'Int minus zero');
+is(Elive::Util::_freeze('+0', 'Int') => '0', 'Int plus zero');
+is(Elive::Util::_freeze('0000', 'Int') => '0', 'Int multiple zeros');
 
-is(Elive::Util::_freeze(0, 'Bool'), 'false', 'Bool 0 => false');
-is(Elive::Util::_freeze(1, 'Bool'), 'true', 'Bool 1 => true');
+is(Elive::Util::_freeze(0, 'Bool') => 'false', 'Bool 0 => false');
+is(Elive::Util::_freeze(1, 'Bool') => 'true', 'Bool 1 => true');
 
-is(Elive::Util::_freeze('abc', 'Str'), 'abc', 'String echoed');
-is(Elive::Util::_freeze(' abc ', 'Str'), 'abc', 'String - L/R Trim');
-is(Elive::Util::_freeze('  ', 'Str'), '', 'String - Empty');
+is(Elive::Util::_freeze('abc', 'Str') => 'abc', 'String echoed');
+is(Elive::Util::_freeze(' abc ', 'Str') => 'abc', 'String - L/R Trim');
+is(Elive::Util::_freeze('  ', 'Str') => '', 'String - Empty');
 
-is(Elive::Util::_freeze('on', 'enumRecordingStates'), 'on', 'recording status - on (lc)');
-is(Elive::Util::_freeze('OFF', 'enumRecordingStates'), 'off', 'recording status - off (uc)');
-is(Elive::Util::_freeze('rEMotE', 'enumRecordingStates'), 'remote', 'recording status - remote (mixed)');
+is(Elive::Util::_freeze('on', 'enumRecordingStates') => 'on', 'recording status - on (lc)');
+is(Elive::Util::_freeze('OFF', 'enumRecordingStates') => 'off', 'recording status - off (uc)');
+is(Elive::Util::_freeze('rEMotE', 'enumRecordingStates') => 'remote', 'recording status - remote (mixed)');
 
 my $user_data =  {
 	userId => '12345678',
@@ -58,8 +60,8 @@ my $user_data =  {
 
 my $user_obj = Elive::Entity::User->construct($user_data);
 
-is_deeply(Elive::Util::_freeze($user_obj,'Elive::Entity::User'), '12345678','object freeze (explicit)');
-is_deeply(Elive::Util::_freeze($user_obj,'Int'), '12345678','object freeze (implicit)');
+is_deeply(Elive::Util::_freeze($user_obj,'Elive::Entity::User') => '12345678','object freeze (explicit)');
+is_deeply(Elive::Util::_freeze($user_obj,'Int') => '12345678','object freeze (implicit)');
 
 my $user_frozen = Elive::Entity::User->_freeze($user_data);
 
@@ -158,10 +160,10 @@ do {
     ok($aliases, 'got server_parameter aliases');
     ok($aliases->{boundary}, 'got server_parameter alias for boundary');
     is($aliases->{boundary}{to}, 'boundaryMinutes', 'alias boundary => boundaryMinutes');
-    my $boundary_method_ref;
-    my $boundary_mins_method_ref;
-    ok($boundary_method_ref =  Elive::Entity::ServerParameters->can('boundary'), 'got boundary method ref');
-    ok($boundary_mins_method_ref =  Elive::Entity::ServerParameters->can('boundaryMinutes'), 'got boundaryMinutes method ref');
+    my $boundary_method_ref =  Elive::Entity::ServerParameters->can('boundary');
+    my $boundary_mins_method_ref =  Elive::Entity::ServerParameters->can('boundaryMinutes');
+    ok($boundary_method_ref, 'got boundary method ref');
+    ok($boundary_mins_method_ref , 'got boundaryMinutes method ref');
     is(Scalar::Util::refaddr($boundary_method_ref), Scalar::Util::refaddr($boundary_mins_method_ref), "'boundaryMinutes' method alias for 'boundary'");
     #
     # -- some slightly off-topic tests
