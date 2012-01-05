@@ -155,10 +155,14 @@ sub _tidy_decimal {
     # to avoid overflow. Just normalise it for potential
     # string comparisons
     #
-    # l-r trim
+    # l-r trim, also untaint
     #
-    $i =~ s{^ [\s\+]* (-?\d+) \s* $}{$1}x
-	or return;
+    if ($i =~ m{^ [\s\+]* (-?\d+) \s* $}x) {
+	$i = $1;
+    }
+    else {
+	return;
+    }
 
     #
     # remove any leading zeros:
@@ -183,8 +187,6 @@ sub _tidy_decimal {
     #
     die "bad integer: $_[0]"
 	unless $i =~ m{^([+-]?\d+)$};
-
-    $i = $1; # untaint
 
     return $i;
 }
