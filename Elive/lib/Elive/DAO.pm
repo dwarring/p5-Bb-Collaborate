@@ -4,7 +4,7 @@ use warnings; use strict;
 use Mouse;
 use Mouse::Util::TypeConstraints;
 
-our $VERSION = '0.05';
+our $VERSION = '0.06';
 
 use parent 'Elive::DAO::_Base';
 
@@ -1015,7 +1015,7 @@ sub is_changed {
 	my $old = $db_data->$prop;
 	my $type = $property_types->{$prop};
 
-	die (ref($self)." - attribute $_ contains tainted data")
+	die (ref($self)." - attribute $prop contains tainted data")
 	    if Elive::Util::_tainted($new) || Elive::Util::_tainted($old);
 
 	if (defined ($new) != defined ($old)
