@@ -1,5 +1,16 @@
 Revision history for Elive
 
+1.22    5th January 2012
+        [security]
+        Elive::Util::_tidy_decimal():
+        - Untaint Ints once sanitised - for consistency with Enums and Bools.
+        [testing]
+        - Replaced Test::Builder->new with Test::More->builder
+        00load.t, soap-connect.t:
+        - now bail on failure
+        soap-session-participants.t, soap-participant-list.t:
+        - reworked long participant list tests
+
 1.21    3rd November 2011
 
         [error handling]

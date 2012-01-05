@@ -44,7 +44,6 @@ recommends(
 
 test_requires (
     'File::Temp'                   => 0,
-    'Test::Builder'                => 0,
     'Test::More'                   => 0,
     'Test::Warn'                   => 0,
     'Test::Fatal'                  => 0,
