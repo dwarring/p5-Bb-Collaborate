@@ -2,9 +2,8 @@
 use warnings; use strict;
 use Test::More tests => 18;
 use Test::Fatal;
-use Test::Builder;
 
-my $t = Test::Builder->new();
+my $t = Test::More->builder();
 
 use Elive;
 use Elive::Entity::User;

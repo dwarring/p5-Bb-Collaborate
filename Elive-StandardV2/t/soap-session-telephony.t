@@ -2,7 +2,7 @@
 use warnings; use strict;
 use Test::More tests => 11;
 use Test::Fatal;
-use Test::Builder;
+
 use version;
 
 use lib '.';
@@ -12,7 +12,7 @@ use Elive::Util;
 use Elive::StandardV2::Session;
 use Elive::StandardV2::SessionTelephony;
 
-our $t = Test::Builder->new;
+our $t = Test::More->builder;
 our $class = 'Elive::StandardV2::Session' ;
 
 our $connection;

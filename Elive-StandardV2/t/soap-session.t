@@ -2,7 +2,7 @@
 use warnings; use strict;
 use Test::More tests => 25;
 use Test::Fatal;
-use Test::Builder;
+
 use version;
 use Try::Tiny;
 
@@ -12,7 +12,7 @@ use t::Elive::StandardV2;
 use Elive::StandardV2::Session;
 use Elive::Util;
 
-our $t = Test::Builder->new;
+our $t = Test::More->builder;
 our $class = 'Elive::StandardV2::Session';
 
 our $connection;

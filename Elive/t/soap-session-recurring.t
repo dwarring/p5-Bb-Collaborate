@@ -1,7 +1,6 @@
 #!perl -T
 use warnings; use strict;
 use Test::More tests => 6;
-use Test::Builder;
 use version;
 
 use lib '.';
@@ -13,7 +12,7 @@ use Elive::Util;
 
 use Carp; $SIG{__DIE__} = \&Carp::confess;
 
-our $t = Test::Builder->new;
+our $t = Test::More->builder;
 our $class = 'Elive::Entity::Session' ;
 
 our $connection;

@@ -2,7 +2,6 @@
 use warnings; use strict;
 use Test::More tests => 12;
 use Test::Fatal;
-use Test::Builder;
 use version;
 
 use lib '.';
@@ -11,7 +10,7 @@ use Elive::Util;
 
 use Elive::Entity::Session;
 
-our $t = Test::Builder->new;
+our $t = Test::More->builder;
 our $class = 'Elive::Entity::Session' ;
 
 ok($class->can('enableTelephony'), 'session telephony -sanity');

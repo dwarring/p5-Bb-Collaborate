@@ -1,11 +1,11 @@
 #!perl
 use warnings; use strict;
-use File::Spec;
 use Test::More;
 use Test::Fatal;
+
+use File::Spec;
 use English qw(-no_match_vars);
 use version;
-use Test::Builder;
 
 use lib '.';
 use t::Elive;
@@ -23,7 +23,7 @@ if ( $EVAL_ERROR ) {
 
 plan(tests => 177);
 
-our $t = Test::Builder->new;
+our $t = Test::More->builder;
 
 local ($ENV{TERM}) = 'dumb';
 

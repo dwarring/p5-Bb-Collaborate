@@ -2,14 +2,14 @@
 use warnings; use strict;
 use Test::More;
 use Test::Fatal;
-use Test::Builder;
+
 use Elive::StandardV2;
 use Elive::StandardV2::Session;
 
 use lib '.';
 use t::Elive::StandardV2;
 
-my $t = Test::Builder->new();
+my $t = Test::More->builder();
 
 my $class = 'Elive::StandardV2::Session' ;
 

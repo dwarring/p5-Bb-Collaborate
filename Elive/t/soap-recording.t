@@ -1,6 +1,5 @@
 #!perl -T
 use warnings; use strict;
-use Test::Builder;
 use Test::More tests => 22;
 use Test::Fatal;
 
@@ -15,7 +14,7 @@ use XML::Simple;
 
 use version;
 
-our $t = Test::Builder->new;
+our $t = Test::More->builder;
 
 my $class = 'Elive::Entity::Recording';
 

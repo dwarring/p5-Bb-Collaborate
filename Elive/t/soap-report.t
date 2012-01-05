@@ -2,7 +2,6 @@
 use warnings; use strict;
 use Test::More tests => 14;
 use Test::Fatal;
-use Test::Builder;
 
 use lib '.';
 use t::Elive;
@@ -11,7 +10,7 @@ use Elive;
 
 use XML::Simple;
 
-my $t = Test::Builder->new;
+my $t = Test::More->builder;
 
 my $class = 'Elive::Entity::Report';
 use Elive::Entity::Report;

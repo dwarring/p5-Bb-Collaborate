@@ -3,7 +3,6 @@ use warnings; use strict;
 use Test::More tests => 62;
 use Test::Fatal;
 use Test::Warn;
-use Test::Builder;
 use version;
 
 use lib '.';
@@ -14,7 +13,7 @@ use Elive::Entity::Session;
 
 use XML::Simple;
 
-our $t = Test::Builder->new;
+our $t = Test::More->builder;
 our $class = 'Elive::Entity::Session' ;
 
 our $connection;

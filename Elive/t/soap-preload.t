@@ -2,7 +2,6 @@
 use warnings; use strict;
 use Test::More tests => 65;
 use Test::Fatal;
-use Test::Builder;
 use version;
 
 use lib '.';
@@ -18,7 +17,7 @@ use File::Temp qw();
 
 use Carp; $SIG{__DIE__} = \&Carp::confess;
 
-our $t = Test::Builder->new;
+our $t = Test::More->builder;
 my $class = 'Elive::Entity::Preload' ;
 
 my @data;

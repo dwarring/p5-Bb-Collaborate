@@ -2,7 +2,7 @@
 use warnings; use strict;
 use Test::More tests => 6;
 use Test::Fatal;
-use Test::Builder;
+
 use version;
 
 use lib '.';
@@ -11,7 +11,7 @@ use t::Elive::StandardV2;
 use Elive::StandardV2::Connection;
 use Elive::StandardV2::SessionAttendance;
 
-our $t = Test::Builder->new;
+our $t = Test::More->builder;
 our $class = 'Elive::StandardV2::SessionAttendance' ;
 
 our $connection;

@@ -2,7 +2,6 @@
 use warnings; use strict;
 use Test::More tests => 22;
 use Test::Fatal;
-use Test::Builder;
 use version;
 
 use Elive;
@@ -11,7 +10,7 @@ use lib '.';
 use t::Elive;
 
 my $class = 'Elive::Entity::User' ;
-our $t = Test::Builder->new;
+our $t = Test::More->builder;
 
 use Carp;
 

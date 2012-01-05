@@ -2,14 +2,13 @@
 use warnings; use strict;
 use Test::More tests => 3;
 use Test::Fatal;
-use Test::Builder;
 
 use lib '.';
 use t::Elive::StandardV2;
 
 use Elive::StandardV2::Multimedia;
 
-our $t = Test::Builder->new;
+our $t = Test::More->builder;
 my $class = 'Elive::StandardV2::Multimedia';
 
 my $data = 'random junk data U(&(* 090 -0';

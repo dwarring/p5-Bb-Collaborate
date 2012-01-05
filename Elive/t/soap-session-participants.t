@@ -2,7 +2,6 @@
 use warnings; use strict;
 use Test::More tests => 30;
 use Test::Fatal;
-use Test::Builder;
 use List::Util;
 
 use lib '.';
@@ -18,7 +17,7 @@ use Elive::Entity::User;
 use Elive::Entity::Group;
 use Elive::Util;
 
-our $t = Test::Builder->new;
+our $t = Test::More->builder;
 our $class = 'Elive::Entity::Session' ;
 
 our $connection;

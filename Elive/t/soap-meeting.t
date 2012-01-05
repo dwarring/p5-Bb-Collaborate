@@ -2,7 +2,6 @@
 use warnings; use strict;
 use Test::More tests => 32;
 use Test::Fatal;
-use Test::Builder;
 
 use lib '.';
 use t::Elive;
@@ -16,7 +15,7 @@ use Elive::Entity::ServerParameters;
 
 use XML::Simple;
 
-our $t = Test::Builder->new;
+our $t = Test::More->builder;
 our $class = 'Elive::Entity::Meeting' ;
 
 our $connection;
