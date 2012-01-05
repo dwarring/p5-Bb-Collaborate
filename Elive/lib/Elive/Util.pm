@@ -9,7 +9,7 @@ use Clone;
 use YAML::Syck;
 use Try::Tiny;
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 use Elive::Util::Type;
 
@@ -182,7 +182,9 @@ sub _tidy_decimal {
     # sanity check.
     #
     die "bad integer: $_[0]"
-	unless $i =~ m{^[+-]?\d+$};
+	unless $i =~ m{^([+-]?\d+)$};
+
+    $i = $1; # untaint
 
     return $i;
 }
