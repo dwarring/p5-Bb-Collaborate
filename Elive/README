@@ -6,8 +6,8 @@ Elive is a set of Perl bindings and definitions for entities in the
 Elluminate Live! Manager (ELM) database. You can, for example, use it to
 manage users, groups meetings and meeting participants.
 
-Elive connects to Elluminate Live! servers via SOAP services and
-utilises the Command Toolkit services ('default' adapter).
+Elive connects to Elluminate Live! servers via http or https and
+utilises the Command Toolkit services SOAP ('default' adapter).
 
 Some manual configuration may be required on your Elluminate Live! server
 to configure access. Please see the Server Configuration section.
@@ -37,8 +37,8 @@ CONFIGURING SDK ACCESS
     By default, only Elluminate Live! administrator users (Role 0) are
     granted access to the SDK.
 
-    If you wish to to grant access to non-administrator users and/or
-    LDAP users , you'll need to edit your site instance configuration.
+    If you wish to to grant access to non-administrator users, or if you're
+    using LDAP, you'll need to edit your site instance configuration.
 
     To do this, firstly stop the site using the Elluminate Live Instance
     Manager (http://yourserver/elmcontrol).
@@ -104,7 +104,7 @@ LIVE TESTING
 
     ELIVE_TEST_PRELOAD_SERVER_PATH - absolute path of an existing preload
                file on the server. Set this to enable testing of the
-               Elive::Entity::Preload::import_from_server() method.
+               Elive::Entity::Preload->import_from_server() method.
 
     ELIVE_TEST_USER_UPDATES - set this to true to enable insert and update
                of user accounts on a live site (t/soap-user.t). 
@@ -127,13 +127,13 @@ POST INSTALLATION
     The elive_query script can be used to check basic operation of Elive
     and access to your Elluminate server(s).
 
-        % elive_query --user admin_user http://myserver/mysite
+        % elive_query --user some_account http://some_server.com/some_site
 
-    Where admin_user is an Elluminate system administrator account.
+    Where 'some_account' has been configured for SDK access.
 
     You will need to enter a password. You should then get:
 
-        connecting to http://myserver/mysite...done
+        connecting to http://some_server.com/some_site...done
         Elive query 1.xx (Elluminate Live 10.y.z) - type 'help' for help
         elive>
 
@@ -142,13 +142,13 @@ POST INSTALLATION
         elive> select * from users
 
     See also elive_raise_meeting. This is a utility script that creates
-    Elluminate meetings.
+    meetings on an Elluminate server.
 
         % elive_raise_meeting http://some_user@myserver/mysite -name 'Test'
 
 TROUBLESHOOTING
 
-    'User [<username>], not permitted to access the command {<command>]'
+    'User [<username>], not permitted to access the command <command>'
     --------------------------------------------------------------------
     You are connected to the SOAP services with an account that has not
     been setup for full SDK access. Please see the Server Configuration
@@ -156,25 +156,25 @@ TROUBLESHOOTING
     
     'Unable to determine a command for the key Xxxxx'
     -------------------------------------------------
-    This may indicate that some of the adapters are missing from
+    This may indicate that some command definitions are missing from
     your Elluminate configuration. This can be prone to likely to
     happen with an Elluminate instance that has been through several
     Elluminate upgrades.
 
     You can use the installed script elive_lint_config to check for
-    missing adapters.
+    missing commands.
 
         % cd /opt/ElluminateLive/manager/tomcat/webapps
         % elive_lint_config WEB-INF/resources/configuration.xml
-        missing adapter command: getUser
-        missing adapter command: deletePreload
-        missing adapter command: listPreloads
+        missing 'default' adapter command: getUser
+        missing 'default' adapter command: deletePreload
+        missing 'default' adapter command: listPreloads
 
-    The adapters can be added to your configuration file.
+    The missing commands can be added to your configuration file.
 
     For example, if elive_lint_config returned the error:
 
-        "missing adapter command: getUser"
+        "missing 'default' adapter command: getUser"
 
     You'll need to first stop Elluminate services.
 
@@ -196,13 +196,8 @@ TROUBLESHOOTING
 LDAP AUTHENTICATION
 
     Elluminate Live! can also be configured to use an LDAP repository for
-    user authentication.  Users and groups can  be retrieved or listed, but
+    user authentication. Users and groups can  be retrieved or listed, but
     cannot be updated.
-
-    * You can map both of the user's userId and loginName to the
-      LDAP uid attribute.
-
-    * Updates and deletes are not supported by the LDAP DAO adapter.
 
 SUPPORT AND DOCUMENTATION
 

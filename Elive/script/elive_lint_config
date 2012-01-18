@@ -179,7 +179,7 @@ sub main {
     my @missing = sort grep {!exists $found{$_}} (keys %required_commands);
 
     foreach (@missing) {
-	push(@errors, "missing adapter command: $_");
+	push(@errors, "missing 'default' adapter command: $_\n");
     }
 
     die join("\n", '',@errors)
