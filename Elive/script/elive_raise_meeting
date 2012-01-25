@@ -511,15 +511,13 @@ sub _get_users {
     foreach (@users_in) {
 	my $user = Elive::Entity::User->stringify($_->user);
 	
-	die "bad username: $user\n"
-	    if $user =~ m{'}x;
-
 	$users{$user} = $_;
     }
 
     my $filter = join(' OR ',
 		      map {sprintf("loginName='%s' OR userId='%s'",
 				   $_, $_)}
+		      map {Elive::Entity::User->quote($_)}
 		      (keys %users)
 	);
 
@@ -565,6 +563,7 @@ sub _get_groups {
     my $filter = join(' OR ',
 		      map {sprintf("groupId='%s' OR groupName='%s'",
 				   $_, $_)}
+		      map {Elive::Entity::User->quote($_)}
 		      (keys %groups)
 	);
 

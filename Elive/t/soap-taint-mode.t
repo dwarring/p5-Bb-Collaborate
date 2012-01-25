@@ -14,7 +14,6 @@ my $t = Test::More->builder();
 
 my $class = 'Elive::Entity::Session' ;
 
-use Carp; $SIG{__DIE__} = \&Carp::confess;
 use Scalar::Util;
 use Try::Tiny;
 
@@ -23,7 +22,7 @@ eval "use $MODULE";
 plan skip_all => "$MODULE not available for taint tests"
     if $@;
 
-plan tests => 19;
+plan tests => 21;
 
 taint_checking_ok();
 
@@ -109,10 +108,16 @@ SKIP: {
     isnt( exception {Elive::Entity::Session->list(filter => "name = '$session_name_tainted'")} => undef,
 	'List with tainted filter - dies');
   
+    isnt( exception {Elive::Entity::Session->list(filter => "name = ".Elive::Entity::Session->quote($session_name_tainted))} => undef,
+	'List with tainted filter quoted - dies');
+  
     my $sessions;
 
     is( exception {$sessions = Elive::Entity::Session->list(filter => "name = '$session_name_clean'")} => undef,
 	'List with clean filter - lives');
+  
+    is( exception {Elive::Entity::Session->list(filter => "name = ".Elive::Entity::Session->quote($session_name_clean))} => undef,
+	'List with clean filter quoted - lives');
   
     is(scalar @$sessions, 1, 'list returns unique session');
 

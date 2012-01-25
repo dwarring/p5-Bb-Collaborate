@@ -6,7 +6,7 @@ use Try::Tiny;
 
 extends 'Elive::DAO';
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 =head1 NAME
 
@@ -216,6 +216,31 @@ sub _unpack_results {
     }
 
     return $results;
+}
+
+=head2 quote
+
+This is a utility method for quoting literal arguments to C<list> filter
+expressions:
+
+    my $users = Elive::Entity::User->list(
+		    filter => "surname=".Elive::Entity::User->quote("O'Reilly"),
+                );
+
+=cut
+
+sub quote {
+    my $class = shift;
+    my $str = shift;
+
+    return $str
+	if !defined $str
+	or $str eq ''
+	or $str =~ m{^ \w+ $}x;
+
+    $str =~ s{'}{''}g;
+
+    return "'$str'";
 }
 
 =head1 SEE ALSO

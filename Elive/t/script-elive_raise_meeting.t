@@ -214,7 +214,7 @@ SKIP: {
 	    # meeting passwords are not returned directly. Instead we search
 	    # for meetings that contain the password.
 	    #
-	    my $meetings_with_this_password = Elive::Entity::Meeting->list(filter => "password = '$meeting_pass'", connection => $connection);
+	    my $meetings_with_this_password = Elive::Entity::Meeting->list(filter => "password = ". Elive::Entity::Meeting->quote($meeting_pass), connection => $connection);
 
 	    while ($resp =~ s{$meeting_response_re}{}) {
 		$week++;

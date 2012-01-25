@@ -651,7 +651,7 @@ sub list_recordings {
     my ($self, @args) = shift;
 
     return Elive::Entity::Recording
-	->list(filter => 'meetingId = '.$self->meetingId,
+	->list(filter => 'meetingId = '.$self->quote( $self->meetingId ),
 	       connection => $self->connection,
 	       @args);
 }

@@ -1,5 +1,10 @@
 Revision history for Elive
 
+1.23    tba
+        [enhancements]
+        Elive::Entity
+        - added quote() method - for quoting list() filter arguments.
+
 1.22    5th January 2012
         [security]
         Elive::Util::_tidy_decimal():
@@ -98,7 +103,7 @@ Revision history for Elive
          - Created new module Elive::DAO::_Base
         - Changed parent class for Elive::DAO and Elive::DAO::_Array from
           Elive to Elive::DAO::_Base
-        - Set $Elive::DAO::Version = '0.01'
+        - Set $Elive::DAO::VERSION = '0.01'
 
 1.14    21st August 2011
         [bug fixes]
