@@ -102,8 +102,7 @@ sub _thaw {
 
     return unless defined $val;
 
-    do {
-	local ($_) = $val;
+    for ($val) {
 
 	if ($type =~ m{^Bool}i) {
 	    #
@@ -121,7 +120,7 @@ sub _thaw {
 	}
 	elsif ($type =~ m{^Int|HiResDate}i) {
 
-	    $_ = _tidy_decimal($_);
+	    $_ = _tidy_decimal("$_");
 
 	}
 	elsif ($type eq 'Any') {
@@ -131,8 +130,6 @@ sub _thaw {
 	else {
 	    die "unknown type: $type";
 	}
-
-	$val = $_;
     };
 
     return $val;
