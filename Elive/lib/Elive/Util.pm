@@ -43,8 +43,7 @@ sub inspect_type {
 sub _freeze {
     my ($val, $type) = @_;
 
-    do {
-	local ($_) = $val;
+    for ($val) {
 
 	if (!defined) {
 	    warn "undefined value of type $type\n"
@@ -76,21 +75,16 @@ sub _freeze {
 		$_ = lc if $type =~ m{^enum};
 	    }
 	    elsif ($type =~ m{^(Int|HiResDate)}ix) {
-
-		$_ = _tidy_decimal($_)
-		    unless $_ eq '0' || m{^[1-9][0-9]*$};
-
+		$_ = _tidy_decimal("$_");
 	    }
 	    elsif ($type =~ m{^Ref|Any}ix) {
-		$val = undef;
+		$_ = undef;
 	    }
 	    else {
 		die "unable to convert $raw_val to $type\n"
 		    unless defined;
 	    }
 	}
-
-	$val = $_;
     };
 
     return $val;
@@ -186,7 +180,7 @@ sub _tidy_decimal {
     # sanity check.
     #
     die "bad integer: $_[0]"
-	unless $i =~ m{^([+-]?\d+)$};
+	unless $i =~ m{^[+-]?\d+$};
 
     return $i;
 }
