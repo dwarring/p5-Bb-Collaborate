@@ -1,9 +1,12 @@
 Revision history for Elive
 
-1.23    tba
+1.23    26th January 2012
         [enhancements]
         Elive::Entity
         - added quote() method - for quoting list() filter arguments.
+        [bug fixes]
+        - elive_raise_meeting: correctly handle login and group names with
+          embedded single quotes, using Elive::Entity->quote().
 
 1.22    5th January 2012
         [security]
@@ -12,7 +15,7 @@ Revision history for Elive
         [testing]
         - Replaced Test::Builder->new with Test::More->builder
         00load.t, soap-connect.t:
-        - now bail on failure
+        - now bai if any sub tests fail
         soap-session-participants.t, soap-participant-list.t:
         - reworked long participant list tests
 
@@ -28,10 +31,10 @@ Revision history for Elive
         - is_changed() now also warns if a primary key has been updated.
         elive_raise_meeting, elive_query, elive_lint_config:
         - Changed all scripts to report usage errors to STDERR and exit
-         with status code 2 [i.e. exit via pod2usage(2)].
+         on usage error with status code 2 [i.e. exit via pod2usage(2)].
         elive_query:
-        - now dies immediately with status code 2, on error, when being
-          used non-interactively.
+        - now dies immediately with status code 2, on command parsing error,
+          when being used non-interactively.
 
         [testing]
         - Replaced Test::Exception with Test::Fatal
