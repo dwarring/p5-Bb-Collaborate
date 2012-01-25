@@ -41,7 +41,7 @@ do {
 
 SKIP: {
 
-    my $skippable = 16;
+    my $skippable = 18;
 
     my %result = t::Elive->test_connection(only => 'real');
     my $auth = $result{auth};
