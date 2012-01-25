@@ -1,6 +1,6 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 23;
+use Test::More tests => 24;
 use Test::Fatal;
 use Scalar::Util;
 
@@ -13,8 +13,9 @@ use Elive::Entity::User;
 my $class = 'Elive::Entity::User' ;
 
 is($class->quote('') => '', 'quote - empty string');
-is($class->quote('abc123') => 'abc123', 'quote - word');
-is($class->quote('abc 123') => "'abc 123'", 'quote - space');
+is($class->quote(' ') => "' '", 'quote - space');
+is($class->quote('abc123') => 'abc123', 'quote - single word');
+is($class->quote('abc 123') => "'abc 123'", 'quote - words');
 is($class->quote("O'Reilly") => "'O''Reilly'", 'quote - embedded quote');
 
 SKIP: {
