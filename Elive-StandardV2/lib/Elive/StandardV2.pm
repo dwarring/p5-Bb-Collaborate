@@ -249,12 +249,12 @@ sub list {
 
 sub _parse_filter {
     my ($self, $expr) = @_;
-    my $selection;
+    my %selection;
 
     foreach ( split(qr{ \s+ and \s+}ix, $expr) ) {
-	my ($field, $val) = m{^ \s* (\w+) \s* [\!=<>]+ (.*?) $}x;
+	my ($field, $op, $val) = m{^ \s* (\w+) \s* ([\!=<>]+) \s* (.*?) \s* $}x;
 
-	unless (defined($val) && length($val)) {
+	unless (defined($val) && length($val) && $op eq '=') {
 	    carp "selection expresion '$_' not in format <field> = <val>";
 	    next;
 	}
