@@ -98,14 +98,14 @@ has 'boundaryTime' => (is => 'rw', isa => 'Int',
 
 =head2 chairList (Str)
 
-Comma-separated list of user identifiers from your system that specifies which users may join the Elluminate Live! session as chairpersons.
+Array of user identifiers from your system that specifies which users may join the Elluminate Live! session as chairpersons.
 
 Each user identifier in the list may be 1 - 64 characters in length, and each identifier is case sensitive. A userId may not appear in both the chair and non-chair lists.
 
 =cut
 
 has 'chairList' => (is => 'rw', isa => 'Elive::StandardV2::_List', coerce => 1,
-	       documentation => 'list of chair-persons (comma separated)',
+	       documentation => 'list of chair-persons',
     );
 
 =head2 chairNotes (Str)
@@ -141,7 +141,7 @@ has 'endTime' => (is => 'rw', isa => 'HiResDate', required => 1,
 
 =head2 groupingList (Str)
 
-Comma-separated list of unique course identifiers from your system with which to associate this Elluminate Live! session.
+Array of unique course identifiers from your system with which to associate this Elluminate Live! session.
 
 Each course identifier may be 1 - 32 characters in length, and each identifier is case sensitive.
 
@@ -227,7 +227,7 @@ Each user identifier in the list may be 1 - 64 characters in length, and each id
 =cut
 
 has 'nonChairList' => (is => 'rw', isa => 'Elive::StandardV2::_List', coerce => 1,
-	       documentation => 'list of participants (comma separated)',
+	       documentation => 'list of participants',
     );
 
 =head2 nonChairNotes (Str)
