@@ -25,7 +25,7 @@ use Elive::Entity::ServerParameters;
 #
 my $group_types = Elive::Entity::Group->property_types;
 is($group_types->{groupId}, 'Str', 'non-numeric groupIds permitted (LDAP compat)');
-ok($group_types->{domain}, 'group has domain property (early ELM 3.0 compat');
+ok($group_types->{domain}, 'group has domain property (early ELM 3.0 compat)');
 
 #
 # User Ids can be non-numeric when configured to use LDAP for 
@@ -38,8 +38,8 @@ is($user_types->{userId}, 'Str', 'non-numeric userIds permitted (LDAP compat)');
 #
 # User 'domain' and 'group' were present in early ELM 3.x, but appear to be stillborn
 #
-ok($user_types->{domain}, 'user has domain property (early ELM 3.0 compat');
-ok($user_types->{groups}, 'user has groups property (early ELM 3.0 compat');
+ok($user_types->{domain}, 'user has domain property (early ELM 3.0 compat)');
+ok($user_types->{groups}, 'user has groups property (early ELM 3.0 compat)');
 
 #
 # recording IDs can be user supplied and non-numeric
