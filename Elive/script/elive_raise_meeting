@@ -14,6 +14,7 @@ use Elive;
 use Elive::Util;
 use Elive::Entity::Preload;
 use Elive::Entity::User;
+use Elive::Entity::Group;
 use Elive::Entity::Participant;
 use Elive::Entity::Session;
 use Elive::View::Session;
@@ -89,14 +90,14 @@ elive_raise_meeting - Elluminate Live! Manager (ELM) meeting creation
  -[no]supervised              # moderator can see private messages
  -[no]all_moderators          # all participants can moderate (elm3)
 
- -user_notes      <text>
- -moderator_notes <text>
- -cost_center     <code>
+ -user_notes      <text>      # Set general user notes
+ -moderator_notes <text>      # Set general moderator notes
+ -cost_center     <code>      # Set a cost center code
  -exit_url        <address>   # URL to visit on meeting exit (elm3)
 
 =head2 Preloads
 
- -upload             <local_file>     # upload a local file
+ -upload             <local_file>     # upload a client side file
  -import_from_server <remote_file>    # import a server side file
  -add_preload        <preload_id>,... # associate with existing preloads
 
@@ -563,7 +564,7 @@ sub _get_groups {
     my $filter = join(' OR ',
 		      map {sprintf("groupId=%s OR groupName=%s",
 				   $_, $_)}
-		      map {Elive::Entity::User->quote($_)}
+		      map {Elive::Entity::Group->quote($_)}
 		      (keys %groups)
 	);
 
@@ -589,21 +590,6 @@ sub _get_groups {
 	if @groups_not_found;
 
     return @groups_out;
-}
-
-########################################################################
-
-sub _get_user {
-    my $user_spec = shift;
-
-    die 'usage: _get_user($user_name_or_id)'
-	unless (defined $user_spec && $user_spec ne '');
-
-    my $user = (Elive::Entity::User->retrieve([$user_spec])
-		|| Elive::Entity::User->get_by_loginName($user_spec))
-	or die "unkown user: $user_spec\n";
-
-    return $user;
 }
 
 ########################################################################
