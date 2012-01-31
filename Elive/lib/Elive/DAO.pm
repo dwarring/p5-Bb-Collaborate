@@ -1689,7 +1689,7 @@ L<Elive::DAO> keeps a reference table to all current database objects. This
 is primarily used to detect errors, such as destroying or overwriting objects
 with unsaved changes.
 
-You can also reuse objects from this cache by passing C<reuse => 1> to the
+You can also reuse objects from this cache by passing C<reuse =E<gt> 1> to the
 C<fetch> method. 
 
     my $user = Elive::Entity::User->retrieve(11223344);
