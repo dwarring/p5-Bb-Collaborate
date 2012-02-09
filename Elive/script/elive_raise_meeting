@@ -209,7 +209,7 @@ sub main {
     pod2usage(0) if $help;
 
     if ($version) {
-	print "Elive v${Elive::VERSION} (c) 2009-2011\n";
+	print "Elive v${Elive::VERSION} (c) 2009 - 2012\n";
 	exit(0);
     };
 

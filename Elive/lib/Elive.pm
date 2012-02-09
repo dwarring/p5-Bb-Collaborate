@@ -375,7 +375,7 @@ assistance with the development of this module.
 
 =head1 COPYRIGHT & LICENSE
 
-Copyright 2009-2011 David Warring, all rights reserved.
+Copyright 2009-2012 David Warring, all rights reserved.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
