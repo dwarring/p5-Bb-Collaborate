@@ -659,7 +659,7 @@ sub _connect {
     };
 
     if ($@) {
-	print "\nerror:$@";
+	print STDERR "\nconnection failed: $@";
 	return;
     }
 
