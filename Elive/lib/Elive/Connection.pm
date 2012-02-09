@@ -155,10 +155,10 @@ sub _check_for_errors {
     my $class = shift;
     my $som = shift;
 
-    croak "No response from server"
+    die "No response from server\n"
 	unless $som;
 
-    croak $som->fault->{ faultstring } if ($som->fault);
+    die $som->fault->{ faultstring }."\n" if ($som->fault);
 
     my $result = $som->result;
     my @paramsout = $som->paramsout;
@@ -195,8 +195,9 @@ sub _check_for_errors {
 
 	    my %seen;
 
-	    my @error = grep {defined($_) && !$seen{$_}++} ($code, $reason, @stack_trace);
-	    Carp::croak join(' ', @error) || YAML::Syck::Dump($result);
+	    my @error = grep {$_ && !$seen{$_}++} ($code, $reason, @stack_trace);
+	    my $msg = @error ? join(' ', @error) : YAML::Syck::Dump($result);
+	    die "$msg\n";
 	}
     }
 }
