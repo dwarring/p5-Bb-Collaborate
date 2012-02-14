@@ -237,7 +237,7 @@ sub download {
 
 Create a preload from a file that is already present on the server's
 file-system. If a C<mimeType> is not supplied, it will be guessed from
-the C<name> or C<fileName> extension using MIME::Types.
+the C<name> or C<fileName> extension using L<MIME::Types>.
 
 =cut
 

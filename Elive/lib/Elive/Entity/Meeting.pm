@@ -171,7 +171,7 @@ them yourself, E.g.:
 
     $meeting->delete;
 
-=item deleted meeting may remain retrievable, but with the I<deleted> property to true.
+=item Recently deleted meetings may remain retrievable, but with the I<deleted> property to true.
 
 Meetings, Meeting Parameters, Server Parameters and recordings may remain
 accessible via the SOAP interface for a short period of time until they

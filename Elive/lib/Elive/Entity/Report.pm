@@ -52,13 +52,13 @@ For example, the following code snippet exports all reports for a site:
     my $reports = Elive::Entity::Report->list;
     my @report_ids = map {$_->reportId} @$reports;
 
-    foreach my $reportId (@report_ids) {
+    foreach my $report_id (@report_ids) {
 
 	#
 	# listed objects don't have the report body, refetch them.
 	#
 
-        my $rpt = Elive::Entity::Report->retrieve( $reportId );
+        my $rpt = Elive::Entity::Report->retrieve( $report_id );
 
 	my $name = $rpt->name;
 	$name =~ s/[^\w]//g; # sanitise

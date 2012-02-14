@@ -7,11 +7,11 @@ Elive - Elluminate Live! (c) Command Toolkit bindings
 
 =head1 VERSION
 
-Version 1.23
+Version 1.24
 
 =cut
 
-our $VERSION = '1.23';
+our $VERSION = '1.24';
 
 use 5.008003;
 

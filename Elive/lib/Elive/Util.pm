@@ -25,10 +25,12 @@ Elive::Util - Utility functions for Elive
 
 =head2 inspect_type
 
-       $type = Elive::Util::inspect_type($att->type_constraint)
-       @coerce_types = Elive::Util::inspect_type($att->type_constraint, $data)
+       $type = Elive::Util::inspect_type('Elive::Entity::Participants');
+       if ($type->is_array) {
+           # ...
+       }
 
-Parses an entity property type and returns an elemental coercement type.
+Returns an object of type L<Elive::Util::Type>.
 
 =cut
 
