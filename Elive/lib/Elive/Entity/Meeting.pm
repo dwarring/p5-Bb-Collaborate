@@ -603,7 +603,7 @@ sub server_parameters {
 
     my $meeting = Elive::Entity::Meeting->retrieve($meeting_id);
     my $participant_list = $meeting->participant_list;
-    my $participants = $meeting->participants;
+    my $participants = $participant_list->participants;
 
 Utility method to return the participant_list associated with a meeting.
 See also L<Elive::Entity::ParticipantList>.
