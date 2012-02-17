@@ -62,7 +62,7 @@ has 'iNetAddress' => (is => 'rw', isa => 'Ref');
         printf("server %s is running Elluminate Live! version %s\n", $server->name, $server->version);
     }
 
-This C<list> method can be used when your site has multiple session servers.
+The C<list> method can be used when your site has multiple session servers.
 
 =cut
 
