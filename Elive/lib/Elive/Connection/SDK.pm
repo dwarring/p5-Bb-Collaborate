@@ -27,17 +27,17 @@ This module handles logical connections to Elluminate I<Live!> sites.
 Most of the time, you won't need to use this module directly, rather
 you'll create a default connection via L<Elive>:
 
-    Elive->connect('http://someserver.com', 'someuser', 'somepass');
+    Elive->connect('https://someserver.com', 'someuser', 'somepass');
 
 However, if you need to manage multiple sites and/or servers. You can
 have multiple connections:
 
     my $connection1
-            = Elive::Connection->connect('http://someserver.com/site1',
+            = Elive::Connection->connect('https://someserver.com/site1',
                                         'user1' => 'pass1');
 
     my $connection2
-            = Elive::Connection->connect('http://user2:pass2@someserver.com/site2');
+            = Elive::Connection->connect('https://user2:pass2@someserver.com/site2');
 
 =cut
 
@@ -120,23 +120,22 @@ our %KnownCommands = (
 	updateServerParameters => 'u',
 	updateSession => 'u',
 	updateUser => 'u',
-
 	);
 
 __PACKAGE__->mk_classdata(known_commands => \%KnownCommands);
 
 =head2 connect
 
-    my $ec1 = Elive::Connection::SDK->connect('http://someserver.com/test',
-                                        'user1', 'pass1', debug => 1,
-    );
-    my $url1 = $ec1->url;   #  'http://someserver.com/test'
+    my $ec1 = Elive::Connection::SDK->connect('https://someserver.com/test',
+                                              'user1', 'pass1', debug => 1);
+
+    my $url1 = $ec1->url;   #  'https://someserver.com/test'
 
     my $ec2 =  Elive::Connection::SDK->connect('http://user2:pass2@someserver.com/test', undef, undef, debug => 1);
     my $url2 = $ec2->url;   #  'http://someserver.com/test'
 
-Establishes a SOAP connection. Retrieves the login user, to verify
-connectivity and authentication details.
+Establishes a SOAP connection over C<http>/C<https>. Retrieves the login user,
+to verify connectivity and authentication details.
 
 =cut
 
