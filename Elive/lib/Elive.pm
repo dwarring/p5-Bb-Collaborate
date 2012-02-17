@@ -34,7 +34,7 @@ participants:
 
     my $meeting_name = 'Meeting of the Smiths';
 
-    Elive->connect('http://someEllumServer.com/my_instance',
+    Elive->connect('https://someEllumServer.com/my_instance',
                    'serversupport', 'mypass');
 
     my $users = Elive::Entity::User->list(filter => "(lastName = 'Smith')");
@@ -87,7 +87,7 @@ the Entity Commands in the Command Toolkit.
 
 =head2 connect
 
-     Elive->connect('http://myServer.com/test', some_user => 'some_pass');
+     Elive->connect('https://myServer.com/test', some_user => 'some_pass');
      my $connection = Elive->connection;
 
 Connects to an Elluminate server instance. Dies if the connection could not
@@ -210,8 +210,8 @@ L<README> file.
 
 elive_query is a script for issuing basic sql-like queries on entities. It serves as a simple demonstration script, and can be used to confirm connectivity and operation of Elive.
 
-    % perl elive_query http://myserver.com/test -user sdk_user
-    Password: connecting to http://myserver.com/test...ok
+    % perl elive_query https://myserver.com/test -user sdk_user
+    Password: connecting to https://myserver.com/test...ok
     Elive query 1.xx - type 'help' for help
 
     elive> select address,version from serverDetails

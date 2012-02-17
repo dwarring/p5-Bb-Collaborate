@@ -669,7 +669,7 @@ sub __set_db_data {
 
 	    if ($struct->can('_db_data')) {
 		#
-		# save before image from databse
+		# save before image from database
 		#
 		$data_copy->_db_data(undef)
 		    if Scalar::Util::blessed($data_copy)
@@ -1164,7 +1164,7 @@ sub _to_aliases {
     print "inserted user with id: ".$new_user->userId."\n";
 
 Abstract method to insert new entities. The primary key is generally not
-provided. It is generated for you and returned with the newly created object.
+required. It is generated for you and returned with the newly created object.
 
 =cut
 
@@ -1190,8 +1190,7 @@ sub insert {
     my @objs = (map {$class->construct( $_, connection => $connection )}
 		@rows);
     #
-    # Not a big fan of wantarry, but 99% we expect to return a single
-    # record on insert. Only exception is recurring meetings.
+    # possibly return a list of recurring meetings.
     #
     return wantarray? @objs : $objs[0];
 }
@@ -1364,8 +1363,7 @@ sub list {
 	push( @params, filter => Elive::Util::_freeze($filter => 'Str') );
     }
 
-    my $connection = $opt{connection}
-		      || $class->connection
+    my $connection = $opt{connection} || $class->connection
 	or die "no connection active";
 
     my $collection_name = $class->collection_name || $class->entity_name;
@@ -1726,7 +1724,7 @@ The following are all equivalent, and are all ok:
 
 =over 4
 
-=item L<Mouse> (base class) - Lightweight L<Moose> like class system
+=item L<Mouse> (base class) - Middle-weight L<Moose> like class system
 
 =back
 

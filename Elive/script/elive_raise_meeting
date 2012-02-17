@@ -35,7 +35,7 @@ elive_raise_meeting - Elluminate Live! Manager (ELM) meeting creation
 =head2 Authentication
 
  [url]                        # web address and site instance path,
-                              # E.g.: http://myserver.com/mysite 
+                              # E.g.: https://myserver.com/mysite 
  -user <username>             # SDK/SOAP username
  -pass <password>             # SDK/SOAP password
 
@@ -225,13 +225,13 @@ sub main {
 	$SIG{__DIE__} = \&Carp::confess;
     }
 
-    $url ||= Elive::Util::prompt("Url ('http://...'): ");
+    $url ||= Elive::Util::prompt("Url ('http[s]://...'): ");
 
     unless ($username && $password) {
 	#
 	# look for credentials encoded in the uri
 	#
-	my $uri_obj = URI->new($url, 'http');
+	my $uri_obj = URI->new($url);
 	my $userinfo = $uri_obj->userinfo; # credentials supplied in URI
 
 	if ($userinfo) {

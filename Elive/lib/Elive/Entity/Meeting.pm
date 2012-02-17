@@ -260,7 +260,7 @@ Associates a preload with the given meeting-Id, or meeting object.
 sub add_preload {
     my ($self, $preload_id, %opt) = @_;
 
-    die 'usage: $meeting_obj->add_preload($preload || $preload_id)'
+    die 'usage: $meeting_obj->add_preload($preload)'
 	unless $preload_id;
 
     my %params = %{ $opt{param} || {} };

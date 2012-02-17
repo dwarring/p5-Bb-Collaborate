@@ -23,7 +23,7 @@ elive_query - simple query shell for Elluminate Live! Manager (ELM)
 
 =head1 SYNOPSIS
 
-  elive_query   http://myserver.com/my-site[:port]
+  elive_query   http[s]://myserver.com/my-site[:port]
 
     -user someuser          # SDK/SOAP username
     -pass somepass          # SDK/SOAP password
@@ -43,9 +43,9 @@ Simple read-only query shell for Elluminate Live! Manager (ELM).
 This script lets you do simple queries, in a vaguely SQL like manner.
 For example:
 
-    % elive_query -user admin http://myserver.com/mysite
+    % elive_query -user admin https://myserver.com/mysite
     Password: ********
-    connecting to http://myserver.com/mysite...ok
+    connecting to https://myserver.com/mysite...ok
     Elive query ... (Elluminate Live! ...)  (c) ... - type 'help' for help
 
     elive> select loginName,email,firstName,lastName,role from user where loginName like *m* 
@@ -213,7 +213,7 @@ sub main {
 		elsif ($keyw  =~ m{^(connect)$}i) {
 		    my ($url, $user) = split(m{\s+}, $args);
 
-		    $url ||= Elive::Util::prompt("Url ('http://...'): ");
+		    $url ||= Elive::Util::prompt("Url ('http[s]://...'): ");
 
 		    my $new_connection
 			= _connect($adapter_class => $url,
@@ -637,7 +637,7 @@ sub _connect {
     my $username = $options{username};
     my $password = $options{password};
 
-    my $uri_obj = URI->new($url, 'http');
+    my $uri_obj = URI->new($url);
     if (my $userinfo = $uri_obj->userinfo) {
 	#
 	# credentials supplied in URI

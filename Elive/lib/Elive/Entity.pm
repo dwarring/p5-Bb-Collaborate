@@ -44,7 +44,7 @@ sub data_classes {
 
 =head2 connect
 
-     Elive::Entity->connect('http://myServer.com/test', some_user => 'some_pass');
+     Elive::Entity->connect('https://myServer.com/test', some_user => 'some_pass');
      my $connection = Elive::Entity->connection;
 
 Connects to an Elluminate server instance. Dies if the connection could not
