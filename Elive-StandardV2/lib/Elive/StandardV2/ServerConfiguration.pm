@@ -94,6 +94,7 @@ has 'timeZone' => (is => 'rw', isa => 'Str');
 =head2 get
 
     my $server_config = Elive::StandardV2::ServerConfiguration->get();
+    print "Server time-zone is: ".$server_config->timeZone."\n";
 
 Return the server configuration details.
 

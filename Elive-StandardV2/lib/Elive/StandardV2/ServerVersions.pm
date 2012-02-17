@@ -25,7 +25,7 @@ __PACKAGE__->entity_name('ServerVersions');
 
 =head2 versionId (Int)
 
-This version's identifier belongs to an available version of the Login Group??
+The version number as a 4 digit integer, e.g. C<1002>.
 
 =cut
 
@@ -33,7 +33,7 @@ has 'versionId' => (is => 'rw', isa => 'Int');
 
 =head2 versionName (Str)
 
-The name of the Elluminate Live! version.
+The version in XX.X.X format, e.g. C<10.0.2>.
 
 =cut
 
@@ -61,9 +61,18 @@ has 'versionMaxFilmersLimit' => (is => 'rw', isa => 'Int');
 
 =head2 get
 
-    my $versions = Elive::StandardV2::ServerVersions->get;
+    my $server_version = Elive::StandardV2::ServerVersions->get;
+    print "ELM version is: ".$server_version->versionName."\n";
 
 Returns the server version information for the current connection.
+
+=cut
+
+=head2 list
+
+    my @server_versions = Elive::StandardV2::ServerVersions->list;
+
+The C<list> method can be used for sites with multiple session servers.
 
 =cut
 
