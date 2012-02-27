@@ -133,11 +133,8 @@ SKIP: {
     #
     # check that we can access our meeting by user and date range.
     #
-    if (1) {
-	$t->skip('listUserMeetingsByDate - broken under elm 3.0')
-	    for (1..4);
-    }
-    else {
+    TODO: {
+	local $TODO = 'listUserMeetingsByDate - broken under elm 3.0';
 	my $user_meetings;
 	is( exception {
 	    my $user_meetings

@@ -15,8 +15,6 @@ use Elive::Util;
 use File::Spec qw();
 use File::Temp qw();
 
-use Carp; $SIG{__DIE__} = \&Carp::confess;
-
 our $t = Test::More->builder;
 my $class = 'Elive::Entity::Preload' ;
 
@@ -237,11 +235,11 @@ SKIP: {
 	or die "unable to get server details - are all services running?";
 
     my $version = version->parse($server_details->version)->numify;
-    if ($version >= '10') {
-	$t->skip('skipping known Elluminate v10.0.0+ bugs')
-	    for (1..2);
-    }
-    else {
+    TODO: {
+
+	local($TODO);
+	$TODO = 'skipping known Elluminate v10.0.0+ bugs'
+	    if $version ge '10';
 
 	is( exception {
 	    push (@preloads, Elive::Entity::Preload->upload(
@@ -256,11 +254,11 @@ SKIP: {
 		  'upload of preload with no extension - lives'
 	    );
 
-	is($preloads[-1]->mimeType, 'video/mpeg','expected value for mimeType (set, no-extension)');
+	is($preloads[-1] && $preloads[-1]->mimeType, 'video/mpeg','expected value for mimeType (set, no-extension)');
     }
 
-    for my $i (1 .. $#preloads) {
-	$preloads[$i]->delete;
+    foreach (@preloads) {
+	$_->delete if $_;
     }
 
     if ($ENV{ELIVE_TEST_PRELOAD_SERVER_PATH}) {
