@@ -1,6 +1,6 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 14;
+use Test::More;
 use Test::Warn;
 
 use Elive;
@@ -14,6 +14,13 @@ use Elive::Entity::Participant;
 
 use lib '.';
 use t::Elive::MockConnection;
+
+if (Elive->debug) {
+    # because debugging adds spurious warnings
+    plan skip_all => "Can't run this test when debugging is enabled";
+}
+
+plan tests => 14;
 
 Elive->connection( t::Elive::MockConnection->connect() );
 

@@ -37,7 +37,13 @@ do {
     my ( $return, $stdout, $stderr ) = run_script($script_name, ['--help'] );
     my $status = last_script_exit_code();
     is($status   => 0, "$script_name --help: zero exit status");
-    is($stderr   => '', "$script_name --help: stderr empty");
+    if (Elive->debug) {
+	$t->skip('debugging enabled - wont check stderr');
+    }
+    else {
+	is($stderr   => '', "$script_name describe user: no errors");
+    }
+
     like($stdout => qr{usage:}ix, "$script_name --help: stdout =~ 'usage:...''");
 };
 
@@ -116,7 +122,14 @@ SKIP: {
 	    my $status = last_script_exit_code();
 
 	    is( $status  => 0, "$script_name: zero exit status");
-	    is($stderr   => '', "stderr empty");
+
+	    if (Elive->debug) {
+		$t->skip('debugging enabled - wont check stderr');
+	    }
+	    else {
+		is($stderr   => '', "$script_name - stderr empty");
+	    }
+
 	    like($stdout => $meeting_response_re, 'meeting response');
 	    my ($ret_meeting_name, $ret_meeting_id) = ($stdout =~ $meeting_response_re);
 
@@ -200,7 +213,12 @@ SKIP: {
 							  ] );
 
 	    if ($class eq 'Elive::Entity::Session') {
-		is($stderr => '', "stderr empty ($class)");
+		if (Elive->debug) {
+		    $t->skip('debugging enabled - wont check stderr');
+		}
+		else {
+		    is($stderr   => '', "$script_name - stderr empty ($class)");
+		}
 	    }
 	    else {
 		like($stderr => qr{ignoring invited guests}, "std has 'ignoring invitied guests' warning");
@@ -287,7 +305,12 @@ SKIP: {
 							   @flags_on_args
 							  ] );
 
-	    is($stderr => '', "stderr empty");
+	    if (Elive->debug) {
+		$t->skip('debugging enabled - wont check stderr');
+	    }
+	    else {
+		is($stderr   => '', "$script_name - stderr empty");
+	    }
 	    like($stdout => $meeting_response_re, 'meeting response');
 	    my ($ret_meeting_name, $ret_meeting_id) = ($stdout =~ $meeting_response_re);
 
@@ -321,7 +344,12 @@ SKIP: {
 							   @flags_off_args
 							  ] );
 
-	    is($stderr => '', "stderr empty");
+	    if (Elive->debug) {
+		$t->skip('debugging enabled - wont check stderr');
+	    }
+	    else {
+		is($stderr   => '', "$script_name - stderr empty");
+	    }
 
 	    like($stdout => $meeting_response_re, 'meeting response');
 	    my ($ret_meeting_name, $ret_meeting_id) = ($stdout =~ $meeting_response_re);
@@ -373,7 +401,12 @@ SKIP: {
 							       @options,
 							      ] );
 
-		is($stderr => '', "stderr empty");
+		if (Elive->debug) {
+		    $t->skip('debugging enabled - wont check stderr');
+		}
+		else {
+		    is($stderr   => '', "$script_name - stderr empty");
+		}
 		like($stdout => $meeting_response_re, 'meeting response');
 		my ($ret_meeting_name, $ret_meeting_id) = ($stdout =~ $meeting_response_re);
 
