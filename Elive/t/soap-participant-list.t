@@ -18,6 +18,7 @@ use Elive::Entity::Meeting;
 use Elive::Entity::User;
 use Elive::Entity::Group;
 use Elive::Util;
+use Try::Tiny;
 
 our $t = Test::More->builder;
 our $class = 'Elive::Entity::Meeting' ;
@@ -39,9 +40,12 @@ SKIP: {
     # ELM 3.3.4 / 10.0.2 includes significant bug fixes
     my $server_details =  Elive->server_details
 	or die "unable to get server details - are all services running?";
+    our $version = version->declare( $server_details->version )->numify;
+    our $version_10_0_1 = version->declare( '10.0.1' )->numify;
+    our $version_11_1_2 = version->declare( '11.1.2' )->numify;
 
-    our $elm_3_3_4_or_better =  (version->declare( $server_details->version )->numify
-				 > version->declare( '10.0.1' )->numify);
+    our $elm_3_3_4_or_higher =  $version > $version_10_0_1;
+    our $elm_3_5_0_or_higher =  $version >= $version_11_1_2;
 
     my $meeting_start = time();
     my $meeting_end = $meeting_start + 900;
@@ -197,7 +201,7 @@ SKIP: {
     is($p->[0]->role && $p->[0]->role->roleId, 2,
        'participant_list reset - single participant has moderator role');
 
-    if (! $elm_3_3_4_or_better ) {
+    if (! $elm_3_3_4_or_higher ) {
 	#
 	# The next test verifies bug fixes under ELM 3.3.4/10.0.2. It probably wont
 	# work with 10.0.1 or earlier.
@@ -234,37 +238,53 @@ SKIP: {
 	# a long list. was a problem prior to elm 3.3.4
 	#
 
-	is( exception {
-	    my $participants_str = join(';', 
-					Elive->login->userId.'=2',
-					map {$_.'=3'} @big_user_list
-		);
-	    my %params = (
-		meetingId => $meeting,
-		users => $participants_str
-		);
-	    my $som = $connection->call('setParticipantList' => %{Elive::Entity::ParticipantList->_freeze(\%params)});
+	TODO : {
+	    local($TODO);
+	    $TODO = 'broken under ELM 3.5.0 ... ?'
+		if $elm_3_5_0_or_higher;
 
-	    $connection->_check_for_errors( $som );
-		 } => undef,
-		 'participants long-list test - lives'
-	    );
-	#
-	# refetch the participant list and check that all real users
-	# are present
-	#
-	my @users_in =  (Elive->login, $participant1, $participant2, @participants);
-	my @user_ids_in = map {$_->userId} @users_in;
-	my %users_seen;
-	@users_seen{ @user_ids_in } = undef;
-	my @expected_users = sort keys %users_seen;
+	    try {
+		# this can hang - add a timeout
+		my $timeout_sec = 120;
+		local $SIG{ALRM} = sub { die "test failed to complete after $timeout_sec\n" };
 
-	$participant_list = Elive::Entity::ParticipantList->retrieve($meeting->meetingId);
-	my $participants = $participant_list->participants;
+		is( exception {
+		    my $participants_str = join(';', 
+						Elive->login->userId.'=2',
+						map {$_.'=3'} @big_user_list
+			);
+		    my %params = (
+			meetingId => $meeting,
+			users => $participants_str
+			);
+		    my $som = $connection->call('setParticipantList' => %{Elive::Entity::ParticipantList->_freeze(\%params)});
 
-	my @actual_users = sort map {$_->user->userId} @$participants;
+		    $connection->_check_for_errors( $som );
+		    } => undef,
+		    'participants long-list test - lives'
+		    );
+		#
+		# refetch the participant list and check that all real users
+		# are present
+		#
+		my @users_in =  (Elive->login, $participant1, $participant2, @participants);
+		my @user_ids_in = map {$_->userId} @users_in;
+		my %users_seen;
+		@users_seen{ @user_ids_in } = undef;
+		my @expected_users = sort keys %users_seen;
 
-	is_deeply(\@actual_users, \@expected_users, "participant list as expected (no repeats or unknown users)");
+		$participant_list = Elive::Entity::ParticipantList->retrieve($meeting->meetingId);
+		my $participants = $participant_list->participants;
+
+		my @actual_users = sort map {$_->user->userId} @$participants;
+
+		is_deeply(\@actual_users, \@expected_users, "participant list as expected (no repeats or unknown users)");
+		alarm 0;
+	    }
+	    catch {
+		fail $_ for (1..2);
+	    }
+	}
     }
 
     my $group;
