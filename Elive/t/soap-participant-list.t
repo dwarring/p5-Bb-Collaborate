@@ -37,14 +37,16 @@ SKIP: {
     my $connection = $connection_class->connect(@$auth);
     Elive->connection($connection);
     #
-    # ELM 3.3.4 / 10.0.2 includes significant bug fixes
+    # - ELM 3.3.4 / 10.0.2 - includes significant bug fixes
+    # - ELM 3.5.0 / 11.1.2 - breaks setParticipant stress test
+
     my $server_details =  Elive->server_details
 	or die "unable to get server details - are all services running?";
     our $version = version->declare( $server_details->version )->numify;
     our $version_10_0_1 = version->declare( '10.0.1' )->numify;
     our $version_11_1_2 = version->declare( '11.1.2' )->numify;
 
-    our $elm_3_3_4_or_higher =  $version > $version_10_0_1;
+    our $elm_3_3_4_or_higher =  $version >= $version_10_0_1;
     our $elm_3_5_0_or_higher =  $version >= $version_11_1_2;
 
     my $meeting_start = time();
@@ -136,16 +138,16 @@ SKIP: {
 	$participant_list->participants->add($participant2->userId.'=3');
 	$participant_list->update();
 
-    TODO: {
+      TODO: {
           #
           # is_participant() give variable results on various ELM versions
           # ELM 3.0 - 3.3.4 under LDAP - best to treat is as broken
           #
-           local($TODO) = 'reliable - is_participant()';
+	  local($TODO) = 'reliable - is_participant()';
 
-	   ok($meeting->is_participant( $participant1), 'is_participant($participant1)');
-	   ok($meeting->is_participant( $participant2), 'is_participant($participant2)');
-       }
+	  ok($meeting->is_participant( $participant1), 'is_participant($participant1)');
+	  ok($meeting->is_participant( $participant2), 'is_participant($participant2)');
+	}
 
  	ok(!$meeting->is_moderator( $participant2), '!is_moderator($participant2)');
 
@@ -240,50 +242,42 @@ SKIP: {
 
 	TODO : {
 	    local($TODO);
-	    $TODO = 'broken under ELM 3.5.0 ... ?'
+	    $TODO = 'setParticipant stree test - broken under ELM 3.5.0 ... ?'
 		if $elm_3_5_0_or_higher;
-
-	    try {
-		# this can hang - add a timeout
-		my $timeout_sec = 120;
-		local $SIG{ALRM} = sub { die "test failed to complete after $timeout_sec\n" };
 
 		is( exception {
 		    my $participants_str = join(';', 
 						Elive->login->userId.'=2',
 						map {$_.'=3'} @big_user_list
 			);
-		    my %params = (
-			meetingId => $meeting,
-			users => $participants_str
-			);
-		    my $som = $connection->call('setParticipantList' => %{Elive::Entity::ParticipantList->_freeze(\%params)});
+
+		    # this can hang - add a timeout
+		    my $timeout_sec = 60;
+		    local $SIG{ALRM} = sub { die "test failed to complete after $timeout_sec\n" };
+		    alarm $timeout_sec;
+		    my $som = $connection->call('setParticipantList' => (meetingId => $meeting->meetingId, users => $participants_str));
+		    alarm 0;
 
 		    $connection->_check_for_errors( $som );
 		    } => undef,
 		    'participants long-list test - lives'
 		    );
-		#
-		# refetch the participant list and check that all real users
-		# are present
-		#
-		my @users_in =  (Elive->login, $participant1, $participant2, @participants);
-		my @user_ids_in = map {$_->userId} @users_in;
-		my %users_seen;
-		@users_seen{ @user_ids_in } = undef;
-		my @expected_users = sort keys %users_seen;
+	    #
+	    # refetch the participant list and check that all real users
+	    # are present
+	    #
+	    my @users_in =  (Elive->login, $participant1, $participant2, @participants);
+	    my @user_ids_in = map {$_->userId} @users_in;
+	    my %users_seen;
+	    @users_seen{ @user_ids_in } = undef;
+	    my @expected_users = sort keys %users_seen;
 
-		$participant_list = Elive::Entity::ParticipantList->retrieve($meeting->meetingId);
-		my $participants = $participant_list->participants;
+	    $participant_list = Elive::Entity::ParticipantList->retrieve($meeting->meetingId);
+	    my $participants = $participant_list->participants;
 
-		my @actual_users = sort map {$_->user->userId} @$participants;
+	    my @actual_users = sort map {$_->user->userId} @$participants;
 
-		is_deeply(\@actual_users, \@expected_users, "participant list as expected (no repeats or unknown users)");
-		alarm 0;
-	    }
-	    catch {
-		fail $_ for (1..2);
-	    }
+	    is_deeply(\@actual_users, \@expected_users, "participant list as expected (no repeats or unknown users)");
 	}
     }
 
@@ -300,14 +294,24 @@ SKIP: {
     splice(@groups, 10) if @groups > 10;
 
     my $invited_guest = 'Robert(bob@acme.org)';
-    warnings_like(sub {$participant_list->update({ participants => [$participant1, $invited_guest]})}, qr{ignoring}, 'participant guest - "ignored" warning under elm 2.x');
+    if (Elive->debug) {
+	$t->skip('debugging enable - wont check for warnings');
+    }
+    else {
+	warnings_like(sub {$participant_list->update({ participants => [$participant1, $invited_guest]})}, qr{ignoring}, 'participant guest - "ignored" warning under elm 2.x');
+    }
     #
     # you've got to refetch the group to populate the list of recipients
     ($group) = List::Util::first {$_->retrieve($_); @{ $_->members } } @groups;
 
     if ($group) {
-	note "using group ".$group->name;
-	warnings_like(sub {$participant_list->update({ participants => [$participant1, $group]})}, qr{client side expansion}, 'participant groups - expansion warning under elm 2.x');
+	if (Elive->debug) {
+	    $t->skip('debugging enable - wont check for warnings');
+	}
+	else {
+	    note "using group ".$group->name;
+	    warnings_like(sub {$participant_list->update({ participants => [$participant1, $group]})}, qr{client side expansion}, 'participant groups - expansion warning under elm 2.x');
+	}
     }
     else {
 	$t->skip('no candidates found for group tests');
