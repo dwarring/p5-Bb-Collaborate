@@ -14,6 +14,7 @@ use Elive::Util;
 
 use File::Spec qw();
 use File::Temp qw();
+use Try::Tiny;
 
 our $t = Test::More->builder;
 my $class = 'Elive::Entity::Preload' ;
@@ -257,7 +258,7 @@ SKIP: {
     }
 
     foreach (@preloads) {
-	$_->delete if $_;
+	try{ $_->delete } if $_;
     }
 
     if ($ENV{ELIVE_TEST_PRELOAD_SERVER_PATH}) {
