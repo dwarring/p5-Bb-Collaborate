@@ -137,7 +137,7 @@ SKIP: {
 	local $TODO = 'listUserMeetingsByDate - broken under elm 3.0';
 	my $user_meetings;
 	is( exception {
-	    my $user_meetings
+	    $user_meetings
 		= Elive::Entity::Meeting->list_user_meetings_by_date(
 		[$meeting_data{facilitatorId},
 		 $meeting_data{start},
