@@ -1,6 +1,11 @@
 Revision history for Elive
 
-1.24   tba
+1.24   28th February 2012
+       [Tested against Blackboard Collaborate 11.1.2  / ELM 3.5.0.]
+       [testing]
+       - soap-connect.t - raised max_version to 11.1.2
+       - soap-participant-list.t - long participant / stress-tests are hanging
+         under LDAP. I marked these tests as TODO and added an alarm-timeout.
        elive_query
         - removed disused _get_user() function.
         - direct 'connection error ...' message to STDERR
@@ -20,7 +25,7 @@ Revision history for Elive
         [testing]
         - Replaced Test::Builder->new with Test::More->builder
         00load.t, soap-connect.t:
-        - now bail if any sub tests fail
+        - now bail testing if any sub tests fail
         soap-session-participants.t, soap-participant-list.t:
         - reworked long participant list tests
 

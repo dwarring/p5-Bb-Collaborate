@@ -236,10 +236,9 @@ SKIP: {
 
     my $version = version->parse($server_details->version)->numify;
     TODO: {
-
 	local($TODO);
 	$TODO = 'skipping known Elluminate v10.0.0+ bugs'
-	    if $version ge '10';
+	    if $version >= '10';
 
 	is( exception {
 	    push (@preloads, Elive::Entity::Preload->upload(

@@ -1,6 +1,6 @@
-Elluminate Live! (c) is software for virtual online classrooms. It is
-suitable for meetings, demonstrations web conferences, seminars and
-general training and support.
+Elluminate Live! (Blackboard Collaborate)) is software for virtual online
+classrooms. It is suitable for meetings, demonstrations web conferences,
+seminars and general training and support.
 
 Elive is a set of Perl bindings and definitions for entities in the
 Elluminate Live! Manager (ELM) database. You can, for example, use it to
@@ -9,16 +9,16 @@ manage users, groups meetings and meeting participants.
 Elive connects to Elluminate Live! servers via http or https and
 utilises the Command Toolkit services SOAP ('default' adapter).
 
-Some manual configuration may be required on your Elluminate Live! server
-to configure access. Please see the Server Configuration section.
+Some additional configuration is be required on your Elluminate Live!
+server. Please see the Server Configuration section.
 
 COMPATIBILITY
 
     The Elive distribution supports only self hosted Elluminate Live!
-    servers that use the Elluminate Live! Manager (ELM).
+    servers that are running Elluminate Live! Manager (ELM).
 
-    - works best with ELM versions 3.0 - 3.3.5 and Elluminate Live!
-      versions 9.5 - 10.0.1
+    - works best with ELM versions 3.0 - 3.5.0 and Elluminate Live!
+      (Blackboard Collaborate) versions 9.5 - 11.1.2
 
     - does not support access to externally hosted servers deployed with SAS
       (Session Administration System).
@@ -32,13 +32,10 @@ INSTALLATION
         make test
         make install
 
-CONFIGURING SDK ACCESS
+SERVER CONFIGURATION
 
-    By default, only Elluminate Live! administrator users (Role 0) are
-    granted access to the SDK.
-
-    If you wish to to grant access to non-administrator users, or if you're
-    using LDAP, you'll need to edit your site instance configuration.
+    You'll need to edit your site instance configuration to provide
+    SDK access to one or more users.
 
     To do this, firstly stop the site using the Elluminate Live Instance
     Manager (http://yourserver/elmcontrol).

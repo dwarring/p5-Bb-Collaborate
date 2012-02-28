@@ -3,7 +3,7 @@ use warnings; use strict;
 
 =head1 NAME
 
-Elive - Elluminate Live! (c) Command Toolkit bindings
+Elive - Elluminate Live! (Blackboard Collaborate) Command Toolkit bindings
 
 =head1 VERSION
 
@@ -67,7 +67,8 @@ managing users and groups.
 
 =head1 BACKGROUND
 
-Elluminate I<Live!> (c) is software for virtual online classrooms.
+Elluminate I<Live!> (Blackboard Collaborate) is software for virtual online
+classrooms.
 
 It is suitable for meetings, demonstrations web conferences, seminars
 and IT deployment, training and support.
