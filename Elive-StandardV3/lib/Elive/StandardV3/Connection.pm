@@ -75,7 +75,7 @@ __PACKAGE__->mk_classdata(known_commands => \%KnownCommands);
 #
 # cache singleton records
 #
-__PACKAGE__->mk_accessors( qw{_scheduling_manager _server_configuration _server_versions} );
+__PACKAGE__->mk_accessors( qw{_scheduling_manager _server_configuration _server_versions _authoriz _proxy} );
 
 =head2 connect
 
@@ -167,13 +167,15 @@ sub soap {
 	$proxy_opts{timeout} = $self->timeout
 	    if $self->timeout;
 
+	$self->_proxy($proxy);
 	$soap->proxy($proxy);
 	#
 	# authentication adapted from www.perlmonks.org/index.pl?node_id=657873
 	#
 	my $authoriz = 'Basic '.MIME::Base64::encode_base64($self->user.':'.$self->pass);
+	$self->_authoriz( $authoriz );
 
-	$soap->transport->http_request->headers->push_header('Authorization'=>$authoriz);
+	$soap->transport->http_request->headers->push_header(Authorization => $authoriz);
 
 	$self->_soap($soap);
     }
