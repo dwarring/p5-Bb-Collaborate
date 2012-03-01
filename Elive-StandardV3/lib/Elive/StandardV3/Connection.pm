@@ -31,15 +31,18 @@ on the Elluminate server. This endpoint implements the Standard Bridge API.
 
 our %KnownCommands = (
 
-    BuildSessionUrl => 'r',
     BuildRecordingUrl => 'r',
+    BuildSessionUrl => 'r',
+
+    ClearSessionChairList => 'u',
+    ClearSessionNonChairList => 'u',
 
     GetSchedulingManager => 'r',
     GetServerConfiguration => 'r',
     GetServerVersions => 'r',
  
-    ListMultimediaContent => 'r',
-    ListPresentationContent => 'r',
+    ListRepositoryMultimedia => 'r',
+    ListRepositoryPresentation => 'r',
     ListRecordingLong => 'r',
     ListRecordingShort => 'r',
     ListSession => 'r',
@@ -48,8 +51,14 @@ our %KnownCommands = (
     ListSessionMultimedia => 'r',
     ListSessionPresentation => 'r',
 
-    RemoveSession => 'r',
+    RemoveRepositoryMultimedia => 'd',
+    RemoveRepositoryPresentation => 'd',
+    RemoveSession => 'd',
+    RemoveSessionMultimedia => 'd',
+    RemoveSessionPresentation => 'd',
+    RemoveSessionTelephony => 'd',
 
+    SetApiCallbackUrl => 'r',
     SetSession => 'c',
     SetSessionMultimedia => 'u',
     SetSessionPresentation => 'u',

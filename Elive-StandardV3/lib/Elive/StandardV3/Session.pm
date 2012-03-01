@@ -562,7 +562,7 @@ sub set_presentation {
 	presentationIds => $presentation_ids
 				 });
 
-    my $som = $connection->call(setSessionPresentation => %$params);
+    my $som = $connection->call(SetSessionPresentation => %$params);
 
     my $results = $class->_get_results(
 	$som,
@@ -607,7 +607,7 @@ sub set_multimedia {
 	multimediaIds => $multimedia_ids
 				 });
 	
-    my $som = $connection->call(setSessionMultimedia => %$params);
+    my $som = $connection->call(SetSessionMultimedia => %$params);
 
     my $results = $class->_get_results(
 	$som,

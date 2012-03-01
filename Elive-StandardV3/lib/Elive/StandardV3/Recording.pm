@@ -134,12 +134,9 @@ sub recording_url {
 
     my $params = $class->_freeze({recordingId => $recording_id});
 
-    my $som = $connection->call('buildRecordingUrl' => %$params);
+    my $som = $connection->call('BuildRecordingUrl' => %$params);
 
-    my $results = $class->_get_results(
-	$som,
-	$connection,
-	);
+    my $results = $class->_get_results(	$som, $connection );
 
     my $url = @$results && $results->[0];
 
@@ -177,7 +174,7 @@ Returns an array of recording objects. You may filter on:
 sub list {
     my ($self, %opt) = @_;
 
-    $opt{command} ||= 'listRecordingLong';
+    $opt{command} ||= 'ListRecordingLong';
 
     return $self->SUPER::list(%opt);
 }

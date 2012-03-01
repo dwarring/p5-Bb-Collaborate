@@ -135,7 +135,7 @@ sub upload {
                                 );
 
 Lists multimedia. You will need to provide a filter that contains at least one
-of: C<creatorId>, C<presentationId>, C<description> or C<multimediaId>.
+of: C<sessionId>, C<creatorId>, C<description> or C<multimediaId>.
 
 =cut
 
