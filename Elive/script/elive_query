@@ -32,7 +32,7 @@ elive_query - simple query shell for Elluminate Live! Manager (ELM)
     -dump=yaml              # serialise results as YAML
     -? -help                # obtain help
     -v -version             # print Elive version
-    -adapter type           # E.g. -adapter standardv2 (See Elive::StandardV2)
+    -adapter type           # E.g. -adapter standardv3 (See Elive::StandardV3)
 
 =head1 DESCRIPTION
 
@@ -110,8 +110,11 @@ sub main {
 	(my $url, %options) = _getopt();
 
 	my $adapter = $options{adapter} || 'default';
-	$adapter_class = {default => 'Elive::Entity',
-			  standardv2 => 'Elive::StandardV2'}->{$adapter};
+	$adapter_class = {default    => 'Elive::Entity',
+			  standard   => 'Elive::StandardV3',
+			  standardv3 => 'Elive::StandardV3',
+			  standardv2 => 'Elive::StandardV2',
+	}->{$adapter};
 	$adapter_class ||= $adapter;
 	
 	eval "require $adapter_class";
