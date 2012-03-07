@@ -221,6 +221,7 @@ SKIP: {
 	# call to bypass overly helpful readback checks and removal of duplicates.
 	#
 	my @big_user_list;
+	my $participant_limit = $ENV{ELIVE_TEST_PARTICIPANT_LIMIT} || 2500;
 
       MAKE_BIG_LIST:
 	while (1) {
@@ -231,10 +232,12 @@ SKIP: {
 		my $user = rand() < .1 ? t::Elive::generate_id(): $_->userId;
 		push (@big_user_list, $user);
 		last MAKE_BIG_LIST
-		    if @big_user_list > 2500;
+		    if @big_user_list >= $participant_limit;
 	    }
 	}
 
+	my $timeout_sec = $ENV{ELIVE_TEST_PARTICIPANT_TIMEOUT} || 60;
+	note sprintf('stress testing with %d participants (timeout %d sec)...', scalar @big_user_list, $timeout_sec);
 	#
 	# low level test that the setParticipantList adapter will accept
 	# a long list. was a problem prior to elm 3.3.4
@@ -252,7 +255,6 @@ SKIP: {
 			);
 
 		    # this can hang - add a timeout
-		    my $timeout_sec = 60;
 		    local $SIG{ALRM} = sub { die "test failed to complete after $timeout_sec\n" };
 		    alarm $timeout_sec;
 		    my $som = $connection->call('setParticipantList' => (meetingId => $meeting->meetingId, users => $participants_str));
