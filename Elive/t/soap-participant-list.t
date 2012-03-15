@@ -23,11 +23,36 @@ use Try::Tiny;
 our $t = Test::More->builder;
 our $class = 'Elive::Entity::Meeting' ;
 
+use Pod::Usage;
+use Getopt::Long qw{};
+
+=head1 NAME
+
+soap-participant-list.t - elm 2.x participant tests (setParticipant etc)
+
+=head1 SYNOPSIS
+
+  prove --lib -v soap-participant-list.t :: \ #<opts>
+    -[no]unknowns         # include a smattering of unknown users
+    -timeout=sec          # set a timeout on the soap call
+    -participant_limit=n  # max no. of participants in the stress-test
+
+=cut
+ 
+my $unknowns = 1;
+my $participant_limit = $ENV{ELIVE_TEST_PARTICIPANT_LIMIT} || 500;
+my $timeout_sec = $ENV{ELIVE_TEST_PARTICIPANT_TIMEOUT} || 120;
+
+Getopt::Long::GetOptions('u|unknowns!' => \$unknowns,
+			 't|timeout=i' => \$timeout_sec,
+			 'p|participant_limit' => \$participant_limit,
+    ) or pod2usage(2);
+
 our $connection;
 
 SKIP: {
 
-    my %result = t::Elive->test_connection( only => 'real');
+    my %result = t::Elive->test_connection( only => 'real', timeout => $timeout_sec);
     my $auth = $result{auth};
 
     skip ($result{reason} || 'skipping live tests', 34)
@@ -38,16 +63,13 @@ SKIP: {
     Elive->connection($connection);
     #
     # - ELM 3.3.4 / 10.0.2 - includes significant bug fixes
-    # - ELM 3.5.0 / 11.1.2 - breaks setParticipant stress test
 
     my $server_details =  Elive->server_details
 	or die "unable to get server details - are all services running?";
     our $version = version->declare( $server_details->version )->numify;
-    our $version_10_0_1 = version->declare( '10.0.1' )->numify;
-    our $version_11_1_2 = version->declare( '11.1.2' )->numify;
 
+    our $version_10_0_1 = version->declare( '10.0.1' )->numify;
     our $elm_3_3_4_or_higher =  $version >= $version_10_0_1;
-    our $elm_3_5_0_or_higher =  $version >= $version_11_1_2;
 
     my $meeting_start = time();
     my $meeting_end = $meeting_start + 900;
@@ -76,7 +98,7 @@ SKIP: {
 	exception {my $_p = Elive::Entity::ParticipantList->insert(
 		 {meetingId => $meeting->meetingId,
 		  participants => $participants_deep_ref});
-	     note ("participants=".$_p->participants->stringify);
+	     note ("participants: ".$_p->participants->stringify);
 	} => undef,
 	'insert of participant deep list - lives');
 
@@ -110,10 +132,14 @@ SKIP: {
 	#
 	# for datasets with 1000s of entries
 	($participant1,$participant2, @participants) = grep {$_->userId ne $meeting->facilitatorId} @{ Elive::Entity::User->list(filter => 'lastName = Sm*') };
+
+	# for middle sized datasets
+	($participant1,$participant2, @participants) = grep {$_->userId ne $meeting->facilitatorId} @{ Elive::Entity::User->list(filter => 'lastName = S*') }
+	unless @participants+2 >= $participant_limit;
 	#
 	# for modest test datasets
 	($participant1,$participant2, @participants) = grep {$_->userId ne $meeting->facilitatorId} @{ Elive::Entity::User->list() }
-	    unless @participants;
+	    unless @participants+2 >= $participant_limit;
 	      } => undef,
 	      'get_users - lives');
 
@@ -128,7 +154,7 @@ SKIP: {
 
 	$participant_list->participants->add($participant1->userId.'=3');
 
-	is( exception {$participant_list->update} => undef, 'setting of participant - lives');
+	is( exception {$participant_list->update} => undef, 'adding participant - lives');
 
 	ok(!$meeting->is_moderator( $participant1), '!is_moderator($participant1)');
 
@@ -205,8 +231,8 @@ SKIP: {
 
     if (! $elm_3_3_4_or_higher ) {
 	#
-	# The next test verifies bug fixes under ELM 3.3.4/10.0.2. It probably wont
-	# work with 10.0.1 or earlier.
+	# The next test verifies bug fixes under ELM 3.3.4/10.0.2. It probably
+	# wont work with 10.0.1 or earlier.
 	#
 	$t->skip('skipping participant long-list test for Elluminate < v10.0.2')
 	    for (1..2);
@@ -221,7 +247,7 @@ SKIP: {
 	# call to bypass overly helpful readback checks and removal of duplicates.
 	#
 	my @big_user_list;
-	my $participant_limit = $ENV{ELIVE_TEST_PARTICIPANT_LIMIT} || 2500;
+	my %expected_users = ($meeting->facilitatorId => 1);
 
       MAKE_BIG_LIST:
 	while (1) {
@@ -229,57 +255,75 @@ SKIP: {
 		#
 		# include a smattering of unknown users
 		#
-		my $user = rand() < .1 ? t::Elive::generate_id(): $_->userId;
-		push (@big_user_list, $user);
+		if ($unknowns && rand() < .1) {
+		    #
+		    # include a smattering of random unknown users
+		    #	
+		    my $unknown_user = t::Elive::generate_id();
+
+		    push (@big_user_list, $unknown_user);
+		}
+
+		$expected_users{$_->userId}++;
+		push (@big_user_list, $_->userId);
+
 		last MAKE_BIG_LIST
 		    if @big_user_list >= $participant_limit;
 	    }
 	}
 
-	my $timeout_sec = $ENV{ELIVE_TEST_PARTICIPANT_TIMEOUT} || 60;
 	note sprintf('stress testing with %d participants (timeout %d sec)...', scalar @big_user_list, $timeout_sec);
 	#
 	# low level test that the setParticipantList adapter will accept
 	# a long list. was a problem prior to elm 3.3.4
 	#
 
-	TODO : {
-	    local($TODO);
-	    $TODO = 'setParticipant stree test - broken under ELM 3.5.0 ... ?'
-		if $elm_3_5_0_or_higher;
-
-		is( exception {
-		    my $participants_str = join(';', 
+	do {
+	    is( exception {
+		my $participants_str = join(';', 
 						Elive->login->userId.'=2',
 						map {$_.'=3'} @big_user_list
-			);
-
-		    # this can hang - add a timeout
-		    local $SIG{ALRM} = sub { die "test failed to complete after $timeout_sec\n" };
-		    alarm $timeout_sec;
-		    my $som = $connection->call('setParticipantList' => (meetingId => $meeting->meetingId, users => $participants_str));
-		    alarm 0;
-
-		    $connection->_check_for_errors( $som );
-		    } => undef,
-		    'participants long-list test - lives'
 		    );
+
+		note "participants in: $participants_str";
+
+		# this can hang - add a timeout
+		local $SIG{ALRM} = sub { die "test failed to complete after $timeout_sec seconds\n" };
+		alarm $timeout_sec;
+		my $som = $connection->call('setParticipantList' => (meetingId => $meeting->meetingId, users => $participants_str));
+		alarm 0;
+
+		$connection->_check_for_errors( $som );
+		} => undef,
+		'participants long-list test - lives'
+		);
 	    #
 	    # refetch the participant list and check that all real users
 	    # are present
 	    #
-	    my @users_in =  (Elive->login, $participant1, $participant2, @participants);
-	    my @user_ids_in = map {$_->userId} @users_in;
-	    my %users_seen;
-	    @users_seen{ @user_ids_in } = undef;
-	    my @expected_users = sort keys %users_seen;
 
 	    $participant_list = Elive::Entity::ParticipantList->retrieve($meeting->meetingId);
 	    my $participants = $participant_list->participants;
 
 	    my @actual_users = sort map {$_->user->userId} @$participants;
+	    note "actual users: @actual_users";
 
-	    is_deeply(\@actual_users, \@expected_users, "participant list as expected (no repeats or unknown users)");
+	    my %users_out;
+	    @users_out{ @actual_users } = undef;
+
+	    is_deeply(\@actual_users, [sort keys %expected_users], "participant list as expected (no repeats or unknown users)")
+		or do {
+
+		    foreach (sort keys %expected_users) {
+			diag "\t - user $_ has not been accepted as a participant"
+			    unless exists $users_out{ $_ }
+		    }
+
+		    foreach (sort keys %users_out) {
+			diag "\t - user $_ has popped up, out of nowhere!?"
+			    unless exists $expected_users{ $_ }
+		    }
+	    };
 	}
     }
 

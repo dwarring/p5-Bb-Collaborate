@@ -1,11 +1,24 @@
 Revision history for Elive
 
+1.25   tba
+       [enhancements]
+       Elive::Connection
+       - Added timeout option. This is passed through to SOAP::Lite.
+       [testing]
+       - soap-participants.t -  Extended the connection timeout on the long
+         participant / stress-tests - now passing.
+       - soap-session-participants.t - I've found that the participant stress
+         test can crash the LDAP server (OpenLDAP 2.4.26 on openSUSE 12.1, at
+         least). I've lowered the default number of participants to a safe
+         level of 250.
+
 1.24   28th February 2012
        [Tested against Blackboard Collaborate 11.1.2  / ELM 3.5.0.]
        [testing]
        - soap-connect.t - raised max_version to 11.1.2
        - soap-participant-list.t - long participant / stress-tests are hanging
          under LDAP. I marked these tests as TODO and added an alarm-timeout.
+       [bug fixes]
        elive_query
         - removed disused _get_user() function.
         - direct 'connection error ...' message to STDERR
@@ -114,9 +127,9 @@ Revision history for Elive
         Elive::StandardV2's benefit, which can now base itself directly on
         Elive::DAO rather than Elive.
          - Created new module Elive::DAO::_Base
-        - Changed parent class for Elive::DAO and Elive::DAO::_Array from
-          Elive to Elive::DAO::_Base
-        - Set $Elive::DAO::VERSION = '0.01'
+         - Changed parent class for Elive::DAO and Elive::DAO::_Array from
+            Elive to Elive::DAO::_Base
+         - Set $Elive::DAO::VERSION = '0.01'
 
 1.14    21st August 2011
         [bug fixes]

@@ -34,7 +34,9 @@ have multiple connections:
 
     my $connection1
             = Elive::Connection->connect('https://someserver.com/site1',
-                                        'user1' => 'pass1');
+                                        'user1' => 'pass1',
+                                        timeout => 100,
+              );
 
     my $connection2
             = Elive::Connection->connect('https://user2:pass2@someserver.com/site2');
@@ -181,7 +183,7 @@ Returns the underlying L<SOAP::Lite> object for the connection.
 =cut
 
 sub soap {
-    my ($self) = shift;
+    my $self = shift;
 
     my $soap = $self->_soap;
 
@@ -200,7 +202,12 @@ sub soap {
 	    if ($debug);
 
 	$soap = SOAP::Lite->new();
-	$soap->proxy($proxy);
+
+	my %proxy_opts;
+	$proxy_opts{timeout} = $self->timeout
+	    if $self->timeout;
+
+	$soap->proxy($proxy, %proxy_opts);
 
 	$self->_soap($soap);
     }

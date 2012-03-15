@@ -30,7 +30,7 @@ Most of the time, you'll be dealing with specific class instances; See L<Elive::
 
 =cut
 
-__PACKAGE__->mk_accessors( qw{url user pass _soap debug type} );
+__PACKAGE__->mk_accessors( qw{url user pass _soap debug type timeout} );
 
 =head1 METHODS
 
@@ -147,6 +147,7 @@ sub _connect {
     $self->user($user);
     $self->pass($pass);
     $self->debug($debug);
+    $self->timeout($opt{timeout});
 
     return $self
 }

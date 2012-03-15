@@ -1,6 +1,6 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 32;
+use Test::More tests => 31;
 use Test::Fatal;
 
 use lib '.';
@@ -51,13 +51,6 @@ SKIP: {
 	privateMeeting => 1,
     );
 
-    if (1) {
-	$t->skip("can't modify restrictedMeeting property (known elm2.x problem)");
-    }
-    else {
-	$meeting_data{restrictedMeeting} = 1;
-    }
-
     my ($meeting) = $class->insert(\%meeting_data);
 
     isa_ok($meeting, $class, 'meeting');
@@ -99,7 +92,7 @@ SKIP: {
     # This is a far as we can currently go with a mock connection
     ########################################################################
 
-    skip ($result{reason} || 'skipping live tests', 15)
+    skip ($result{reason} || 'skipping live tests', 14)
 	if $connection_class->isa('t::Elive::MockConnection');
 
     my %meeting_server_data = (
@@ -142,7 +135,7 @@ SKIP: {
     #
     TODO: {
 	local $TODO;
-	$TODO = 'listUserMeetingsByDate - broken under elm 3.0'
+	$TODO = 'listUserMeetingsByDate - broken elm 3.0 - 3.4'
 	    unless $elm_3_5_0_or_higher;
 
 	my $user_meetings;

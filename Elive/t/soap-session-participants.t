@@ -20,11 +20,44 @@ use Elive::Util;
 our $t = Test::More->builder;
 our $class = 'Elive::Entity::Session' ;
 
+use Pod::Usage;
+use Getopt::Long qw{};
+
+=head1 NAME
+
+soap-session-participants.t - elm 3.x participant tests (createSession etc)
+
+=head1 SYNOPSIS
+
+  prove --lib -v soap-session-participants.t :: \ #<opts>
+    -[no]unknowns         # include a smattering of unknown users
+    -timeout=sec          # set a timeout on the soap call
+    -participant_limit=n  # max no. of participants in the stress-test
+
+=head1 BUGS AND LIMITATIONS
+
+I've found that my LDAP (slapd) server consistantly chokes and dies if I
+set the participant limit too high (into the 1000s).
+
+If you need to handle this volume of participants, consider using groups,
+or the elm 2.x L<Elive::Entity::Particpant> C<update()> method.
+
+=cut
+ 
+my $unknowns = 1;
+my $participant_limit = $ENV{ELIVE_TEST_PARTICIPANT_LIMIT} || 250;
+my $timeout_sec = $ENV{ELIVE_TEST_PARTICIPANT_TIMEOUT} || 180;
+
+Getopt::Long::GetOptions('u|unknowns!' => \$unknowns,
+			 't|timeout=i' => \$timeout_sec,
+			 'p|participant_limit' => \$participant_limit,
+    ) or pod2usage(2);
+
 our $connection;
 
 SKIP: {
 
-    my %result = t::Elive->test_connection( only => 'real');
+    my %result = t::Elive->test_connection( only => 'real', timeout => $timeout_sec);
     my $auth = $result{auth};
 
     my $skippable = 30;
@@ -49,12 +82,6 @@ SKIP: {
 	diag "Skipping session tests: $reason";
 	skip($reason, $skippable)
     }
-
-
-    #
-    # ELM 3.3.4 / 10.0.2 includes significant bug fixes
-    our $elm_3_3_4_or_better =  (version->declare( $connection->server_details->version )->numify
-				 > version->declare( '10.0.1' )->numify);
 
     my $session_start = time();
     my $session_end = $session_start + 900;
@@ -99,10 +126,13 @@ SKIP: {
 	#
 	# for datasets with 1000s of entries
 	($participant1, $participant2, @participants) = grep {$_->userId ne $session->facilitatorId} @{ Elive::Entity::User->list(filter => 'lastName = Sm*') };
+	# for middle sized datasets
+	($participant1,$participant2, @participants) = grep {$_->userId ne $session->facilitatorId} @{ Elive::Entity::User->list(filter => 'lastName = S*') }
+	unless @participants+2 >= $participant_limit;
 	#
 	# for modest test datasets
 	($participant1, $participant2, @participants) = grep {$_->userId ne $session->facilitatorId} @{ Elive::Entity::User->list() }
-	    unless @participants;
+	    unless @participants+2 >= $participant_limit;
 	      } => undef,
 	      'get_users - lives');
 
@@ -211,7 +241,7 @@ SKIP: {
 	while (1) {
 	    foreach my $user ($participant1, $participant2, @participants) {
 
-		if (rand() < .1) {
+		if ($unknowns && rand() < .1) {
 		    #
 		    # include a smattering of random invited guests
 		    #	
@@ -226,24 +256,32 @@ SKIP: {
 		push (@big_user_list, $user->userId);
 
 		last MAKE_BIG_LIST
-		    if @big_user_list > 500;
+		    if @big_user_list > $participant_limit;
 	    }
 	}
 
+	note sprintf('stress testing with %d participants (timeout %d sec)...', scalar @big_user_list, $timeout_sec);
+
 	is( exception {
-	  $session->update( {participants => [
-				-moderators => Elive->login,
-				-others => @big_user_list
-				 ] } )
-		  } => undef, 'session participants long-list - lives'
+	    local $SIG{ALRM} = sub { die "test failed to complete after $timeout_sec seconds\n" };
+	    alarm $timeout_sec;
+
+	    $session->update( {participants => [
+				   -moderators => Elive->login,
+				   -others => @big_user_list
+				   ] } );
+	    alarm 0;
+	    } => undef, 'session participants long-list - lives'
 	      );
 
 	#
 	# refetch the participant list and check that all real users
 	# are present
 	#
-	my @users_in =  (Elive->login, $participant1, $participant2, @participants);
-	my @user_ids_in = map {$_->userId} @users_in;
+	my %users_in;
+	@users_in{ Elive->login->userId, @big_user_list } = undef;
+	my @expected_users = sort keys %users_in;
+	note "expected users: @expected_users";
 
 	#
 	# retrieve via elm 2.x getParticipantList command

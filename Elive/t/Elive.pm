@@ -98,6 +98,9 @@ sub test_connection {
 
 	push (@{$result{auth}}, debug => Elive->debug)
 	    if Elive->debug;
+
+	push(@{$result{auth}}, timeout => $opt{timeout})
+	    if $opt{timeout};
     }
 
     return %result;
