@@ -33,7 +33,7 @@ soap-participant-list.t - elm 2.x participant tests (setParticipant etc)
 =head1 SYNOPSIS
 
   prove --lib -v soap-participant-list.t :: \ #<opts>
-    -[no]unknowns         # include a smattering of unknown users
+    -[no]unknowns         # include unknown users in the stress test
     -timeout=sec          # set a timeout on the soap call
     -participant_limit=n  # max no. of participants in the stress-test
 
@@ -45,7 +45,7 @@ my $timeout_sec = $ENV{ELIVE_TEST_PARTICIPANT_TIMEOUT} || 120;
 
 Getopt::Long::GetOptions('u|unknowns!' => \$unknowns,
 			 't|timeout=i' => \$timeout_sec,
-			 'p|participant_limit' => \$participant_limit,
+			 'p|participant_limit=i' => \$participant_limit,
     ) or pod2usage(2);
 
 our $connection;

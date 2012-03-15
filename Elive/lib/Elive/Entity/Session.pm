@@ -1098,12 +1098,12 @@ The maximum number of cameras.
 
 =item * ** DANGER ** with large participant lists
 
-I've found that L<soap-session-participants.t> can crash my LDAP server
-(OpenLDAP 2.4.26 on openSUSE 12.1), if I attempt to set up a meeting around 500+
-participants.
+I've found that L<soap-session-participants.t> crashes my LDAP server
+(OpenLDAP 2.4.26 on openSUSE 12.1, ELM 3.5.0), if I attempt to set up a meeting
+around 500+ participants.
 
-If you need this volume of participants, consider using LDAP groups, or dropping
-back to the elm 2.x compatible L<Elive::View::Session>.
+If you need this volume of participants, alternatives include LDAP groups, or
+dropping back to the elm 2.x compatible L<Elive::View::Session>.
 
 =back
 

@@ -30,17 +30,17 @@ soap-session-participants.t - elm 3.x participant tests (createSession etc)
 =head1 SYNOPSIS
 
   prove --lib -v soap-session-participants.t :: \ #<opts>
-    -[no]unknowns         # include a smattering of unknown users
+    -[no]unknowns         # include unknown users in the stress test
     -timeout=sec          # set a timeout on the soap call
     -participant_limit=n  # max no. of participants in the stress-test
 
 =head1 BUGS AND LIMITATIONS
 
-I've found that my LDAP (slapd) server consistantly chokes and dies if I
-set the participant limit too high (into the 1000s).
+I've found that my LDAP (OpenLDAP 2.4.26 on openSUSE 12.1, ELM 3.5.0) server
+consistantly chokes and dies if I set the participant limit too high (500+).
 
-If you need to handle this volume of participants, consider using groups,
-or the elm 2.x L<Elive::Entity::Particpant> C<update()> method.
+If you need to handle this volume of participants, alternatives include LDAP
+groups or the elm 2.x L<Elive::Entity::Particpant> C<update()> method.
 
 =cut
  
@@ -50,7 +50,7 @@ my $timeout_sec = $ENV{ELIVE_TEST_PARTICIPANT_TIMEOUT} || 180;
 
 Getopt::Long::GetOptions('u|unknowns!' => \$unknowns,
 			 't|timeout=i' => \$timeout_sec,
-			 'p|participant_limit' => \$participant_limit,
+			 'p|participant_limit=i' => \$participant_limit,
     ) or pod2usage(2);
 
 our $connection;
@@ -256,7 +256,7 @@ SKIP: {
 		push (@big_user_list, $user->userId);
 
 		last MAKE_BIG_LIST
-		    if @big_user_list > $participant_limit;
+		    if @big_user_list >= $participant_limit;
 	    }
 	}
 

@@ -8,8 +8,8 @@ Revision history for Elive
        - soap-participants.t -  Extended the connection timeout on the long
          participant / stress-tests - now passing.
        - soap-session-participants.t - I've found that the participant stress
-         test can crash the LDAP server (OpenLDAP 2.4.26 on openSUSE 12.1, at
-         least). I've lowered the default number of participants to a safe
+         test can crash the LDAP server (OpenLDAP 2.4.26 on openSUSE 12.1, ELM
+         3.5.0). I've lowered the default number of participants to a safe
          level of 250.
 
 1.24   28th February 2012
