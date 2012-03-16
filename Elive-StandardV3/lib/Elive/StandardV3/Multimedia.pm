@@ -118,16 +118,6 @@ Uploads content and creates a new multimedia resource. There are two formats:
 
 =cut
 
-sub upload {
-    my ($class, $upload_data, %opt) = @_;
-
-    my $self = $class->SUPER::upload($upload_data,
-				     command => 'UploadRepositoryMultimedia',
-				     %opt);
-
-    return $self;
-}
-
 =head2 list
 
     my $session_presentations = Elive::StandardV3::Presentation->list(

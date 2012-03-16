@@ -13,17 +13,27 @@ use Carp;
 
 =head1 NAME
 
-Elive::StandardV2 - Perl bindings for the Elluminate Live Standard Bridge (V2) [TRIAL]
+Elive::StandardV2 - Perl bindings for the Elluminate Live Standard Bridge (V2) [DEPRECIATED]
 
 =head1 VERSION
 
-Version 0.01_9
+Version 0.02
 
-** DEVELOPER RELEASE - UNDER CONSTRUCTION **
+=head1 DESCRIPTION
+
+Elluminate Live! (c) is software for virtual online classrooms. It is
+suitable for meetings, demonstrations web conferences, seminars and
+general training and support.
+
+Elive-StandardV2 is a set of Perl bindings and entity definitions for the
+Elluminate Standard Bridge V2 SOAP services ('standardv2' adapter).
+
+This is an alternative to the Command Toolkit, as supported by the
+Elive::Entity classess ('default' adapter).
 
 =cut
 
-our $VERSION = '0.01_9';
+our $VERSION = '0.02';
 
 use 5.008003;
 
@@ -367,7 +377,7 @@ background information and a full description of the available commands.
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright 2010-2011 David Warring.
+Copyright 2011-2012 David Warring.
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of either: the GNU General Public License as published

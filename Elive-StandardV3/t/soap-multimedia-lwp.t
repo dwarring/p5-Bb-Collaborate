@@ -3,6 +3,7 @@ use warnings; use strict;
 use Test::More tests => 3;
 use Test::Fatal;
 
+use Elive::StandardV3;
 use t::Elive::StandardV3;
 
 for (qw(LWP::UserAgent HTTP::Request::Common)) {
@@ -32,20 +33,14 @@ SKIP: {
 		      Content => $message))
 		  } => undef, "uploadMultimediaContent request post - lives"); 
 
-    my $html_error  = $response->error_as_HTML;
-    diag "**** ERROR ****".$html_error
-	if $html_error;
-
     ok($response->is_success, 'response is succcess');
 
     my $response_string = $response->as_string;
     note "==== RESPONSE ====\n".$response_string;
 
-    TODO : {
-	local($TODO) = 'working uploadMultimediaContent';
+    ok( $response !~ m{error}i, 'Response is not an error');
 
-	ok( $response !~ m{error}i, 'Response is not an error')
-    }
+    $connection->disconnect;
 }
 
 __DATA__
@@ -58,7 +53,7 @@ __DATA__
         <sas:creatorId>serversupport</sas:creatorId>
         <sas:filename>test.mp3</sas:filename>
         <sas:description>test api3 upload</sas:description>
-        <sas:content xsi:type="xsd:base64Binary">anVzdCBzb21lIGp1bms=</sas:content>
+        <sas:content xsi:type="xs:base64Binary">anVzdCBzb21lIGp1bms=</sas:content>
     </sas:UploadRepositoryMultimedia>
   </soapenv:Body>
 </soapenv:Envelope>

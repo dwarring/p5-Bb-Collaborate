@@ -110,14 +110,6 @@ a file, or upload binary data for the presentation.
          );
 =cut
 
-sub upload {
-    my ($class, $upload_data, %opt) = @_;
-
-    return $class->SUPER::upload($upload_data,
-				 command => 'uploadPresentationContent',
-				 %opt);
-}
-
 =head2 list
 
     my $session_presentations = Elive::StandardV3::Presentation->list(

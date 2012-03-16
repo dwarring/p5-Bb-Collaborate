@@ -5,6 +5,7 @@ use Mouse;
 
 use Carp;
 use Try::Tiny;
+use MIME::Base64;
 
 extends 'Elive::StandardV2';
 
@@ -75,7 +76,8 @@ sub _freeze {
 	# for base 64 encoded data?
 	#
 	try {require SOAP::Lite} catch {die $_};
-	$_ = SOAP::Data->type(base64 => $_);
+	$_ = SOAP::Data->type('xs:base64Binary' => MIME::Base64::encode_base64($_) );
+
     }
 
     return $db_data;
@@ -95,6 +97,12 @@ sub upload {
     my $self = $class->SUPER::insert($upload_data, %opt);
 
     return $self;
+}
+
+sub delete {
+    my ($self, %opt) = @_;
+
+    return $self->SUPER::delete( %opt, command => 'remove'.$self->entity_name.'Content');
 }
 
 1;

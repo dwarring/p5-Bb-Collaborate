@@ -49,6 +49,8 @@ our %KnownCommands = (
     listSessionPresentation => 'r',
 
     removeSession => 'r',
+    removeMultimediaContent => 'r',
+    removePresentationContent => 'r',
 
     setSession => 'cu',
     setSessionMultimedia => 'u',

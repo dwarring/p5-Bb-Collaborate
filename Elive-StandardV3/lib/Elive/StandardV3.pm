@@ -13,17 +13,29 @@ use Carp;
 
 =head1 NAME
 
-Elive::StandardV3 - Perl bindings for the Elluminate Live Standard Bridge (V2) [TRIAL]
+Elive::StandardV3 - Perl bindings for the Elluminate Live Standard Bridge (V3)
 
 =head1 VERSION
 
-Version 0.00_1
-
-** DEVELOPER RELEASE - UNDER CONSTRUCTION **
+Version 0.01
 
 =cut
 
-our $VERSION = '0.00_1';
+our $VERSION = '0.01';
+
+=head1 DESCRIPTION
+
+Elluminate Live! (c) is software for virtual online classrooms. It is
+suitable for meetings, demonstrations web conferences, seminars and
+general training and support.
+
+Elive-StandardV3 is a set of Perl bindings and entity definitions for the
+Elluminate Standard Bridge V3 SOAP services ('standardv3' adapter).
+
+This is an alternative to the Command Toolkit, as supported by the
+Elive::Entity classess ('default' adapter).
+
+=cut
 
 use 5.008003;
 
@@ -61,7 +73,7 @@ use 5.008003;
 
 =head1 DESCRIPTION
 
-Implements Elluminate I<Live!> Standard Bridge V2 API bindings
+Implements Elluminate I<Live!> Standard Bridge V3 API bindings
 
 ** DEVELOPER RELEASE - UNDER CONSTRUCTION **
 
@@ -359,7 +371,7 @@ L<http://search.cpan.org/dist/Elive-StandardV3/>
 
 =head1 SEE ALSO
 
-I<Elluminate_Live_Standard_Bridge_API_ELM_v2.0.pdf> - this contains essential
+I<Standard Integration API Guide for ELM.pdf> - this contains essential
 background information and a full description of the available commands.
 
 =head1 ACKNOWLEDGEMENTS
@@ -367,7 +379,7 @@ background information and a full description of the available commands.
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright 2010-2011 David Warring.
+Copyright 2012 David Warring.
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of either: the GNU General Public License as published

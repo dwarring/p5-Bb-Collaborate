@@ -131,11 +131,4 @@ Updates a session's telephony characteristics.
 
 =cut
 
-=head1 SEE ALSO
-
-I<Elluminate_Live_Standard_Bridge_API_ELM_v2.0.pdf> - please see
-the C<setSessionTelephony> command.
-
-=cut
-
 1;

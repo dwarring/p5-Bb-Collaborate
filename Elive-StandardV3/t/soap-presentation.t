@@ -6,10 +6,10 @@ use Test::Fatal;
 use lib '.';
 use t::Elive::StandardV3;
 
-use Elive::StandardV3::Multimedia;
+use Elive::StandardV3::Presentation;
 
 our $t = Test::More->builder;
-my $class = 'Elive::StandardV3::Multimedia';
+my $class = 'Elive::StandardV3::Presentation';
 
 my $data = 'random junk data U(&(* 090 -0';
 
@@ -25,32 +25,33 @@ SKIP: {
     my $connection = $connection_class->connect(@$auth);
     Elive::StandardV3->connection($connection);
 
-    my $multimedia;
+    my $presentation;
 
-  do {
+  TODO : {
+      local($TODO) = 'UploadRespositoryPresentation - mixed up filename and description in response?';
       is( exception {
-	  $multimedia = Elive::StandardV3::Multimedia->upload(
+	  $presentation = Elive::StandardV3::Presentation->upload(
 	      {
-		filename => 'elive-standardv3-soap-session-multimedia-t.mpeg',
+		filename => 'elive-standardv3-soap-session-presentation-t.wbd',
 		content => $data,
-                description => 'created by standard v3 t/soap-multimedia.t',
+                description => 'created by standard v3 t/soap-presentation.t',
 		creatorId => 'elive-standardv3-tester',
 	      })
 	       } => undef,
-	       'insert multimedia - lives'
+	       'insert presentation - lives'
 	  );
   };
 
     skip('unable to continue without an object', 2)
-	unless $multimedia;
+	unless $presentation;
 
-    isa_ok($multimedia, $class, 'preload object');
+    isa_ok($presentation, $class, 'preload object');
 
     #
     # Body of tests to be adapted from Elive/t/soap-preload.t
     #
 
-    is( exception {$multimedia->delete} => undef, 'multimedia deletion - lives');
+    is( exception {$presentation->delete} => undef, 'presentation deletion - lives');
 }
 
 Elive::StandardV3->disconnect;
