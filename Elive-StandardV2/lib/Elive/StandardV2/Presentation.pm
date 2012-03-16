@@ -33,6 +33,7 @@ has 'presentationId' => (is => 'rw', isa => 'Int', required => 1);
 __PACKAGE__->primary_key('presentationId');
 __PACKAGE__->params(
     content => 'Str',
+    filename => 'Str',
     sessionId => 'Int',
     );
 
@@ -77,8 +78,6 @@ Elluminate Live! supports the following presentation file types:
 Note: The filename must be less than 64 characters (including any file extensions)
 
 =cut
-
-has 'filename' => (is => 'rw', isa => 'Str');
 
 =head1 METHODS
 
@@ -128,18 +127,6 @@ Lists sessions. You will need to provide a filter that contains at least one
 of: C<creatorId>, C<presentationId>, C<description> or C<sessionId>.
 
 =cut
-
-sub list {
-    my ($self, %opts) = @_;
-
-    return $self->SUPER::list(
-	command => sub {
-	    my ($_crud, $params) = @_;
-
-	    return $params->{sessionId} ? 'listSessionPresentation': 'listPresentationContent'
-	},
-	%opts);
-}
 
 =head2 delete
 

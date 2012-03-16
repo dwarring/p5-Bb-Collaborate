@@ -86,7 +86,7 @@ __PACKAGE__->mk_accessors( qw{_scheduling_manager _server_configuration _server_
     my $url1 = $ec1->url;   #  'http://someserver.com/test'
 
     my $ec2 =  Elive::StandardV3::Connection->connect('http://user2:pass2@someserver.com/test',
-                                                       undef, undef, timeout => 100);
+                                                       undef, undef);
     my $url2 = $ec2->url;   #  'http://someserver.com/test'
 
 Establishes a SOAP connection. Retrieves the server configuration, to verify
@@ -164,8 +164,6 @@ sub soap {
 	$soap->ns( "http://sas.elluminate.com/" => "sas");
 
 	my %proxy_opts;
-	$proxy_opts{timeout} = $self->timeout
-	    if $self->timeout;
 
 	$self->_proxy($proxy);
 	$soap->proxy($proxy);

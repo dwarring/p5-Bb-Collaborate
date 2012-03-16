@@ -51,6 +51,7 @@ SKIP: {
     #
 
     is( exception {$multimedia->delete} => undef, 'multimedia deletion - lives');
+    $connection->disconnect;
 }
 
 Elive::StandardV2->disconnect;

@@ -1,5 +1,5 @@
 ---
-abstract: 'Perl bindings for the Elluminate Live Standard Bridge (V2) [TRIAL]'
+abstract: 'Perl bindings for the Elluminate Live Standard Bridge (V2) [DEPRECIATED]'
 author:
   - 'David Warring <david.warring@gmail.com>'
 build_requires:
@@ -29,10 +29,12 @@ requires:
   Class::Accessor: 0
   Class::Data::Inheritable: 0
   Date::Parse: 0
-  Elive::DAO: 0.04
+  Elive::Connection: 0.01
+  Elive::DAO: 0.06
   Elive::Util: 0.01
   File::Basename: 0
   File::Spec: 0
+  MIME::Base64: 0
   Mouse: 0.56
   SOAP::Lite: 0.712
   Try::Tiny: 0
@@ -42,5 +44,5 @@ requires:
   perl: 5.8.3
 resources:
   license: http://dev.perl.org/licenses/
-  repository: https://dwarring@elive.svn.sourceforge.net/svnroot/elive/trunk/Elive-StandardV2
-version: 0.01_9
+  repository: https://elive.svn.sourceforge.net/svnroot/elive/trunk/Elive-StandardV2
+version: 0.02_1

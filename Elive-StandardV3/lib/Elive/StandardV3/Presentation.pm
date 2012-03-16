@@ -33,6 +33,7 @@ has 'presentationId' => (is => 'rw', isa => 'Int', required => 1);
 __PACKAGE__->primary_key('presentationId');
 __PACKAGE__->params(
     content => 'Str',
+    filename => 'Str',
     sessionId => 'Int',
     );
 
@@ -78,8 +79,6 @@ Note: The filename must be less than 64 characters (including any file extension
 
 =cut
 
-has 'filename' => (is => 'rw', isa => 'Str');
-
 =head1 METHODS
 
 =cut
@@ -120,18 +119,6 @@ Lists sessions. You will need to provide a filter that contains at least one
 of: C<creatorId>, C<presentationId>, C<description> or C<sessionId>.
 
 =cut
-
-sub list {
-    my ($self, %opts) = @_;
-
-    return $self->SUPER::list(
-	command => sub {
-	    my ($_crud, $params) = @_;
-
-	    return $params->{sessionId} ? 'ListSessionPresentation': 'ListRepositoryPresentation'
-	},
-	%opts);
-}
 
 =head2 delete
 

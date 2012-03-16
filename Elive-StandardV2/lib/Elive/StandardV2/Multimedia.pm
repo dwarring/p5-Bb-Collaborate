@@ -34,7 +34,7 @@ __PACKAGE__->primary_key('multimediaId');
 __PACKAGE__->params(
     content => 'Str',
     sessionId => 'Int',
-    size => 'Int',
+    filename => 'Str',
     );
 
 =head2 description (Str)
@@ -83,8 +83,6 @@ Elluminate Live! supports the following multimedia file types:
 The filename must be less than 64 characters (including any file extensions).
 
 =cut
-
-has 'filename' => (is => 'rw', isa => 'Str');
 
 =head1 METHODS
 
@@ -139,17 +137,6 @@ of: C<creatorId>, C<presentationId>, C<description> or C<multimediaId>.
 
 =cut
 
-sub list {
-    my ($self, %opts) = @_;
-
-    return $self->SUPER::list(
-	command => sub {
-	    my ($_crud, $params) = @_;
-
-	    return $params->{sessionId} ? 'listSessionMultimedia': 'listMultimediaContent'
-	},
-	%opts);
-}
 
 =head2 delete
 

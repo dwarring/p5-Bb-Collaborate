@@ -33,8 +33,8 @@ has 'multimediaId' => (is => 'rw', isa => 'Int', required => 1);
 __PACKAGE__->primary_key('multimediaId');
 __PACKAGE__->params(
     content => 'Str',
+    filename => 'Str',
     sessionId => 'Int',
-    size => 'Int',
     );
 
 =head2 description (Str)
@@ -84,8 +84,6 @@ The filename must be less than 64 characters (including any file extensions).
 
 =cut
 
-has 'filename' => (is => 'rw', isa => 'Str');
-
 =head1 METHODS
 
 =cut
@@ -128,18 +126,6 @@ Lists multimedia. You will need to provide a filter that contains at least one
 of: C<sessionId>, C<creatorId>, C<description> or C<multimediaId>.
 
 =cut
-
-sub list {
-    my ($self, %opts) = @_;
-
-    return $self->SUPER::list(
-	command => sub {
-	    my ($_crud, $params) = @_;
-
-	    return $params->{sessionId} ? 'ListSessionMultimedia': 'ListRepositoryMultimediaContent'
-	},
-	%opts);
-}
 
 =head2 delete
 

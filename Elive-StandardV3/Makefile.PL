@@ -19,7 +19,7 @@ requires(
     'File::Spec'                   => 0,
     'File::Basename'               => 0,
     'Elive::DAO'                   => '0.06',
-    'Elive::Connection'            => '0.02',
+    'Elive::Connection'            => '0.01',
     'Elive::Util'                  => '0.01',
     'MIME::Base64'                 => 0,
     'Mouse'                        => 0.56,

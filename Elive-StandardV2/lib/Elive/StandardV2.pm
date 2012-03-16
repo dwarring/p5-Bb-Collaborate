@@ -17,7 +17,11 @@ Elive::StandardV2 - Perl bindings for the Elluminate Live Standard Bridge (V2) [
 
 =head1 VERSION
 
-Version 0.02
+Version 0.02_1
+
+=cut
+
+our $VERSION = '0.02_1';
 
 =head1 DESCRIPTION
 
@@ -32,8 +36,6 @@ This is an alternative to the Command Toolkit, as supported by the
 Elive::Entity classess ('default' adapter).
 
 =cut
-
-our $VERSION = '0.02';
 
 use 5.008003;
 
