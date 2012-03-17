@@ -9,7 +9,7 @@ use Scalar::Util;
 
 =head1 NAME
 
-Elive::StandardV3::ServerVersions - Server Versions entity class
+Elive::StandardV3::ServerVersion - Server Version entity class
 
 =cut
 
