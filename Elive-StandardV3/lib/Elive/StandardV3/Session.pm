@@ -13,6 +13,7 @@ use Elive::Util;
 use Elive::StandardV3::_List;
 use Elive::StandardV3::SessionAttendance;
 use Elive::StandardV3::SessionTelephony;
+use Elive::StandardV3::Multimedia;
 use Elive::StandardV3::Presentation;
 
 =head1 NAME
@@ -625,46 +626,53 @@ sub set_multimedia {
     return $success;
 }
 
-=head2 remove_multimedia
+=head2 list_multimedia
 
-Disassociate the given multimedia items from the session
+    my $multimedia = $meeting_obj->list_multimedia;
+
+Lists all multimedia associated with the session.
+
+See also L<Elive::StandardV3::Multimedia>.
 
 =cut
 
-sub remove_multimedia {
-    my $class = shift;
-    my $multimedia_id = shift;
-    my %opt = @_;
+sub list_multimedia {
+    my ($self, @args) = @_;
 
-   my $session_id = delete $opt{sessionId};
-    $session_id ||= $class->sessionId
-	if Scalar::Util::blessed($class);
-
-   my $connection = $opt{connection} || $class->connection
-	or croak "Not connected";
-
-    my $params = $class->_freeze({
-	sessionId => $session_id,
-	multimediaId => $multimedia_id
-				 });
-
-    my $command = $opt{command} || 'RemoveSessionMultimedia';
-    my $som = $connection->call($command => %$params);
-
-    my $results = $class->_get_results(
-	$som,
-	$connection,
-	);
-
-    my $success = @$results && $results->[0];
-
-    return $success;
-
+    return Elive::StandardV3::Multimedia
+        ->list({sessionId => $self->sessionId},
+	       connection => $self->connection,
+	       @args);
 }
-			      
+
+=head2 list_presentation
+
+    my $presentation = $meeting_obj->list_presentation;
+
+Lists all presentation associated with the session.
+
+See also L<Elive::StandardV3::Presentation>.
+
+=cut
+
+sub list_presentation {
+    my ($self, @args) = @_;
+
+    return Elive::StandardV3::Presentation
+        ->list({sessionId => $self->sessionId},
+	       connection => $self->connection,
+	       @args);
+}
+
 =head2 remove_presentation
 
-Disassociate the given presentation items from the session
+    my $presentation_list = $session->list_presentation;
+
+    foreach my $presentation_item (@$presentation_list) {
+        $session->rmemove_presentation( $presentation_item );
+    }
+
+Disassociate the given presentation item from the session
 
 =cut
 
@@ -686,6 +694,49 @@ sub remove_presentation {
 				 });
 
     my $command = $opt{command} || 'RemoveSessionPresentation';
+    my $som = $connection->call($command => %$params);
+
+    my $results = $class->_get_results(
+	$som,
+	$connection,
+	);
+
+    my $success = @$results && $results->[0];
+
+    return $success;
+
+}
+			      
+=head2 remove_multimedia
+
+    my $multimedia_list = $session->list_multimedia;
+
+    foreach my $multimedia_item (@$multimedia_list) {
+        $session->rmemove_multimedia( $multimedia_item );
+    }
+
+Disassociate the given multimedia item from the session
+
+=cut
+
+sub remove_multimedia {
+    my $class = shift;
+    my $multimedia_id = shift;
+    my %opt = @_;
+
+   my $session_id = delete $opt{sessionId};
+    $session_id ||= $class->sessionId
+	if Scalar::Util::blessed($class);
+
+   my $connection = $opt{connection} || $class->connection
+	or croak "Not connected";
+
+    my $params = $class->_freeze({
+	sessionId => $session_id,
+	multimediaId => $multimedia_id
+				 });
+
+    my $command = $opt{command} || 'RemoveSessionMultimedia';
     my $som = $connection->call($command => %$params);
 
     my $results = $class->_get_results(

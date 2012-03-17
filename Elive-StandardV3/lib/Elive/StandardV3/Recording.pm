@@ -20,7 +20,7 @@ This class is used to locate and access Elluminate Live recordings.
 
 =cut
 
-__PACKAGE__->entity_name('Recording');
+__PACKAGE__->entity_name('RecordingLong');
 
 =head1 PROPERTIES
 

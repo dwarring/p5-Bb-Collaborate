@@ -42,10 +42,10 @@ SKIP: {
 	  );
   };
 
-    skip('unable to continue without an object', 2)
+    die 'unable to continue without an object'
 	unless $presentation;
 
-    isa_ok($presentation, $class, 'preload object');
+    isa_ok($presentation, $class, 'multimedia object');
 
     #
     # Body of tests to be adapted from Elive/t/soap-preload.t

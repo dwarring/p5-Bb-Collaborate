@@ -1,6 +1,6 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 12;
+use Test::More tests => 15;
 use Test::Fatal;
 
 use lib '.';
@@ -20,7 +20,7 @@ SKIP: {
     my %result = t::Elive::StandardV3->test_connection();
     my $auth = $result{auth};
 
-    skip ($result{reason} || 'skipping live tests', 12)
+    skip ($result{reason} || 'skipping live tests', 15)
 	unless $auth;
 
     my $connection_class = $result{class};
@@ -43,10 +43,10 @@ SKIP: {
 	  );
   };
 
-    skip('unable to continue without an object', 4)
+    die 'unable to continue without an multimedia upload object'
 	unless $multimedia;
 
-    isa_ok($multimedia, $class, 'preload object');
+    isa_ok($multimedia, $class, 'multimedia object');
 
     my $multimedia_id = $multimedia->multimediaId;
     ok($multimedia_id, 'got multimedia id');
@@ -56,11 +56,11 @@ SKIP: {
     # you need to supply a creatator id
     is( exception {$multimedia_list = Elive::StandardV3::Multimedia->list({multimediaId => $multimedia_id, creatorId => 'elive-standardv3-tester'})} => undef,  'retrieve multimedia - lives');
 
-     skip('unable to continue without an object', 4)
+     die 'unable to continue without a multimedia list object'
 	unless $multimedia_list && $multimedia_list->[0]; 
 
-    is($multimedia_list->[0]->creatorId, 'elive-standardv3-tester', 'preload creatorId, as expected');
-    is($multimedia_list->[0]->size, length($data), 'preload size, as expected');
+    is($multimedia_list->[0]->creatorId, 'elive-standardv3-tester', 'multimedia creatorId, as expected');
+    is($multimedia_list->[0]->size, length($data), 'multimedia size, as expected');
     is($multimedia_list->[0]->description, 'created by standard v3 t/soap-multimedia.t', 'description, as expected'); 
 
     my $start_time = Elive::Util::next_quarter_hour();
@@ -71,7 +71,7 @@ SKIP: {
 	creatorId => Elive::StandardV3->connection->user,
 	startTime => $start_time . '000',
 	endTime => $end_time . '000',
-	nonChairList => [qw(alaice bob)],
+	nonChairList => [qw(alice bob)],
     }),
 	'inserted session');
 
@@ -82,8 +82,18 @@ SKIP: {
 
     isnt( exception {$multimedia_list->[0]->delete} => undef, 'deletion of referenced multimedia - dies');
 
-       is( exception {
-	   $session->remove_multimedia($multimedia_list->[0]);
+    $multimedia_list = undef;
+
+    $multimedia_list = $session->list_multimedia;
+
+     die 'unable to continue without a multimedia list object'
+	unless $multimedia_list && $multimedia_list->[0]; 
+
+    isa_ok($multimedia_list->[0], $class, 'multimedia list object');
+    is($multimedia_list->[0]->multimediaId, $multimedia_id, 'multimedia list id');
+
+    is( exception {
+	$session->remove_multimedia($multimedia_list->[0]);
 	} => undef,
 	'$session->removed_multimedia - lives'); 
 
