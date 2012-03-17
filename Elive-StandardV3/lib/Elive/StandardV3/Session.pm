@@ -31,7 +31,10 @@ __PACKAGE__->params(
     displayName => 'Str',
     userId => 'Str',
     groupingId => 'Str',
-    presentationIds => 'Elive::StandardV3::_List',
+    presentationId => 'Int',
+    multimediaIds => 'Elive::StandardV3::_List',
+    multimediaId => 'Int',
+    multimediaIds => 'Elive::StandardV3::_List',
     sessionId => 'Int',
     recurrenceCount => 'Int',
     recurrenceDays => 'Int',
@@ -562,7 +565,9 @@ sub set_presentation {
 	presentationIds => $presentation_ids
 				 });
 
-    my $som = $connection->call(SetSessionPresentation => %$params);
+    my $command = $opt{command} || 'SetSessionPresentation';
+
+    my $som = $connection->call($command => %$params);
 
     my $results = $class->_get_results(
 	$som,
@@ -606,8 +611,9 @@ sub set_multimedia {
 	sessionId => $session_id,
 	multimediaIds => $multimedia_ids
 				 });
-	
-    my $som = $connection->call(SetSessionMultimedia => %$params);
+
+    my $command = $opt{command} || 'SetSessionMultimedia';
+    my $som = $connection->call($command => %$params);
 
     my $results = $class->_get_results(
 	$som,
@@ -617,6 +623,80 @@ sub set_multimedia {
     my $success = @$results && $results->[0];
 
     return $success;
+}
+
+=head2 remove_multimedia
+
+Disassociate the given multimedia items from the session
+
+=cut
+
+sub remove_multimedia {
+    my $class = shift;
+    my $multimedia_id = shift;
+    my %opt = @_;
+
+   my $session_id = delete $opt{sessionId};
+    $session_id ||= $class->sessionId
+	if Scalar::Util::blessed($class);
+
+   my $connection = $opt{connection} || $class->connection
+	or croak "Not connected";
+
+    my $params = $class->_freeze({
+	sessionId => $session_id,
+	multimediaId => $multimedia_id
+				 });
+
+    my $command = $opt{command} || 'RemoveSessionMultimedia';
+    my $som = $connection->call($command => %$params);
+
+    my $results = $class->_get_results(
+	$som,
+	$connection,
+	);
+
+    my $success = @$results && $results->[0];
+
+    return $success;
+
+}
+			      
+=head2 remove_presentation
+
+Disassociate the given presentation items from the session
+
+=cut
+
+sub remove_presentation {
+    my $class = shift;
+    my $presentation_id = shift;
+    my %opt = @_;
+
+   my $session_id = delete $opt{sessionId};
+    $session_id ||= $class->sessionId
+	if Scalar::Util::blessed($class);
+
+   my $connection = $opt{connection} || $class->connection
+	or croak "Not connected";
+
+    my $params = $class->_freeze({
+	sessionId => $session_id,
+	presentationId => $presentation_id
+				 });
+
+    my $command = $opt{command} || 'RemoveSessionPresentation';
+    my $som = $connection->call($command => %$params);
+
+    my $results = $class->_get_results(
+	$som,
+	$connection,
+	);
+
+    my $success = @$results && $results->[0];
+
+    return $success;
+
 }
 			      
 =head2 session_url

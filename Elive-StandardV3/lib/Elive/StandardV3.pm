@@ -17,11 +17,11 @@ Elive::StandardV3 - Perl bindings for the Elluminate Live Standard Bridge (V3)
 
 =head1 VERSION
 
-Version 0.01_1
+Version 0.01_2
 
 =cut
 
-our $VERSION = '0.01_1';
+our $VERSION = '0.01_2';
 
 =head1 DESCRIPTION
 
@@ -236,14 +236,17 @@ sub insert {
 Abstract selection method. Most commands allow a ranging expression to narrow
 the selection. This is passed in using the C<filter> option. For example:
 
-    my $bobs_sessions = Elive::StandardV3::Session->list(filter => {userId => 'bob'});
+    my $bobs_sessions = Elive::StandardV3::Session->list({userId => 'bob'});
 
 =cut
 
 sub list {
-    my ($self, %opt) = @_;
+    my $self = shift;
 
-    my $filter = delete $opt{filter} || {};
+    unshift @_, 'filter' if @_ % 2;
+    my %opt = @_;
+
+    my $filter = delete $opt{filter};
 
     $filter = $self->_parse_filter($filter)
 	unless Scalar::Util::reftype $filter;
@@ -262,6 +265,8 @@ sub list {
 sub _parse_filter {
     my ($self, $expr) = @_;
     my %selection;
+
+    return unless defined $expr;
 
     foreach ( split(qr{ \s+ and \s+}ix, $expr) ) {
 	my ($field, $op, $val) = m{^ \s* (\w+) \s* ([\!=<>]+) \s* (.*?) \s* $}x;

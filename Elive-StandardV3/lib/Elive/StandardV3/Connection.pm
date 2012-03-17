@@ -12,8 +12,7 @@ use Try::Tiny;
 use Carp;
 use YAML::Syck;
 
-use Elive::Connection;
-use base qw{Elive::Connection};
+use parent qw{Elive::Connection};
 
 use Elive;
 use Elive::Util;

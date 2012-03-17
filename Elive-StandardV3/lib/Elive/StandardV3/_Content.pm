@@ -100,16 +100,17 @@ sub upload {
 }
 
 sub list {
-    my ($self, %opts) = @_;
+    my ($self, @params) = @_;
 
     return $self->SUPER::list(
+	@params,
 	command => sub {
 	    my ($_crud, $params) = @_;
 	    my $ent = $self->entity_name;
 
 	    return exists $params->{sessionId} ? "ListSession${ent}": "ListRepository${ent}"
 	},
-	%opts);
+	);
 }
 
 sub delete {
