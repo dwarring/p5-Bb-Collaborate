@@ -114,6 +114,8 @@ Uploads content and creates a new multimedia resource. There are two formats:
 	     },
          );
 
+    $some_session->set_multimedia( $multimedia );
+
 =cut
 
 =head2 list

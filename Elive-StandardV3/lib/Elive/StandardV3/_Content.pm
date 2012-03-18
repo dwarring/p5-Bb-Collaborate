@@ -6,6 +6,7 @@ use Mouse;
 use Carp;
 use Try::Tiny;
 use MIME::Base64;
+use File::Basename;
 
 extends 'Elive::StandardV3';
 

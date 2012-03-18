@@ -34,12 +34,12 @@ __PACKAGE__->params(
     userId => 'Str',
     groupingId => 'Str',
     presentationId => 'Int',
-    multimediaIds => 'Elive::StandardV3::_List',
     multimediaId => 'Int',
     multimediaIds => 'Elive::StandardV3::_List',
     sessionId => 'Int',
     recurrenceCount => 'Int',
     recurrenceDays => 'Int',
+    apiCallbackUrl => 'Str',
     );
 
 
@@ -537,44 +537,32 @@ sub telephony {
 
 =head2 set_presentation
 
-    $session->set_presentation([$presentation_1, $presentation_2]);
+    $session->set_presentation($presentation);
 
-Associates Presentations with Sessions.
+Aossociates the presenetation with a session.
 
 =cut
 
 sub set_presentation {
-    my ($class, $presentation_ids, %opt) = @_;
+    my ($class, $presentation_id, %opt) = @_;
 
     my $session_id = delete $opt{sessionId};
     $session_id ||= $class->sessionId
 	if Scalar::Util::blessed($class);
 
-    for ($presentation_ids) {
-	croak 'usage: $'.(ref($class)||$class).'->set_presentation(\@presentation_ids)'
-	    unless defined;
-	#
-	# coerce a single value to an array
-	#
-	$_ = [$_]
-	    if Elive::Util::_reftype($_) ne 'ARRAY';
-    }
-
     my $connection = $opt{connection} || $class->connection
 	or croak "Not connected";
+
     my $params = $class->_freeze({
 	sessionId => $session_id,
-	presentationIds => $presentation_ids
+	presentationId => $presentation_id
 				 });
 
     my $command = $opt{command} || 'SetSessionPresentation';
 
     my $som = $connection->call($command => %$params);
 
-    my $results = $class->_get_results(
-	$som,
-	$connection,
-	);
+    my $results = $class->_get_results(	$som, $connection );
 
     my $success = @$results && $results->[0];
 
@@ -585,7 +573,7 @@ sub set_presentation {
 
     $session->set_multimedia([$multimedia_1, $multimedia_2]);
 
-Associates Multimedias with Sessions.
+Associates a session with Multimedia content.
 
 =cut
 
@@ -617,10 +605,7 @@ sub set_multimedia {
     my $command = $opt{command} || 'SetSessionMultimedia';
     my $som = $connection->call($command => %$params);
 
-    my $results = $class->_get_results(
-	$som,
-	$connection,
-	);
+    my $results = $class->_get_results(	$som, $connection );
 
     my $success = @$results && $results->[0];
 
@@ -697,10 +682,7 @@ sub remove_presentation {
     my $command = $opt{command} || 'RemoveSessionPresentation';
     my $som = $connection->call($command => %$params);
 
-    my $results = $class->_get_results(
-	$som,
-	$connection,
-	);
+    my $results = $class->_get_results( $som, $connection );
 
     my $success = @$results && $results->[0];
 
@@ -740,10 +722,7 @@ sub remove_multimedia {
     my $command = $opt{command} || 'RemoveSessionMultimedia';
     my $som = $connection->call($command => %$params);
 
-    my $results = $class->_get_results(
-	$som,
-	$connection,
-	);
+    my $results = $class->_get_results( $som, $connection );
 
     my $success = @$results && $results->[0];
 
@@ -809,14 +788,53 @@ sub session_url {
 
     my $som = $connection->call($command => %{ $class->_freeze(\%params) });
 
-    my $results = $class->_get_results(
-	$som,
-	$connection,
-	);
+    my $results = $class->_get_results( $som, $connection );
 
     my $url = @$results && $results->[0];
 
     return $url;
+}
+
+=head2 set_api_callback_url
+
+    my $session_url = $session->session_url($url);
+
+This method calls the C< SetApiCallbackUrl> command, which is used to specify a
+callback URL that will be notified every time a room closes.
+
+If a session is launched multiple times, there will be multiple rooms
+(instances of the session). When each room closes, the callback URL will be
+called. If the session is only launched once, the URL will be called once.
+
+=cut
+
+sub set_api_callback_url {
+    my ($class, $url, %opt) = @_;
+
+    my $connection = $opt{connection} || $class->connection
+	or croak "Not connected";
+
+    my $session_id = $opt{sessionId};
+
+    $session_id ||= $class->sessionId
+	if ref($class);
+
+    croak "unable to determine sessionId"
+	unless $session_id;
+
+    my %params;
+    $params{sessionId} = $session_id;
+    $params{apiCallbackUrl} = $url;
+
+    my $command = $opt{command} || 'SetApiCallbackUrl';
+
+    my $som = $connection->call($command => %{ $class->_freeze(\%params) });
+
+    my $results = $class->_get_results( $som, $connection );
+
+    my $success = @$results && $results->[0];
+
+    return $success;
 }
 
 =head2 attendance

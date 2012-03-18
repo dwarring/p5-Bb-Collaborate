@@ -1,6 +1,6 @@
 #!perl
 use warnings; use strict;
-use Test::More tests => 25;
+use Test::More tests => 26;
 use Test::Fatal;
 
 use version;
@@ -19,7 +19,7 @@ our $connection;
 
 SKIP: {
 
-    my $skippable = 25;
+    my $skippable = 26;
 
     my %result = t::Elive::StandardV3->test_connection();
     my $auth = $result{auth};
@@ -70,6 +70,9 @@ SKIP: {
 	);
 
     $session->update(\%update_data);
+
+    is( exception {$session->set_api_callback_url('http://perlmonks.org')} => undef,
+	'$session->setapI_callback_url(...) - lives');
 
     $session = undef;
 

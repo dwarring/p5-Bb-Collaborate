@@ -107,6 +107,9 @@ a file, or upload binary data for the presentation.
                     content => $content,
 	     },
          );
+
+    $some_session->set_presentation( $presentation );
+
 =cut
 
 =head2 list
