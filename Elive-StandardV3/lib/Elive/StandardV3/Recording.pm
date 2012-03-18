@@ -136,7 +136,7 @@ sub recording_url {
 
     my $som = $connection->call('BuildRecordingUrl' => %$params);
 
-    my $results = $class->_get_results(	$som, $connection );
+    my $results = $class->_get_results( $som, $connection );
 
     my $url = @$results && $results->[0];
 
@@ -170,12 +170,6 @@ Returns an array of recording objects. You may filter on:
 =back
 
 =cut
-
-sub list {
-    my ($self, @args) = @_;
-
-    return $self->SUPER::list( @args, command => 'ListRecordingLong');
-}
 
 =head2 delete
 
