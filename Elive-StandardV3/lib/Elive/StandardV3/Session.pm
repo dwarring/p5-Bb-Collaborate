@@ -562,7 +562,7 @@ sub set_presentation {
 
     my $som = $connection->call($command => %$params);
 
-    my $results = $class->_get_results(	$som, $connection );
+    my $results = $class->_get_results( $som, $connection );
 
     my $success = @$results && $results->[0];
 
@@ -605,7 +605,7 @@ sub set_multimedia {
     my $command = $opt{command} || 'SetSessionMultimedia';
     my $som = $connection->call($command => %$params);
 
-    my $results = $class->_get_results(	$som, $connection );
+    my $results = $class->_get_results( $som, $connection );
 
     my $success = @$results && $results->[0];
 
