@@ -92,7 +92,7 @@ SKIP: {
     # This is a far as we can currently go with a mock connection
     ########################################################################
 
-    skip ($result{reason} || 'skipping live tests', 14)
+    skip ($result{reason} || 'skipping live tests', 15)
 	if $connection_class->isa('t::Elive::MockConnection');
 
     my %meeting_server_data = (

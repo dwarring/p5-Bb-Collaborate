@@ -295,7 +295,7 @@ see the README file.
 
 =head2 Related CPAN Modules
 
-L<Elive::StandardV2> - This is a separate CPAN module that implements the alternate Elluminate I<Live!> Standard Bridge API (v2). 
+L<Elive::StandardV3> - This is a separate CPAN module that implements the alternate Elluminate I<Live!> Standard Bridge API (v3). 
 
 =head2 Elluminate Documentation
 

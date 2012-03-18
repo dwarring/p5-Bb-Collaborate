@@ -37,7 +37,7 @@ sub _connect {
     $url ||= 'http://elive_mock_connection';
     $url =~ s{/$}{};                    # lose trailing '/'
     $url =~ s{/webservice\.event$}{};   # lose endpoint
-    $url =~ s{/v2$}{};                  # lose adapter path
+    $url =~ s{/v[1-9]$}{};                  # lose adapter path
 
     if ($url =~ s{^(\w+)://(.*)\@}{$1://}) {  # lose/capture credentials
 

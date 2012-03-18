@@ -78,6 +78,8 @@ SKIP: {
     my $connection = $connection_class->connect(@$auth)
 	or die "failed to connect?";
 
+    Elive->connection( $connection );
+
     my $min_elm3_version =  '9.5.0';
     my $server_details = $connection->server_details;
     my $server_version = $server_details->version;
@@ -433,3 +435,5 @@ SKIP: {
 
     $preload->delete;
 }
+
+Elive->disconnect;
