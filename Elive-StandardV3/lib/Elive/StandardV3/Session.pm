@@ -15,6 +15,7 @@ use Elive::StandardV3::SessionAttendance;
 use Elive::StandardV3::SessionTelephony;
 use Elive::StandardV3::Multimedia;
 use Elive::StandardV3::Presentation;
+use Elive::StandardV3::Recording;
 
 =head1 NAME
 
@@ -750,6 +751,25 @@ sub remove_multimedia {
 
 }
 			      
+=head2 list_recordings
+
+    my $recordings = $meeting_obj->list_recordings;
+
+Lists all recording associated with the session.
+
+See also L<Elive::StandardV3::Recording>.
+
+=cut
+
+sub list_recordings {
+    my ($self, @args) = @_;
+
+    return Elive::StandardV3::Recording
+        ->list({sessionId => $self->sessionId},
+	       connection => $self->connection,
+	       @args);
+}
+
 =head2 session_url
 
     my $session_url = $session->session_url(userId => 'bob');

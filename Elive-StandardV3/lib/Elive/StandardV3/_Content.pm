@@ -100,10 +100,10 @@ sub upload {
 }
 
 sub list {
-    my ($self, @params) = @_;
+    my ($self, @args) = @_;
 
     return $self->SUPER::list(
-	@params,
+	@args,
 	command => sub {
 	    my ($_crud, $params) = @_;
 	    my $ent = $self->entity_name;

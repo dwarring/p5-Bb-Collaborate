@@ -42,7 +42,7 @@ SKIP: {
 	  );
   };
 
-    die 'unable to continue without an object'
+    skip('unable to continue without an object', 2)
 	unless $presentation;
 
     isa_ok($presentation, $class, 'multimedia object');

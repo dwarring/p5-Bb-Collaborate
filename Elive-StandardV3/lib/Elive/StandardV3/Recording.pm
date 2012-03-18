@@ -172,11 +172,9 @@ Returns an array of recording objects. You may filter on:
 =cut
 
 sub list {
-    my ($self, %opt) = @_;
+    my ($self, @args) = @_;
 
-    $opt{command} ||= 'ListRecordingLong';
-
-    return $self->SUPER::list(%opt);
+    return $self->SUPER::list( @args, command => 'ListRecordingLong');
 }
 
 =head2 delete

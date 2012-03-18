@@ -1,6 +1,6 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 5;
+use Test::More tests => 6;
 use Test::Fatal;
 
 use lib '.';
@@ -8,10 +8,10 @@ use t::Elive::StandardV3;
 
 use Elive::StandardV3;
 use Elive::StandardV3::Recording;
+use Elive::StandardV3::Session;
 
 SKIP: {
 
-    use Carp; $SIG{__DIE__} = \&Carp::confess;
     my %result = t::Elive::StandardV3->test_connection();
     my $auth = $result{auth};
 
@@ -39,7 +39,7 @@ SKIP: {
 
     my $recording = $recordings->[-1];
 
-    # this recording is not under our control, so do'nt assume too much
+    # this recording is not under our control, so don't assume too much
     # and just test a few essential properties
 
     ok($recording->recordingId, "recording has recordingId")
@@ -53,6 +53,22 @@ SKIP: {
 	'$recording->recording_url - lives');
     ok($recording_url, "got recording_url");
     note("recording url is: $recording_url");
+
+    # try to find a session with associated recording(s)
+
+    my ($session) = List::Util::first {$_->recordings} @{ Elive::StandardV3::Session->list() };
+
+    if ($session) {
+
+	note "found session with recordings: ".$session->sessionId;
+
+	my $session_recordings = $session->list_recordings;
+	ok($session_recordings && $session_recordings->[0], '$session->list_recordings')
+	    or diag("unable to find the purported recordings for session: ".$session->sessionId);
+    }
+    else {
+	Test::More->builder->skip("unable to find a session with recordings");
+    }
 }
 
 Elive::StandardV3->disconnect;
