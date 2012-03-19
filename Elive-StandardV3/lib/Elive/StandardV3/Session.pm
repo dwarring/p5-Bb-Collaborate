@@ -539,7 +539,7 @@ sub telephony {
 
     $session->set_presentation($presentation);
 
-Aossociates the presenetation with a session.
+Aossociates the presentation with a session.
 
 =cut
 
@@ -655,7 +655,7 @@ sub list_presentation {
     my $presentation_list = $session->list_presentation;
 
     foreach my $presentation_item (@$presentation_list) {
-        $session->rmemove_presentation( $presentation_item );
+        $session->remove_presentation( $presentation_item );
     }
 
 Disassociate the given presentation item from the session
@@ -695,7 +695,7 @@ sub remove_presentation {
     my $multimedia_list = $session->list_multimedia;
 
     foreach my $multimedia_item (@$multimedia_list) {
-        $session->rmemove_multimedia( $multimedia_item );
+        $session->remove_multimedia( $multimedia_item );
     }
 
 Disassociate the given multimedia item from the session
