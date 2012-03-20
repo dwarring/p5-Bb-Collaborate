@@ -1,6 +1,6 @@
 #!perl
 use warnings; use strict;
-use Test::More tests => 11;
+use Test::More tests => 13;
 use Test::Fatal;
 
 use version;
@@ -19,7 +19,7 @@ our $connection;
 
 SKIP: {
 
-    my $skippable = 11;
+    my $skippable = 13;
 
     my %result = t::Elive::StandardV3->test_connection();
     my $auth = $result{auth};
@@ -65,11 +65,22 @@ SKIP: {
     $session_telephony = undef;
 
     is( exception {$session_telephony = Elive::StandardV3::SessionTelephony->retrieve($session)} => undef,
-	     'retrieve session telephony (direct) lives');
+	     'retrieve session telephony - lives');
 
     foreach (keys %telephony_data) {
 	is($telephony_data{$_},  $session_telephony->$_, "session telephony: $_ - as expected");
     }
+
+    my $session_telephony_list;
+
+    is( exception {$session_telephony_list = Elive::StandardV3::SessionTelephony->list({sessionId => $session})} => undef,
+	'list session telephony - lives');
+
+    ok($session_telephony_list
+       && $session_telephony_list->[0]
+       && $session_telephony_list->[0]->sessionId eq $session->sessionId,
+       'telephony list sanity')
+	or diag explain {session_telephony_list => $session_telephony_list};
 
     is( exception {$session->delete} => undef,'session deletion - lives');
 
