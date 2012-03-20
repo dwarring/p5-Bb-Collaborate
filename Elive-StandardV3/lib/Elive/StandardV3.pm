@@ -373,7 +373,7 @@ L<http://search.cpan.org/dist/Elive-StandardV3/>
 
 =head1 SEE ALSO
 
-I<Standard Integration API Guide for ELM.pdf> - this contains essential
+I<Standard Integration API Guide V3 for ELM.pdf> - this contains essential
 background information and a full description of the available commands.
 
 =head1 ACKNOWLEDGEMENTS

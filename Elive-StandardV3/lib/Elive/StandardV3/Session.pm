@@ -438,7 +438,7 @@ A series of sessions can be created using the C<recurrenceCount> and C<recurrenc
     #
     $session->update({maxCameras => 5, hideParticipantNames => 0});
 
-Updates a previous created session.
+Updates an existing session.
 
 =cut
 
