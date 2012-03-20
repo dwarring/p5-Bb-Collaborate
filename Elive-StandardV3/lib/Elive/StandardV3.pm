@@ -26,8 +26,8 @@ our $VERSION = '0.01_4';
 =head1 DESCRIPTION
 
 Elluminate Live! (c) is software for virtual online classrooms. It is
-suitable for meetings, demonstrations web conferences, seminars and
-general training and support.
+suitable for meetings, demonstrations web conferences, seminars, general
+training and support.
 
 Elive-StandardV3 is a set of Perl bindings and entity definitions for the
 Elluminate Standard Bridge V3 SOAP services ('standardv3' adapter).
@@ -307,10 +307,7 @@ sub delete {
 
     my $som = $self->connection->call($command, @params);
 
-    my $results = $self->_get_results(
-	$som,
-	$self->connection,
-	);
+    my $results = $self->_get_results( $som, $self->connection );
 
     my $success = @$results && $results->[0];
 

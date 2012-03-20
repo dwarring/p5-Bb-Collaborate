@@ -85,11 +85,15 @@ Note: The filename must be less than 64 characters (including any file extension
 
 =head2 upload
 
-Uploads content and creates a new presentation resource. You can either upload
-a file, or upload binary data for the presentation.
+Uploads content and creates a new presentation resource.
+
+You can either upload a file:
 
     # 1. upload a local file
     my $presentation = Elive::StandardV3::Presentation->upload('c:\\Documents\intro.wbd');
+    $some_session->set_presentation( $presentation );
+
+or source binary data for the presentation.
 
     # 2. source our own binary content
     open (my $fh, '<', $presentation_path)

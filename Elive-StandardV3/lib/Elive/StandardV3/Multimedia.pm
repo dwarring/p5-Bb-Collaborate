@@ -90,11 +90,14 @@ The filename must be less than 64 characters (including any file extensions).
 
 =head2 upload
 
-Uploads content and creates a new multimedia resource. There are two formats:
+Uploads content and creates a new multimedia resource.
+
+You can either upload a file:
 
     # 1. upload a local file
-    my $multimedia = Elive::StandardV3::Multimedia->upload('c:\\Documents\intro.wav');
+    my $multimedia1 = Elive::StandardV3::Multimedia->upload('c:\\Documents\intro.wav');
 
+or source binary content:
 
     # 2. source our own binary content
     open (my $fh, '<', $multimedia_path)
@@ -105,7 +108,7 @@ Uploads content and creates a new multimedia resource. There are two formats:
     die "no multimedia data: $multimedia_path"
         unless ($content);
 
-    my $multimedia = Elive::StandardV3::Multimedia->upload(
+    my $multimedia2 = Elive::StandardV3::Multimedia->upload(
              {
                     filename => 'whoops.wav',
                     creatorId =>  'alice',
@@ -114,7 +117,9 @@ Uploads content and creates a new multimedia resource. There are two formats:
 	     },
          );
 
-    $some_session->set_multimedia( $multimedia );
+You can assign multiple multimedia items to a session:
+
+    $some_session->set_multimedia( [$multimedia1, $multimedia2] );
 
 =cut
 

@@ -539,7 +539,7 @@ sub telephony {
 
     $session->set_presentation($presentation);
 
-Aossociates the presentation with a session.
+Aossociates a seession with presentation content.
 
 =cut
 
@@ -573,7 +573,7 @@ sub set_presentation {
 
     $session->set_multimedia([$multimedia_1, $multimedia_2]);
 
-Associates a session with Multimedia content.
+Associates a session with multimedia content.
 
 =cut
 
@@ -797,7 +797,7 @@ sub session_url {
 
 =head2 set_api_callback_url
 
-    my $session_url = $session->session_url($url);
+    my $session_url = $session->set_api_callback_url($url);
 
 This method calls the C< SetApiCallbackUrl> command, which is used to specify a
 callback URL that will be notified every time a room closes.
