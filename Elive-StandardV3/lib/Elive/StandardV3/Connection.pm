@@ -7,7 +7,6 @@ use Scalar::Util;
 
 use SOAP::Lite;
 use MIME::Base64;
-use Try::Tiny;
 
 use Carp;
 use YAML::Syck;
@@ -193,8 +192,7 @@ sub scheduling_manager {
 
     unless ($scheduling_manager) {
 
-	try {require Elive::StandardV3::SchedulingManager}
-	catch { die $_ };
+	require Elive::StandardV3::SchedulingManager;
 
 	$scheduling_manager = Elive::StandardV3::SchedulingManager->get(connection => $self);
 	$self->_scheduling_manager($scheduling_manager);
@@ -216,8 +214,7 @@ sub server_configuration {
 
     unless ($server_configuration) {
 
-	try {require Elive::StandardV3::ServerConfiguration}
-	catch {die $_};
+	require Elive::StandardV3::ServerConfiguration;
 
 	$server_configuration = Elive::StandardV3::ServerConfiguration->list(connection => $self);
 	$self->_server_configuration($server_configuration);
@@ -239,8 +236,7 @@ sub server_versions {
 
     unless ($server_versions) {
 
-	try {require Elive::StandardV3::ServerVersion}
-	catch {die $_};
+	require Elive::StandardV3::ServerVersion;
 
 	$server_versions = Elive::StandardV3::ServerVersion->list(connection => $self);
 	$self->_server_versions($server_versions);
