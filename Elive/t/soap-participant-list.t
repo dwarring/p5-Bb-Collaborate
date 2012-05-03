@@ -1,6 +1,6 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 34;
+use Test::More tests => 38;
 use Test::Fatal;
 use Test::Warn;
 
@@ -55,7 +55,7 @@ SKIP: {
     my %result = t::Elive->test_connection( only => 'real', timeout => $timeout_sec);
     my $auth = $result{auth};
 
-    skip ($result{reason} || 'skipping live tests', 34)
+    skip ($result{reason} || 'skipping live tests', 38)
 	unless $auth;
 
     my $connection_class = $result{class};
@@ -184,6 +184,33 @@ SKIP: {
     else {
 	$t->skip('unable to find any other users to act as participants(?)',)
 	    for (1..9);
+    }
+
+    # indirect  detection of LDAP integration. We can expect the
+    # userId to be mapped to the loginName
+
+    my $looks_like_ldap = $participant2 && $participant2->userId eq $participant2->loginName;
+    if ($looks_like_ldap && $elm_3_3_4_or_higher) {
+	#
+	# Check the following newer features
+	# 1. passing participants by name
+	# 2. case insensitivity of usernames
+	# NB under LDAP loginName :== userId
+	$participant_list->reset();
+	$participant_list->participants->add(Elive::Entity::User->quote($participant1->loginName).'=3');
+	is(exception {$participant_list->update()} => undef, 'adding participant by loginName - lives');
+	ok((grep {$_->user->userId eq $participant1->userId} @{ $participant_list->participants }), 'participant by loginName - found in participant list');
+
+	my $login_name_toggled = join('', map {$_ =~ m{[A-Z]}? lc: uc} split('', $participant2->loginName));
+
+	$participant_list->reset();
+	$participant_list->participants->add(Elive::Entity::User->quote($login_name_toggled).'=3');
+	is(exception {$participant_list->update()} => undef, 'participant by loginName (case insensitive - lives');
+	ok((grep {$_->user->userId eq $participant2->userId} @{ $participant_list->participants }), 'participant by loginName (case insensitive) - found in participant list');
+    }
+    else {
+	$t->skip("skipping ldap specific tests")
+	    for (1..4);
     }
 
     $participant_list->reset();

@@ -1,6 +1,6 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 30;
+use Test::More tests => 32;
 use Test::Fatal;
 use List::Util;
 
@@ -60,7 +60,7 @@ SKIP: {
     my %result = t::Elive->test_connection( only => 'real', timeout => $timeout_sec);
     my $auth = $result{auth};
 
-    my $skippable = 30;
+    my $skippable = 32;
 
     skip ($result{reason} || 'skipping live tests', $skippable)
 	unless $auth;
@@ -228,7 +228,22 @@ SKIP: {
 	$t->skip('not enough participants to run long-list test')
 	    for (1 .. 3);
     }
-    else { 
+    else {
+	#
+	# test case insensitivity under LDAP
+	my $looks_like_ldap = $participant2 && $participant2->userId eq $participant2->loginName;
+
+	if ($looks_like_ldap) {
+	    my $login_name_toggled = join('', map {$_ =~ m{[A-Z]}? lc: uc} split('', $participant2->loginName));
+	    $session->participants->add(Elive::Entity::User->quote($login_name_toggled).'=3');
+	    is(exception {$session->update()} => undef, 'participant by loginName (case insensitive - lives');
+	    ok((grep {$_->user->userId eq $participant2->userId} @{ $session->participants }), 'participant by loginName (case insensitive) - found in participant list');
+	}
+	else {
+	    $t->skip("skipping ldap specific tests")
+		for (1..2);
+	}
+ 
 	#
 	# stress test underlying setParticipantList command we need to do a direct SOAP
 	# call to bypass overly helpful readback checks and removal of duplicates.

@@ -1,16 +1,20 @@
 Revision history for Elive
 
-1.25   tba
+1.26   4th May 2012
+       [bug fixes]
+       Elive::Entity::ParticipantList
+       - Case insensitive participants names are now correctly handled under
+         LDAP integration. E.g. if a user has an LDAP uid of 'johnsmith'.
+         Attempting to add 'JohnSmith' was triggering and error "failed to
+         add ...". Note that after update, the return participant is set to
+         the case of the LDAP uid, i.e. 'johnsmith'.
+
+1.25   18th April 2012
        [enhancements]
        Elive::Connection
-       - Added timeout option. This is passed through to SOAP::Lite.
+       - Added timeout option. This is passed through to the SOAP::Lite proxy object.
        [testing]
-       - soap-participants.t -  Extended the connection timeout on the long
-         participant / stress-tests - now passing.
-       - soap-session-participants.t - I've found that the participant stress
-         test can crash the LDAP server (OpenLDAP 2.4.26 on openSUSE 12.1, ELM
-         3.5.0). I've lowered the default number of participants to a safe
-         level of 250.
+       - soap-participants.t, soap-session-participants.t - stress tests now passing.
 
 1.24   28th February 2012
        [Tested against Blackboard Collaborate 11.1.2  / ELM 3.5.0.]

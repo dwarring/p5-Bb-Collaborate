@@ -206,14 +206,14 @@ sub _readback_check {
     if (my $participants = delete $data{participants}) {
 
 	my $participants_in = Elive::Entity::Participants->new( $participants );
-	my %requested = map {Elive::Entity::Participant->stringify($_) => 1} @$participants_in;
+	my %requested = map {lc Elive::Entity::Participant->stringify($_) => 1} @$participants_in;
 	my $requested_count = scalar keys %requested;
 
 	foreach my $row (@$rows) {
 
 	    if ($participants = $row->{participants}) {
 		my $participants_out = Elive::Entity::Participants->new( $participants );
-		my %actual = map {Elive::Entity::Participant->stringify($_) => 1} @$participants_out;
+		my %actual = map {lc Elive::Entity::Participant->stringify($_) => 1} @$participants_out;
 		my %rejected = %requested;
 		delete @rejected{ keys %actual };
 
