@@ -2,12 +2,14 @@ Revision history for Elive
 
 1.26   4th May 2012
        [bug fixes]
-       Elive::Entity::ParticipantList
-       - Case insensitive participants names are now correctly handled under
-         LDAP integration. E.g. if a user has an LDAP uid of 'johnsmith'.
-         Attempting to add 'JohnSmith' was triggering and error "failed to
-         add ...". Note that after update, the return participant is set to
-         the case of the LDAP uid, i.e. 'johnsmith'.
+       Elive::Entity::ParticipantList, elive_raise_meeting:
+       - Fixed to align with uid (loginName) case sensitivity policies under LDAP
+         Elluminate integration. The case of the uid is preserved on entry. But
+         comparisions and uniqueness checks are case insensitive.
+         -- E.g. if a user has an LDAP uid of 'johnsmith'.  Attempting to add 'JohnSmith'
+            was triggering and error "failed to add ...", but now works.
+         -- Note that after update, the returned participant list entry 
+            contains the response uid, e.g. 'johnsmith'.
 
 1.25   18th April 2012
        [enhancements]

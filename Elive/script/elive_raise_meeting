@@ -153,6 +153,11 @@ my $version;
 
 main(@ARGV) unless caller;
 
+sub bail {
+    Elive->disconnect;
+    die @_;
+}
+
 sub main {
 
     local(@ARGV) = @_;
@@ -245,7 +250,8 @@ sub main {
     $username ||= Elive::Util::prompt('Username: ');
     $password ||= Elive::Util::prompt('Password: ', password => 1);
 
-    our $connection = Elive->connect($url, $username, $password);
+    our $connection; 
+    $connection = Elive->connect($url, $username, $password);
 
     $class ||= do {
 	#
@@ -253,7 +259,7 @@ sub main {
 	# class to use. Guess it from their Elluminate server version.
 	#
 	my $server_version = eval {$connection->version}
-	or die ($@ || "unable to get server details version\n");
+	or bail ($@ || "unable to get server details version\n");
 
 	my $server_version_num = version->new($server_version)->numify;
 	my $elm3_min_version_num = version->declare( '9.5.0' )->numify;
@@ -270,9 +276,9 @@ sub main {
     warn "Session class: $class\n" if $debug;
 
     eval "use $class";
-    die "unable to load class $class: $@" if $@;
+    bail("unable to load class $class: $@") if $@;
 
-    die "class $class: does not implement the 'insert' method"
+    bail("class $class: does not implement the 'insert' method")
 	unless eval{ $class->can('insert') };
 
     for ($session_data{recordingStatus}) {
@@ -293,7 +299,7 @@ sub main {
     for ($session_data{recordingResolution}) {
 	next unless defined;
 	$_ = uc $_;
-	die("-recording_resolution must be one of: 'cg', 'cc', 'mg', 'mc', 'fg' or 'fc'\n")
+	bail("-recording_resolution must be one of: 'cg', 'cc', 'mg', 'mc', 'fg' or 'fc'\n")
 	    unless m{^[CMF][GC]$}x;
     }
 
@@ -301,7 +307,7 @@ sub main {
 	next unless defined;
 	$_ = lc $_;
 
-	die ("-profile_display must be one of: 'none', 'gmod' or 'all'\n")
+	bail("-profile_display must be one of: 'none', 'gmod' or 'all'\n")
 	    unless m{^(none|mod|all)$}x;
     }
 
@@ -315,7 +321,7 @@ sub main {
 	? Date::Parse::str2time($end_str)
 	: $start + 30 * 60;
 
-    die "end time ($end_str) is not later than start time ($start_str)\n"
+    bail("end time ($end_str) is not later than start time ($start_str)\n")
 	unless ($end > $start);
 
     my $upload_data;
@@ -346,7 +352,7 @@ sub main {
 
 	$existing_preload = Elive::Entity::Preload->retrieve( $preload_opt );
 	
-	die "no existing preload: $preload_opt\n"
+	bail("no existing preload: $preload_opt\n")
 	    unless $existing_preload;
     }
 
@@ -511,7 +517,6 @@ sub _get_users {
 
     foreach (@users_in) {
 	my $user = Elive::Entity::User->stringify($_->user);
-	
 	$users{$user} = $_;
     }
 
@@ -523,27 +528,25 @@ sub _get_users {
 	);
 
     my $db_users = Elive::Entity::User->list(filter => $filter);
-    my @users_out;
+    my @users;
+    my %ids_seen;
+    my %uids_seen;
 
     foreach my $user (@$db_users) {
-
-	my $obj1 = delete $users{$user->loginName};
-	my $obj2 =  delete $users{$user->userId};
-	my $obj = $obj1 || $obj2;
-
-	if ($obj) {
-	    # replace with db user
-	    $obj->user( $user );
-	    push (@users_out, $obj);
-	}
+        $ids_seen{lc $user->userId}++;
+        $uids_seen{lc $user->loginName}++;
     }
 
-    my @users_not_found = keys %users;
+    foreach (keys %users) {
+	delete $users{$_}
+	    if $ids_seen{lc $_} or $uids_seen{lc $_};
+    }
 
-    die "unknown user(s): @users_not_found\n"
+    my @users_not_found = sort keys %users;
+    bail("unknown user(s): @users_not_found\n")
 	if @users_not_found;
 
-    return @users_out;
+    return @$db_users;
 }
 
 ########################################################################
@@ -570,26 +573,25 @@ sub _get_groups {
 
     my $db_groups = Elive::Entity::Group->list(filter => $filter);
 
-    my @groups_out;
+    my %gids_seen;
+    my %names_seen;
 
     foreach my $group (@$db_groups) {
-
-	my $obj1 = delete $groups{$group->groupId};
-	my $obj2 = delete $groups{$group->groupName};
-	my $obj = $obj1 || $obj2;
-
-	if ($obj) {
-	    $obj->group($group);
-	    push (@groups_out, $obj)
-	}
+	$gids_seen{ lc $group->groupId}++;
+	$names_seen{ lc $group->groupName}++;
     }
 
-    my @groups_not_found = keys %groups;
+    foreach (keys %groups) {
+	delete $groups{$_}
+	    if $gids_seen{lc $_} || $names_seen{lc $_};
+     }
 
-    die "unknown group(s): @groups_not_found\n"
+    my @groups_not_found = sort keys %groups;
+
+    bail("unknown group(s): @groups_not_found\n")
 	if @groups_not_found;
 
-    return @groups_out;
+    return @$db_groups;
 }
 
 ########################################################################
@@ -608,7 +610,7 @@ sub _get_occurrences {
 	    m{^.*day(s?).*$}i       ? 1
 	  : m{^.*week(s?).*$}i      ? 7
           : m{^.*fortnight(s?).*$}i ? 14
-          : die "occurs usage: --occurs days=n  or --occurs weeks=n\n";
+          : bail("occurs usage: --occurs days=n  or --occurs weeks=n\n");
 
     }
 
