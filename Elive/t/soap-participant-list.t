@@ -71,6 +71,9 @@ SKIP: {
     our $version_10_0_1 = version->declare( '10.0.1' )->numify;
     our $elm_3_3_4_or_higher =  $version >= $version_10_0_1;
 
+    our $version_11_1_2 = version->declare( '11.1.2' )->numify;
+    our $elm_3_5_0_or_higher =  $version >= $version_11_1_2;
+
     my $meeting_start = time();
     my $meeting_end = $meeting_start + 900;
 
@@ -190,7 +193,7 @@ SKIP: {
     # userId to be mapped to the loginName
 
     my $looks_like_ldap = $participant2 && $participant2->userId eq $participant2->loginName;
-    if ($looks_like_ldap && $elm_3_3_4_or_higher) {
+    if ($looks_like_ldap && $elm_3_5_0_or_higher) {
 	#
 	# Check the following newer features
 	# 1. passing participants by name
