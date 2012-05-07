@@ -59,7 +59,7 @@ via web services.
 sub connect {
     my ($class, $url, $login_name, $pass, %opts) = @_;
 
-    die "usage: ${class}->new(url, [login_name] [, pass])"
+    croak("usage: ${class}->connect(url, [login_name] [, pass])")
 	unless ($class && $url);
 
     try {require Elive::Connection::SDK};
