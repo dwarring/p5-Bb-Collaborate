@@ -3,6 +3,7 @@ use warnings; use strict;
 
 use Mouse;
 use Try::Tiny;
+use Carp;
 
 extends 'Elive::DAO';
 
@@ -59,7 +60,7 @@ via web services.
 sub connect {
     my ($class, $url, $login_name, $pass, %opts) = @_;
 
-    croak("usage: ${class}->connect(url, [login_name] [, pass])")
+    Carp::croak("usage: ${class}->connect(url, [login_name] [, pass])")
 	unless ($class && $url);
 
     try {require Elive::Connection::SDK};
