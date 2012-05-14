@@ -48,6 +48,17 @@ sub BUILDARGS {
 
 =head1 METHODS
 
+=head2 new
+
+       $type = Elive::Util::inspect_type('Elive::Entity::Participants');
+       if ($type->is_array) {
+           # ...
+       }
+
+Creates an object of type L<Elive::Util::Type>.
+
+=cut
+
 =head2 is_struct
 
     Return true, if the type is an ancestor of Elive::DAO
@@ -76,7 +87,14 @@ sub is_ref {
 
 =head2 is_array
 
-    Return true if elements are contained in an array
+Return an elemental class if objects are substantiated as arrays.
+
+    my $type = Elive::Util::Type->new('Elive::Entity::Participants');
+    print $type->is_array;
+    # prints Elive::Entity::Participant
+
+If the class is an array, the C<is_struct()> and C<is_ref()> methods inquire
+on the properties of the element class.
 
 =cut
 
