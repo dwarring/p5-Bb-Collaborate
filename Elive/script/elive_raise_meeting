@@ -97,8 +97,8 @@ elive_raise_meeting - Elluminate Live! Manager (ELM) meeting creation
 
 =head2 Preloads
 
- -upload             <local_file>     # upload a client side file
- -import_from_server <remote_file>    # import a server side file
+ -upload             <local_file>     # upload a client side preload
+ -import_from_server <remote_file>    # import a server side preload
  -add_preload        <preload_id>,... # associate with existing preloads
 
  Where preload files can include:
@@ -122,7 +122,7 @@ elive_raise_meeting - Elluminate Live! Manager (ELM) meeting creation
 
 =head1 DESCRIPTION
 
-Creates a meeting (session) on an Elluminate I<Live!> server.
+Creates meetings on an Elluminate I<Live!> (Blackboard Collaborate) server.
 
 =head1 SEE ALSO
 
@@ -371,8 +371,8 @@ sub main {
     }
 
     my @preloads = grep {$_} ($existing_preload, $uploaded_preload, $imported_preload);
-
     $session_data{add_preload} = \@preloads if @preloads;
+
     my $ptmp = Elive::Entity::Participants->new($session_data{participants});
 
     foreach (grep {! defined $session_data{$_} } keys %session_data) {

@@ -162,7 +162,7 @@ SKIP: {
 	# there can potentially be several servers. Pick one and make
 	# sure it's known to us.
 	#
-	is( exception {($data, @_others) = YAML::Syck::Load($stdout)} => undef, 'output is parsable YAML');
+	is( exception {($data, @_others) = YAML::Syck::Load($stdout)} => undef, '-dump=yaml output is parsable YAML');
 	isa_ok($data, 'HASH', 'result');
 
 	my $server_details_id = $data->{ServerDetails}{serverDetailsId};
@@ -230,7 +230,7 @@ SKIP: {
 	my $data;
 	my @guff;
 
-	is( exception {($data, @guff) = YAML::Syck::Load($stdout)} => undef, 'session query output is parsable YAML');
+	is( exception {($data, @guff) = YAML::Syck::Load($stdout)} => undef, '-dump=yaml output is parsable YAML');
 	isa_ok($data, 'HASH', 'result');
 
 	ok(!@guff, 'single result returned for single row query');

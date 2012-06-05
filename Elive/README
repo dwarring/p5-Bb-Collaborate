@@ -4,12 +4,12 @@ seminars and general training and support.
 
 Elive is a set of Perl bindings and definitions for entities in the
 Elluminate Live! Manager (ELM) database. You can, for example, use it to
-manage users, groups meetings and meeting participants.
+create meetings (sessions) or manage users, groups and meeting participants.
 
 Elive connects to Elluminate Live! servers via http or https and
 utilises the Command Toolkit services SOAP ('default' adapter).
 
-Some additional configuration is be required on your Elluminate Live!
+Some additional configuration may be required on your Elluminate Live!
 server. Please see the Server Configuration section.
 
 COMPATIBILITY
@@ -112,7 +112,7 @@ LIVE TESTING
                of groups on a live site (t/soap-group.t).
 
     ELIVE_TEST_REPORT_UPDATES - set this to true to enable insert and
-              update of reports on a live site.
+              update of reports on a live site (t/soap-report.t).
 
     The User and Group update tests can only be run on sites that have not
     been configured for LDAP.

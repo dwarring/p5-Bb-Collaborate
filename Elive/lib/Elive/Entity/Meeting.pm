@@ -83,7 +83,7 @@ has  'allModerators' => (is => 'rw', isa => 'Bool',
 __PACKAGE__->_alias(all_moderators => 'allModerators');
 
 has  'restrictedMeeting' => (is => 'rw', isa => 'Bool',
-			     documentation => "Restricted meeting");
+			     documentation => "all participants must login");
 __PACKAGE__->_alias(restricted => 'restrictedMeeting');
 
 has 'adapter' => (is => 'rw', isa => 'Str',
