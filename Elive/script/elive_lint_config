@@ -114,17 +114,17 @@ sub main {
 		     $class =~ m{CommandAdapter}}
 	       @adapters);
 
-	die "assuming elm 9.5, but unable to find elements of class =~ /CommandAdapter/\n"
+	die "assuming elm 9.5+, but unable to find elements of class =~ /CommandAdapter/\n"
 	    unless $command_adapter;
 
 	my @commands = _get_elems($command_adapter, 'commands');
 
-	die "assuming elm 9.5, but unable to find 'commands' elements\n"
+	die "assuming elm 9.5+, but unable to find 'commands' elements\n"
 	    unless @commands;
 
 	my ($command, @_guff) = map {_get_elems($_, 'command')} @commands;
 
-	die "assuming elm 9.5, but unable to find 'command' element\n"
+	die "assuming elm 9.5+, but unable to find 'command' element\n"
 	    unless $command;
 
 	my @command_keys = sort keys %$command;

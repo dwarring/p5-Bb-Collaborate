@@ -541,6 +541,8 @@ sub delete {
 
 =head2 is_changed
 
+Returns a list of properties that have unsaved changes.
+
      my $session = Elive::Entity::Session->retrieve( $session_id);
      #
      # ..then later on
@@ -550,8 +552,6 @@ sub delete {
      #
      # @changed will contained 'seats', plus any other unsaved updates.
      #
-
-Returns a list of properties that have unsaved changes.
 
 Destroyng an object with unsaved changes will cause a warning. To avoid this,
 you will either need to call C<update> on the object to save the changes, or

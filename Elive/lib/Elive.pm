@@ -7,11 +7,11 @@ Elive - Elluminate Live! (Blackboard Collaborate) Command Toolkit bindings
 
 =head1 VERSION
 
-Version 1.26
+Version 1.27
 
 =cut
 
-our $VERSION = '1.26';
+our $VERSION = '1.27';
 
 use 5.008003;
 

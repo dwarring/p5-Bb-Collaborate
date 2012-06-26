@@ -1,5 +1,11 @@
 Revision history for Elive
 
+1.27   tba
+       [testing]
+       - script-elive_lint_conf.t - Fix annoying CPAN Testers failures; allow noise
+         in stderr (perl 5.17.x depreciation warnings from XML::Simple <= 2.20).
+       - soap-preload.t - cross-check imported preload sizes
+
 1.26   4th May 2012
        [bug fixes]
        Elive::Entity::ParticipantList, elive_raise_meeting:
