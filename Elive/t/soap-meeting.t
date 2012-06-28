@@ -125,7 +125,7 @@ SKIP: {
 		'$meeting->buildJNLP - lives');
 
 	ok($meetingJNLP && !ref($meetingJNLP), 'got meeting JNLP');
-	is( exception {XMLin($meetingJNLP)} => undef, 'meeting JNLP is valid XML (XHTML)');
+	is( exception {XMLin($meetingJNLP)} => undef, 'meeting JNLP is valid XML');
     };
 
     my $meeting_id = $meeting->meetingId;

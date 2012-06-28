@@ -108,7 +108,7 @@ SKIP: {
 		     '$session->buildJNLP - lives');
 
 	    ok($sessionJNLP && !ref($sessionJNLP), 'got session JNLP');
-	    is( exception {XMLin($sessionJNLP)} => undef, 'JNLP is valid XML (XHTML)');
+	    is( exception {XMLin($sessionJNLP)} => undef, 'JNLP is valid XML');
 	};
 
 	ok(my $web_url = $session->web_url, 'got session web_url()');

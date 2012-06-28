@@ -149,7 +149,7 @@ SKIP: {
 	);
 
     ok($recordingJNLP && !ref($recordingJNLP), 'got recording JNLP');
-    is( exception {XMLin($recordingJNLP)} => undef, 'JNLP is valid XML (XHTML)');
+    is( exception {XMLin($recordingJNLP)} => undef, 'JNLP is valid XML');
     ok(my $web_url = $recording->web_url, 'got recording web_url()');
 		
     $recording = undef;
