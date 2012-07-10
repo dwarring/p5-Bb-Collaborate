@@ -285,7 +285,7 @@ sub main {
 	next unless defined;
 	$_ = lc $_;
 	#
-	# accept some of the other symonymns for the various modes as
+	# accept some of the other synonyms for the various modes as
 	# seen in documentation and Elluminate's web interface.
 	#
 	s{^none|disabled$}{off}x;
