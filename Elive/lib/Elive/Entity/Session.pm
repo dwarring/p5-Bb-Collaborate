@@ -760,7 +760,7 @@ extension, or you can supply, these details yourself:
     $preload2 =  Elive::Entity::Preload->upload({
                      name => 'slide2.wbd',
                      data => $content,
-                     type => 'preload',
+                     type => 'whiteboard',
                      mimeType => 'application/octet-stream',
                    });
 
@@ -769,7 +769,7 @@ The C<import_from_server> method also has an extended form:
     $preload3 =  Elive::Entity::Preload->import_from_server({
                      fileName =>'/home/uploads/slide3.wbd.tmp123'
                      ownerId => 357147617360,
-                     type => 'preload',
+                     type => 'whiteboard',
                      mimeType => 'application/octet-stream',
                    });
 
