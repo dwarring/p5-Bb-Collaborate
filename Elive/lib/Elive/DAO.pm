@@ -1608,19 +1608,17 @@ BEGIN {
 
     subtype 'HiResDate'
 	=> as 'Int'
-	=> where {m{^\d+$}
-		    && 
-			(!$_ || length($_) > 10
-			 or Carp::carp "doesn't look like a hi-res date: $_")}
+	=> where {m{^\d+$} && (!$_ || length($_) > 10
+	   or Carp::carp "doesn't look like a hi-res date: $_")}
         => message {"invalid date: $_"};
 }
 
 sub can {
     my ($class, $method) = @_;
 
-    my $subref;
+    my $subref = try { $class->SUPER::can($method) };
 
-    unless ($subref = try { $class->SUPER::can($method) }) {
+    unless ($subref) {
 
 	my $aliases = try { $class->_aliases };
 
@@ -1643,11 +1641,8 @@ sub AUTOLOAD {
         unless $class && $method;
 
     if (my $subref = $class->can($method)) {
-
-	{
-	    no strict 'refs';
-	    *{$class.'::'.$method} = $subref;
-	}
+	no strict 'refs';
+	*{$class.'::'.$method} = $subref;
 
 	goto $subref;
     }
