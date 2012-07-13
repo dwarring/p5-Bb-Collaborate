@@ -1,9 +1,11 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 81;
+use Test::More tests => 83;
 use Test::Warn;
 
-use Carp; $SIG{__DIE__} = \&Carp::confess;
+use Carp;
+$SIG{__WARN__} = \&Carp::cluck;
+$SIG{__DIE__} = \&Carp::confess;
 
 use Elive::Connection;
 use Elive::Entity::ParticipantList;
@@ -20,32 +22,49 @@ my $participant_list = Elive::Entity::ParticipantList->construct(
     {
 	meetingId => 123456,
 	participants => [
-	    {
+	    { # [0]
 		user => {userId => 112233,
 			 loginName => 'test_user',
 		},
 		role => {roleId => 2},
 	    },
-	    {
+	    { # [1]
 		user => {userId => 223344,
 			 loginName => 'test_user2',
 		},
 		role => {roleId => 3}, # sans coercement
 	    },
-	    {
+	    { # [2]
 		user => {userId => 'dave',
 			 loginName => 'test_user2',
 		},
 		role => 3,             # with coercement
-	    }
+	    },
+	    { # [3]  group
+		group => {
+		    groupId => 'test_group',
+		    name => 'test Group',
+		    members => [qw(888888 999999)],
+		},
+		role => 2,
+	    },
+	    { # [4] invited guest
+		guest => {
+		    loginName => 'alice@acme.com',
+		    displayName => 'Alice',
+		},
+		role => 3,
+	    },
 	    ],
     },
     );
 
+
 isa_ok($participant_list, 'Elive::Entity::ParticipantList', 'participant');
 is($participant_list->stringify, "123456", 'participant list stringifies to meeting id');
 
-is_deeply($participant_list->participants->[-1], {
+is_deeply($participant_list->participants->[2], {
+                type => 0,
     		user => {userId => 'dave',
 			 loginName => 'test_user2',
 		},
@@ -66,8 +85,8 @@ can_ok($participant_list, 'participants');
 
 my $participants = $participant_list->participants;
 isa_ok($participants, 'Elive::Entity::Participants');
+is(scalar @$participants, 5, 'all participants constructed');
 
-ok(@$participants == 3, 'all participants constructed');
 isa_ok($participants->[0], 'Elive::Entity::Participant');
 is(Elive::Entity::Participants->stringify( [$participants->[0]] ),
    '112233=2', 'one element array stringification');
@@ -75,13 +94,14 @@ is(Elive::Entity::Participants->stringify( $participants->[0] ),
    '112233=2', 'one element scalar stringification');
 
 $participants->add({
+    type => 0,
     user => {userId => 'late_comer',
 	     loginName => 'late_comer',
 	 },
     role => {roleId => 3},
 });
 
-ok(@$participants == 4, 'participants added');
+is(scalar @$participants, 6, 'participants added');
 isa_ok($participants->[-1], 'Elive::Entity::Participant');
 is($participants->[-1]->user->userId, 'late_comer', 'added participant value');
 
@@ -91,11 +111,14 @@ is($participants->[0]->user->stringify, '112233', 'user stringified');
 
 is($participants->[0]->role->stringify, '2', 'role stringified');
 
-is($participants->[0]->stringify, '112233=2', 'participant stringified');
+is($participants->[0]->stringify, '112233=2', 'user participant stringified');
 ok($participants->[0]->is_moderator, 'is_moderator() on moderator');
 
-is($participants->[2]->stringify, 'dave=3', 'participant stringified');
+is($participants->[2]->stringify, 'dave=3', 'user participant stringified');
 ok(! $participants->[2]->is_moderator, 'is_moderator() on regular participant');
+
+is($participants->[3]->stringify, '*test_group=2', 'guest participant stringified');
+is($participants->[4]->stringify, 'Alice (alice@acme.com)', 'guest participant stringified');
 
 # upgrade/downgrade tests on moderator privileges
 
@@ -105,7 +128,7 @@ is($participants->[2]->stringify, 'dave=2', 'upgraded participant stringified');
 ok(!  $participants->[2]->is_moderator(0), 'is_moderator() downgrade');
 is($participants->[2]->stringify, 'dave=3', 'downgraded participant stringified');
 
-is($participants->stringify, '112233=2;223344=3;dave=3;late_comer=3',
+is($participants->stringify, '*test_group=2;112233=2;223344=3;Alice (alice@acme.com);dave=3;late_comer=3',
    'participants stringification');
 
 is($participant_list->participants->[0]->user->loginName, 'test_user',
@@ -333,3 +356,5 @@ do {
     my @all_members = $group->expand_members;
     is_deeply(\@all_members, [2222, 3333, 4141, 4242, 6666, 7777], 'group - all_members()');
 };
+
+Elive->disconnect;
