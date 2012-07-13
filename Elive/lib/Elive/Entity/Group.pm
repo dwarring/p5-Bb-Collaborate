@@ -4,6 +4,8 @@ use warnings; use strict;
 use Mouse;
 use Mouse::Util::TypeConstraints;
 
+use Carp;
+
 extends 'Elive::Entity';
 
 use Elive::Entity::Group::Members;
@@ -69,6 +71,9 @@ sub stringify {
     return $prefix . $class->SUPER::stringify($data, @_);
 
 }
+
+# _restful_url()
+# remove any leading '*'
 
 sub _restful_url {
     my $self = shift;
@@ -180,6 +185,8 @@ is further reduced to only include unique members.
 
     my @all_members = $group_obj->expand_members();
 
+It returns C<loginNames> as an array of strings.
+
 =cut
 
 sub expand_members {
@@ -202,9 +209,18 @@ sub expand_members {
 	    @elements = (Elive::Util::string($_));
 	}
 
-	foreach (@elements) {
-	    push(@members, $_)
-		unless ref || m{^\*} || $seen{u => $_}++;
+	foreach my $member (@elements) {
+	    $member = Elive::Util::string($member)
+		if ref $member;
+
+	    if (defined $member && $member =~ m{^\*}) {
+		# should be caught in BUILDARGS anyway...
+		carp "skipping unexpanded group: $member";
+	    }
+	    else {
+		push(@members, $member)
+		unless $seen{u => $member}++;
+	    }
 	}
     }
 

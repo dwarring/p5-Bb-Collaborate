@@ -385,14 +385,15 @@ sub _show {
     foreach my $property ($entity_class->properties) {
 
 	my $type = Elive::Util::inspect_type($property_types->{$property});
-	my $elemental_type = $type->elemental_type;
+	my ($elemental_type, @_other_types) = $type->union;
 
 	my $is_primary = $pkey && $property eq $pkey;
 
 	my $primary_str = $is_primary? 'pkey ': '';
 	my $array_str = $type->is_array? ' []': '';
 
-	printf("%-20s : %-16s", "$sp  $property", "${primary_str}${elemental_type}${array_str}");
+	my $all_types = join('|', $elemental_type, @_other_types);
+	printf("%-20s : %-16s", "$sp  $property", "${primary_str}${all_types}${array_str}");
 	for ($property_doco->{$property}) {
 	    print "\t-- $_" if $_;
 	}

@@ -13,10 +13,17 @@ use Scalar::Util;
 use Elive::Util;
 
 use Elive::Entity::Group;
+use Elive::Entity::User;
 
 extends 'Elive::DAO::Array';
 __PACKAGE__->separator(',');
-__PACKAGE__->element_class('Elive::Entity::Group');
+
+# Elements are likley to be
+# - group objects
+# - user-ids as strings: 'someuser'
+# - group-ids strings: '*my_group'
+
+__PACKAGE__->element_class('Elive::Entity::Group|Str');
 
 sub _build_array {
     my $class = shift;

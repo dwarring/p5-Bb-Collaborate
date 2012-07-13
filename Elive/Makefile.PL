@@ -24,6 +24,7 @@ requires(
     'IO::Interactive'              => 0,
     'MIME::Types'                  => 0,
     'Mouse'                        => 0.81,
+    'Mouse::Util::TypeConstraints' => 0,
     'Pod::Usage'                   => 1.33,  # for elive_raise_meeting
     'parent'                       => 0,
     'Scalar::Util'                 => 0,

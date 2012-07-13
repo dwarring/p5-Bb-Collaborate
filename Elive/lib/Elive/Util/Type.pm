@@ -13,6 +13,7 @@ Elive::Util::Type - Type introspection class
 has 'type' => (is => 'rw', isa => 'Str', required => 1);
 has 'array_type' => (is => 'rw', isa => 'Str');
 has 'elemental_type' => (is => 'rw', isa => 'Str', required => 1);
+has '_other_types' => (is => 'rw', isa => 'ArrayRef[Str]', required => 1);
 
 #
 # hoping to get rid of build args and base this entirely on
@@ -29,12 +30,12 @@ sub BUILDARGS {
     #
 
     my $array_type;
-    my $elemental_type = $type;
+    my ($elemental_type, @other_types) = split(/\|/, $type);
 
     if ($type =~ m{^Elive::}) {
 
 	if ($type->can('element_class')) {
-	    $elemental_type = $type->element_class || 'Str';
+	    ($elemental_type, @other_types) = split(/\|/, $type->element_class || 'Str');
 	    $array_type = $type;
 	}
     }
@@ -42,6 +43,7 @@ sub BUILDARGS {
     $info{type} = $type;
     $info{array_type} = $array_type if defined $array_type;
     $info{elemental_type} = $elemental_type;
+    $info{_other_types} = \@other_types;
 
     return \%info;
 }
@@ -102,6 +104,31 @@ sub is_array {
     my $self = shift;
 
     return $self->array_type;
+}
+
+=head2 elemental_type
+
+Returns the type of the class. For arrays, returns the array element
+class.
+
+=cut
+
+=head2 union
+
+Return the full type union.  For arrays, returns the union of all possible
+array element classes.
+
+    my @types = Elive::Util::Type->new(' Elive::Entity::Group::Members')->union;
+    #
+    # group members may contain sub-groups, user objects, or packed strings
+    is(\@types, [qw(Elive::Entity::Group Str)]);
+
+=cut
+
+sub union {
+    my $self = shift;
+
+    return ($self->elemental_type, @{ $self->_other_types });
 }
 
 1;

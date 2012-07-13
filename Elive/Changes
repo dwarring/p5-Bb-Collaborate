@@ -1,9 +1,16 @@
 Revision history for Elive
 
 1.27   tba
+       [bug fixes]
+       Elive::Entity::Group, Elive::Util::Type, dao-construct.t
+       - Fixed element_class declaration and tightened tests to match actual
+         content. Elements may be subgroups (group objects) or user-ids
+         (strings).
+       Elive::Entity::Participant
+       - fixed potential problem with handling invited guests.
        [testing]
-       - script-elive_lint_conf.t - Fix annoying CPAN Testers failures; allow noise
-         in stderr (perl 5.17.x depreciation warnings from XML::Simple <= 2.20).
+       - script-elive_lint_conf.t - tolerate perl 5.17.x depreciation warnings 
+         (from XML::Simple <= 2.20).
        - soap-preload.t - cross-check imported preload sizes
 
 1.26   4th May 2012

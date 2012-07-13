@@ -293,6 +293,11 @@ do {
 
     ## tests on nested group construction
 
+    my $user_7777_obj = Elive::Entity::User->construct({
+	userId => 7777,
+	loginName => 'test_user'
+    });
+
     my $group =  Elive::Entity::Group->construct( {
 	name => 'Top level group',
 	groupId => '1111',
@@ -307,7 +312,12 @@ do {
 		    '4242',
 		    '3333', # deliberate duplicate
 		    ],
-	    }
+	    },
+	    {   # expanded user
+		userId => 6666,
+		loginName => 'test_user'
+	    },
+	    $user_7777_obj,
 	]
      });
 
@@ -316,10 +326,10 @@ do {
 
     my $members = $group->members;
     isa_ok($members,'ARRAY', 'group members');
-    is(scalar @$members, 3, 'group members - cardinality');
+    is(scalar @$members, 5, 'group members - cardinality');
     is($members->[0], '2222', 'group member - simple element');
     isa_ok($members->[2], 'Elive::Entity::Group', 'group member - subgroup');
 
     my @all_members = $group->expand_members;
-    is_deeply(\@all_members, [2222, 3333, 4141, 4242], 'group - all_members()');
+    is_deeply(\@all_members, [2222, 3333, 4141, 4242, 6666, 7777], 'group - all_members()');
 };
