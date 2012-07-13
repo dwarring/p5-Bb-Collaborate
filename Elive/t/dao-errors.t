@@ -48,8 +48,8 @@ unless ($user_obj) {
 
 $user_obj->loginName( $user_obj->loginName .'x' );
 
-isnt(
-    exception {Elive::Entity::User->construct(\%user_data)} => undef,
+like(
+    exception {Elive::Entity::User->construct(\%user_data)} => qr{attempted overwrite of object with unsaved changes}i,
     "reconstructing unsaved object - dies"
     );
 
@@ -65,13 +65,13 @@ is(
     "setter on non-key value - lives"
     );
 
-isnt(
-    exception {$user_obj->set(userId => undef)} => undef,
+like(
+    exception {$user_obj->set(userId => undef)} => qr{attempt to delete primary key}i,
     "clearing primary key field - dies"
     );
 
-isnt(
-    exception {$user_obj->set('userId', $user_obj->userId.'9')} => undef,
+like(
+    exception {$user_obj->set('userId', $user_obj->userId.'9')} => qr{attempt to update primary key}i,
     "updating primary key field - dies"
     );
 
@@ -98,36 +98,36 @@ is(
 is( exception {$meeting->_readback_check( \%meeting_data, [\%meeting_data] )} => undef,
 	 'readback on unchanged data - lives');
 
-isnt(
+like(
     exception {
 	my %changed = %meeting_data;
 	$changed{meetingId}++;
 	$meeting->_readback_check( \%meeting_data, [\%changed] )
-    } => undef,
+    } => qr{Update consistancy check failed}i,
     'readback with changed Int property - dies');
 
-isnt(
+like(
     exception {
 	my %changed = %meeting_data;
 	$changed{restrictedMeeting} = !$changed{restrictedMeeting};
 	$meeting->_readback_check( \%meeting_data, [\%changed] )
-    } => undef,
+    } => qr{Update consistancy check failed}i,
     'readback with changed Bool property - dies');
 
-isnt(
+like(
     exception {
 	my %changed = %meeting_data;
 	$changed{name} .= 'x';
 	$meeting->_readback_check( \%meeting_data, [\%changed] )
-    } => undef,
+    } => qr{Update consistancy check failed}i,
     'readback with changed Str property - dies');
 
-isnt(
+like(
     exception {
 	my %changed = %meeting_data;
 	$changed{start} .= '9';
 	$meeting->_readback_check( \%meeting_data, [\%changed] )
-    } => undef,
+    } => qr{Update consistancy check failed}i,
     'readback with changed hiResDate property - dies');
 
 is(
@@ -151,8 +151,8 @@ is(
     "setting optional field to undef - lives"
     );
 
-isnt(
-    exception {$meeting->set(start => undef)} => undef,
+like(
+    exception {$meeting->set(start => undef)} => qr{attempt to delete required attribute}i,
     "setting required field to undef - dies"
     );
 
@@ -163,18 +163,18 @@ foreach (qw(meetingId name start end)) {
     my %bad_meeting_data = %meeting_data;
     delete $bad_meeting_data{$_};
 
-    isnt(
-	exception {Elive::Entity::Meeting->construct(\%bad_meeting_data)} => undef,
+    like(
+	exception {Elive::Entity::Meeting->construct(\%bad_meeting_data)} => qr{is required}i,
 	"meeting without required $_ - dies"
 	);
 }
 
 foreach my $fld (qw/meetingId start/) {
-    isnt(
+    like(
 	exception {
 	    local $meeting_data{$fld} = 'non numeric data';
 	    Elive::Entity::Meeting->construct(\%meeting_data);
-	} => undef,
+	} => qr{non numeric}i,
 	"meeting with non numeric $fld - dies"
 	);
 }
@@ -188,12 +188,12 @@ is(
     'meeting parameters - valid recordingStatus - lives',
     );
 
-isnt(
+like(
     exception {Elive::Entity::MeetingParameters->construct
 	     ({
 		 meetingId => 222222,
 		 recordingStatus => 'CRUD',
-	      })} => undef,
+	      })} => qr{validation failed}i,
 	      'meeting parameters - invalid recordingStatus - dies',
     );       
 
@@ -210,7 +210,7 @@ is(
 	      'meeting parameters - valid type - lives',
     );
 
-isnt(
+like(
     exception {Elive::Entity::Preload->construct
 		   ({
 		       preloadId => 333333,
@@ -219,7 +219,7 @@ isnt(
 		       ownerId => 123456789000,
 		       size => 1024,
 		       type => 'crud',
-		    })} => undef,
+		    })} => qr{validation failed}i,
     'meeting parameters - invalid type - dies',
     );
 
@@ -235,14 +235,14 @@ is(
     );
 
 
-isnt(
+like(
     exception {Elive::Entity::MeetingParameters->_thaw
 	    ({
 		CrudAdapter => {
 		    Id => 11111222233334444,
 		    RecordingStatus => 'REMOTE',
 		}})
-    } => undef,
+    } => qr{unexpected entities in response:: Crud},
     'thawing invalid meeting struct parameters - dies',
     );
 
