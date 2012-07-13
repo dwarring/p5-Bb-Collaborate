@@ -146,7 +146,7 @@ sub _group_by_type {
     my $untidy = 'trev;bob=3;bob=2'
     my $participants = Elive::Entity::Participants->new($untidy);
     # outputs: alice=2;bob=3;trev=3
-    print $participants->tidy;
+    print $participants->tidied;
 
 Produces a tidied list of participants. These are sorted with duplicates
 removed (highest role is retained).
