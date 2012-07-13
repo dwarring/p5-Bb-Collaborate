@@ -85,7 +85,7 @@ sub BUILDARGS {
 	    }
 	}
 
-	if (try {$_->isa('Elive::Entity::InvitedGuests')}) {
+	if (try {$_->isa('Elive::Entity::InvitedGuest')}) {
 	    #
 	    # coerce to an invited guest
 	    #
@@ -122,7 +122,7 @@ sub BUILDARGS {
 	my $id = $2;
 	my $roleId = $4;
 
-	$roleId = 3 unless defined $roleId;
+	$roleId = 3 unless defined $roleId && $roleId ne '';
 
 	if ( $is_group ) {
 	    $parse{group} = {groupId => $id};
