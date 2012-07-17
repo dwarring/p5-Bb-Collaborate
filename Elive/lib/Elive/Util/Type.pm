@@ -4,6 +4,8 @@ use warnings; use strict;
 use Mouse;
 use Mouse::Util::TypeConstraints;
 
+our $VERSION = '0.01';
+
 =head1 NAME
 
 Elive::Util::Type - Type introspection class
@@ -14,11 +16,6 @@ has 'type' => (is => 'rw', isa => 'Str', required => 1);
 has 'array_type' => (is => 'rw', isa => 'Str');
 has 'elemental_type' => (is => 'rw', isa => 'Str', required => 1);
 has '_other_types' => (is => 'rw', isa => 'ArrayRef[Str]', required => 1);
-
-#
-# hoping to get rid of build args and base this entirely on
-# Mouse::Meta::TypeConstraints
-# 
 
 sub BUILDARGS {
     my ($class, $type) = @_;
