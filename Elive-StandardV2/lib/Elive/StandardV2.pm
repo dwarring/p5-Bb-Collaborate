@@ -4,8 +4,6 @@ use warnings; use strict;
 use Mouse;
 use Mouse::Util::TypeConstraints;
 
-use Try::Tiny;
-
 use Elive::DAO '0.04';
 extends 'Elive::DAO';
 
@@ -30,10 +28,10 @@ suitable for meetings, demonstrations web conferences, seminars and
 general training and support.
 
 Elive-StandardV2 is a set of Perl bindings and entity definitions for the
-Elluminate Standard Bridge V2 SOAP services ('standardv2' adapter).
+Elluminate Standard Bridge V2 SOAP services (C<standardv2> adapter).
 
 This is an alternative to the Command Toolkit, as supported by the
-Elive::Entity classess ('default' adapter).
+L<Elive::Entity> classess (bindings to the C<default> adapter).
 
 =cut
 
@@ -141,8 +139,7 @@ sub connect {
     die "usage: ${class}->connect(url, [login_name], [pass])"
 	unless ($class && $url);
 
-    try {require Elive::StandardV2::Connection}
-    catch {die $_};
+    require Elive::StandardV2::Connection;
 
     my $connection = Elive::StandardV2::Connection->connect(
 	$url,
@@ -370,6 +367,8 @@ L<http://search.cpan.org/dist/Elive-StandardV2/>
 =back
 
 =head1 SEE ALSO
+
+L<Elive::StandardV3> - Bindings to the V3 API. Available with ELM 11.1.2+.
 
 I<Elluminate_Live_Standard_Bridge_API_ELM_v2.0.pdf> - this contains essential
 background information and a full description of the available commands.
