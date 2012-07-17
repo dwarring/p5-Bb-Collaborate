@@ -4,8 +4,6 @@ use warnings; use strict;
 use Mouse;
 use Mouse::Util::TypeConstraints;
 
-use Try::Tiny;
-
 use Elive::DAO '0.06';
 extends 'Elive::DAO';
 
@@ -30,10 +28,10 @@ suitable for meetings, demonstrations web conferences, seminars, general
 training and support.
 
 Elive-StandardV3 is a set of Perl bindings and entity definitions for the
-Elluminate Standard Bridge V3 SOAP services ('standardv3' adapter).
+Elluminate Standard Bridge V3 SOAP services (C<standardv3> adapter).
 
 This is an alternative to the Command Toolkit, as supported by the
-Elive::Entity classess ('default' adapter).
+L<Elive::Entity> classess (bindings to the C<default> adapter).
 
 =cut
 
@@ -141,8 +139,7 @@ sub connect {
     die "usage: ${class}->connect(url, [login_name], [pass])"
 	unless ($class && $url);
 
-    try {require Elive::StandardV3::Connection}
-    catch {die $_};
+    require Elive::StandardV3::Connection;
 
     my $connection = Elive::StandardV3::Connection->connect(
 	$url,
