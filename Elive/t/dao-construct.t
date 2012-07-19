@@ -1,6 +1,6 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 83;
+use Test::More tests => 84;
 use Test::Warn;
 
 use Carp;
@@ -34,9 +34,9 @@ my $participant_list = Elive::Entity::ParticipantList->construct(
 		},
 		role => {roleId => 3}, # sans coercement
 	    },
-	    { # [2]
+	    { # [2] user
 		user => {userId => 'dave',
-			 loginName => 'test_user2',
+			 loginName => 'test_user3',
 		},
 		role => 3,             # with coercement
 	    },
@@ -55,10 +55,13 @@ my $participant_list = Elive::Entity::ParticipantList->construct(
 		},
 		role => 3,
 	    },
+	    { # [5] user - shorter form
+		user => 'bob',
+		role => 3,
+	    },
 	    ],
     },
     );
-
 
 isa_ok($participant_list, 'Elive::Entity::ParticipantList', 'participant');
 is($participant_list->stringify, "123456", 'participant list stringifies to meeting id');
@@ -71,13 +74,20 @@ is_deeply($participant_list->participants->[2], {
 		role => {roleId => 3},,
 	  }, "construction/coercement sanity");
 
-$participant_list->participants->[-1]->role(2);
+is_deeply($participant_list->participants->[5], {
+                type => 0,
+    		user => {userId => 'test_user3',
+		},
+		role => {roleId => 3},,
+	  }, "construction/coercement sanity");
 
-is_deeply($participant_list->participants->[-1]->role, {roleId => 2},
+$participant_list->participants->[2]->role(2);
+
+is_deeply($participant_list->participants->[2]->role, {roleId => 2},
 	  "set/get sanity");
 
-$participant_list->participants->[-1]->role(3);
-is_deeply($participant_list->participants->[-1]->role, {roleId => 3},
+$participant_list->participants->[2]->role(3);
+is_deeply($participant_list->participants->[2]->role, {roleId => 3},
 	  "revert sanity");
 
 can_ok($participant_list, 'meetingId');
@@ -85,7 +95,7 @@ can_ok($participant_list, 'participants');
 
 my $participants = $participant_list->participants;
 isa_ok($participants, 'Elive::Entity::Participants');
-is(scalar @$participants, 5, 'all participants constructed');
+is(scalar @$participants, 6, 'all participants constructed');
 
 isa_ok($participants->[0], 'Elive::Entity::Participant');
 is(Elive::Entity::Participants->stringify( [$participants->[0]] ),
@@ -101,7 +111,7 @@ $participants->add({
     role => {roleId => 3},
 });
 
-is(scalar @$participants, 6, 'participants added');
+is(scalar @$participants, 7, 'participants added');
 isa_ok($participants->[-1], 'Elive::Entity::Participant');
 is($participants->[-1]->user->userId, 'late_comer', 'added participant value');
 
@@ -128,7 +138,7 @@ is($participants->[2]->stringify, 'dave=2', 'upgraded participant stringified');
 ok(!  $participants->[2]->is_moderator(0), 'is_moderator() downgrade');
 is($participants->[2]->stringify, 'dave=3', 'downgraded participant stringified');
 
-is($participants->stringify, '*test_group=2;112233=2;223344=3;Alice (alice@acme.com);dave=3;late_comer=3',
+is($participants->stringify, '*test_group=2;112233=2;223344=3;Alice (alice@acme.com);bob=3;dave=3;late_comer=3',
    'participants stringification');
 
 is($participant_list->participants->[0]->user->loginName, 'test_user',

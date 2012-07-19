@@ -123,7 +123,6 @@ sub BUILDARGS {
 	die "unable to build participant from $reftype reference";
     }
 
-    return $_ if Scalar::Util::reftype($_);
     #
     # Simple users:
     #     'bob=3' => user:bob, role:3, type: 0 (user)
@@ -135,14 +134,26 @@ sub BUILDARGS {
     #
     my %parse;
 
-    if (m{^ \s* ([^;]*?) \s* \( ([^;\)]+) \) \s* (= (\d) \s*)? $}x) {
+    if (m{^ \s* 
+            ([^;]*?)          # display name
+            \s*
+            \( ([^;\)]+) \)   # (login name)
+            \s*
+            (= (\d) \s*)?     # possible '=role' (ignored)
+          $}x) {
 
 	$parse{guest} = {displayName => $1, loginName => $2};
 	$parse{type} = 2;
 
 	return \%parse;
     }
-    elsif (m{^ \s* (\*?) \s* ([^,]*?) \s* (= (\d) \s*)? $}x) {
+    elsif (m{^ \s*
+               (\*?)          # optional group indicator '*'
+               \s*
+               ([^,]*?)       # user/group id
+               \s*
+               (= (\d) \s*)?  # optional '=role'
+             $}x) {
 
 	my $is_group = $1;
 	my $id = $2;
@@ -167,7 +178,7 @@ sub BUILDARGS {
     #
     # slightly convoluted die on return to keep Perl::Critic happy
     #
-    return die "'$_' not in format: userId=[0-3] or *groupId=[0-3] or guestName(guestLogin)";
+    return die "participant '$_' not in format: userId=[0-3] or *groupId=[0-3] or guestName(guestLogin)";
 }
 
 coerce 'Elive::Entity::Participant' => from 'Str'
