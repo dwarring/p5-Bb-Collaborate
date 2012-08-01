@@ -305,7 +305,6 @@ sub server_details {
     unless ($server_details) {
 
 	$server_details = Elive::Entity::ServerDetails->list(connection => $self);
-
 	$self->_server_details($server_details);
     }
 

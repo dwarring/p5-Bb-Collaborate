@@ -112,7 +112,7 @@ sub connect {
      $e1 = Elive->connection
          or warn 'no elive connection active';
 
-Returns the default Elive connection handle.
+Returns the current L<Elive::Connection::SDK> connection.
 
 =cut
 
@@ -124,6 +124,11 @@ sub connection {
 =head2 login
 
 Returns the login user for the default connection.
+
+    my $login = Elive->login;
+    say "logged in as: ".$login->loginName;
+
+See L<Elive::Entity::User>.
 
 =cut
 
@@ -140,7 +145,17 @@ sub login {
 
 =head2 server_details
 
-Returns the server details for the default connection.
+Returns the server details for the current connection. See L<Elive::Entity::ServerDetails>.
+
+    my $server = Elive->server_details;
+    printf("server %s is running Elluminate Live! version %s\n", $server->name, $server->version);
+
+There can potentially be multiple servers:
+
+    my @servers = Elive->server_details;
+    foreach my $server (@servers) {
+        printf("server %s is running Elluminate Live! version %s\n", $server->name, $server->version);
+    }
 
 =cut
 
@@ -150,13 +165,17 @@ sub server_details {
     my $connection = $opt{connection} || $class->connection
 	or die "not connected";
 
-    return $connection->server_details;
+    my @server_details = $connection->server_details;
+    return wantarray ? @server_details : $server_details[0]
 }
     
 =head2 disconnect
 
 Disconnects the default Elluminate connection. It is recommended that you
 do this prior to exiting your program.
+
+    Elive->disconnect;
+    exit(0);
 
 =cut
 
@@ -295,7 +314,7 @@ see the README file.
 
 =head2 Related CPAN Modules
 
-L<Elive::StandardV3> - This is a separate CPAN module that implements the alternate Elluminate I<Live!> Standard Bridge API (v3). 
+L<Elive::StandardV3> - this module implements the alternate Elluminate I<Live!> Standard Bridge API (v3). 
 
 =head2 Elluminate Documentation
 
