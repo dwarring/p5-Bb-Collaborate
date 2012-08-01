@@ -69,14 +69,14 @@ is($participant_list->stringify, "123456", 'participant list stringifies to meet
 is_deeply($participant_list->participants->[2], {
                 type => 0,
     		user => {userId => 'dave',
-			 loginName => 'test_user2',
+			 loginName => 'test_user3',
 		},
 		role => {roleId => 3},,
 	  }, "construction/coercement sanity");
 
 is_deeply($participant_list->participants->[5], {
                 type => 0,
-    		user => {userId => 'test_user3',
+    		user => {userId => 'bob',
 		},
 		role => {roleId => 3},,
 	  }, "construction/coercement sanity");
