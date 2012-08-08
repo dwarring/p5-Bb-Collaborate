@@ -1,5 +1,11 @@
 Revision history for Elive
 
+1.28   tba
+       [enhancements]
+       Elive:
+       - server_details() - Return all server(s) in a list context:
+         my @servers = Elive->server_details;
+
 1.27   14th July 2012
        [bug fixes]
        Elive::Entity::Participant
