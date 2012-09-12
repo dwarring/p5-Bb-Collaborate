@@ -39,7 +39,7 @@ has 'lastName' => (is => 'rw', isa => 'Str',
 
 #
 # 'groups' and 'domain' propreties made a brief appearence in Elm 9.5.0
-# but haven't survived to 9.5.2. Will cull these shortly.
+# but haven't survived past 9.5.2. Will cull these shortly.
 #
 
 has 'groups' => (is => 'rw', isa => 'Any',

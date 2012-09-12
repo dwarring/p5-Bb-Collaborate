@@ -3,7 +3,7 @@ use warnings; use strict;
 
 =head1 NAME
 
-Elive - Elluminate Live! (Blackboard Collaborate) Command Toolkit bindings
+Elive - Elluminate Live! Manager (ELM) Command Toolkit bindings
 
 =head1 VERSION
 
@@ -61,16 +61,15 @@ participants:
 =head1 DESCRIPTION
 
 Elive is a set of Perl bindings and entity definitions for quick and easy
-integration with the Elluminate I<Live!> Manager application. It can be used
-to automate a range of tasks including setting up meetings and participants,
-managing users and groups.
+integration with the Elluminate I<Live!> Manager (ELM) application. It can
+be used to automate a range of tasks including setting up meetings and
+participants, as well as managing users and user groups.
 
 =head1 BACKGROUND
 
-Elluminate I<Live!> (Blackboard Collaborate) is software for virtual online
-classrooms.
+Elluminate I<Live!> is software for virtual online classrooms.
 
-It is suitable for meetings, demonstrations web conferences, seminars
+It is suitable for meetings, demonstrations, web conferences, seminars
 and IT deployment, training and support.
 
 Most management functions that can be performed via the web interface can

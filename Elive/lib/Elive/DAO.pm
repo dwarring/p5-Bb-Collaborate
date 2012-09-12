@@ -1092,7 +1092,7 @@ sub set {
 
 	    if (ref($value)) {
 		#
-		# inspect the item to see if we need to uncoerce back to
+		# inspect the item to see if we need to stringify back to
 		# a simpler type. For example we may have been passed an
 		# object, rather than just its primary key.
 		#
