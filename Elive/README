@@ -18,7 +18,7 @@ COMPATIBILITY
     servers that are running Elluminate Live! Manager (ELM).
 
     - works best with ELM versions 3.0 - 3.5.0 and Elluminate Live!
-      (Blackboard Collaborate) versions 9.5 - 11.1.2
+      versions 9.5 - 11.1.2
 
     - does not support access to externally hosted servers deployed with SAS
       (Session Administration System).
