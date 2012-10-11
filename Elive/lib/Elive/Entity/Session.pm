@@ -553,7 +553,7 @@ Returns a list of properties that have unsaved changes.
      # @changed will contained 'seats', plus any other unsaved updates.
      #
 
-Destroyng an object with unsaved changes will cause a warning. To avoid this,
+Destroying an object with unsaved changes will cause a warning. To avoid this,
 you will either need to call C<update> on the object to save the changes, or
 C<revert> to discard the changes.
 
