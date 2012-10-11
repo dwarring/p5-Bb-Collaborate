@@ -40,7 +40,7 @@ soap-participant-list.t - elm 2.x participant tests (setParticipant etc)
 =cut
  
 my $unknowns = 1;
-my $participant_limit = $ENV{ELIVE_TEST_PARTICIPANT_LIMIT} || 500;
+my $participant_limit;
 my $timeout_sec = $ENV{ELIVE_TEST_PARTICIPANT_TIMEOUT} || 120;
 
 Getopt::Long::GetOptions('u|unknowns!' => \$unknowns,
@@ -73,6 +73,10 @@ SKIP: {
 
     our $version_11_1_2 = version->declare( '11.1.2' )->numify;
     our $elm_3_5_0_or_higher =  $version >= $version_11_1_2;
+
+    $participant_limit ||= $ENV{ELIVE_TEST_PARTICIPANT_LIMIT};
+    # older ELMs choke quite easily
+    $participant_limit ||= $elm_3_5_0_or_higher? 500: 200;
 
     my $meeting_start = time();
     my $meeting_end = $meeting_start + 900;
