@@ -204,7 +204,8 @@ SKIP: {
 		ok($found_participant && ! $found_participant->is_moderator, '"-participant" option; user has expected role'); 
 	    }
 	    else {
-		$t->skip("Not enough users to run this test");
+		$t->skip("Not enough users to run this test")
+		    for (1..2);
 	    }
 
 	    if ($moderator2) {
@@ -213,7 +214,8 @@ SKIP: {
 		ok($found_moderator && $found_moderator->is_moderator, '"-moderator" option; user has expected role'); 
 	    }
 	    else {
-		$t->skip("Not enough users to run this test");
+		$t->skip("Not enough users to run this test")
+		    for (1..2);
 	    }
 
 	    if ($class eq 'Elive::Entity::Session') {
