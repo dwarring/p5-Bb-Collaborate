@@ -60,7 +60,7 @@ SKIP: {
     my %result = t::Elive->test_connection( only => 'real', timeout => $timeout_sec);
     my $auth = $result{auth};
 
-    my $skippable = 32;
+    my $skippable = 33;
 
     skip ($result{reason} || 'skipping live tests', $skippable)
 	unless $auth;
