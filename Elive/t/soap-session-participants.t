@@ -1,6 +1,6 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 32;
+use Test::More tests => 33;
 use Test::Fatal;
 use List::Util;
 
@@ -120,23 +120,41 @@ SKIP: {
     #
     # lets grab some volunteers from the audience!
     #
-    my ($participant1, $participant2, @participants);
+    my ($participant1, $moderator2, @participants);
 
     is( exception {
 	#
 	# for datasets with 1000s of entries
-	($participant1, $participant2, @participants) = grep {$_->userId ne $session->facilitatorId} @{ Elive::Entity::User->list(filter => 'lastName = Sm*') };
+	($participant1, $moderator2, @participants) = grep {$_->userId ne $session->facilitatorId} @{ Elive::Entity::User->list(filter => 'lastName = Sm*') };
 	# for middle sized datasets
-	($participant1,$participant2, @participants) = grep {$_->userId ne $session->facilitatorId} @{ Elive::Entity::User->list(filter => 'lastName = S*') }
+	($participant1, $moderator2, @participants) = grep {$_->userId ne $session->facilitatorId} @{ Elive::Entity::User->list(filter => 'lastName = S*') }
 	unless @participants+2 >= $participant_limit;
 	#
 	# for modest test datasets
-	($participant1, $participant2, @participants) = grep {$_->userId ne $session->facilitatorId} @{ Elive::Entity::User->list() }
+	($participant1, $moderator2, @participants) = grep {$_->userId ne $session->facilitatorId} @{ Elive::Entity::User->list() }
 	    unless @participants+2 >= $participant_limit;
 	      } => undef,
 	      'get_users - lives');
 
     note 'got '.(scalar @participants).' participants';
+
+
+    if ($moderator2) {
+	my $participants_ref = [
+	    {user => Elive->login->userId, role => 2},
+	    {user => $participant1, role => 3},
+	    {user => $moderator2, role => 2},
+	    {guest => 'Robert(bob@example.com)'},
+	    ];
+
+##	die explain ($class->_freeze({participants => $participants_ref}));
+
+	is_deeply($class->_freeze({participants => $participants_ref}),
+	      {invitedGuests => 'Robert (bob@example.com)',
+	       invitedParticipantsList =>  $participant1->userId,
+	       invitedModerators => join(',', sort (Elive->login->userId, $moderator2->userId)),
+	      }, 'freeze one participant + one moderator');
+    }
 
     #
     # only want a handful
@@ -151,29 +169,27 @@ SKIP: {
 
 	is( exception {$session->update} => undef, 'setting of participant - lives');
 
-	ok(!$session->is_moderator( $participant1), '!is_moderator($participant1)');
+	ok(!$session->is_moderator( $participant1), '! is_moderator($participant1)');
 
 	ok((grep {$_->user->userId eq $participant1->userId} @{ $session->participants }), 'participant 1 found in participant list');
 	ok((grep {$_->user->userId eq $participant1->userId && $_->role->roleId == 3} @{ $session->participants }), 'participant 1 is not a moderator');
 
-	$session->participants->add($participant2->userId.'=3');
+	$session->participants->add($moderator2->userId.'=2');
 	$session->update();
-
       TODO: {
           #
           # is_participant() give variable results on various ELM versions
           # ELM 3.0 - 3.3.4 under LDAP - best to treat is as broken
           #
-	  local($TODO) = 'reliable - is_participant()';
+	  local($TODO) = 'reliable - is_participant(), is_moderator()';
 	  
 	  ok($session->is_participant( $participant1), 'is_participant($participant1)');
-	  ok($session->is_participant( $participant2), 'is_participant($participant2)');
+	  ok(! $session->is_participant( $moderator2), '! is_participant($moderator2)');
+	  ok($session->is_moderator( $moderator2 ), 'is_moderator($moderator2)');
 	}
 
- 	ok(!$session->is_moderator( $participant2), '!is_moderator($participant2)');
-
-	ok((grep {$_->user->userId eq $participant2->userId} @{ $session->participants }), 'participant 2 found in participant list');
-	ok((grep {$_->user->userId eq $participant2->userId && $_->role->roleId == 3} @{ $session->participants }), 'participant 2 is not a moderator');
+	ok((grep {$_->user->userId eq $moderator2->userId} @{ $session->participants }), 'participant 2 found in participant list');
+	ok((grep {$_->user->userId eq $moderator2->userId && $_->role->roleId == 2} @{ $session->participants }), 'moderator2 is a moderator');
 
     }
     else {
@@ -224,20 +240,20 @@ SKIP: {
     is($p->[0]->role && $p->[0]->role->roleId, 2,
        'participant_list reset - single participant has moderator role');
 
-    if ( !$participant2 )  {
+    if ( !$moderator2 )  {
 	$t->skip('not enough participants to run long-list test')
 	    for (1 .. 3);
     }
     else {
 	#
 	# test case insensitivity under LDAP
-	my $looks_like_ldap = $participant2 && $participant2->userId eq $participant2->loginName;
+	my $looks_like_ldap = $moderator2 && $moderator2->userId eq $moderator2->loginName;
 
 	if ($looks_like_ldap) {
-	    my $login_name_toggled = join('', map {$_ =~ m{[A-Z]}? lc: uc} split('', $participant2->loginName));
+	    my $login_name_toggled = join('', map {$_ =~ m{[A-Z]}? lc: uc} split('', $moderator2->loginName));
 	    $session->participants->add(Elive::Entity::User->quote($login_name_toggled).'=3');
 	    is(exception {$session->update()} => undef, 'participant by loginName (case insensitive - lives');
-	    ok((grep {$_->user->userId eq $participant2->userId} @{ $session->participants }), 'participant by loginName (case insensitive) - found in participant list');
+	    ok((grep {$_->user->userId eq $moderator2->userId} @{ $session->participants }), 'participant by loginName (case insensitive) - found in participant list');
 	}
 	else {
 	    $t->skip("skipping ldap specific tests")
@@ -254,7 +270,7 @@ SKIP: {
 
       MAKE_BIG_LIST:
 	while (1) {
-	    foreach my $user ($participant1, $participant2, @participants) {
+	    foreach my $user ($participant1, $moderator2, @participants) {
 
 		if ($unknowns && rand() < .1) {
 		    #

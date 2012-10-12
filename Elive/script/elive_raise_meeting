@@ -50,8 +50,8 @@ elive_raise_meeting - Elluminate Live! Manager (ELM) meeting creation
 
 =head2 Moderators and Participants
 
- -moderators user|*group|guest-name(guest-id) ...
- -participants user|*group|guest-name(guest-id) ...
+ -moderators user|*group ...
+ -participants user|*group|Display Name(loginName) ...
 
  Where each participant or moderator can be:
 
@@ -97,9 +97,9 @@ elive_raise_meeting - Elluminate Live! Manager (ELM) meeting creation
 
 =head2 Preloads
 
- -upload             <local_file>     # upload a client side preload
- -import_from_server <remote_file>    # import a server side preload
- -add_preload        <preload_id>,... # associate with existing preloads
+ -upload             <local_file>     # upload a file from the client
+ -import_from_server <remote_file>    # import a file from the server
+ -add_preload        <preload_id>,... # reuse previous preloads
 
  Where preload files can include:
 
@@ -407,38 +407,29 @@ sub build_participants {
 	-others => @$others
 	);
 
-    my $participants = Elive::Entity::Participants->new( \@participants_spec );
+    my $p = Elive::Entity::Participants->new( \@participants_spec );
+
     #
-    # collate by type
+    # collate by role && type
     #
-    my @users;
-    my @groups;
-    my @guests;
+    my @users  = grep {$_->user} @$p;
+    my @groups = grep {$_->group} @$p;
+    my @guests = grep {$_->guest} @$p;
 
-    foreach my $participant (@$participants) {
-
-	my $type = $participant->type;
-
-	if (! $type ) {
-	    push (@users, $participant);
-	}
-	elsif ($type == 1) {
-	    push (@groups, $participant);
-	}
-	elsif ($type == 2) {
-	    push (@guests, $participant); 
-	}
-	else {
-	    warn "don't know how to handle participant type: $type";
-	}
-    }
     #
     # Vet participants
     #
-    @users = _get_users(@users) if @users;
-    @groups = _get_groups(@groups) if @groups;
+    my @attendees;
+    push (@attendees, _get_users( @users ))
+	if @users;
 
-    return [@users, @groups, @guests];
+    push (@attendees, _get_groups( @groups ))
+	if @groups;
+
+    push (@attendees, @guests)
+	if @guests;
+
+    return \@attendees;
 }
 
 ########################################################################
@@ -473,7 +464,7 @@ sub _display_participant {
     my $type = $participant->type;
     my $str;
 
-    if (! $type)  {
+    if (! $type)  {        # regular user
 	my $user_obj = $participant->user;
 	my $loginName = $user_obj->loginName;
 	my $email = $user_obj->email;
@@ -482,7 +473,7 @@ sub _display_participant {
 	$str .= ' <'.$email.'>'
 	    if $email;
     }
-    elsif ($type == 1) {
+    elsif ($type == 1) {   # group of participants
 	my $group_obj = $participant->group;
 	my $id = $group_obj->groupId;
 	my $name = $group_obj->name;
@@ -491,7 +482,7 @@ sub _display_participant {
 	$str .= ' <group:'.$name.'>'
 	    if $name;
     }
-    elsif ($type == 2) {
+    elsif ($type == 2) {   # invited guest
 	my $guest_obj = $participant->guest;
 	my $loginName = $guest_obj->loginName;
 	my $displayName = $guest_obj->displayName;
@@ -511,6 +502,21 @@ sub _display_participant {
 ########################################################################
 
 sub _get_users {
+    my @participants = grep {$_->role->roleId > 2} @_;
+    my @moderators = grep {$_->role->roleId <= 2} @_;
+
+    my @users;
+
+    push (@users, map {{user => $_, role => 3}} __get_users(@participants))
+	if @participants;
+
+    push (@users, map {{user => $_, role => 2}} __get_users(@moderators))
+	if @moderators;
+
+    return @users;
+}
+
+sub __get_users {
     my @users_in = @_;
 
     my %users;
@@ -552,6 +558,21 @@ sub _get_users {
 ########################################################################
 
 sub _get_groups {
+    my @participants = grep {$_->role->roleId > 2} @_;
+    my @moderators = grep {$_->role->roleId <= 2} @_;
+
+    my @groups;
+
+    push (@groups, map {{user => $_, role => 3}} __get_groups(@participants))
+	if @participants;
+
+    push (@groups, map {{user => $_, role => 2}} __get_groups(@moderators))
+	if @moderators;
+
+    return @groups;
+}
+
+sub __get_groups {
     my @groups_in = @_;
 
     my %groups;
