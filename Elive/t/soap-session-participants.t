@@ -172,7 +172,7 @@ SKIP: {
 	ok(!$session->is_moderator( $participant1), '! is_moderator($participant1)');
 
 	ok((grep {$_->user->userId eq $participant1->userId} @{ $session->participants }), 'participant 1 found in participant list');
-	ok((grep {$_->user->userId eq $participant1->userId && $_->role->roleId == 3} @{ $session->participants }), 'participant 1 is not a moderator');
+	ok((grep {$_->user->userId eq $participant1->userId && ! $_->is_moderator} @{ $session->participants }), 'participant 1 is not a moderator');
 
 	$session->participants->add($moderator2->userId.'=2');
 	$session->update();
@@ -189,7 +189,7 @@ SKIP: {
 	}
 
 	ok((grep {$_->user->userId eq $moderator2->userId} @{ $session->participants }), 'participant 2 found in participant list');
-	ok((grep {$_->user->userId eq $moderator2->userId && $_->role->roleId == 2} @{ $session->participants }), 'moderator2 is a moderator');
+	ok((grep {$_->user->userId eq $moderator2->userId && $_->is_moderator} @{ $session->participants }), 'moderator2 is a moderator');
 
     }
     else {
@@ -237,7 +237,7 @@ SKIP: {
     is($p->[0]->user && $p->[0]->user->userId, $session->facilitatorId,
        'participant_list reset - single participant is the facilitator');
 
-    is($p->[0]->role && $p->[0]->role->roleId, 2,
+    ok($p->[0]->is_moderator,
        'participant_list reset - single participant has moderator role');
 
     if ( !$moderator2 )  {

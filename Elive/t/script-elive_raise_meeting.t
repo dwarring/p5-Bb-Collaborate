@@ -201,7 +201,7 @@ SKIP: {
 	    if ($participant1) {
 		my ($found_participant) = grep{$_->user && $_->user->userId eq $participant1->userId} @$participants;
 		ok($found_participant, '"-participants" option; user added');  
-		ok($found_participant && $found_participant->role >= 3, '"-participant" option; user has expected role'); 
+		ok($found_participant && ! $found_participant->is_moderator, '"-participant" option; user has expected role'); 
 	    }
 	    else {
 		$t->skip("Not enough users to run this test");
@@ -210,7 +210,7 @@ SKIP: {
 	    if ($moderator2) {
 		my ($found_moderator) = grep{$_->user && $_->user->userId eq $moderator2->userId} @$participants;
 		ok($found_moderator, '"-moderators" option; user added');  
-		ok($found_moderator && $found_moderator->role >= 3, '"-moderator" option; user has expected role'); 
+		ok($found_moderator && $found_moderator->is_moderator, '"-moderator" option; user has expected role'); 
 	    }
 	    else {
 		$t->skip("Not enough users to run this test");
