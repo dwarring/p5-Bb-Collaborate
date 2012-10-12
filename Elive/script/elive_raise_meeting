@@ -464,7 +464,7 @@ sub _display_participant {
     my $type = $participant->type;
     my $str;
 
-    if (! $type)  {        # regular user
+    if (! $type)  {        # single participant
 	my $user_obj = $participant->user;
 	my $loginName = $user_obj->loginName;
 	my $email = $user_obj->email;
@@ -502,8 +502,8 @@ sub _display_participant {
 ########################################################################
 
 sub _get_users {
-    my @participants = grep {$_->role->roleId > 2} @_;
-    my @moderators = grep {$_->role->roleId <= 2} @_;
+    my @participants = grep {! $_->is_moderator} @_;
+    my @moderators = grep {$_->is_moderator} @_;
 
     my @users;
 
@@ -558,8 +558,8 @@ sub __get_users {
 ########################################################################
 
 sub _get_groups {
-    my @participants = grep {$_->role->roleId > 2} @_;
-    my @moderators = grep {$_->role->roleId <= 2} @_;
+    my @participants = grep {!$_->is_moderator > 2} @_;
+    my @moderators = grep {$_->is_moderator} @_;
 
     my @groups;
 
