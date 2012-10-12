@@ -20,7 +20,35 @@ has 'loginName' => (is => 'rw', isa => 'Str',
 has 'displayName' => (is => 'rw', isa => 'Str',
 		      documentation => "Guest's display name");
 
-coerce 'Elive::Entity::InvitedGuest' => from 'HashRef'
+sub BUILDARGS {
+    my $class = shift;
+    my $spec = shift;
+
+    my $args;
+
+    if ($spec && ! ref $spec) {
+	if ($spec =~ m{^ \s* 
+            ([^;]*?)          # display name
+            \s*
+            \( ([^;\)]+) \)   # (login name)
+            \s*
+            (= (\d) \s*)?     # possible '=role' (ignored)
+          $}x) {
+
+	    $args = {displayName => $1, loginName => $2};
+	}
+	else {
+	    die "invited guest '$spec': not in format: <Display Name>(<user-id>)'";
+	}
+    }
+    else {
+	$args = $spec;
+    }
+
+    return $args;
+}
+
+coerce 'Elive::Entity::InvitedGuest' => from 'HashRef|Str'
           => via {Elive::Entity::InvitedGuest->new($_)};
 
 =head1 NAME
