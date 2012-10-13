@@ -61,7 +61,7 @@ has 'versionMaxFilmersLimit' => (is => 'rw', isa => 'Int');
 
 =head2 get
 
-    my $server_version = Elive::StandardV3::ServerVersions->get;
+    my $server_version = Elive::StandardV3::ServerVersion->get;
     print "ELM version is: ".$server_version->versionName."\n";
 
 Returns the server version information for the current connection.
@@ -70,7 +70,7 @@ Returns the server version information for the current connection.
 
 =head2 list
 
-    my @server_versions = Elive::StandardV3::ServerVersions->list;
+    my @server_versions = Elive::StandardV3::ServerVersion->list;
 
 The C<list> method can be used for sites with multiple session servers.
 

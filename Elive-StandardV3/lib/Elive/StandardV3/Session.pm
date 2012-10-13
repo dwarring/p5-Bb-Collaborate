@@ -186,7 +186,7 @@ Maximum number of simultaneous video cameras to be configured in the Elluminate 
 
 For single server configurations, this value must be between 1 and C<maxAvailableCameras> (as returned from the L<Elive::StandardV3::ServerConfiguration> C<get()> command).
 
-For multiple server configurations, this must be between 1 and versionMaxFilmersLimit for the version you are using (as returned from the L<Elive::StandardV3::ServerVersions> C<get()> command).
+For multiple server configurations, this must be between 1 and versionMaxFilmersLimit for the version you are using (as returned from the L<Elive::StandardV3::ServerVersion> C<get()> command).
 
 If you don't specify a value, the default is taken from the C<Maximum Simultaneous Cameras> setting in the Default Session Preferences.
 
@@ -202,7 +202,7 @@ Maximum number of simultaneous talkers to be configured in the Elluminate Live! 
 
 For single server configurations, this value must be between 1 and C<maxAvailableTalkers> property (as returned from the L<Elive::StandardV3::ServerConfiguration> C<get()> command).
 
-For multiple server configurations, this must be between 1 and C<versionMaxTalkersLimit> for the version you are using (as returned from the C<Elive::StandardV3::ServerVersions> C<get()> command).
+For multiple server configurations, this must be between 1 and C<versionMaxTalkersLimit> for the version you are using (as returned from the L<Elive::StandardV3::ServerVersion> C<get()> command).
 
 If you don't specify a value, the default is taken from the C<Maximum Simultaneous Talkers> setting in the Default Session Preferences.
 
