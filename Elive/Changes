@@ -3,7 +3,7 @@ Revision history for Elive
 1.28   12th October 2012
        [bug fixes]
        elive_raise_meeting, script-elive_raise_meeting.t
-       - fixed handling of moderators. These were being downgraded to regular
+       - fixed -moderators option. These were being downgraded to regular
          participants. Added tests (bug introduced in 1.20)
        Elive::Entity::InvitedGuest, soap-session-particiants.t
        - added BUILDARGS method (it's never had one). Also added failing test.

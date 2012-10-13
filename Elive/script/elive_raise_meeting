@@ -59,10 +59,10 @@ elive_raise_meeting - Elluminate Live! Manager (ELM) meeting creation
                     user's username or user-id.
 
     '*group'      - a group of users. This can be either the group-name
-                    or group-id.
+                    or group-id. (elm3)
 
     'Display Name(loginName)'
-                  - a guest login, e.g. "Robert(bob@example.com)"
+                  - a guest login, e.g. "Robert(bob@example.com)" (elm3)
 
 =head2 Meeting Setup
 
@@ -122,7 +122,7 @@ elive_raise_meeting - Elluminate Live! Manager (ELM) meeting creation
 
 =head1 DESCRIPTION
 
-Creates meetings on an Elluminate I<Live!> (ELM) server.
+Creates meetings on an Elluminate I<Live!> Manager (ELM) server.
 
 =head1 SEE ALSO
 
