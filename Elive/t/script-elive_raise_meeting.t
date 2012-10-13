@@ -13,6 +13,8 @@ use t::Elive;
 use Elive;
 use Elive::View::Session;
 use Elive::Entity::Session;
+use Elive::Entity::User;
+use Elive::Entity::Group;
 
 eval "use Test::Script::Run 0.04 qw{:all}";
 
@@ -21,7 +23,7 @@ if ( $EVAL_ERROR ) {
     plan( skip_all => $msg );
 }
 
-plan(tests => 198);
+plan(tests => 200);
 
 our $t = Test::More->builder;
 
@@ -114,13 +116,13 @@ SKIP: {
 	is( exception {
 	    #
 	    # for datasets with 1000s of entries
-	    ($participant1, $participant2, $moderator1) = grep {$_->userId ne $auth->[1]} @{ Elive::Entity::User->list(filter => 'lastName = Sm*') };
+	    ($participant1, $participant2, $moderator1) = grep {$_->loginName ne $auth->[1]} @{ Elive::Entity::User->list(filter => 'lastName = Sm*') };
 	    # for middle sized datasets
-	    ($participant1, $participant2, $moderator1) = grep {$_->userId ne $auth->[1]} @{ Elive::Entity::User->list(filter => 'lastName = S*') }
+	    ($participant1, $participant2, $moderator1) = grep {$_->loginName ne $auth->[1]} @{ Elive::Entity::User->list(filter => 'lastName = S*') }
 	    unless $moderator1;
 	    #
 	    # for modest test datasets
-	    ($participant1, $participant2, $moderator1) = grep {$_->userId ne $auth->[1]} @{ Elive::Entity::User->list() }
+	    ($participant1, $participant2, $moderator1) = grep {$_->loginName ne $auth->[1]} @{ Elive::Entity::User->list() }
 	    unless $moderator1;
 	    } => undef,
 	    'get_users - lives');
@@ -138,8 +140,16 @@ SKIP: {
 
 	push(@meeting_args, $participant2->userId) if $participant2;
 
-	push (@meeting_args, 'Robert(bob@example.com)')  # elm3 only
-	    if $class eq 'Elive::Entity::Session';
+	my $participant_group;
+
+	if ($class eq 'Elive::Entity::Session') {
+	    # elm3 specific options
+	    push (@meeting_args, 'Robert(bob@example.com)');
+
+	    ($participant_group) = grep {$_->members && @{ $_->members}} @{ Elive::Entity::Group->list() };
+	    push(@meeting_args, '*'. $participant_group->groupId)
+		if $participant_group;
+	}
 
 	push(@meeting_args, -moderators => $moderator1->loginName)
 	    if $moderator1;
@@ -147,6 +157,7 @@ SKIP: {
       MEETING_DEFAULTS:
 	do {
 	    my $time = time();
+	    note "$class creating meeting: @meeting_args";
 	    my ( $return, $stdout, $stderr ) = run_script($script_name, \@meeting_args );
 	    my $status = last_script_exit_code();
 
@@ -189,21 +200,23 @@ SKIP: {
 	    ok($duration >= 9 * 60 && $duration <= 61 * 60 , "sensible default duration");
 
 	    my $participant_list;
-	     ok($participant_list = $meeting->participantList, 'participants retrieve')
+	    ok($participant_list = $meeting->participantList, 'participants retrieve')
 		 or die "unable to continue without a participant list";
 
-	    my $participants = $participant_list->participants;
+	    my @participants = @{ $participant_list->participants || {} };
 
-	    is (scalar @$participants,
-		1  # facilitator 
-		+  ($class eq 'Elive::Entity::Session'? 1: 0) # invited guest - elm3 only
+	    is (scalar @participants,
+		1  # facilitator
+		+ ($class eq 'Elive::Entity::Session'? 1: 0) # invited guest - elm3 only
+		+ ($participant_group?1:0)
 		+ ($participant1?1:0) + ($participant2?1:0) + ($moderator1?1:0),
-		"Meeting has expected number of particants");
+		"Meeting has expected number of participants");
 
 	    if ($participant1) {
-		my ($found_participant) = grep{$_->user && $_->user->userId eq $participant1->userId} @$participants;
+		my ($found_participant) = grep{$_->user && $_->user->userId eq $participant1->userId} @participants;
 		ok($found_participant, '"-participants" option; user added');  
-		ok($found_participant && ! $found_participant->is_moderator, '"-participant" option; user has expected role'); 
+		ok($found_participant && ! $found_participant->is_moderator, '"-participant" option; participant has expected role')
+		    or diag "unexpected moderator role for: " . $participant1->userId;
 	    }
 	    else {
 		$t->skip("Not enough users to run this test")
@@ -211,9 +224,11 @@ SKIP: {
 	    }
 
 	    if ($participant2) {
-		my ($found_participant) = grep{$_->user && $_->user->userId eq $participant2->userId} @$participants;
+		my ($found_participant) = grep{$_->user && $_->user->userId eq $participant2->userId} @participants;
 		ok($found_participant, '"-participants" option; user added');  
-		ok($found_participant && ! $found_participant->is_moderator, '"-participant" option; user has expected role'); 
+		ok($found_participant && ! $found_participant->is_moderator, '"-participant" option; participant has expected role')
+		    or diag "unexpected moderator role for: " . $participant2->userId;
+
 	    }
 	    else {
 		$t->skip("Not enough users to run this test")
@@ -221,9 +236,11 @@ SKIP: {
 	    }
 
 	    if ($moderator1) {
-		my ($found_moderator) = grep{$_->user && $_->user->userId eq $moderator1->userId} @$participants;
+		my ($found_moderator) = grep{$_->user && $_->user->userId eq $moderator1->userId} @participants;
 		ok($found_moderator, '"-moderators" option; user added');  
-		ok($found_moderator && $found_moderator->is_moderator, '"-moderator" option; user has expected role'); 
+		ok($found_moderator && $found_moderator->is_moderator, '"-moderator" option; moderator has expected role')
+		    or diag "didn't have expected moderator role: " . $moderator1->userId;
+
 	    }
 	    else {
 		$t->skip("Not enough users to run this test")
@@ -231,7 +248,7 @@ SKIP: {
 	    }
 
 	    if ($class eq 'Elive::Entity::Session') {
-		my ($found_guest) = grep{$_->guest} @$participants;
+		my ($found_guest) = grep{$_->guest} @participants;
 
 		ok($found_guest, '"-moderators" option; guest added');  
 
@@ -240,6 +257,17 @@ SKIP: {
 
 		is($found_guest && $found_guest->guest->loginName, 'bob@example.com',
 		   '"guest login name - as expected'); 
+
+		if ($participant_group) {
+		    my ($found_participant) = grep{$_->group && $_->group->groupId eq $participant_group->groupId} @participants;
+		    ok($found_participant, '"-participants" option; group added');  
+		    ok($found_participant && ! $found_participant->is_moderator, '"-participant" option; group has expected role'); 
+		}
+		else {
+		    $t->skip("Not enough groups to run this test")
+			for (1..2);
+		}
+
 	    };
 
 	    is( exception {$meeting->delete} => undef, 'deletion - lives');
