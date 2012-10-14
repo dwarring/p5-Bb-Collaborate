@@ -2,12 +2,11 @@ package Elive::Entity;
 use warnings; use strict;
 
 use Mouse;
-use Try::Tiny;
 use Carp;
 
 extends 'Elive::DAO';
 
-our $VERSION = '0.05';
+our $VERSION = '0.06';
 
 =head1 NAME
 
@@ -63,8 +62,7 @@ sub connect {
     Carp::croak("usage: ${class}->connect(url, [login_name] [, pass])")
 	unless ($class && $url);
 
-    try {require Elive::Connection::SDK};
-    catch { die $_};
+    require Elive::Connection::SDK;
 
     my $connection = Elive::Connection::SDK->connect(
 	$url,
