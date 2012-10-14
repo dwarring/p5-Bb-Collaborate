@@ -264,12 +264,12 @@ sub _parse_filter {
 	my ($field, $op, $val) = m{^ \s* (\w+) \s* ([\!=<>]+) \s* (.*?) \s* $}x;
 
 	unless (defined($val) && length($val) && $op eq '=') {
-	    carp "selection expresion '$_' not in format <field> = <val>";
+	    carp "selection expression '$_' not in format <field> = <val>";
 	    next;
 	}
 
 	$selection{$field} = $val;
-    } ;
+    }
 
     return \%selection;
 }
