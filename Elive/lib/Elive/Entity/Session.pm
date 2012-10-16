@@ -330,8 +330,12 @@ sub _unpack_as_list {
 
 Creates a new session on an Elluminate server, using the C<createSession> command.
 
+    use Elive;
     use Elive::Entity::Session;
     use Elive::Entity::Preload;
+
+    Elive->connect('https://someEllumServer.com/my_instance',
+                   'some_user', 'some_pass');
 
     my $session_start = time();
     my $session_end = $session_start + 900;
@@ -345,7 +349,7 @@ Creates a new session on an Elluminate server, using the C<createSession> comman
 	name => 'An example session',
 	facilitatorId => Elive->login->userId,
 	password => 'secret',
-	start =>  $session_start,
+	start => $session_start,
 	end => $session_end,
         restricted => 1,
 	privateMeeting => 1,

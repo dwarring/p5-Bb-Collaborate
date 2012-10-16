@@ -201,7 +201,7 @@ sub participant {
 
 =head2 is_moderator
 
-Utility method to exam or set a meeting participant's moderator privileges.
+Utility method to examine or set a meeting participant's moderator privileges.
 
     # does Bob have moderator privileges?
     my $is_moderator = $bob->is_moderator;
