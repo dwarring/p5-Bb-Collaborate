@@ -171,7 +171,7 @@ SKIP: {
     # deleted for later garbage collection
     #
     my $deleted_meeting = try {Elive::Entity::Meeting->retrieve($meeting_id)};
-    ok($@ || !$deleted_meeting || $deleted_meeting->deleted,
+    ok(!$deleted_meeting || $deleted_meeting->deleted,
        'meeting deletion enacted');
 }
 
