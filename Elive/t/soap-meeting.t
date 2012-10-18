@@ -2,6 +2,7 @@
 use warnings; use strict;
 use Test::More tests => 31;
 use Test::Fatal;
+use Try::Tiny;
 
 use lib '.';
 use t::Elive;
@@ -169,8 +170,7 @@ SKIP: {
     # The meeting should either have been immediately deleted, or marked as
     # deleted for later garbage collection
     #
-    my $deleted_meeting;
-    eval {$deleted_meeting = Elive::Entity::Meeting->retrieve($meeting_id)};
+    my $deleted_meeting = try {Elive::Entity::Meeting->retrieve($meeting_id)};
     ok($@ || !$deleted_meeting || $deleted_meeting->deleted,
        'meeting deletion enacted');
 }

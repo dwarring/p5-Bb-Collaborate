@@ -1,6 +1,7 @@
 #!perl -T
 use warnings; use strict;
 use Test::More tests => 18;
+use Try::Tiny;
 use Test::Fatal;
 
 my $t = Test::More->builder();
@@ -43,7 +44,7 @@ my $base = t::Elive::generate_id();
 my @inserted_users;
 
 foreach my $username (@usernames) {
-    my ($user) = eval {Elive::Entity::User->get_by_loginName($username)};
+    my $user = try {Elive::Entity::User->get_by_loginName($username)};
 
     unless ($user) {
 	my %insert_data = (

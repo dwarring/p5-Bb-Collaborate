@@ -3,6 +3,7 @@ use warnings; use strict;
 use Test::More tests => 22;
 use Test::Fatal;
 use version;
+use Try::Tiny;
 
 use Elive;
 
@@ -133,7 +134,7 @@ isnt(
 $admin_user = undef;
 #
 # ELM 9.0 dies if user has been deleted
-$admin_user = eval { $class->retrieve($admin_id) };
+$admin_user = try { $class->retrieve($admin_id) };
 #
 # The user should either have been immediately deleted or marked as
 # deleted for later gardbage collection.

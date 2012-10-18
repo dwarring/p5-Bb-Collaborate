@@ -4,6 +4,7 @@ use File::Spec;
 use Test::More;
 use Test::Fatal;
 use English qw(-no_match_vars);
+use Try::Tiny;
 
 use lib '.';
 use t::Elive;
@@ -134,10 +135,11 @@ SKIP: {
 	
     };
 
-    eval {require YAML::Syck};
-    # YAML::Syck is a Elive prequesite
-    die "unable to load YAML::Syck - can't continue: $@"
-	if $@;
+    try {require YAML::Syck}
+    catch {
+	# YAML::Syck is a Elive prequesite
+	die "unable to load YAML::Syck - can't continue: $_";
+    };
 
     do {
 	#
@@ -180,8 +182,7 @@ SKIP: {
 	#
 	# now create and verify a session
 	#
-	eval "use Elive::View::Session";
-	die $@ if $@;
+	require Elive::View::Session;
 
 	my $session_start = time();
 	my $session_end = $session_start + 900;
