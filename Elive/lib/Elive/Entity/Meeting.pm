@@ -441,11 +441,9 @@ sub remove_preload {
     my $meeting = Elive::Entity::Meeting->retrieve($meeting_id);
 
     my $login_name = $cgi->param('user');
-    my $user = Elive::Entity::User->get_by_loginName($login_name);
 
     my $jnlp = $meeting->buildJNLP(version => $version,
-                                   user => $user,
-                                   displayName => join(' ', $user->firstName, $user->lastName),
+                                   userName => $login_name,
                                    sessionRole => ${Elive::Entity::Role::PARTICIPANT},
                                   );
     #
@@ -457,6 +455,21 @@ sub remove_preload {
 
     print $jnlp;
 
+Alternatively, you can pass a user object or user-id via C<userId>
+
+    my $user = Elive::Entity::User->get_by_loginName($login_name);
+
+    my $jnlp = $meeting->buildJNLP(version => $version,
+                                   userId => $user);
+
+Or you can just conjure up a display name and role. The user does
+not have to exist as in the ELM database, or in the meeting's participant list:
+
+    my $jnlp = $meeting->buildJNLP(
+                       displayName => 'Joe Bloggs',
+                       sessionRole => ${Elive::Entity::Role::PARTICIPANT}
+                     );
+
 Builds a JNLP for the meeting.
 
 JNLP is the 'Java Network Launch Protocol', also commonly known as Java
@@ -464,7 +477,7 @@ WebStart. To launch the meeting you can, for example, render this as a web
 page, or send email attachments  with mime type C<application/x-java-jnlp-file>.
 
 Under Windows, and other desktops, files are usually saved  with extension
-C<JNLP>.
+C<.jnlp>.
 
 See also L<http://wikipedia.org/wiki/JNLP>.
 
@@ -483,23 +496,25 @@ sub buildJNLP {
 
     my %soap_params = (meetingId => $meeting_id);
 
-    foreach my $param (qw(version password displayName sessionRole)) {
+    foreach my $param (qw(version displayName sessionRole userName userId)) {
 	my $val = delete $opt{$param};
 	$soap_params{$param} = $val
 	    if defined $val;
     }
 
-    my $user = delete $opt{user} || $connection->login;
+    my $user = delete $opt{user};
 
-    if (ref($user) || $user =~ m{^\d+$}x) {
-	$soap_params{userId} = $user;
+    if ($user) {
+	if (ref($user) || $user =~ m{^\d+$}x) {
+	    $soap_params{userId} ||= $user;
+	}
+	else {
+	    $soap_params{userName} ||= $user;
+	}
     }
-    elsif ($user) {
-	$soap_params{userName} = $user;
-    }
-    else {
-	die "unable to determine jnlp user"; # shouldn't get here
-    }
+
+    $soap_params{userId} ||= $connection->login
+	unless $soap_params{userName} || $soap_params{displayName};
 
     my %params_frozen = %{$self->_freeze(\%soap_params)};
     my $som = $connection->call('buildMeetingJNLP' => %params_frozen);
