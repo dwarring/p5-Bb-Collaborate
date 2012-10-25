@@ -376,14 +376,14 @@ sub _thaw {
 		    # peek at the the type property. 0 => user, 1 => group
 		    # a group record, rename to Group, otherwise treat
 		    #
-		    if ($p->{Type} == ${Elive::Entity::Participant::TYPE_GROUP}) {
+		    if (!defined $p->{Type} || $p->{Type} == ${Elive::Entity::Participant::TYPE_USER}) {
+			$p->{User} = delete $p->{Participant}
+		    }
+		    elsif ($p->{Type} == ${Elive::Entity::Participant::TYPE_GROUP}) {
 			$p->{Group} = delete $p->{Participant}
 		    }
-		    elsif ($p->{Type} ==  ${Elive::Entity::Participant::TYPE_GUEST}) {
+		    elsif ($p->{Type} == ${Elive::Entity::Participant::TYPE_GUEST}) {
 			$p->{Guest} = delete $p->{Participant}
-		    }
-		    elsif (! $p->{Type} || $p->{Type} ==  ${Elive::Entity::Participant::TYPE_USER}) {
-			$p->{User} = delete $p->{Participant}
 		    }
 		    else {
 			warn "unknown participant type: $p->{Type}";

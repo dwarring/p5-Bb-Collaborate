@@ -122,17 +122,17 @@ sub _group_by_type {
 	my $roleId = Elive::Entity::Role->stringify( $participant->role )
 	    || ${Elive::Entity::Role::PARTICIPANT};
 
-	if ($participant->type == ${Elive::Entity::Participant::TYPE_GROUP}) {
+	if (!defined $participant->type || $participant->type == ${Elive::Entity::Participant::TYPE_USER}) {
+	    $id = Elive::Entity::User->stringify( $participant->user );
+	    $users{ $id } = $roleId;
+	}
+	elsif ($participant->type == ${Elive::Entity::Participant::TYPE_GROUP}) {
 	    $id = Elive::Entity::Group->stringify( $participant->group );
 	    $groups{ $id } = $roleId;
 	}
 	elsif ($participant->type == ${Elive::Entity::Participant::TYPE_GUEST}) {
 	    $id = Elive::Entity::InvitedGuest->stringify( $participant->guest );
 	    $guests{ $id } = $roleId;
-	}
-	elsif (! $participant->type || $participant->type == ${Elive::Entity::Participant::TYPE_USER}) {
-	    $id = Elive::Entity::User->stringify( $participant->user );
-	    $users{ $id } = $roleId;
 	}
 	else {
 	    carp("unknown type: $participant->{type} in participant list: ".$self->id);

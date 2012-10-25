@@ -198,10 +198,11 @@ Returns a participant. This can either be of type L<Elive::Entity::User> (type
 
 sub participant {
     my ($self) = @_;
-
-    return   ($self->type == $TYPE_GUEST) ? $self->guest
-           : ($self->type == $TYPE_GROUP) ? $self->group
-	   : $self->user;
+ 
+    return (!defined $self->type || $self->type == $TYPE_USER) ? $self->user
+       : ($self->type == $TYPE_GROUP) ? $self->group
+       : ($self->type == $TYPE_GUEST) ? $self->guest
+       : do {warn "unknown participant type: ".$self->type; $self->user};
 }
 
 =head2 is_moderator
@@ -221,7 +222,7 @@ sub is_moderator {
 
     my $role_id;
 
-    if ($self->type && $self->type == $TYPE_GUEST) {
+    if (defined $self->type && $self->type == $TYPE_GUEST) {
 	#
 	# invited guests cannot be moderators
 	return;
@@ -240,7 +241,7 @@ sub is_moderator {
 	$role_id = $self->role->stringify;
     }
 
-    return defined $role_id && $role_id <= ${Elive::Entity::Role::MODERATOR};
+    return defined $role_id && $role_id != ${Elive::Entity::Role::PARTICIPANT};
 }
 
 =head2 stringify
@@ -258,7 +259,11 @@ sub stringify {
     $data = $self->BUILDARGS($data);
     my $role_id = Elive::Entity::Role->stringify( $data->{role} );
 
-    if ($data->{type} && $data->{type} == $TYPE_GUEST) {
+    if (!defined $data->{type} || $data->{type} == $TYPE_USER) {
+	# user => 'userId'
+	return Elive::Entity::User->stringify($data->{user}).'='.$role_id;
+    }
+    elsif ($data->{type} == $TYPE_GUEST) {
 	# guest => 'displayName(loginName)'
 	my $guest_str =  Elive::Entity::InvitedGuest->stringify($data->{guest});
 
@@ -270,10 +275,6 @@ sub stringify {
     elsif ($data->{type} == $TYPE_GROUP) {
 	# group => '*groupId'
 	return Elive::Entity::Group->stringify($data->{group}).'='.$role_id;
-    }
-    if (! $data->{type} || $data->{type} == $TYPE_USER) {
-	# user => 'userId'
-	return Elive::Entity::User->stringify($data->{user}).'='.$role_id;
     }
     else {
 	# unknown

@@ -1,14 +1,21 @@
 Revision history for Elive
 
-1.29   tba
+1.29   25th October 2012
        [enhancements]
+
        Elive::Entity::Meeting, Elive::Entity::Session, Elive::View::Meeting
-       - added 'sessionRole' parameter to buildJNLP() method.
+       - buildJNLP() method: Tidy up of POD and argument handling.
+         -- removed `version' argument; not used.
+         -- added 'sessionRole' parameter.
+         -- accept any one of 'userId', 'userName' or 'displayName'. In
+            particular, don't default 'userId' when 'displayName' given.
+
        Elive::Entity::Role - added some constants:
        - ${Elive::Entity::Role::PARTICIPANT}       (3)
        - ${Elive::Entity::Role::MODERATOR}         (2)
        - ${Elive::Entity::Role::APPLICATION_ADMIN} (1)
        - ${Elive::Entity::Role::SYSTEM_ADMIN}      (0)
+
        Elive::Entity::Participant - added some constants:
        - ${Elive::Entity::Participant::TYPE_USER}  (0)
        - ${Elive::Entity::Participant::TYPE_GROUP} (1)

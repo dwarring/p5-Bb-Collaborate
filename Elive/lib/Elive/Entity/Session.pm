@@ -818,17 +818,21 @@ Please see also L<Elive::Entity::Preload>.
 
 If a user has been registered as a meeting participant, either by being
 directly assigned as a participant or by being a member of a group, you
-can then create a JNLP for access to the meeting.
+can then create a JNLP for access to the meeting, giving either a C<userName>,
+C<userId>, or C<displayName>.
 
-    my $user_jnlp = $session->buildJNLP(user => $username);
+    my $user_jnlp = $session->buildJNLP(userName => $username);
 
 There's a slightly different format for guests:
 
-    my $guest_jnlp = $session->buildJNLP(userName => $guest_username,
-                                         displayName => $guest_display_name);
+    my $guest_jnlp = $session->buildJNLP(
+                          displayName => $guest_display_name,
+                          sessionRole => ${Elive::Entity::Role::MODERATOR} # 2
+                     );
 
 Unlike registered users, guests do not need to be registered as a session
-participant for you to add them as a guest.
+participant. They will be given a default role of
+${Elive::Entity::Role::MODERATOR} (3).
 
 For more information, please see L<Elive::Entity::Meeting>.
 

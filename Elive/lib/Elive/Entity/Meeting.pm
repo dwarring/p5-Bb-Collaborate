@@ -426,6 +426,8 @@ sub remove_preload {
     
 =head2 buildJNLP 
 
+Builds a JNLP for the meeting.
+
     # ...
     use Elive;
     use Elive::Entity::Role;
@@ -442,7 +444,7 @@ sub remove_preload {
 
     my $login_name = $cgi->param('user');
 
-    my $jnlp = $meeting->buildJNLP(version => $version,
+    my $jnlp = $meeting->buildJNLP(
                                    userName => $login_name,
                                    sessionRole => ${Elive::Entity::Role::PARTICIPANT},
                                   );
@@ -459,8 +461,7 @@ Alternatively, you can pass a user object or user-id via C<userId>
 
     my $user = Elive::Entity::User->get_by_loginName($login_name);
 
-    my $jnlp = $meeting->buildJNLP(version => $version,
-                                   userId => $user);
+    my $jnlp = $meeting->buildJNLP(userId => $user);
 
 Or you can just conjure up a display name and role. The user does
 not have to exist as in the ELM database, or in the meeting's participant list:
@@ -470,7 +471,7 @@ not have to exist as in the ELM database, or in the meeting's participant list:
                        sessionRole => ${Elive::Entity::Role::PARTICIPANT}
                      );
 
-Builds a JNLP for the meeting.
+Guests will by default be given a C<sessionRole> of participant (3).
 
 JNLP is the 'Java Network Launch Protocol', also commonly known as Java
 WebStart. To launch the meeting you can, for example, render this as a web
@@ -496,7 +497,7 @@ sub buildJNLP {
 
     my %soap_params = (meetingId => $meeting_id);
 
-    foreach my $param (qw(version displayName sessionRole userName userId)) {
+    foreach my $param (qw(displayName sessionRole userName userId)) {
 	my $val = delete $opt{$param};
 	$soap_params{$param} = $val
 	    if defined $val;
