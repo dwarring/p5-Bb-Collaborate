@@ -202,7 +202,8 @@ sub participant {
     return (!defined $self->type || $self->type == $TYPE_USER) ? $self->user
        : ($self->type == $TYPE_GROUP) ? $self->group
        : ($self->type == $TYPE_GUEST) ? $self->guest
-       : do {warn "unknown participant type: ".$self->type; $self->user};
+       : do {warn "unknown participant type: ".$self->type;
+	     $self->user || $self->group || $self->guest};
 }
 
 =head2 is_moderator

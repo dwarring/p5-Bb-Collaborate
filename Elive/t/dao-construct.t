@@ -1,6 +1,6 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 84;
+use Test::More tests => 87;
 use Test::Warn;
 
 use Carp;
@@ -122,13 +122,16 @@ is($participants->[0]->user->stringify, '112233', 'user stringified');
 is($participants->[0]->role->stringify, '2', 'role stringified');
 
 is($participants->[0]->stringify, '112233=2', 'user participant stringified');
+is($participants->[0]->participant->stringify, '112233', 'user stringified (user)');
 ok($participants->[0]->is_moderator, 'is_moderator() on moderator');
 
 is($participants->[2]->stringify, 'dave=3', 'user participant stringified');
 ok(! $participants->[2]->is_moderator, 'is_moderator() on regular participant');
 
-is($participants->[3]->stringify, '*test_group=2', 'guest participant stringified');
+is($participants->[3]->stringify, '*test_group=2', 'group participant stringified');
+is($participants->[3]->participant->stringify, '*test_group', 'group stringified');
 is($participants->[4]->stringify, 'Alice (alice@acme.com)', 'guest participant stringified');
+is($participants->[4]->participant->stringify, 'Alice (alice@acme.com)', 'guest stringified');
 
 # upgrade/downgrade tests on moderator privileges
 
