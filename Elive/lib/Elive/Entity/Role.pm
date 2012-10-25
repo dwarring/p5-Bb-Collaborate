@@ -38,6 +38,11 @@ sub BUILDARGS {
     return $args;
 }
 
+our $SYSTEM_ADMIN      = 0;  # applicable to users only
+our $APPLICATION_ADMIN = 1;  # applicable to users only
+our $MODERATOR         = 2;  # applicable to users and meetings
+our $PARTICIPANT       = 3;  # applicable to users and meetings
+
 coerce 'Elive::Entity::Role' => from 'HashRef|Int'
           => via {Elive::Entity::Role->new($_) };
 

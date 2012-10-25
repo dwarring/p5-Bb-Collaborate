@@ -61,7 +61,7 @@ Participants may also be specified as an array of scalars:
 
 Or an array of hashrefs:
 
-    $participant_list->participants([{user => 111111, role =>2},
+    $participant_list->participants([{user => 111111, role => 2},
                                      {user => 222222}]);
     $participant_list->update;
 
@@ -171,7 +171,7 @@ sub update {
     #
     # make sure that the facilitator is included with a moderator role
     #
-    $users->{ $meeting->facilitatorId } = 2;
+    $users->{ $meeting->facilitatorId } = ${Elive::Entity::Role::MODERATOR};
 
     my $participants = $self->_set_participant_list( $users, $groups, $guests );
     #
@@ -289,15 +289,15 @@ sub _set_participant_list {
     my @participants;
 
     foreach (keys %$users) {
-	push(@participants, Elive::Entity::Participant->new({user => $_, role => $users->{$_}, type => 0}) )
+	push(@participants, Elive::Entity::Participant->new({user => $_, role => $users->{$_}, type => ${Elive::Entity::Participant::TYPE_USER}}) )
     }
 
     foreach (keys %$groups) {
-	push(@participants, Elive::Entity::Participant->new({group => $_, role => $groups->{$_}, type => 1}) )
+	push(@participants, Elive::Entity::Participant->new({group => $_, role => $groups->{$_}, type => ${Elive::Entity::Participant::TYPE_GROUP}}) )
     }
 
     foreach (keys %$guests) {
-	push(@participants, Elive::Entity::Participant->new({guest => $_, role => $guests->{$_}, type => 2}) )
+	push(@participants, Elive::Entity::Participant->new({guest => $_, role => $guests->{$_}, type => ${Elive::Entity::Participant::TYPE_GUEST}}) )
     }
 
     my %params;
@@ -376,14 +376,17 @@ sub _thaw {
 		    # peek at the the type property. 0 => user, 1 => group
 		    # a group record, rename to Group, otherwise treat
 		    #
-		    if (! $p->{Type}) {
-			$p->{User} = delete $p->{Participant}
-		    }
-		    elsif ($p->{Type} == 1) {
+		    if ($p->{Type} == ${Elive::Entity::Participant::TYPE_GROUP}) {
 			$p->{Group} = delete $p->{Participant}
 		    }
-		    elsif ($p->{Type} == 2) {
+		    elsif ($p->{Type} ==  ${Elive::Entity::Participant::TYPE_GUEST}) {
 			$p->{Guest} = delete $p->{Participant}
+		    }
+		    elsif (! $p->{Type} || $p->{Type} ==  ${Elive::Entity::Participant::TYPE_USER}) {
+			$p->{User} = delete $p->{Participant}
+		    }
+		    else {
+			warn "unknown participant type: $p->{Type}";
 		    }
 		}
 	    }

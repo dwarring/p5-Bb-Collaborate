@@ -138,7 +138,7 @@ sub get_by_loginName {
 	      firstName => ...,
 	      lastName => ...,
 	      email => ...,
-	      role => {roleId => 0|1|2|3},
+	      role => ${Elive::Entity::Role::PARTICIPANT},
 	    )};
 
 Insert a new user
@@ -157,7 +157,7 @@ sub _safety_check {
 	    if $self->userId eq $connection->login->userId;
 
 	die "Cowardly refusing to update system admin account for ".$self->loginName.": (pass force => 1 to override)"
-	    if ($self->_db_data->role->stringify <= 0);
+	    if ($self->_db_data->role->stringify <= ${Elive::Entity::Role::SYSTEM_ADMIN});
     }
 }
 
@@ -165,7 +165,7 @@ sub _safety_check {
 
     my $user_obj = Elive::Entity::user->retrieve($user_id);
 
-    $user_obj->update(role => 0); # make the user an app admin
+    $user_obj->update(role => ${Elive::Entity::Role::SYSTEM_ADMIN}); # upgrade to an app admin
     $user_obj->lastName('Smith');
     $user_obj->update(undef, force => 1);
 

@@ -29,15 +29,16 @@ This is the main entity class for meetings.
 __PACKAGE__->entity_name('Meeting');
 __PACKAGE__->collection_name('Meetings');
 __PACKAGE__->params(
-    seats => 'Int',
+    displayName => 'Str',
+    endDate => 'HiResDate',
     preloadId => 'Int',
     recurrenceCount => 'Int',
     recurrenceDays => 'Int',
-    timeZone => 'Str',
+    seats => 'Int',
     startDate => 'HiResDate',
-    endDate => 'HiResDate',
+    timeZone => 'Str',
+    sessionRole => 'Int',
     version => 'Str',
-    displayName => 'Str',
     userId => 'Str',
     userName => 'Str',
     );
@@ -427,6 +428,7 @@ sub remove_preload {
 
     # ...
     use Elive;
+    use Elive::Entity::Role;
     use Elive::Entity::Meeting;
 
     use CGI;
@@ -444,6 +446,7 @@ sub remove_preload {
     my $jnlp = $meeting->buildJNLP(version => $version,
                                    user => $user,
                                    displayName => join(' ', $user->firstName, $user->lastName),
+                                   sessionRole => ${Elive::Entity::Role::PARTICIPANT},
                                   );
     #
     # join this user to the meeting
@@ -480,7 +483,7 @@ sub buildJNLP {
 
     my %soap_params = (meetingId => $meeting_id);
 
-    foreach my $param (qw(version password displayName)) {
+    foreach my $param (qw(version password displayName sessionRole)) {
 	my $val = delete $opt{$param};
 	$soap_params{$param} = $val
 	    if defined $val;

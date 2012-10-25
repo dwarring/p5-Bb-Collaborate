@@ -1217,7 +1217,7 @@ sub live_entity {
 
     my $user_ref = $live_entities->{'http://test.org/User/1234567890'};
 
-Returns a reference to an object in the Elive::Entity cache. 
+Returns a reference to the Elive::Entity cache. 
 
 =cut
 

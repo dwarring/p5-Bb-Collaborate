@@ -7,6 +7,7 @@ use Mouse::Util::TypeConstraints;
 extends 'Elive::DAO::Array';
 
 use Elive::Entity::Participant;
+use Elive::Entity::Role;
 use Elive::Util;
 
 __PACKAGE__->element_class('Elive::Entity::Participant');
@@ -58,10 +59,10 @@ sub _build_array {
 		my $opt = $1;
 
 		if ($opt =~ m{^(participant|other)(s?)$}) {
-		    $cur_role = 3;
+		    $cur_role = ${Elive::Entity::Role::PARTICIPANT};
 		}
 		elsif ($opt =~ m{^moderator(s?)$}) {
-		    $cur_role = 2;
+		    $cur_role = ${Elive::Entity::Role::MODERATOR};
 		}
 		else {
 		    die "unknown option '$_' in participant list (expected: '-participant', '-moderator' or '-other'";
@@ -119,19 +120,19 @@ sub _group_by_type {
 
 	my $id;
 	my $roleId = Elive::Entity::Role->stringify( $participant->role )
-	    || 3;
+	    || ${Elive::Entity::Role::PARTICIPANT};
 
-	if (! $participant->type ) {
-	    $id = Elive::Entity::User->stringify( $participant->user );
-	    $users{ $id } = $roleId;
-	}
-	elsif ($participant->type == 1) {
+	if ($participant->type == ${Elive::Entity::Participant::TYPE_GROUP}) {
 	    $id = Elive::Entity::Group->stringify( $participant->group );
 	    $groups{ $id } = $roleId;
 	}
-	elsif ($participant->type == 2) {
+	elsif ($participant->type == ${Elive::Entity::Participant::TYPE_GUEST}) {
 	    $id = Elive::Entity::InvitedGuest->stringify( $participant->guest );
 	    $guests{ $id } = $roleId;
+	}
+	elsif (! $participant->type || $participant->type == ${Elive::Entity::Participant::TYPE_USER}) {
+	    $id = Elive::Entity::User->stringify( $participant->user );
+	    $users{ $id } = $roleId;
 	}
 	else {
 	    carp("unknown type: $participant->{type} in participant list: ".$self->id);

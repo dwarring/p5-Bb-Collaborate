@@ -1,16 +1,32 @@
 Revision history for Elive
 
+1.29   tba
+       [enhancements]
+       Elive::Entity::Meeting, Elive::Entity::Session, Elive::View::Meeting
+       - added 'sessionRole' parameter to buildJNLP() method.
+       Elive::Entity::Role - added some constants:
+       - ${Elive::Entity::Role::PARTICIPANT}       (3)
+       - ${Elive::Entity::Role::MODERATOR}         (2)
+       - ${Elive::Entity::Role::APPLICATION_ADMIN} (1)
+       - ${Elive::Entity::Role::SYSTEM_ADMIN}      (0)
+       Elive::Entity::Participant - added some constants:
+       - ${Elive::Entity::Participant::TYPE_USER}  (0)
+       - ${Elive::Entity::Participant::TYPE_GROUP} (1)
+       - ${Elive::Entity::Participant::TYPE_GUEST} (2)
+
 1.28   12th October 2012
        [bug fixes]
        elive_raise_meeting, script-elive_raise_meeting.t
        - fixed -moderators option. These were being downgraded to regular
          participants. Added tests (bug introduced in 1.20)
        Elive::Entity::InvitedGuest, soap-session-particiants.t
-       - added BUILDARGS method (it's never had one). Also added failing test.
+       - added BUILDARGS method plus string coercement (it's never had these).
+         The following now works:
+                Elive::Entity::InvitedGuest->new('Robert (bob@example.com)');
        [enhancements]
        Elive:
        - server_details() - Return all server(s) in a list context:
-         my @servers = Elive->server_details;
+                my @servers = Elive->server_details;
 
 1.27   14th July 2012
        [bug fixes]
@@ -46,7 +62,7 @@ Revision history for Elive
        - soap-participants.t, soap-session-participants.t - stress tests now passing.
 
 1.24   28th February 2012
-       [Tested against Blackboard Collaborate 11.1.2  / ELM 3.5.0.]
+       [Tested against Blackboard Elive 11.1.2  / ELM 3.5.0.]
        [testing]
        - soap-connect.t - raised max_version to 11.1.2
        - soap-participant-list.t - long participant / stress-tests are hanging

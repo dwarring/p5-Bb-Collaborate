@@ -12,10 +12,11 @@ use Carp;
 
 use Elive;
 use Elive::Util;
-use Elive::Entity::Preload;
 use Elive::Entity::User;
 use Elive::Entity::Group;
 use Elive::Entity::Participant;
+use Elive::Entity::Preload;
+use Elive::Entity::Role;
 use Elive::Entity::Session;
 use Elive::View::Session;
 
@@ -507,10 +508,10 @@ sub _get_users {
 
     my @users;
 
-    push (@users, map {{user => $_, role => 3}} __get_users(@participants))
+    push (@users, map {{user => $_, role => ${Elive::Entity::Role::PARTICIPANT}}} __get_users(@participants))
 	if @participants;
 
-    push (@users, map {{user => $_, role => 2}} __get_users(@moderators))
+    push (@users, map {{user => $_, role => ${Elive::Entity::Role::MODERATOR}}} __get_users(@moderators))
 	if @moderators;
 
     return @users;
@@ -563,10 +564,10 @@ sub _get_groups {
 
     my @groups;
 
-    push (@groups, map {{user => $_, role => 3}} __get_groups(@participants))
+    push (@groups, map {{user => $_, role => ${Elive::Entity::Role::PARTICIPANT}}} __get_groups(@participants))
 	if @participants;
 
-    push (@groups, map {{user => $_, role => 2}} __get_groups(@moderators))
+    push (@groups, map {{user => $_, role => ${Elive::Entity::Role::MODERATOR}}} __get_groups(@moderators))
 	if @moderators;
 
     return @groups;
