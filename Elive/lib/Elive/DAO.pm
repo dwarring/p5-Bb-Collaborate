@@ -4,7 +4,7 @@ use warnings; use strict;
 use Mouse;
 use Mouse::Util::TypeConstraints;
 
-our $VERSION = '0.06';
+our $VERSION = '0.07';
 
 use parent 'Elive::DAO::_Base';
 
@@ -1573,8 +1573,12 @@ Abstract method to revert an entity to its last constructed value.
 
 =cut
 
+our $REVERTING;
+
 sub revert {
     my ($self, @props) = @_;
+
+    local( $REVERTING ) = 1;
 
     my $db_data = $self->_db_data
 	or die "object doesn't have db-data!? - can't cope";
@@ -1659,7 +1663,9 @@ sub DEMOLISH {
 	if ($self->debug||0) >= 5;
 
     if (my $db_data = $self->_db_data) {
-	if ((my @changed = $self->is_changed) && ! $self->_deleted) {
+	if (!$REVERTING
+	    && (my @changed = $self->is_changed)
+	    && ! $self->_deleted) {
 	    my $self_string = Elive::Util::string($self);
 	    Carp::carp("$class $self_string destroyed without saving or reverting changes to: "
 		 . join(', ', @changed));
