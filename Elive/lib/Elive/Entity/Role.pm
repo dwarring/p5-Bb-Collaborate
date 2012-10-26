@@ -23,6 +23,14 @@ __PACKAGE__->entity_name('Role');
 has 'roleId' => (is => 'rw', isa => 'Int', required => 1);
 __PACKAGE__->primary_key('roleId');
 
+our ( $SYSTEM_ADMIN, $APPLICATION_ADMIN, $MODERATOR, $PARTICIPANT );
+BEGIN {
+    $SYSTEM_ADMIN      = 0;
+    $APPLICATION_ADMIN = 1;
+    $MODERATOR         = 2;
+    $PARTICIPANT       = 3;
+}
+
 sub BUILDARGS {
     my $class = shift;
     my $spec = shift;
@@ -37,11 +45,6 @@ sub BUILDARGS {
 
     return $args;
 }
-
-our $SYSTEM_ADMIN      = 0;  # applicable to users only
-our $APPLICATION_ADMIN = 1;  # applicable to users only
-our $MODERATOR         = 2;  # applicable to users and meetings
-our $PARTICIPANT       = 3;  # applicable to users and meetings
 
 coerce 'Elive::Entity::Role' => from 'HashRef|Int'
           => via {Elive::Entity::Role->new($_) };

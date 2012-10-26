@@ -1,6 +1,6 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 50;
+use Test::More tests => 57;
 use Test::Warn;
 use Test::Fatal;
 
@@ -191,6 +191,15 @@ is( exception {
           },
 	  participantList => {
 	    meetingId => 12345,
+	    participants =>
+		[{
+		    user => $user1,
+		    role => 3
+		 },
+		 {
+		    user => $user2,
+		    role => 2
+		 },]
           },
      })
   } => undef, 'session construct - lives');
@@ -207,3 +216,18 @@ is_deeply( [ do {$session->enableTeleconferencing(1); $session->is_changed} ],
 	   ['enableTelephony'], 'session update via freeze alias');
 
 $session->revert;
+
+ok(!$session->is_changed, 'ression revert');
+
+is($session->participants->[1]->role->roleId, 2, 'participant role (pre-update)');
+$session->participants->[1]->role(3);
+
+is($session->participants->[1]->role->roleId, 3, 'participant role (post-update)');
+
+ok($session->participants->[1]->is_changed, 'single participant is_changed()');
+ok($session->participantList->is_changed, 'participants is_changed()');
+
+$session->participantList->revert;
+
+ok(!$session->participantList->is_changed, 'participantList is_changed() (post-revert)');
+is($session->participants->[1]->role->roleId, 2, 'participant role (post-revert)');

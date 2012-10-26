@@ -31,10 +31,6 @@ on a participating user, including their type and participation role.
 
 __PACKAGE__->entity_name('Participant');
 
-our $TYPE_USER  = 0;
-our $TYPE_GROUP = 1;
-our $TYPE_GUEST = 2;
-
 has 'user' => (is => 'rw', isa => 'Elive::Entity::User',
 		documentation => 'User (type=0)',
 		coerce => 1,
@@ -61,6 +57,13 @@ has 'role' => (is => 'rw', isa => 'Elive::Entity::Role',
 has 'type' => (is => 'rw', isa => 'Int',
 	       documentation => 'type of participant; 0:user, 1:group, 2:guest'
     );
+
+our ( $TYPE_USER, $TYPE_GROUP, $TYPE_GUEST );
+BEGIN {
+    $TYPE_USER  = 0;
+    $TYPE_GROUP = 1;
+    $TYPE_GUEST = 2;
+}
 
 sub BUILDARGS {
     my $class = shift;
