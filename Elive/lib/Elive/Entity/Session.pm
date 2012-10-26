@@ -832,7 +832,7 @@ There's a slightly different format for guests:
 
 Unlike registered users, guests do not need to be registered as a session
 participant. They will be given a default role of
-${Elive::Entity::Role::MODERATOR} (3).
+${Elive::Entity::Role::PARTICIPANT} (3).
 
 For more information, please see L<Elive::Entity::Meeting>.
 
