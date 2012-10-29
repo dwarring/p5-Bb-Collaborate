@@ -6,6 +6,7 @@ use Test::Fatal;
 use Elive;
 use Elive::Entity::Session;
 use Elive::Util;
+use version;
 
 use lib '.';
 use t::Elive;
@@ -51,6 +52,21 @@ SKIP: {
 
     my $connection_class = $result{class};
     my $connection = $connection_class->connect(@$auth);
+
+    my $min_elm3_version =  '9.5.0';
+    my $server_details = $connection->server_details;
+    my $server_version = $server_details->version;
+
+    my $have_elm3 = do {
+	my $min_elm3_version_num = version->new($min_elm3_version)->numify;
+	my $server_version_num = version->new($server_version)->numify;
+
+	$server_version_num >= $min_elm3_version_num;
+    };
+
+    skip ($result{reason} || 'Test requires ELM > 3.0', $skippable)
+	unless $have_elm3;
+
     Elive->connection($connection);
 
     my $session_start = time();

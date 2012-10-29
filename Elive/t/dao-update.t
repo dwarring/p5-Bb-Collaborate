@@ -204,6 +204,8 @@ is( exception {
      })
   } => undef, 'session construct - lives');
 
+note explain {session_constructed => $session};
+
 $session->name( $session->name.'X' );
 $session->userNotes( $session->userNotes.'X' );
 

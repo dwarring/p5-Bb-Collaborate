@@ -106,7 +106,7 @@ SKIP: {
 	if ($class eq 'Elive::Entity::Session' && ! $have_elm3) {
 	    diag "*** Skipping class $class for Elluminate Live! version $server_version < $min_elm3_version";
 	    $t->skip("$class for Elluminate Live! version $server_version < $min_elm3_version")
-		for (1..80);
+		for (1..95);
 	    next;
 	}
 

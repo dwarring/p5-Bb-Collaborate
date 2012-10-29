@@ -539,8 +539,8 @@ sub url {
              copy => 1,             # return a simple blessed uncached object.
            );
 
-Abstract method to construct an entity from data. A copy is made of the data
-for use by the C<is_changed> and C<revert> methods.
+Abstract method to construct a data mapped entity. A copy is made of the
+data for use by the C<is_changed> and C<revert> methods.
 
 =cut
 
