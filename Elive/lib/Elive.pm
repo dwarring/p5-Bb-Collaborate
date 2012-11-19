@@ -67,10 +67,8 @@ participants, as well as managing users and user groups.
 
 =head1 BACKGROUND
 
-Elluminate I<Live!> is software for virtual online classrooms.
-
-It is suitable for meetings, demonstrations, web conferences, seminars
-and IT deployment, training and support.
+Elluminate I<Live!> is software for virtual online classrooms. It is suitable
+for meetings, demonstrations, web conferences, seminars, training and support.
 
 Most management functions that can be performed via the web interface can
 also be achieved via SOAP web services. This is known as the
@@ -187,12 +185,19 @@ sub disconnect {
 
     Elive->debug(1)
 
-    Set or get the debug level.
+Sets or gets the debug level.
 
-      0 = no debugging
-      1 = dump object and class information 
-      2 = also enable SOAP::Lite tracing
-      3 = very detailed
+=over 4
+
+=item 0 = no debugging
+
+=item 1 = dump object and class information 
+
+=item 2 = also enable SOAP::Lite tracing
+
+=item 3 = very detailed
+
+=back
 
 =cut
 
