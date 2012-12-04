@@ -9,7 +9,7 @@ dao-unpack.t
 
 The unpacking pass precedes thawing. It involves interpreting simple data
 and C<Collection> and C<Map> containers within the data. These are all
-converted to arrays by the Elive::DAO->_unpack_as_list() method.
+converted to arrays by the Elive::Entity->_unpack_as_list() method.
 
 =cut
 
