@@ -1,5 +1,10 @@
 Revision history for Elive
 
+1.30   4th January 2013
+       [bug fixes]
+       Elive::DAO
+       - Relax HiResDate constraints to allow negative timestamps; downgrade to a warning
+
 1.29   25th October 2012
        [enhancements]
 

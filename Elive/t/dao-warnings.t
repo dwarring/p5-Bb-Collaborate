@@ -20,7 +20,7 @@ if (Elive->debug) {
     plan skip_all => "Can't run this test when debugging is enabled";
 }
 
-plan tests => 14;
+plan tests => 15;
 
 Elive->connection( t::Elive::MockConnection->connect() );
 
@@ -28,7 +28,12 @@ my $meeting;
 
 warnings_like (sub {$meeting = meeting_with_lowres_dates()},
 	      qr{doesn't look like a hi-res date},
-	      'low-res dates gives warning'
+	      'low-res date gives warning'
+    );
+
+warnings_like (sub {$meeting = meeting_with_lowres_dates('-123456789000')},
+	      qr{doesn't look like a hi-res date},
+	      'negative date gives warning'
     );
 
 warnings_like (\&do_unsaved_update,
@@ -124,11 +129,13 @@ exit(0);
 
 sub meeting_with_lowres_dates {
 
+    my $start = shift || '1234567890';
+
     my $meeting = Elive::Entity::Meeting->construct
 	({
 	    meetingId => 11223344,
 	    name => 'test meeting',
-	    start => '1234567890',  #too short
+	    start => $start,  #too short
 	    end => '1244668890000', #good
          },
 	);
