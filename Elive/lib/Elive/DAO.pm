@@ -1613,7 +1613,7 @@ BEGIN {
     subtype 'HiResDate'
 	=> as 'Int'
 	=> where {m{^-?\d+$}
-               && (!$_ || (length($_) > 10 && $_ > 0)
+               && (m{^0+$} || (length($_) > 10 && !m{-})
 		   or Carp::carp "doesn't look like a hi-res date: $_")}
         => message {"invalid date: $_"};
 }
