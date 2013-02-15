@@ -3,7 +3,8 @@ Revision history for Elive
 1.30   4th January 2013
        [bug fixes]
        Elive::DAO
-       - Relax HiResDate constraints to allow negative timestamps; downgrade to a warning
+       - Relax HiResDate constraints to allow negative timestamps; downgrade
+       to a warning
 
 1.29   25th October 2012
        [enhancements]
@@ -172,8 +173,8 @@ Revision history for Elive
 1.16    27th August 2011
         [enhancements]
         - Elive::Entity::Session - The ELM 3.x SessionInsert and SessionUpdate
-          commands often return a null response rather that an error message
-          which was then leading to messy failures while unpacking. Catch
+          commands often return a null response rather than an error message.
+          This was then leading to messy failures while unpacking. Catch
           this earlier and return (as far as possible) a more meaningful
           error message.
         [refactoring]

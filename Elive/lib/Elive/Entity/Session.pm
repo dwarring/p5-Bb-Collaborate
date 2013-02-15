@@ -537,6 +537,7 @@ sub delete {
     my $delegates = $self->_delegates;
 
     foreach my $delegate (sort keys %$delegates) {
+        # ELM cascades the delete for us
 	$self->$delegate->_deleted(1) if $self->{$delegate};
     }
 

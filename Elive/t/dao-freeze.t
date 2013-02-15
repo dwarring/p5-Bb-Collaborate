@@ -155,7 +155,7 @@ my $aliases = Elive::Entity::ServerParameters->_get_aliases;
 
 do {
     ################################################################
-    # ++ some slightly off-topic tests
+    # ++ some slightly off-topic tests on aliases
     #
     ok($aliases, 'got server_parameter aliases');
     ok($aliases->{boundary}, 'got server_parameter alias for boundary');
