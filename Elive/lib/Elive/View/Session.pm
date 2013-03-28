@@ -234,7 +234,7 @@ sub derivable {
 =head1 BUGS AND LIMITATIONS
 
 The C<insert()> and C<update()> methods in this class rely on older ELM 2.x
-commands. These do not support a newer ELM 3.x features including
+commands. These do not support newer ELM 3.x features including
 restricted meetings, invited guests, groups, exit URLs and a number of other
 newer options and flags - these are listed in L<elive_raise_meeting>.
 
