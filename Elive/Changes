@@ -1,6 +1,6 @@
 Revision history for Elive
 
-1.31   tba
+1.31   28th March 2013
        [testing]
        - added Test::More 0.98 dependency. Older versions don't understand
          $t->is_passing
@@ -9,7 +9,7 @@ Revision history for Elive
        [bug fixes]
        Elive::DAO
        - Relax HiResDate constraints to allow negative timestamps; downgrade
-       to a warning
+         to a warning
 
 1.29   25th October 2012
        [enhancements]
@@ -40,7 +40,7 @@ Revision history for Elive
        elive_raise_meeting, script-elive_raise_meeting.t
        - fixed -moderators option. These were being downgraded to regular
          participants. Added tests (bug introduced in 1.20)
-       Elive::Entity::InvitedGuest, soap-session-particiants.t
+       Elive::Entity::InvitedGuest, soap-session-participants.t
        - added BUILDARGS method plus string coercement (it's never had these).
          The following now works:
                 Elive::Entity::InvitedGuest->new('Robert (bob@example.com)');
@@ -69,7 +69,7 @@ Revision history for Elive
        Elive::Entity::ParticipantList, elive_raise_meeting:
        - Fixed to align with uid (loginName) case sensitivity policies under
          LDAP and latest (ELM 11.1.2). The case of the uid is preserved on
-         entry. But comparisions and uniqueness checks are case insensitive.
+         entry. But comparisons and uniqueness checks are case insensitive.
          -- E.g. if a user has an LDAP uid of 'johnsmith'.  Attempting to add
             'JohnSmith' now works.
          -- Note that after update, the returned participant list entry 
@@ -187,7 +187,7 @@ Revision history for Elive
 
 1.15    24th August 2011
         [enhancements]
-        More work on inaccessable server details. This can indicate
+        More work on inaccessible server details. This can indicate
         that either the session manager or license manager are not running
         and reachable.
         - Elive::Connection::SDK - error message changed to "Unable to get
@@ -203,7 +203,7 @@ Revision history for Elive
 
 1.14    21st August 2011
         [bug fixes]
-        Improved detection and handling of inaccessable server details.
+        Improved detection and handling of inaccessible server details.
         This is usually an indication that the Session Server (elive) is
         not running or is unreachable.
         - Elive::Connection::SDK - was dieing with 'Can't call method
@@ -214,7 +214,7 @@ Revision history for Elive
           version) unless the '-use elm2 or -use elm3' options are present.
         [testing]
         General improvements to error messages and handling when the server
-        details are inaccessable - the underlying problem should now be more
+        details are inaccessible - the underlying problem should now be more
         obvious to the tester.
 
 1.13    19th August 2011
@@ -279,13 +279,13 @@ Revision history for Elive
 
         Under Elive 10.0.1+ the getUser command (Elive::Entity::User retrieve
         method) matches on both userId and loginName.
-        - I relaxed the _readback() consistancy checks to allow this.  Also,
+        - I relaxed the _readback() consistency checks to allow this.  Also,
           added tests to soap-user.t to capture this behaviour.
 
        [bug fixes]
        - Elive::Entity::Session - the retrieve() method now returns undef when
          an attempt is made to access a non-existent meeting. This fix was
-         sufficient pass all Elive::View::Session tests on Elluminate 9.0.
+         sufficient to pass all Elive::View::Session tests on Elluminate 9.0.
 
 1.07    7th August 2011
         [compatibility]
@@ -349,7 +349,7 @@ Revision history for Elive
        [enhancements]
        Elive::Entity::Recording - added BUILDARGS method. 'size' is now
        computed and doesn't need to be specified in upload()s.
-       Elive::Entity::ParticipantList - movedf update checks to
+       Elive::Entity::ParticipantList - moved update checks to
        _readback_checks() for the benefit of Elive::Entity::Session.
 
 1.03    24th July 2011
@@ -383,9 +383,9 @@ Revision history for Elive
           interfering with readback checks.
         [documentation]
         README
-        - Amendements to section 'Configuring SDK Access'
+        - Amendments to section 'Configuring SDK Access'
         Elive
-        - Admendments introductory example POD
+        - Amendments to introductory example POD
 
 1.00    19th July 2011
         [Regression tested against Elm 3.0 / Elive 9.5 (earliest supported
@@ -400,11 +400,11 @@ Revision history for Elive
         soap-recording.t
         - skipped some failing download tests for Elm <= 3.0.
         Elive::Entity::ServerParameters
-        - included some aliases for mispellings present in Elm 3.0 responses
+        - included some aliases for misspellings present in Elm 3.0 responses
           (sic) ModertatorTelephonyAddress, ModertatorTelephonyPIN
         [Minor refactorings]
         - added _restful_url() method to Elive::DAO. Inherited and
-          overriden by Elive::Entity::Group.
+          overridden by Elive::Entity::Group.
         [README]
         - Manual configuration instructions amended - only needed for LDAP
 
