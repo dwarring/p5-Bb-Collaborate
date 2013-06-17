@@ -136,7 +136,7 @@ sub main {
 
     foreach my $class (@data_classes) {
 	#
-	# Make sure were' dealing with well formed DAO objects
+	# Make sure we're dealing with well formed DAO classes
 	#
 	eval "require $class";
 	die $@ if $@;
@@ -159,7 +159,7 @@ sub main {
 
     if ($connection) {
 	my $server_version =  eval {$connection->version}
-	    or warn ($@ || "unable to get elluminate version\n");
+	    or warn ($@ || "unable to get Elluminate version\n");
 
 	$server_version_str  = "(Elluminate Live! $server_version) "
 	    if $server_version;

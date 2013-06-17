@@ -308,7 +308,7 @@ sub main {
 	next unless defined;
 	$_ = lc $_;
 
-	bail("-profile_display must be one of: 'none', 'gmod' or 'all'\n")
+	bail("-profile_display must be one of: 'none', 'mod' or 'all'\n")
 	    unless m{^(none|mod|all)$}x;
     }
 

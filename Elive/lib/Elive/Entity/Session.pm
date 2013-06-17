@@ -840,7 +840,7 @@ For more information, please see L<Elive::Entity::Meeting>.
 =head1 Working with recordings (recording JNLPs)
 
 A session can be associated with multiple recording segments. A segment is
-created each time recording is stopped an restarted, or when all participants
+created each time recording is stopped and restarted, or when all participants
 entirely vacate the session. This can happen multiple times for long running
 sessions.
 
