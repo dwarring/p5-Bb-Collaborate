@@ -70,7 +70,7 @@ SKIP: {
     my $min_recommended_version =  '9.5.0';
     my $min_recommended_version_num = version->new($min_recommended_version)->numify;
 
-    my $max_version =  '11.1.2';
+    my $max_version =  '12.5.4';
     my $max_version_num = version->new($max_version)->numify;
 
     ok ($server_details = Elive->server_details, 'got server details');
