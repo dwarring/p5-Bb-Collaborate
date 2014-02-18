@@ -194,7 +194,7 @@ SKIP: {
     }
     else {
 	$t->skip('unable to find any other users to act as participants(?)',)
-	    for (1..9);
+	    for (1..12);
     }
 
     $session->revert();
