@@ -1,6 +1,9 @@
 Revision history for Elive
 
-1.32   tba
+1.32   1st March 2014
+       [testing]
+       - raised max tested ELM version 11.1.2 => 12.5.4
+       - fixed soap-session-connect.t test plan
        [distribution]
        - removed Elive::Array
        - relocated sourceforge repository
