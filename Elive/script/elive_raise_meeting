@@ -374,8 +374,6 @@ sub main {
     my @preloads = grep {$_} ($existing_preload, $uploaded_preload, $imported_preload);
     $session_data{add_preload} = \@preloads if @preloads;
 
-    my $ptmp = Elive::Entity::Participants->new($session_data{participants});
-
     foreach (grep {! defined $session_data{$_} } keys %session_data) {
 	delete $session_data{$_};
     }
@@ -508,16 +506,16 @@ sub _get_users {
 
     my @users;
 
-    push (@users, map {{user => $_, role => ${Elive::Entity::Role::PARTICIPANT}}} __get_users(@participants))
+    push (@users, map {{user => $_, role => ${Elive::Entity::Role::PARTICIPANT}}} _lookup_users(@participants))
 	if @participants;
 
-    push (@users, map {{user => $_, role => ${Elive::Entity::Role::MODERATOR}}} __get_users(@moderators))
+    push (@users, map {{user => $_, role => ${Elive::Entity::Role::MODERATOR}}} _lookup_users(@moderators))
 	if @moderators;
 
     return @users;
 }
 
-sub __get_users {
+sub _lookup_users {
     my @users_in = @_;
 
     my %users;
@@ -564,16 +562,16 @@ sub _get_groups {
 
     my @groups;
 
-    push (@groups, map {{user => $_, role => ${Elive::Entity::Role::PARTICIPANT}}} __get_groups(@participants))
+    push (@groups, map {{user => $_, role => ${Elive::Entity::Role::PARTICIPANT}}} _lookup_groups(@participants))
 	if @participants;
 
-    push (@groups, map {{user => $_, role => ${Elive::Entity::Role::MODERATOR}}} __get_groups(@moderators))
+    push (@groups, map {{user => $_, role => ${Elive::Entity::Role::MODERATOR}}} _lookup_groups(@moderators))
 	if @moderators;
 
     return @groups;
 }
 
-sub __get_groups {
+sub _lookup_groups {
     my @groups_in = @_;
 
     my %groups;
