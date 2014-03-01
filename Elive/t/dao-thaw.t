@@ -3,7 +3,6 @@ use warnings; use strict;
 use Test::More tests => 81;
 use Test::Warn;
 
-use Elive::Connection;
 use Elive::Entity::User;
 use Elive::Entity::ParticipantList;
 use Elive::Util;
