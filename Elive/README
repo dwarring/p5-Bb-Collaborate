@@ -17,8 +17,8 @@ COMPATIBILITY
     The Elive distribution supports only self hosted Elluminate Live!
     servers that are running Elluminate Live! Manager (ELM).
 
-    - works best with ELM versions 3.0 - 3.5.0 and Elluminate Live!
-      versions 9.5 - 11.1.2
+    - works best with ELM versions 3.0 - 3.7.0 and Elluminate Live!
+      versions 9.5 - 12.5.4.
 
     - does not support access to externally hosted servers deployed with
       SAS (Session Administration System).
