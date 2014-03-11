@@ -11,7 +11,6 @@ inc/Module/Install/Scripts.pm
 inc/Module/Install/Win32.pm
 inc/Module/Install/WriteAll.pm
 lib/Elive.pm
-lib/Elive/Array.pm
 lib/Elive/Connection.pm
 lib/Elive/Connection/SDK.pm
 lib/Elive/DAO.pm
