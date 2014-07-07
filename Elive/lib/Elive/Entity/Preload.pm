@@ -335,6 +335,10 @@ sub _guess_mimetype {
 
     $guess ||= 'application/octet-stream';
 
+    # untaint
+    $guess = $1
+	if $guess =~ /([[:print:]]+)/;
+
     return $guess;
 }
 
