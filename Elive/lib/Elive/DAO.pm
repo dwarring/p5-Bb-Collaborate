@@ -4,7 +4,7 @@ use warnings; use strict;
 use Mouse;
 use Mouse::Util::TypeConstraints;
 
-our $VERSION = '0.08';
+our $VERSION = '1.34';
 
 use parent 'Elive::DAO::_Base';
 

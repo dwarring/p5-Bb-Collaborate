@@ -1,5 +1,11 @@
 Revision history for Elive
 
+1.34   23 January 2015
+       - Update copyright notices
+       - Finish 1.33 Changes entry
+       [kwalitee]
+       - Use consistant version number in sub-classes
+
 1.33   22 January 2015
        [bug-fixes]
        - RT#101018 "Mouse 2.4.1 when Test::Script::Run is installed"

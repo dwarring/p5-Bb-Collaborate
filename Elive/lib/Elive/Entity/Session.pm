@@ -17,7 +17,7 @@ use Elive::DAO::Array;
 
 =head1 NAME
 
-Elive::Entity::Session - Session insert/update via ELM 3.x
+Elive::Entity::Session - Session insert/update via ELM 3.x commands
 
 =head1 DESCRIPTION
 
@@ -657,7 +657,7 @@ You can also fully construct the participant list.
 
 =head2 Managing Participant Lists
 
-Participant lists are returned an arrays of elements of type
+Participant lists are returned as an array of elements of type
 L<Elive::Entity::Participant>. Each participant contains one of:
 
 =over 4
