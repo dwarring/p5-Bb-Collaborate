@@ -21,7 +21,7 @@ if ( $EVAL_ERROR ) {
 
 local ($ENV{TERM}) = 'dumb';
 
-plan(tests => 36);
+plan(tests => 34);
 
 our $script_name = 'elive_query';
 our $t = Test::More->builder;
@@ -31,11 +31,10 @@ do {
     # try running script with --help
     #
 
-    my ( $return, $stdout, $stderr ) = run_script ($script_name, ['--help'] );
+    my ( $return, $stdout, $_stderr ) = run_script ($script_name, ['--help'] );
     my $status = last_script_exit_code();
     is($status   => 0, "$script_name --help: zero exit status");
     
-    is($stderr   => '', "$script_name --help: stderr empty");
     like($stdout => qr{usage:}ix, "$script_name --help: stdout =~ 'usage:...''");
 };
 
@@ -74,16 +73,10 @@ do {
     # describe one of the entities: user
     #
 
-    my ($return, $stdout, $stderr) = run_script ($script_name, [-c => 'describe user']);
+    my ($return, $stdout, $_stderr) = run_script ($script_name, [-c => 'describe user']);
     my $status = last_script_exit_code();
 
     is($status   => 0, "$script_name describe user: zero exit status");
-    if (Elive->debug) {
-	$t->skip('debugging enabled - wont check stderr');
-    }
-    else {
-	is($stderr   => '', "$script_name describe user: no errors");
-    }
     like($stdout => qr{user: \s+ Elive::Entity::User .* userId \s+ : \s+ pkey \s+ Str}ixs, "$script_name describe user: looks like dump of users entity");
 
 };
