@@ -1,7 +1,10 @@
 Revision history for Elive
 
-1.33   tba
+1.33   22 January 2015
        [bug-fixes]
+       - RT#101018 "Mouse 2.4.1 when Test::Script::Run is installed"
+         Removed fragile 'stderr empty' tests from t/script-elive_query.t
+         and t/script-elive_raise_meeting.t.
        - fixed a taint issue in Elive::Entity::Preload.
 
 1.32   1st March 2014
