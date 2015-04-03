@@ -17,7 +17,7 @@ SKIP: {
     my %result = t::Elive::StandardV3->test_connection(noload => 1);
     my $auth = $result{auth};
 
-    skip ($result{reason} || 'skipping live tests', 12)
+    skip ($result{reason} || 'skipping live tests', 14)
 	unless $auth && @$auth;
 
     my $connection_class = $result{class};
@@ -58,7 +58,7 @@ SKIP: {
 	      '$connection->scheduling_manager - lives');
     isa_ok($scheduling_manager, 'Elive::StandardV3::SchedulingManager','scheduling_manager');
     my %min_version_nums = (ELM => '3.5.0', SAS => '7.2.0-935');
-    my %max_version_nums = (ELM => '3.5.0', SAS => '7.2.0-935');
+    my %max_version_nums = (ELM => '3.7.0', SAS => '7.2.0-935');
 
     ok(my $scheduler_version = $scheduling_manager->version, 'got server version');
     ok(my $scheduler_manager = $scheduling_manager->manager, 'got server manager');

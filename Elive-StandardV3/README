@@ -5,7 +5,7 @@ suitable for meetings, demonstrations web conferences, seminars and
 general training and support.
 
 Elive-StandardV3 is a set of Perl bindings and entity definitions for the
-Elluminate Standard Bridge V3 SOAP services ('standardv3' adapter).
+Elluminate Standard Bridge V3 SOAP services on both SAS and ELM.
 
 This is an alternative to the Command Toolkit, as supported by the
 Elive::Entity classess ('default' adapter).
@@ -34,7 +34,7 @@ account.
 Edit/create the appropriate server instance and tick 'Elluminate Standard
 Bridge V3 ...' in the 'Bridge Selection' section.
 
-You will then be asked to enter the SDK username and password. 
+You will then be asked to enter the API username and password. 
 
 LIVE TESTING
 
@@ -97,7 +97,7 @@ You can also look for information at:
 
 LICENSE AND COPYRIGHT
 
-Copyright (C) 2012 David Warring
+Copyright (C) 2012-2015 David Warring
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of either: the GNU General Public License as published

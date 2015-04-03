@@ -1,12 +1,13 @@
 Revision history for Elive
 
-1.34   23 January 2015
+1.34   4th April 2015
        - Update copyright notices
-       - Finish 1.33 Changes entry
+       [Elive::DAO]
+       - tweaks for latest (SAS compatibile) Elive::StandardV3
        [kwalitee]
        - Use consistant version number in sub-classes
 
-1.33   22 January 2015
+1.33   22nd January 2015
        [bug-fixes]
        - RT#101018 "Mouse 2.4.1 when Test::Script::Run is installed"
          Removed fragile 'stderr empty' tests from t/script-elive_query.t

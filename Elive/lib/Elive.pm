@@ -318,7 +318,7 @@ see the README file.
 
 =head2 Related CPAN Modules
 
-L<Elive::StandardV3> - this module implements the alternate Elluminate I<Live!> Standard Bridge API (v3). 
+L<Elive::StandardV3> - this module implements the alternate Elluminate I<Live!> Standard Bridge API (v3) for C<ELM> and C<SAS>. 
 
 =head2 Elluminate Documentation
 
