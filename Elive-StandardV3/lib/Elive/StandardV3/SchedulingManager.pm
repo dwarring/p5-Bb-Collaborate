@@ -25,7 +25,7 @@ __PACKAGE__->entity_name('SchedulingManager');
 
 =head2 manager (Str)
 
-The name of the Scheduling Server. This will be C<ELM>.
+The name of the Scheduling Server. This will be C<ELM> or <SAS>.
 
 =cut
 

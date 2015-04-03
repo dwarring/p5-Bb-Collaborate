@@ -125,11 +125,8 @@ sub _connect {
     # there's some ambiguity, an instance named v1 ... v9 will cause trouble!
     #
 
-    if (@path && $path[-1] =~ m{^v(\d+)$}) {
-	croak "unsupported standard bridge version v${1}, endpoint path: ". File::Spec::Unix->catdir(@path, 'webservice.event')
-	    unless $1 == 2;
-	pop(@path);
-    }
+    pop(@path)
+        if (@path && $path[-1] =~ m{^v(\d+)$});
 
     $uri_obj->path(File::Spec::Unix->catdir(@path));
 

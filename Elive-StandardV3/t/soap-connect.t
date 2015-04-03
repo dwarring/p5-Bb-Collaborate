@@ -1,6 +1,6 @@
 #!perl
 use warnings; use strict;
-use Test::More tests => 12;
+use Test::More tests => 14;
 use Test::Fatal;
 
 use lib '.';
@@ -57,24 +57,30 @@ SKIP: {
     is ( exception {$scheduling_manager = $connection->scheduling_manager} => undef,
 	      '$connection->scheduling_manager - lives');
     isa_ok($scheduling_manager, 'Elive::StandardV3::SchedulingManager','scheduling_manager');
-    my $min_version_num = '3.5.0';
-    my $max_version_num = '3.5.0';
+    my %min_version_nums = (ELM => '3.5.0', SAS => '7.2.0-935');
+    my %max_version_nums = (ELM => '3.5.0', SAS => '7.2.0-935');
 
     ok(my $scheduler_version = $scheduling_manager->version, 'got server version');
     ok(my $scheduler_manager = $scheduling_manager->manager, 'got server manager');
 
-    my ($scheduler_version_num) = ($scheduler_version =~ m{^([\d\.]+)});
-    note ("Elluminate Live! manager $scheduler_version_num");
-    ok($scheduler_version_num ge $min_version_num, "Elluminate Live! server is $min_version_num or higher");
+    my $min_version_num = $min_version_nums{$scheduler_manager};
+    my $max_version_num = $max_version_nums{$scheduler_manager};
 
-    my $tested_managers = 'ELM';
+    ok $min_version_num, "known schedular manager"
+        or diag "unknown scheduler manager, expected ELM or SAS, found: $scheduler_manager";
+
+    my ($scheduler_version_num) = ($scheduler_version =~ m{([\d\.\-]+)});
+    ok $scheduler_version_num, 'extracted scheduler version number'
+        or diag "unable to extract version number: $scheduler_version";
+    note ("Collaborate $scheduler_manager manager $scheduler_version_num");
+    ok($scheduler_version_num ge $min_version_num, "Collaborate server is $min_version_num or higher");
+
     my $manager = $scheduling_manager->manager;
 
-    if ($scheduler_version_num gt $max_version_num
-	|| $manager !~ m{^($tested_managers)$}) {
+    if ($scheduler_version_num gt $max_version_num) {
 	diag "************************";
-	diag "Note: Elluminate Live! server version is ".$scheduler_version_num;
-	diag "      This Elive::StandardV3 release ($Elive::StandardV3::VERSION) has been tested against $tested_managers on 3.3.2 - ".$max_version_num;
+	diag "Note: Collaborate server version is ".$scheduler_version_num;
+	diag "      This Elive::StandardV3 release ($Elive::StandardV3::VERSION) has been tested against $scheduler_manager on $min_version_num - $max_version_num";
 	diag "      You might want to check CPAN for a more recent version of Elive::StandardV3.";
 	diag "************************";
     }
@@ -89,7 +95,7 @@ SKIP: {
     if ($server_version) {
 	isa_ok($server_version, 'Elive::StandardV3::ServerVersion','server_version');
 
-	note 'Elluminate Live! server '.$server_version->versionName.' ('.$server_version->versionId.')';
+	note 'Collaborate '.$scheduler_manager.' server '.$server_version->versionName.' ('.$server_version->versionId.')';
     }
     else {
 	diag "unable to get server versions - are all servers running?";
