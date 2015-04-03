@@ -34,6 +34,37 @@ has 'sessionId' => (is => 'rw', isa => 'Int', required => 1);
 __PACKAGE__->_isa('Session');
 __PACKAGE__->primary_key('sessionId');
 
+=head2 teleponyType (Str )
+
+The type of telephony to configure.
+
+=over 4
+
+=item  thirdParty – You must use your own
+teleconference provider. You must
+manually configure the teleconference
+connection information.
+
+=item integrated – The teleconference service
+is provided by Blackboard Collaborate.
+Teleconference phone numbers and PINs
+are automatically generated during
+session creation and anyone in the
+session can initiate the connection
+between the session and the
+teleconference by simply dialing in to the
+teleconference.
+
+=item none – No teleconferencing is supported.
+
+=back
+
+=cut
+
+has 'telephonyType' => (is => 'rw', isa => 'Str',
+                        documentation => 'The type of telephony to configure.',
+    );
+
 =head2 chairPhone (Str)
 
 The phone number for the session chair (also known as a session moderator) when the Elluminate Live! session is running.

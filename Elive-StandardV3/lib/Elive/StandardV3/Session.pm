@@ -371,7 +371,17 @@ has 'versionId' => (is => 'rw', isa => 'Int',
 sub _readback_check {
     my ($class, $_updates_ref, $rows, @args) = @_;
     my %updates = %$_updates_ref;
+
     #
+    # sessionName is a bit SHOUTY on SAS. Do case insenstive comparision
+    #
+    if (my $session_name = delete $updates{sessionName}) {
+        for (map {$_->{sessionName}} @$rows) {
+            die " Update consistancy check failed on sessionName, sent:$session_name, read-back:$_"
+                if $_ and uc $session_name ne uc;
+        }
+    }
+
     # cop out of checking start and end times for recurring
     # sessions
     #

@@ -28,7 +28,8 @@ SKIP: {
     my $presentation;
 
   TODO : {
-      local($TODO) = 'UploadRespositoryPresentation - mixed up filename and description in response?';
+      local($TODO) = 'UploadRespositoryPresentation - mixed up filename and description in response?'
+          if $connection->scheduling_manager->manager eq 'ELM';
       is( exception {
 	  $presentation = Elive::StandardV3::Presentation->upload(
 	      {

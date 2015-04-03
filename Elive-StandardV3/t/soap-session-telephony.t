@@ -51,12 +51,13 @@ SKIP: {
     is( exception {$session_telephony = $session->telephony} => undef, 'get session telephony - lives');
 
     my %telephony_data = (
-	chairPhone => '(03) 5999 1234',
+        telephonyType => 'thirdParty',
+	chairPhone => '1 123 123 1234',
 	chairPIN   => '6342',
-	nonChairPhone => '(03) 5999 2234',
+	nonChairPhone => '1 248 248 0248',
 	nonChairPIN   => '7722',
 	isPhone => '0',
-	sessionSIPPhone => '1 6999 2222',
+	sessionSIPPhone => 'sip:foo@bar.com',
 	sessionPIN => '1234',
 	);
 
@@ -67,8 +68,8 @@ SKIP: {
     is( exception {$session_telephony = Elive::StandardV3::SessionTelephony->retrieve($session)} => undef,
 	     'retrieve session telephony - lives');
 
-    foreach (keys %telephony_data) {
-	is($telephony_data{$_},  $session_telephony->$_, "session telephony: $_ - as expected");
+    foreach (grep {$_ ne 'telephonyType'} sort keys %telephony_data) {
+        is($session_telephony->$_, $telephony_data{$_}, "session telephony: $_ - as expected");
     }
 
     my $session_telephony_list;

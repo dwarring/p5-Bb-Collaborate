@@ -311,7 +311,7 @@ sub string {
 	    if (Scalar::Util::blessed($_) && $_->can('stringify'));
 
 	if ($reftype eq 'ARRAY') {
-	    return join(',', map {string($_ => $data_type)} @$_)
+	    return join(',', sort map {string($_ => $data_type)} @$_)
 	}
     }
 

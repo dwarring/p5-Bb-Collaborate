@@ -717,7 +717,7 @@ sub _freeze {
 
 	for ($db_data->{$_}) {
 
-	    $_ = Elive::Util::_freeze($_, $is_array? $property: $type);
+	    $_ = Elive::Util::_freeze($_, $is_array ? $property : $type);
 
 	}
     }
@@ -973,10 +973,15 @@ sub _readback_check {
 
 		    my $property_type = $class->property_types->{$_};
 
-		    warn YAML::Syck::Dump({read => $read_val, sent => $write_val, type => "$property_type"})
-			if ($class->debug >= 2);
+                    my $sent = Elive::Util::string($write_val, $property_type);
+                    my $read = Elive::Util::string($read_val, $property_type);
 
-		    croak "${class}: Update consistancy check failed on $_ (${property_type}), sent:".Elive::Util::string($write_val, $property_type).", read-back:".Elive::Util::string($read_val, $property_type);
+                    unless ($sent eq $read) {
+                        warn YAML::Syck::Dump({read => $read, sent => $sent, type => "$property_type"})
+                            if ($class->debug >= 2);
+
+                        croak "${class}: Update consistancy check failed on $_ (${property_type}), sent:$sent; read-back:$read";
+                    }
 		}
 	    }
 	}

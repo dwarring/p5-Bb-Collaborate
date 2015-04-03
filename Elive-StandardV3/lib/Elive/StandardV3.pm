@@ -4,7 +4,7 @@ use warnings; use strict;
 use Mouse;
 use Mouse::Util::TypeConstraints;
 
-use Elive::DAO '0.06';
+use Elive::DAO '1.34';
 extends 'Elive::DAO';
 
 use Carp;
@@ -19,7 +19,7 @@ Version 0.01_4
 
 =cut
 
-our $VERSION = '0.01_4';
+our $VERSION = '0.01_5';
 
 =head1 DESCRIPTION
 

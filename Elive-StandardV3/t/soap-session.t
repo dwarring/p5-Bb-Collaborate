@@ -58,7 +58,7 @@ SKIP: {
     foreach (keys %session_data) {
 	#
 	# returned record doesn't contain password
-	is_deeply($session->$_, $session_data{$_}, "session $_ as expected");
+	is(uc Elive::Util::string($session->$_), uc Elive::Util::string($session_data{$_}), "session $_ as expected");
     }
 
     my %update_data = (
@@ -92,7 +92,7 @@ SKIP: {
     foreach (keys %update_data) {
 	#
 	# returned record doesn't contain password
-	is($session->$_, $update_data{$_}, "session update $_ as expected");
+	is( uc $session->$_, uc $update_data{$_}, "session update $_ as expected");
     }
 
     my $session_url;

@@ -22,19 +22,19 @@ SKIP: {
     my $connection = $connection_class->connect(@$auth);
     Elive::StandardV3->connection($connection);
 
+    my $end_time = time();
+    my $start_time = $end_time  -  60 * 60 * 24 * 7; # one week approx
     my $recordings;
 
-    $recordings = Elive::StandardV3::Recording->list;
-
     is( exception {
-	$recordings = Elive::StandardV3::Recording->list
+	$recordings = Elive::StandardV3::Recording->list(filter => {startTime => $start_time, endTime => $end_time})
 	  } => undef,
 	'list recordings - lives');
 
     die "unable to get recordings"
 	unless $recordings;
 
-    skip('Unable to find any existing recordings to test', 4)
+    skip('Unable to find any existing recordings to test', 5)
 	unless @$recordings;
 
     my $recording = $recordings->[-1];

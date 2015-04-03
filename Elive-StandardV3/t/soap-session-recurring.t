@@ -49,7 +49,7 @@ SKIP: {
     foreach (@sessions) {
 	isa_ok($_, $class, "** session occurence ".++$n." **");
 	foreach my $prop (grep {!/^password$/} sort keys %session_opts) {
-	    is($_->$prop, $session_opts{$prop}, "session $n, $prop as expected");
+	    is(uc $_->$prop, uc $session_opts{$prop}, "session $n, $prop as expected");
 	}
     }
 
