@@ -3,16 +3,17 @@ abstract: 'Elluminate Live! Manager (ELM) Command Toolkit bindings'
 author:
   - 'David Warring <david.warring@gmail.com>'
 build_requires:
-  ExtUtils::MakeMaker: 6.42
+  ExtUtils::MakeMaker: 6.59
   File::Temp: 0
   Test::Fatal: 0
   Test::More: 0.98
   Test::Warn: 0
   version: 0
 configure_requires:
-  ExtUtils::MakeMaker: 6.42
+  ExtUtils::MakeMaker: 6.59
 distribution_type: module
-generated_by: 'Module::Install version 0.86'
+dynamic_config: 1
+generated_by: 'Module::Install version 1.14'
 license: perl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
@@ -54,5 +55,4 @@ requires:
   perl: 5.8.3
 resources:
   license: http://dev.perl.org/licenses/
-  repository: svn+ssh://dwarring@svn.code.sf.net/p/elive/code/trunk/Elive
-version: 1.34
+version: '1.34'
