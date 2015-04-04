@@ -12,7 +12,7 @@ use Elive::Util;
 
 =head1 NAME
 
-Elive::StandardV3::SessionTelephony - Elluminate Session Telephony instance class
+Elive::StandardV3::SessionTelephony - Session Telephony instance class
 
 =head1 DESCRIPTION
 
@@ -61,7 +61,7 @@ has 'telephonyType' => (is => 'rw', isa => 'Str',
 
 =head2 chairPhone (Str)
 
-The phone number for the session chair (also known as a session moderator) when the Elluminate Live! session is running.
+The phone number for the session chair (also known as a session moderator) when the session is running.
 
 =cut
 
@@ -81,7 +81,7 @@ has 'chairPIN' => (is => 'rw', isa => 'Str',
 
 =head2 nonChairPhone (Str)
 
-The phone number used by the session non-chair users (also known as a session participants). The information is for display purposes only in the Elluminate Live! session (so participants know what telephone number and PIN to use to connect to the teleconference).
+The phone number used by the session non-chair users (also known as a session participants). The information is for display purposes only in the session (so participants know what telephone number and PIN to use to connect to the teleconference).
 
 =cut
 
@@ -112,7 +112,7 @@ has 'isPhone' => (is => 'rw', isa => 'Bool',
 
 =head2 sessionSIPPhone (Str)
 
-The Session Initiation Protocol (SIP) or phone number used by the Elluminate Live! session. Sometimes referred to as the session bridge or teleconference bridge.
+The Session Initiation Protocol (SIP) or phone number used by the session. Sometimes referred to as the session bridge or teleconference bridge.
 For accepted phone number and SIP formats, see Notes About Session Telephony Validation on page 67.
 
 =cut

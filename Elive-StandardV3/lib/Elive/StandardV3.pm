@@ -11,27 +11,25 @@ use Carp;
 
 =head1 NAME
 
-Elive::StandardV3 - Perl bindings for the Elluminate Live Standard Bridge (V3)
+Elive::StandardV3 - Perl bindings for the Blackboard Collaborate Standard Bridge (V3)
 
 =head1 VERSION
 
-Version 0.01_6
+Version 0.01_7
 
 =cut
 
-our $VERSION = '0.01_6';
+our $VERSION = '0.01_7';
 
 =head1 DESCRIPTION
 
-Elluminate Live! (c) is software for virtual online classrooms. It is
+Blackboard Collaborate is software for virtual online classrooms. It is
 suitable for meetings, demonstrations web conferences, seminars, general
 training and support.
 
 Elive-StandardV3 is a set of Perl bindings and entity definitions for the
-Elluminate Standard Bridge V3 SOAP services (C<standardv3> adapter).
-
-This is an alternative to the Command Toolkit, as supported by the
-L<Elive::Entity> classess (bindings to the C<default> adapter).
+Collaborate V3 SOAP services, both on SAS (externally hosted) and ELM
+(self hosted) servers.
 
 =cut
 
@@ -71,7 +69,7 @@ use 5.008003;
 
 =head1 DESCRIPTION
 
-Implements Elluminate I<Live!> Standard Bridge V3 API bindings
+Implements Blackboard Collaborate Standard Bridge V3 API bindings
 
 ** DEVELOPER RELEASE - UNDER CONSTRUCTION **
 
@@ -126,8 +124,8 @@ sub _get_results {
      # Setup a secondary connection
      my $c2 = Elive::StandardV3::Connection->connect('http://user2:pass2@myServer.com/test2');
 
-Connects to an Elluminate server instance. Dies if the connection could not
-be established. If, for example, the SOAP connection or authentication failed.
+Connects to a server instance. Dies if the connection could not be established. If, for example,
+the SOAP connection or authentication failed.
 
 See also Elive::StandardV3::Connection.
 
@@ -233,7 +231,7 @@ sub insert {
 Abstract selection method. Most commands allow a ranging expression to narrow
 the selection. This is passed in using the C<filter> option. For example:
 
-    my $bobs_sessions = Elive::StandardV3::Session->list({userId => 'bob'});
+    my $bobs_sessions = Elive::StandardV3::Session->list( filter => {userId => 'bob'});
 
 =cut
 
@@ -378,7 +376,7 @@ background information and a full description of the available commands.
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright 2012 David Warring.
+Copyright 2012-2015 David Warring.
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of either: the GNU General Public License as published

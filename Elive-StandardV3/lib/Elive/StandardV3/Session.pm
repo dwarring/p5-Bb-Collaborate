@@ -19,7 +19,7 @@ use Elive::StandardV3::Recording;
 
 =head1 NAME
 
-Elive::StandardV3::Session - Elluminate Session instance class
+Elive::StandardV3::Session - Collaborate session instance class
 
 =head1 DESCRIPTION
 
@@ -73,7 +73,7 @@ Notes:
 
 =over 4
 
-=item * ELM If you don't specify a value, the default is taken from the C<Restrict Session Access> setting in the Default Session Preferences, These preferences are available through the ELM user interface. For more information, see the online help available from the Elluminate Live! Manager user interface.
+=item * ELM If you don't specify a value, the default is taken from the C<Restrict Session Access> setting in the Default Session Preferences, These preferences are available through the ELM user interface. For more information, see the online help available from the Collaborate Manager user interface.
 
 =item * SAS Use of this parameter should be avoided as this controls
 SAS Native Mode session and recording access. The default value for
@@ -101,7 +101,7 @@ has 'allowInSessionInvites' => (is => 'rw', isa => 'Bool',
 
 =head2 boundaryTime (Int)
 
-Boundary time. (Defined as the period before the start of a session in which users can join the session. Used by chairs to preload content and by non-chairs who have never joined an Elluminate Live! session before to download the jar files and configure their audio.)
+Boundary time. (Defined as the period before the start of a session in which users can join the session. Used by chairs to preload content and by non-chairs who have never joined a Collabroate session before to download any files and configure their audio.)
 
 Specified in minutes, to a maximum value of 1440 minutes (24 hours).
 If you don't specify a value, the default is taken from the C<Early Session Access Time> setting in the Default Session Preferences.
@@ -114,7 +114,7 @@ has 'boundaryTime' => (is => 'rw', isa => 'Int',
 
 =head2 chairList (Str)
 
-Array of user identifiers from your system that specifies which users may join the Elluminate Live! session as chairpersons.
+Array of user identifiers from your system that specifies which users may join the Collaborate session as chairpersons.
 
 Each user identifier in the list may be 1 - 64 characters in length, and each identifier is case sensitive. A userId may not appear in both the chair and non-chair lists.
 
@@ -157,7 +157,7 @@ has 'endTime' => (is => 'rw', isa => 'HiResDate', required => 1,
 
 =head2 groupingList (Str)
 
-Array of unique course identifiers from your system with which to associate this Elluminate Live! session.
+Array of unique course identifiers from your system with which to associate this Collaborate session.
 
 Each course identifier may be 1 - 32 characters in length, and each identifier is case sensitive.
 
@@ -169,7 +169,7 @@ has 'groupingList' => (is => 'rw', isa => 'Elive::StandardV3::_List', coerce => 
 
 =head2 sessionName (Str)
 
-The session name. This name will appear in the Elluminate Live! session title
+The session name. This name will appear in the Collaborate session title
 bar. Case insensitive. 1 - 255 characters in length. Must begin with a letter
 or digit and may not contain C<E<lt>>, C<&>, '"', C<#>, or C<%>.
 
@@ -193,7 +193,7 @@ has 'hideParticipantNames' => (is => 'rw', isa => 'Bool',
 
 =head2 maxCameras (Int)
 
-Maximum number of simultaneous video cameras to be configured in the Elluminate Live! session at session launch time.
+Maximum number of simultaneous video cameras to be configured in the Collaborate session at session launch time.
 
 For single server configurations, this value must be between 1 and C<maxAvailableCameras> (as returned from the L<Elive::StandardV3::ServerConfiguration> C<get()> command).
 
@@ -209,7 +209,7 @@ has 'maxCameras' => (is => 'rw', isa => 'Int',
 
 =head2 maxTalkers (Int)
 
-Maximum number of simultaneous talkers to be configured in the Elluminate Live! session at session launch time.
+Maximum number of simultaneous talkers to be configured in the Collaborate session at session launch time.
 
 For single server configurations, this value must be between 1 and C<maxAvailableTalkers> property (as returned from the L<Elive::StandardV3::ServerConfiguration> C<get()> command).
 
@@ -225,7 +225,7 @@ has 'maxTalkers' => (is => 'rw', isa => 'Int',
 
 =head2 mustBeSupervised (Bool)
 
-Permits chairpersons to view all private chat messages in the Elluminate Live! session.
+Permits chairpersons to view all private chat messages in the Collaborate session.
 If you don't specify a value, the default is taken from the Early Session Access Time setting in the Default Session Preferences.
 
 =cut
@@ -236,7 +236,7 @@ has 'mustBeSupervised' => (is => 'rw', isa => 'Bool',
 
 =head2 nonChairList
 
-Comma-separated list of user identifiers from your system that specifies which users may join the Elluminate Live! session as non-chair participants. (That is assuming that openChair is set to false. If C<openChair> is set to true, then all users will be chairpersons.)
+Comma-separated list of user identifiers from your system that specifies which users may join the Collaborate session as non-chair participants. (That is assuming that openChair is set to false. If C<openChair> is set to true, then all users will be chairpersons.)
 
 Each user identifier in the list may be 1 - 64 characters in length, and each identifier is case sensitive. A userId may not appear in both the chair and non-chair lists.
 
@@ -270,7 +270,7 @@ has 'startTime' => (is => 'rw', isa => 'HiResDate', required => 1,
 
 =head2 openChair (Bool)
 
-All users will join the session as a chairperson in the Elluminate Live! session.
+All users will join the session as a chairperson in the Collaborate session.
 
 If you don't specify a value, the default is taken from the C<Grant All Permissions on Entry> setting in the Default Session Preferences.
 
@@ -294,7 +294,7 @@ has 'permissionsOn' => (is => 'rw', isa => 'Bool',
 
 =head2 raiseHandOnEnter (Bool)
 
-When users join the Elluminate Live! session, they will automatically raise their hand (this is accompanied by an audible notification).
+When users join the Collaborate session, they will automatically raise their hand (this is accompanied by an audible notification).
 
 If you don't specify a value, the default is taken from the Raise Hand on Entry setting in the Default Session Preferences.
 
@@ -306,7 +306,7 @@ has 'raiseHandOnEnter' => (is => 'rw', isa => 'Bool',
 
 =head2 recordingModeType (Int)
 
-The mode of recording in the Elluminate Live! session:
+The mode of recording in the Collaborate session:
 
 =over 4
 

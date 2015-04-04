@@ -31,7 +31,7 @@ has 'boundaryTime' => (is => 'rw', isa => 'Int');
 
 =head2 maxAvailableTalkers (Int)
 
-Your default Elluminate Live! version's supported maximum simultaneous talkers.
+Your default server's supported maximum simultaneous talkers.
 
 =cut
 
@@ -39,7 +39,7 @@ has 'maxAvailableTalkers' => (is => 'rw', isa => 'Int');
 
 =head2 maxAvailableCameras (Int)
 
-Your default Elluminate Live! version's supported maximum simultaneous cameras.
+Your default server's supported maximum simultaneous cameras.
 
 =cut
 

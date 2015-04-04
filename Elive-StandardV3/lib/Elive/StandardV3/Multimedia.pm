@@ -11,10 +11,10 @@ Elive::StandardV3::Multimedia - Multimedia entity class
 
 =head1 DESCRIPTION
 
-This command uploads supported multimedia files into your ELM repository for use by your Elluminate Live! sessions.
+This command uploads supported multimedia files into your ELM repository for use by your Collaborate sessions.
 
-Once uploaded, you will need to "attach" the file to one or more Elluminate
-Live! sessions using the L<Elive::StandardV3::Session> C<set_multimedia()>
+Once uploaded, you will need to "attach" the file to one or more Collaborate
+sessions using the L<Elive::StandardV3::Session> C<set_multimedia()>
 method.
 
 =cut
@@ -64,7 +64,7 @@ has 'creatorId' => (is => 'rw', isa => 'Str');
 =head2 filename (Str)
 
 The name of the multimedia file including the file extension.
-Elluminate Live! supports the following multimedia file types:
+Collobrate supports the following multimedia file types:
 
 =over 4
 

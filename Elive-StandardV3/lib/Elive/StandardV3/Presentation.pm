@@ -11,11 +11,10 @@ Elive::StandardV3::Presentation - Presentation entity class
 
 =head1 DESCRIPTION
 
-This command uploads presentation files, such as Elluminate C<Live!> whiteboard files or Elluminate I<Plan!> files into your ELM repository for use by your Elluminate Live! sessions.
+This command uploads presentation files, such as Collaborate whiteboard files or I<Plan!> files for use by your Collaborate sessions.
 
-Once uploaded, you will need to "attach" the file to one or more Elluminate
-Live! sessions using the L<Elive::StandardV3::Session> C<set_presentation()>
-method.
+Once uploaded, you will need to "attach" the file to one or more Collaborate
+sessions using the L<Elive::StandardV3::Session> C<set_presentation()> method.
 
 =cut
 
@@ -65,13 +64,13 @@ has 'creatorId' => (is => 'rw', isa => 'Str');
 
 The name of the presentation file including the file extension.
 
-Elluminate Live! supports the following presentation file types:
+Collaborate supports the following presentation file types:
 
 =over 4
 
-=item * Elluminate Live! Whiteboard files: C<.wbd>, C<.wbp>
+=item * Collaborate Whiteboard files: C<.wbd>, C<.wbp>
 
-=item * Elluminate Plan! files: C<.elp>, C<.elpx>.
+=item * Collaborate Plan! files: C<.elp>, C<.elpx>.
 
 =back
 

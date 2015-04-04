@@ -10,7 +10,7 @@ use Elive::StandardV3::SessionAttendance::Attendees;
 
 =head1 NAME
 
-Elive::StandardV3::SessionAttendance - Elluminate Session Attendance Report
+Elive::StandardV3::SessionAttendance - Session Attendance Report
 
 =head1 DESCRIPTION
 

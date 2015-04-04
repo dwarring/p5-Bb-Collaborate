@@ -12,11 +12,11 @@ use Elive::Util;
 
 =head1 NAME
 
-Elive::StandardV3::Recording - Elluminate Recording instance class
+Elive::StandardV3::Recording - Collaborate Recording instance class
 
 =head1 DESCRIPTION
 
-This class is used to locate and access Elluminate Live recordings.
+This class is used to locate and access Collaborate recordings.
 
 =cut
 
@@ -26,7 +26,7 @@ __PACKAGE__->entity_name('RecordingLong');
 
 =head2 recordingId (Long)
 
-The ELM-generated recordingId for the Elluminate Live! session recording.
+The ELM-generated recordingId for the Collaborate session recording.
 
 =cut
 
@@ -79,7 +79,7 @@ has 'creationDate' => (is => 'rw', isa => 'HiResDate',);
 
 =head2 recordingSize (Int)
 
-The size of the Elluminate Live! recording file in bytes.
+The size of the recording file in bytes.
 
 =cut
 
@@ -97,7 +97,7 @@ has 'roomName' => (is => 'rw', isa => 'Str',);
 
 =head2 sessionId (Int)
 
-The ELM-generated sessionId for the scheduled Elluminate Live! session. This will be 0 if the scheduled session has been deleted but the corresponding recording has not.
+The ELM-generated sessionId for the scheduled session. This will be 0 if the scheduled session has been deleted but the corresponding recording has not.
 
 =cut
 

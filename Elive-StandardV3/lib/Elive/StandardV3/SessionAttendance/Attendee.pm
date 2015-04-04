@@ -7,7 +7,7 @@ extends 'Elive::StandardV3';
 
 =head1 NAME
 
-Elive::StandardV3::SessionAttendance::Attendee - Elluminate Attendee instance class
+Elive::StandardV3::SessionAttendance::Attendee - Collaborate Attendee instance class
 
 =head1 DESCRIPTION
 
@@ -21,7 +21,7 @@ __PACKAGE__->entity_name('Attendee');
 
 =head2 attendeeName (Str)
 
-The display name of the attendee as it appeared in the Elluminate Live! session.
+The display name of the attendee as it appeared in the Collaborate session.
 
 =cut
 

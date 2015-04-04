@@ -18,12 +18,12 @@ use Elive::Util;
 
 =head1 NAME
 
-Elive::StandardV3::Connection -  Manage Elluminate SOAP v3 endpoint connections.
+Elive::StandardV3::Connection -  Manage Collaborate SOAP V3 endpoint connections.
 
 =head1 DESCRIPTION
 
 This module handles logical connections to the C</v3/webservice.event> endpoint
-on the Elluminate server. This endpoint implements the Standard Bridge API.
+on the Collaborate server. This endpoint implements the Standard Bridge API.
 
 =cut
 
@@ -125,7 +125,7 @@ sub disconnect {
 
     my $som = $self->call( $cmd, %params );
 
-Performs an Elluminate SOAP method call. Returns the response as a
+Performs a Collaborate SOAP method call. Returns the response as a
 SOAP::SOM object.
 
 =cut

@@ -15,7 +15,7 @@ Elive::StandardV3::ServerVersion - Server Version entity class
 
 =head1 DESCRIPTION
 
-This class information regarding the Elluminate I<Live!> versions to which you have access.
+This class provides Collaborate server version information 
 
 =cut
 
