@@ -60,15 +60,26 @@ Session access type:
 
 =over 4
 
-=item 1 = I<Private> - This type does not apply to ELM. If you set this to 1, the API will change it to 2.
+=item 1. I<Private> - Only the SAS Owner may join the session. Note: this type does not apply to ELM. If
+you set this to 1, the API will change it to 2.
 
-=item 2 = I<Restricted> - only users specified in the chair or non-chair lists (or guests invited with the email links) may join.
+=item 2. I<Restricted> - only users specified in the chair or non-chair lists (or guests invited with the email links) may join.
 
-=item 3 = I<Public> - All users within your login group may join.
+=item 3. I<Public> - All users within your login group may join.
 
 =back
 
-If you don't specify a value, the default is taken from the C<Restrict Session Access> setting in the Default Session Preferences, These preferences are available through the ELM user interface. For more information, see the online help available from the Elluminate Live! Manager user interface.
+Notes:
+
+=over 4
+
+=item * ELM If you don't specify a value, the default is taken from the C<Restrict Session Access> setting in the Default Session Preferences, These preferences are available through the ELM user interface. For more information, see the online help available from the Elluminate Live! Manager user interface.
+
+=item * SAS Use of this parameter should be avoided as this controls
+SAS Native Mode session and recording access. The default value for
+this parameter is 2 (Restricted) and is appropriate for API use.
+
+=back
 
 =cut
 
@@ -299,11 +310,11 @@ The mode of recording in the Elluminate Live! session:
 
 =over 4
 
-=item C<1> (I<Manual>) - A chairperson must start the recording.
+=item 1. (I<Manual>) - A chairperson must start the recording.
 
-=item C<2> (I<Automatic>) - The recording starts automatically when the session first starts.
+=item 2. (I<Automatic>) - The recording starts automatically when the session first starts.
 
-=item C<3> (I<Disabled>) - Recording is disabled.
+=item 3. (I<Disabled>) - Recording is disabled.
 
 =back
 
@@ -549,7 +560,7 @@ sub telephony {
 
     $session->set_presentation($presentation);
 
-Aossociates a seession with presentation content.
+Associates a seession with presentation content.
 
 =cut
 

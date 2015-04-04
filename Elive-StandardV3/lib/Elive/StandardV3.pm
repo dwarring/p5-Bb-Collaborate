@@ -15,11 +15,11 @@ Elive::StandardV3 - Perl bindings for the Elluminate Live Standard Bridge (V3)
 
 =head1 VERSION
 
-Version 0.01_4
+Version 0.01_6
 
 =cut
 
-our $VERSION = '0.01_5';
+our $VERSION = '0.01_6';
 
 =head1 DESCRIPTION
 

@@ -1,14 +1,11 @@
-Perl bindings for the Elluminate Live Standard Bridge V3 API.
+Perl bindings for the Blackboard Collaborate Standard Bridge V3 API.
 
-Elluminate Live! (c) is software for virtual online classrooms. It is
+Blackboard Collaborate is software for virtual online classrooms. It is
 suitable for meetings, demonstrations web conferences, seminars and
 general training and support.
 
 Elive-StandardV3 is a set of Perl bindings and entity definitions for the
 Elluminate Standard Bridge V3 SOAP services on both SAS and ELM.
-
-This is an alternative to the Command Toolkit, as supported by the
-Elive::Entity classess ('default' adapter).
 
 You will need to ensure that the Standard V3 bridge is enabled and that
 the SDK user has been set up. Please see the Server Configuration section.
@@ -25,8 +22,13 @@ To install this module, run the following commands:
 SERVER CONFIGURATION
 ====================
 
-Elluminate Live Manager
------------------------
+Session Admininstration System (SAS)
+------------------------------------
+Please ensure that the V3 API has been enabled and use the username, password
+and end-point URL, as provided.
+
+Elluminate Live Manager (ELM)
+-----------------------------
 Please ensure that your the standard bridge (V3) is enabled. To do this,
 login to http://your_server.com/elmcontrol with an appropriate administrator
 account.
