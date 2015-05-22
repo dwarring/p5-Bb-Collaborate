@@ -40,6 +40,7 @@ our %KnownCommands = (
     GetSchedulingManager => 'r',
     GetServerConfiguration => 'r',
     GetServerVersions => 'r',
+    GetTelephony => 'r',
  
     ListRepositoryMultimedia => 'r',
     ListRepositoryPresentation => 'r',
@@ -62,7 +63,7 @@ our %KnownCommands = (
     SetSession => 'c',
     SetSessionMultimedia => 'u',
     SetSessionPresentation => 'u',
-    SetSessionTelephony => 'u',
+    SetTelephony => 'u',
 
     UpdateSession => 'u',
     UploadRepositoryMultimedia => 'c',

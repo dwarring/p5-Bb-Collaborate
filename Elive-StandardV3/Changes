@@ -1,7 +1,8 @@
 Revision history for Elive-StandardV3
 
 0.01_7 25th May 2015
-       Updating to standard V3.3 (see /etc/webservice.wsdl)
+       Upgrading from V1.0 through to V3.3 (see /etc/webservice.wsdl)
+       - GetSessionTelephony => GetTelephony, SetSessionTelephony => SetTelephony
        - Added Elive::StandardV3::Recording::File - for ConvertRecording requests/responses
 
 0.01_6 4 April 2015

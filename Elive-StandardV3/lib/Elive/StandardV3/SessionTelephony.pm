@@ -20,7 +20,7 @@ This class is used to setup telephony information for an existing session
 
 =cut
 
-__PACKAGE__->entity_name('SessionTelephony');
+__PACKAGE__->entity_name('Telephony');
 
 =head1 PROPERTIES
 
