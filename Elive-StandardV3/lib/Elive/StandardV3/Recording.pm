@@ -171,6 +171,23 @@ Returns an array of recording objects. You may filter on:
 
 =cut
 
+=head2 $recording->convert(format => 'mp3', %opts) 
+
+Convert the recording to C<mp3> (default) or C<mp4>.
+
+=cut
+
+sub convert {
+    my $self = shift;
+    my %opts = @_;
+    $opts{format} //= 'mp3';
+    $opts{connection} //= $self->conection
+	or die "not connected";
+
+    require Elive::StandardV3::Recording::File;
+    Elive::StandardV3::Recording::File->convert_recording( %opts );
+}
+
 =head2 delete
 
     $recording->delete;

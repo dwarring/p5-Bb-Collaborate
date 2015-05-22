@@ -35,6 +35,8 @@ our %KnownCommands = (
     ClearSessionChairList => 'u',
     ClearSessionNonChairList => 'u',
 
+    ConvertRecording => 'u',
+
     GetSchedulingManager => 'r',
     GetServerConfiguration => 'r',
     GetServerVersions => 'r',

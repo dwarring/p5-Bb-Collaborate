@@ -1,6 +1,6 @@
 #!perl -T
 use warnings; use strict;
-use Test::More tests => 6;
+use Test::More tests => 8;
 use Test::Fatal;
 
 use lib '.';
@@ -8,6 +8,7 @@ use t::Elive::StandardV3;
 
 use Elive::StandardV3;
 use Elive::StandardV3::Recording;
+use Elive::StandardV3::Recording::File;
 use Elive::StandardV3::Session;
 
 SKIP: {
@@ -15,7 +16,7 @@ SKIP: {
     my %result = t::Elive::StandardV3->test_connection();
     my $auth = $result{auth};
 
-    skip ($result{reason} || 'skipping live tests', 6)
+    skip ($result{reason} || 'skipping live tests', 8)
 	unless $auth;
 
     my $connection_class = $result{class};
@@ -34,7 +35,7 @@ SKIP: {
     die "unable to get recordings"
 	unless $recordings;
 
-    skip('Unable to find any existing recordings to test', 5)
+    skip('Unable to find any existing recordings to test', 7)
 	unless @$recordings;
 
     my $recording = $recordings->[-1];
@@ -53,6 +54,10 @@ SKIP: {
 	'$recording->recording_url - lives');
     ok($recording_url, "got recording_url");
     note("recording url is: $recording_url");
+
+    my $recording_file;
+    is exception {$recording_file = $recording->convert('mp3')} => undef, '$recording->convert - lives';
+    isa_ok $recording_file, 'Elive::StandardV3::Recording::File';
 
     # try to find a session with associated recording(s)
 

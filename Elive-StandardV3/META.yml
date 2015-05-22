@@ -1,5 +1,5 @@
 ---
-abstract: 'Perl bindings for the Elluminate Live Standard Bridge (V3)'
+abstract: 'Perl bindings for the Blackboard Collaborate Standard Bridge (V3)'
 author:
   - 'David Warring <david.warring@gmail.com>'
 build_requires:
@@ -45,4 +45,4 @@ requires:
 resources:
   license: http://dev.perl.org/licenses/
   repository: git.code.sf.net/p/elive/git
-version: 0.01_6
+version: 0.01_7

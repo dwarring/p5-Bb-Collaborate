@@ -1,10 +1,14 @@
 Revision history for Elive-StandardV3
 
-0.01_6 4 April 2012
+0.01_7 25th May 2015
+       Updating to standard V3.3 (see /etc/webservice.wsdl)
+       - Added Elive::StandardV3::Recording::File - for ConvertRecording requests/responses
+
+0.01_6 4 April 2015
        Removed POD wide characters. Apparently cause of Test::Pod::Coverage failures.
        Other general POD and README tweaks.
 
-0.01_5 4 April 2012
+0.01_5 4 April 2015
        Dusted off. New development release, targeting both SAS and ELM
 
 0.01_1 17 March 2012
