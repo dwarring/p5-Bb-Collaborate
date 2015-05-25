@@ -97,9 +97,6 @@ sub _connect {
 	    }
 	}
     }
-    else {
-	warn "no credentials in url: $url" if $debug;
-    }
 
     my $uri_path = $uri_obj->path;
 
