@@ -45,7 +45,7 @@ sub test_connection {
 
 	    if ($user && $pass && $url !~ m{^mock:}i) {
 
-		if ($url =~ m{/v[1-9](/(webservice\.event)?)?$}) {
+		if ($url =~ m{/v[1-9\.]+(/(webservice\.event)?)?$}) {
 		    $result{reason} = '$ELIVE_TEST_URL path is SAS specific ([/instance]/vN[/webservice.event])';
 		}
 		else {
