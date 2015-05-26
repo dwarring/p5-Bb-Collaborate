@@ -859,23 +859,48 @@ sub set_api_callback_url {
     return $success;
 }
 
-=head2 register_attendee
+=head2 attendee_url
 
-    $session->register_attendee(userId => 'fred', displayName => 'Fred Nurk', isChair => 0)
+    my %attendee = (userId => 'fred', displayName => 'Fred Nurk', isChair => 0);
+    my $attendee_url = $session->register_attendee( \%attendee );
+    print "Please go to: $attendee_url";
 
-Ensures that the user is in the chair or non-chair list for this session. The user may be added and/or
-promoted/demoted between the C<chairList> and C<nonChairList> as required.
+Ensures that the user is in the chair or non-chair list for this session and returns a join URL for the session.
+
+The user may be added and/or promoted/demoted between the C<chairList> and C<nonChairList> as required.
 
 =cut
 
-sub register_attendee {
-    my ($self, %opt) = @_;
-    my $userId = $opt{userId}
-        or die "missing required parameter: userId";
+sub attendee_url {
+    my ($self, $_params, %opt) = @_;
+    die "usage: \$self->register_attendee({userId => .., displayName => ..., isChar => ...}, \%opt)"
+        unless Elive::Util::_reftype( $_params ) eq 'HASH';
+    die "missing required parameter: userId"
+	unless $_params->{userId};
 
-    $opt{command} ||= 'UpdateSessionAttendees';
+    my %params = %$_params;
 
-    $self->update( %opt );
+    my $command = $opt{command} || 'UpdateSessionAttendees';
+    my $connection = $opt{connection} || $self->connection
+	or die "not connected";
+
+    my $session_id = $opt{sessionId};
+
+    $session_id ||= $self->sessionId
+	if ref($self);
+
+    croak "unable to determine sessionId"
+	unless $session_id;
+
+    $params{sessionId} = $session_id;
+
+    my $som = $connection->call($command => %{ $self->_freeze(\%params) });
+
+    my $results = $self->_get_results( $som, $connection );
+
+    my $url = @$results && $results->[0];
+
+    return $url;
 }
 
 =head2 attendance

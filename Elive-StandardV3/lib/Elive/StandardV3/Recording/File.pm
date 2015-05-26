@@ -42,7 +42,7 @@ sub convert_recording {
 	or croak "Not connected";
 
     my $recording_id = $opt{recording_id} || $opt{recordingId};
-    my $format = $opt{format} // 'mp3';
+    my $format = $opt{format} || 'mp3';
 
     $recording_id ||= $class->recordingId
 	if ref($class);

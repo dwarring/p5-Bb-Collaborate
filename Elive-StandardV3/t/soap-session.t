@@ -1,6 +1,6 @@
 #!perl
 use warnings; use strict;
-use Test::More tests => 27;
+use Test::More tests => 28;
 use Test::Fatal;
 
 use version;
@@ -99,7 +99,11 @@ SKIP: {
     is( exception {$session_url = $session->session_url(userId => 'bob', displayName => 'Robert')} => undef, 'Can generate session Url for charList user');
     note "session url: $session_url";
 
-    is exception {$session->register_attendee(userId => 'fred', displayName => 'Frederick Nurk', isChair => 1)}, 'Register_attendee lives';
+    my %attendee = (userId => 'fred', displayName => 'Frederick Nurk', isChair => 1);
+    my $url;
+    is exception {$url = $session->attendee_url(\%attendee)} => undef, 'Register_attendee lives';
+    note "attendee_url: $url";
+    ok $url, "got attendee_url";
 
     my $attendances;
 

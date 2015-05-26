@@ -144,11 +144,6 @@ Returns the underlying L<SOAP::Lite> object for the connection.
 
 =cut
 
-sub url {
-    my $self = shift;
-    $self->SUPER::url(@_) . '/v3/webservice.event';
-}
-
 sub soap {
     my ($self) = shift;
 
@@ -278,6 +273,17 @@ Equivalent to C<$self-E<gt>server_versions-E<gt>versionName>.
 
 sub version {
     return (my $self = shift)->server_versions->versionName;
+}
+
+=head2 url
+
+Return the SOAP end-point URL.
+
+=cut
+
+sub url {
+    my $self = shift;
+    $self->SUPER::url(@_) . '/v3/webservice.event';
 }
 
 sub _check_for_errors {

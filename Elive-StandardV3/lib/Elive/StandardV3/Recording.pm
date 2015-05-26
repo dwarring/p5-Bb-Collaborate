@@ -180,8 +180,8 @@ Convert the recording to C<mp3> (default) or C<mp4>.
 sub convert {
     my $self = shift;
     my %opts = @_;
-    $opts{format} //= 'mp3';
-    $opts{connection} //= $self->conection
+    $opts{format} ||= 'mp3';
+    $opts{connection} ||= $self->connection
 	or die "not connected";
 
     require Elive::StandardV3::Recording::File;

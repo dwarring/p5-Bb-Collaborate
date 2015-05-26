@@ -54,10 +54,6 @@ __DATA__
   xmlns:sas="http://sas.elluminate.com/"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <soapenv:Header>
-      <sas:BasicAuth>
-          <sas:Name>${user}</sas:Name>
-          <sas:Password>${pass}</sas:Password>
-      </sas:BasicAuth>
   </soapenv:Header>
   <soapenv:Body>
     <sas:GetSchedulingManager/>
