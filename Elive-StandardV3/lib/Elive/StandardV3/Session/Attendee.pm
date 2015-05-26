@@ -1,4 +1,4 @@
-package Elive::StandardV3::SessionAttendance::Attendee;
+package Elive::StandardV3::Session::Attendee;
 use warnings; use strict;
 
 use Mouse;
@@ -7,11 +7,11 @@ extends 'Elive::StandardV3';
 
 =head1 NAME
 
-Elive::StandardV3::SessionAttendance::Attendee - Collaborate Attendee instance class
+Elive::StandardV3::Session::Attendee - Collaborate Attendee instance class
 
 =head1 DESCRIPTION
 
-This is the element class of Elive::StandardV3::SessionAttendance::Attendees
+This is the element class of Elive::StandardV3::Session::Attendees
 
 =cut
 

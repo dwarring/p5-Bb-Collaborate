@@ -10,7 +10,7 @@ use t::Elive::StandardV3;
 use Elive::Util;
 
 use Elive::StandardV3::Session;
-use Elive::StandardV3::SessionTelephony;
+use Elive::StandardV3::Session::Telephony;
 
 our $t = Test::More->builder;
 our $class = 'Elive::StandardV3::Session' ;
@@ -66,7 +66,7 @@ SKIP: {
     $session_telephony = undef;
     my $session_id = $session->sessionId;
 
-    is( exception {$session_telephony = Elive::StandardV3::SessionTelephony->retrieve($session_id)} => undef,
+    is( exception {$session_telephony = Elive::StandardV3::Session::Telephony->retrieve($session_id)} => undef,
 	     'retrieve session telephony - lives');
 
     foreach (grep {$_ ne 'telephonyType'} sort keys %telephony_data) {

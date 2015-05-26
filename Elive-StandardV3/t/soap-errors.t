@@ -9,10 +9,10 @@ use lib '.';
 use t::Elive::StandardV3;
 
 use Elive::StandardV3::Connection;
-use Elive::StandardV3::SessionAttendance;
+use Elive::StandardV3::Session::Attendance;
 
 our $t = Test::More->builder;
-our $class = 'Elive::StandardV3::SessionAttendance' ;
+our $class = 'Elive::StandardV3::Session::Attendance' ;
 
 our $connection;
 

@@ -1,4 +1,4 @@
-package Elive::StandardV3::SessionTelephony;
+package Elive::StandardV3::Session::Telephony;
 use warnings; use strict;
 
 use Mouse;
@@ -12,7 +12,7 @@ use Elive::Util;
 
 =head1 NAME
 
-Elive::StandardV3::SessionTelephony - Session Telephony instance class
+Elive::StandardV3::Session::Telephony - Session Telephony instance class
 
 =head1 DESCRIPTION
 

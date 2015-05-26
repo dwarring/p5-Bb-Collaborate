@@ -11,8 +11,8 @@ use Carp;
 use Elive::Util;
 
 use Elive::StandardV3::_List;
-use Elive::StandardV3::SessionAttendance;
-use Elive::StandardV3::SessionTelephony;
+use Elive::StandardV3::Session::Attendance;
+use Elive::StandardV3::Session::Telephony;
 use Elive::StandardV3::Multimedia;
 use Elive::StandardV3::Presentation;
 use Elive::StandardV3::Recording;
@@ -541,7 +541,7 @@ Deletes unwanted or completed sessions.
         chairPIN   => '6342',
      });
 
-Returns an L<Elive::StandardV3::SessionTelephony> object for the given session.
+Returns an L<Elive::StandardV3::Session::Telephony> object for the given session.
 This can then be used to get or set the session's telephony characterisitics.
 
 =cut
@@ -556,7 +556,7 @@ sub telephony {
     my $connection = $opt{connection} || $class->connection
 	or croak "Not connected";
 
-    return Elive::StandardV3::SessionTelephony->retrieve($session_id,
+    return Elive::StandardV3::Session::Telephony->retrieve($session_id,
 							 reuse => 1,
 							 connection => $connection,
 							 %opt,
@@ -915,7 +915,7 @@ sub attendee_url {
 
     my $attendance = $session->attendance( $yesterday->epoch.'000' );
 
-Reports on session attendance for a given day. It returns a reference to an array of L<Elive::StandardV3::SessionAttendance> objects.
+Reports on session attendance for a given day. It returns a reference to an array of L<Elive::StandardV3::Session::Attendance> objects.
 
 =cut
 
@@ -924,7 +924,7 @@ sub attendance {
 
     $start_time ||= $self->startTime;
 
-    return Elive::StandardV3::SessionAttendance->list(
+    return Elive::StandardV3::Session::Attendance->list(
 	filter=> {
 	    sessionId => $self->sessionId,
 	    startTime => $start_time,

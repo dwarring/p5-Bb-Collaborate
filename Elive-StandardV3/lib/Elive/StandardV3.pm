@@ -93,8 +93,8 @@ sub data_classes {
       Elive::StandardV3::ServerConfiguration
       Elive::StandardV3::ServerVersion
       Elive::StandardV3::Session
-      Elive::StandardV3::SessionAttendance
-      Elive::StandardV3::SessionTelephony
+      Elive::StandardV3::Session::Attendance
+      Elive::StandardV3::Session::Telephony
    );
 }
 
@@ -318,8 +318,8 @@ sub delete {
 L<Elive::StandardV3::Connection>
 L<Elive::StandardV3::Multimedia>
 L<Elive::StandardV3::Session>
-L<Elive::StandardV3::SessionAttendance>
-L<Elive::StandardV3::SessionTelephony>
+L<Elive::StandardV3::Session::Attendance>
+L<Elive::StandardV3::Session::Telephony>
 L<Elive::StandardV3::Presentation>
 L<Elive::StandardV3::SchedulingManager>
 L<Elive::StandardV3::ServerConfiguration>
