@@ -20,16 +20,21 @@ SKIP: {
 	unless $auth;
 
     my $connection_class = $result{class};
-    my $connection = $connection_class->connect(@$auth);
+    my $connection = $connection_class->connect(@$auth, ping => 1);
     my $message = do {local $/; <DATA>};
     my $userAgent = LWP::UserAgent->new(agent => 'perl post');
     my $response;
 
+    my $user = $connection->user;
+    my $pass = $connection->pass;
+    $message =~ s/\$\{user\}/$user/g;
+    $message =~ s/\$\{pass\}\E/$pass/g;
+
     is ( exception {
 	$response = $userAgent
-	    ->request(HTTP::Request::Common::POST( $connection->_proxy,
+	    ->request(HTTP::Request::Common::POST( $connection->url,
 		      Authorization => $connection->_authoriz,
-		      Content_Type => 'text/xml',
+		      Content_Type => 'text/xml;charset=UTF-8',
 		      Content => $message))
 		  } => undef, "uploadMultimediaContent request post - lives"); 
 
@@ -48,12 +53,13 @@ __DATA__
   xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
   xmlns:sas="http://sas.elluminate.com/"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <soapenv:Header>
+      <sas:BasicAuth>
+          <sas:Name>${user}</sas:Name>
+          <sas:Password>${pass}</sas:Password>
+      </sas:BasicAuth>
+  </soapenv:Header>
   <soapenv:Body>
-    <sas:UploadRepositoryMultimedia>
-        <sas:creatorId>serversupport</sas:creatorId>
-        <sas:filename>test.mp3</sas:filename>
-        <sas:description>test api3 upload</sas:description>
-        <sas:content xsi:type="xs:base64Binary">anVzdCBzb21lIGp1bms=</sas:content>
-    </sas:UploadRepositoryMultimedia>
+    <sas:GetSchedulingManager/>
   </soapenv:Body>
 </soapenv:Envelope>
