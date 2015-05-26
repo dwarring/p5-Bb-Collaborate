@@ -1,6 +1,6 @@
 #!perl
 use warnings; use strict;
-use Test::More tests => 10;
+use Test::More tests => 11;
 use Test::Fatal;
 
 use version;
@@ -72,6 +72,11 @@ SKIP: {
     foreach (grep {$_ ne 'telephonyType'} sort keys %telephony_data) {
         is($session_telephony->$_, $telephony_data{$_}, "session telephony: $_ - as expected");
     }
+
+    $session_telephony->isPhone(1);
+    is exception {$session_telephony->update} => undef, 'update $telephony->isPhone - lives';
+
+    $session->delete;
 
 }
 

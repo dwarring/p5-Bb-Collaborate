@@ -171,15 +171,16 @@ sub _get_results {
 
         my %rec = %{ $resp };
         my $items = delete $rec{TelephonyResponseItem};
-        my $phoney = 0;
+        my $is_phone = 0;
 
         if ($items) {
-            my $type_map = {moderator => 'chair', participant => 'nonChair', serverSIP => 'session'};
+            my $types = {moderator => 'chair', participant => 'nonChair', serverSIP => 'session', serverPhone => 'session'};
 
 	    for (@$items) {
                 my %item = %$_;
-                $phoney = 1 if $item{serverSIP}; # bit of a guess!?
-                my $type = $type_map->{ delete $item{itemType} };
+                $is_phone = 1 if $item{itemType} eq 'serverPhone';
+
+                my $type = $types->{ delete $item{itemType} };
                 unless ($type) {
 		    require YAML::Syck; my $item_yaml = YAML::Syck::Dump($_);
 		    warn "skipping telephony item: $item_yaml";
@@ -197,7 +198,7 @@ sub _get_results {
 	    }
         }
 
-	$rec{isPhone} = $rec{telephonyType} && $rec{telephonyType} eq 'thirdparty' ? $phoney : 0;
+	$rec{isPhone} = $is_phone;
 
         return [ \%rec ]
     }
