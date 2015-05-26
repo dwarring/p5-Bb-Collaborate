@@ -42,9 +42,6 @@ test_requires (
     'version'                  => 0,
     );
 
-#
-# Module::Install::Repository magic
-#
-auto_set_repository();
+repository("git://git.code.sf.net/p/elive/git");
 
 WriteAll;
