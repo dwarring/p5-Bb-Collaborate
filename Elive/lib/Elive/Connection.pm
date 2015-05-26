@@ -30,7 +30,7 @@ Most of the time, you'll be dealing with specific class instances; See L<Elive::
 
 =cut
 
-__PACKAGE__->mk_accessors( qw{url user pass _soap debug type timeout} );
+__PACKAGE__->mk_accessors( qw{_url user pass _soap debug type timeout} );
 
 =head1 METHODS
 
@@ -310,6 +310,12 @@ sub disconnect {
 Returns a restful url for the connection.
 
 =cut
+
+sub url {
+    my $self = shift;
+    $self->_url(@_) if @_;
+    return $self->_url;
+}
 
 sub DESTROY {
     shift->disconnect;

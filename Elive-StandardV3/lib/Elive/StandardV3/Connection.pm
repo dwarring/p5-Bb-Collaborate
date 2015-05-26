@@ -22,7 +22,7 @@ Elive::StandardV3::Connection -  Manage Collaborate SOAP V3 endpoint connections
 
 =head1 DESCRIPTION
 
-This module handles logical connections to the C</v3/webservice.event> endpoint
+This module handles logical connections to the C<.../webservice.event> endpoint
 on the Collaborate server. This endpoint implements the Standard Bridge API.
 
 =cut
@@ -66,6 +66,7 @@ our %KnownCommands = (
     SetTelephony => 'u',
 
     UpdateSession => 'u',
+    UpdateSessionAttendees => 'u',
     UploadRepositoryMultimedia => 'c',
     UploadRepositoryPresentation => 'c',
 
@@ -80,15 +81,11 @@ __PACKAGE__->mk_accessors( qw{_scheduling_manager _server_configuration _server_
 
 =head2 connect
 
-    my $ec1 = Elive::StandardV3::Connection->connect('http://someserver.com/test',
+    my $con = Elive::StandardV3::Connection->connect('https://xx-sas.bbcollab.com/site/external/adapter/default/v3',
                                                      'user1', 'pass1', debug => 1,
     );
 
-    my $url1 = $ec1->url;   #  'http://someserver.com/test'
-
-    my $ec2 =  Elive::StandardV3::Connection->connect('http://user2:pass2@someserver.com/test',
-                                                       undef, undef);
-    my $url2 = $ec2->url;   #  'http://someserver.com/test'
+    my $url = $con->url;   #  'https://xx-sas.bbcollab.com/site/external/adapter/default/v3.3/webservice.event'
 
 Establishes a SOAP connection. Retrieves the server configuration, to verify
 connectivity, authentication and basic operation.
@@ -98,10 +95,15 @@ connectivity, authentication and basic operation.
 sub connect {
     my ($class, $url, $user, $pass, %opt) = @_;
 
+    die "url $url does not contain the string: 'v3'"
+	unless $url =~ 'v3';
+
     my $self = $class->SUPER::_connect($url, $user, $pass, %opt);
     bless $self, $class;
 
-    $self->scheduling_manager; # ping
+    my $ping = $opt{ping} // 1;
+    $self->scheduling_manager
+	if $ping;
 
     return $self;
 }
@@ -141,14 +143,17 @@ Returns the underlying L<SOAP::Lite> object for the connection.
 
 =cut
 
+sub url {
+    my $self = shift;
+    $self->SUPER::url(@_) . '/v3/webservice.event';
+}
+
 sub soap {
     my ($self) = shift;
 
     my $soap = $self->_soap;
 
     unless ($soap) {
-
-	my $proxy = join('/', $self->url, 'v3', 'webservice.event');
 
 	my $debug = $self->debug;
 
@@ -157,6 +162,7 @@ sub soap {
 			   : ()
 	    );
 
+	my $proxy = $self->url;
 	warn "connecting to ".$proxy
 	    if ($debug);
 

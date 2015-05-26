@@ -1,6 +1,6 @@
 #!perl
 use warnings; use strict;
-use Test::More tests => 26;
+use Test::More tests => 27;
 use Test::Fatal;
 
 use version;
@@ -19,7 +19,7 @@ our $connection;
 
 SKIP: {
 
-    my $skippable = 26;
+    my $skippable = 27;
 
     my %result = t::Elive::StandardV3->test_connection();
     my $auth = $result{auth};
@@ -98,6 +98,8 @@ SKIP: {
     my $session_url;
     is( exception {$session_url = $session->session_url(userId => 'bob', displayName => 'Robert')} => undef, 'Can generate session Url for charList user');
     note "session url: $session_url";
+
+    is exception {$session->register_attendee(userId => 'fred', displayName => 'Frederick Nurk', isChair => 1)}, 'Register_attendee lives';
 
     my $attendances;
 

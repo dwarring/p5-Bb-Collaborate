@@ -29,7 +29,7 @@ SKIP: {
 	# exercise a direct connection from Elive main. No preload
 	# of connection or entity classes.
 	#
-        note("connecting: user=$auth->[1], url=$auth->[0]");
+        note("connecting: @$auth");
 	
 	is( exception {$connection = Elive::StandardV3::Connection->connect(@$auth)} => undef,
 	      "Elive::StandardV3::Connection->connect(...) - lives");

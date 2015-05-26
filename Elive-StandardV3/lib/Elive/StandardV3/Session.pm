@@ -40,6 +40,7 @@ __PACKAGE__->params(
     recurrenceCount => 'Int',
     recurrenceDays => 'Int',
     apiCallbackUrl => 'Str',
+    isChair => 'Bool',
     );
 
 
@@ -384,7 +385,7 @@ sub _readback_check {
     my %updates = %$_updates_ref;
 
     #
-    # sessionName is a bit SHOUTY on SAS. Do case insenstive comparision
+    # sessionName is a bit SHOUTY on SAS. Do case insensitive comparision
     #
     if (my $session_name = delete $updates{sessionName}) {
         for (map {$_->{sessionName}} @$rows) {
@@ -856,6 +857,25 @@ sub set_api_callback_url {
     my $success = @$results && $results->[0];
 
     return $success;
+}
+
+=head2 register_attendee
+
+    $session->register_attendee(userId => 'fred', displayName => 'Fred Nurk', isChair => 0)
+
+Ensures that the user is in the chair or non-chair list for this session. The user may be added and/or
+promoted/demoted between the C<chairList> and C<nonChairList> as required.
+
+=cut
+
+sub register_attendee {
+    my ($self, %opt) = @_;
+    my $userId = $opt{userId}
+        or die "missing required parameter: userId";
+
+    $opt{command} ||= 'UpdateSessionAttendees';
+
+    $self->update( %opt );
 }
 
 =head2 attendance
