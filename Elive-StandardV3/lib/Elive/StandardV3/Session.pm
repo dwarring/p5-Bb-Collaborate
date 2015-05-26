@@ -36,7 +36,6 @@ __PACKAGE__->params(
     presentationId => 'Int',
     multimediaId => 'Int',
     multimediaIds => 'Elive::StandardV3::_List',
-    sessionId => 'Int',
     recurrenceCount => 'Int',
     recurrenceDays => 'Int',
     apiCallbackUrl => 'Str',
@@ -548,11 +547,18 @@ This can then be used to get or set the session's telephony characterisitics.
 =cut
 
 sub telephony {
-    my ($self, %opt) = @_;
+    my ($class, %opt) = @_;
 
-    return Elive::StandardV3::SessionTelephony->retrieve($self,
+    my $session_id = delete $opt{sessionId};
+    $session_id ||= $class->sessionId
+	if Scalar::Util::blessed($class);
+
+    my $connection = $opt{connection} || $class->connection
+	or croak "Not connected";
+
+    return Elive::StandardV3::SessionTelephony->retrieve($session_id,
 							 reuse => 1,
-							 connection => $self->connection,
+							 connection => $connection,
 							 %opt,
 	);
 }

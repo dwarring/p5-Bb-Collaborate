@@ -34,7 +34,7 @@ has 'sessionId' => (is => 'rw', isa => 'Int', required => 1);
 __PACKAGE__->_isa('Session');
 __PACKAGE__->primary_key('sessionId');
 
-=head2 teleponyType (Str )
+=head2 telephonyType (Str)
 
 The type of telephony to configure.
 
@@ -155,5 +155,66 @@ has 'sessionPIN' => (is => 'rw', isa => 'Str',
 Updates a session's telephony characteristics.
 
 =cut
+
+# custom unpacker for GetTelephonyResponse
+
+sub _get_results {
+    my $class = shift;
+    my $som = shift;
+    my $connection = shift;
+
+    $connection->_check_for_errors($som);
+
+    my $resp = $som->body->{GetTelephonyResponse} || $som->body->{SetTelephonyResponse};
+
+    if ($resp) {
+
+        my %rec = %{ $resp };
+        my $items = delete $rec{TelephonyResponseItem};
+        my $phoney = 0;
+
+        if ($items) {
+            my $type_map = {moderator => 'chair', participant => 'nonChair', serverSIP => 'session'};
+
+	    for (@$items) {
+                my %item = %$_;
+                $phoney = 1 if $item{serverSIP}; # bit of a guess!?
+                my $type = $type_map->{ delete $item{itemType} };
+                unless ($type) {
+		    require YAML::Syck; my $item_yaml = YAML::Syck::Dump($_);
+		    warn "skipping telephony item: $item_yaml";
+		    next;
+                }
+
+		$rec{$type . 'PIN'} = delete $item{pin} if $item{pin};
+                $type .= 'SIP' if $type eq 'session';
+		$rec{$type . 'Phone'} = delete $item{uri} if $item{uri};
+
+                if (%item) {
+		    require YAML::Syck; my $item_yaml = YAML::Syck::Dump(\%item);
+		    warn "unprocessed telephony item data: $item_yaml";
+                }
+	    }
+        }
+
+	$rec{isPhone} = $rec{telephonyType} && $rec{telephonyType} eq 'thirdparty' ? $phoney : 0;
+
+        return [ \%rec ]
+    }
+
+    warn "problems unpacking Telephony response";
+    $class->SUPER::_get_results( $som, $connection );
+}
+
+sub update {
+    my $self = shift;
+    my $updates = shift;
+    my %opt = @_;
+
+    # include the entire record
+    my @properties = $self->properties;
+
+    $self->SUPER::update($updates, %opt, changed => \@properties);
+}
 
 1;

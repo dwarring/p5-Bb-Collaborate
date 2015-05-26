@@ -108,7 +108,6 @@ sub _get_results {
     my @result = ($som->result, $som->paramsout);
 
     return \@result;
-
 }
 
 =head2 connect

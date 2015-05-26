@@ -1,6 +1,6 @@
 #!perl
 use warnings; use strict;
-use Test::More tests => 13;
+use Test::More tests => 10;
 use Test::Fatal;
 
 use version;
@@ -19,7 +19,7 @@ our $connection;
 
 SKIP: {
 
-    my $skippable = 13;
+    my $skippable = 10;
 
     my %result = t::Elive::StandardV3->test_connection();
     my $auth = $result{auth};
@@ -64,26 +64,14 @@ SKIP: {
     is( exception {$session_telephony->update(\%telephony_data)} => undef, 'telephony update - lives');
 
     $session_telephony = undef;
+    my $session_id = $session->sessionId;
 
-    is( exception {$session_telephony = Elive::StandardV3::SessionTelephony->retrieve($session)} => undef,
+    is( exception {$session_telephony = Elive::StandardV3::SessionTelephony->retrieve($session_id)} => undef,
 	     'retrieve session telephony - lives');
 
     foreach (grep {$_ ne 'telephonyType'} sort keys %telephony_data) {
         is($session_telephony->$_, $telephony_data{$_}, "session telephony: $_ - as expected");
     }
-
-    my $session_telephony_list;
-
-    is( exception {$session_telephony_list = Elive::StandardV3::SessionTelephony->list({sessionId => $session})} => undef,
-	'list session telephony - lives');
-
-    ok($session_telephony_list
-       && $session_telephony_list->[0]
-       && $session_telephony_list->[0]->sessionId eq $session->sessionId,
-       'telephony list sanity')
-	or diag explain {session_telephony_list => $session_telephony_list};
-
-    is( exception {$session->delete} => undef,'session deletion - lives');
 
 }
 
