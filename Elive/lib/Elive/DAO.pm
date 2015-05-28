@@ -4,7 +4,7 @@ use warnings; use strict;
 use Mouse;
 use Mouse::Util::TypeConstraints;
 
-our $VERSION = '1.34';
+our $VERSION = '1.35';
 
 use parent 'Elive::DAO::_Base';
 
@@ -1362,7 +1362,9 @@ Abstract method to list entity objects.
 sub list {
     my ($class, %opt) = @_;
 
-    my @params;
+    my @params = $opt{params}
+        ? %{ $class->_freeze( delete $opt{params} ) }
+	: ();
 
     if (my $filter = delete $opt{filter} ) {
 	push( @params, filter => Elive::Util::_freeze($filter => 'Str') );

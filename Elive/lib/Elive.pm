@@ -7,11 +7,11 @@ Elive - Elluminate Live! Manager (ELM) Command Toolkit bindings
 
 =head1 VERSION
 
-Version 1.34
+Version 1.35
 
 =cut
 
-our $VERSION = '1.34';
+our $VERSION = '1.35';
 
 use 5.008003;
 

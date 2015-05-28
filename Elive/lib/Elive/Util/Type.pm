@@ -4,7 +4,7 @@ use warnings; use strict;
 use Mouse;
 use Mouse::Util::TypeConstraints;
 
-our $VERSION = '1.34';
+our $VERSION = '1.35';
 
 =head1 NAME
 
