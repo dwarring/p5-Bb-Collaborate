@@ -22,10 +22,8 @@ This class is used to return responses to recording conversion requests.
 
 has 'recordingId' => (is => 'rw', isa => 'Int', required => 1);
 __PACKAGE__->primary_key('recordingId');
-__PACKAGE__->params(format => 'Str',
-    );
-
 __PACKAGE__->entity_name('RecordingFile');
+__PACKAGE__->params(format => 'Str');
 
 has 'recordingStatus' => (is => 'rw', isa => 'Str', required => 1);
 
@@ -42,7 +40,6 @@ sub convert_recording {
 	or croak "Not connected";
 
     my $recording_id = $opt{recording_id} || $opt{recordingId};
-    my $format = $opt{format} || 'mp3';
 
     $recording_id ||= $class->recordingId
 	if ref($class);
@@ -50,8 +47,16 @@ sub convert_recording {
     croak "unable to determine recording_id"
 	unless $recording_id;
 
-    my $params = $class->_freeze({format => $format});
-    return $class->retrieve( $recording_id, connection => $connection, command => 'ConvertRecording', %$params);
+    my $format = $opt{format} || 'mp3';
+
+    my $command = $opt{command} || 'ConvertRecording';
+
+    my $params = $class->_freeze({recordingId => $recording_id, format => $format});
+    my $som = $connection->call( $command, => %$params);
+
+    my $results = $class->_get_results( $som, $connection );
+
+    use YAML::Syck; die "thats all I've got @{[ YAML::Syck::Dump($results) ]}";
 }
 
 1;

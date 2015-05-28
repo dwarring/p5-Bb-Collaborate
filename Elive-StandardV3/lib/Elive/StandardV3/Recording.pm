@@ -171,7 +171,9 @@ Returns an array of recording objects. You may filter on:
 
 =cut
 
-=head2 $recording->convert(format => 'mp3', %opts) 
+=head2 convert
+
+    $recording->convert(format => 'mp3');
 
 Convert the recording to C<mp3> (default) or C<mp4>.
 
@@ -180,6 +182,9 @@ Convert the recording to C<mp3> (default) or C<mp4>.
 sub convert {
     my $self = shift;
     my %opts = @_;
+
+    $opts{recordingId} ||= $self->recordingId
+	if ref($self);
     $opts{format} ||= 'mp3';
     $opts{connection} ||= $self->connection
 	or die "not connected";

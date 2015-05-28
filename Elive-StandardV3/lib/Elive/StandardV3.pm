@@ -4,7 +4,7 @@ use warnings; use strict;
 use Mouse;
 use Mouse::Util::TypeConstraints;
 
-use Elive::DAO '1.34';
+use Elive::DAO '1.35';
 extends 'Elive::DAO';
 
 use Carp;
@@ -236,18 +236,17 @@ the selection. This is passed in using the C<filter> option. For example:
 
 sub list {
     my $self = shift;
-
-    unshift @_, 'filter' if @_ % 2;
     my %opt = @_;
 
-    my $filter = delete $opt{filter};
-
-    $filter = $self->_parse_filter($filter)
-	unless Scalar::Util::reftype $filter;
+    if (my $filter = delete $opt{filter} ) {
+        $opt{params} = Scalar::Util::reftype $filter
+            ? $filter
+            : $self->_parse_filter($filter)
+    }
 
     $opt{command} ||= 'List'.$self->entity_name;
 
-    return $self->_fetch( $filter, %opt );
+    return $self->SUPER::list( %opt );
 }
 
 #

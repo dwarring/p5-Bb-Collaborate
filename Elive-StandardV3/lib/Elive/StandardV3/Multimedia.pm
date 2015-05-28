@@ -125,7 +125,7 @@ You can assign multiple multimedia items to a session:
 
 =head2 list
 
-    my $session_presentations = Elive::StandardV3::Presentation->list(
+    my $session_presentations = Elive::StandardV3::Multimedia->list(
                                    filter => {sessionId => $my_session->id}
                                 );
 

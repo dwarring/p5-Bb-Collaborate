@@ -654,7 +654,7 @@ sub list_multimedia {
     my ($self, @args) = @_;
 
     return Elive::StandardV3::Multimedia
-        ->list({sessionId => $self->sessionId},
+        ->list(filter => {sessionId => $self->sessionId},
 	       connection => $self->connection,
 	       @args);
 }
@@ -673,7 +673,7 @@ sub list_presentation {
     my ($self, @args) = @_;
 
     return Elive::StandardV3::Presentation
-        ->list({sessionId => $self->sessionId},
+        ->list(filter => {sessionId => $self->sessionId},
 	       connection => $self->connection,
 	       @args);
 }
@@ -769,12 +769,11 @@ See also L<Elive::StandardV3::Recording>.
 =cut
 
 sub list_recordings {
-    my ($self, @args) = @_;
+    my ($self, %opt) = @_;
+    $opt{connection} ||= $self->connection;
 
     return Elive::StandardV3::Recording
-        ->list({sessionId => $self->sessionId},
-	       connection => $self->connection,
-	       @args);
+        ->list( filter => {sessionId => $self->sessionId}, %opt);
 }
 
 =head2 session_url

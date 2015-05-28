@@ -54,7 +54,7 @@ SKIP: {
     my $multimedia_list;
 
     # you need to supply a creatator id
-    is( exception {$multimedia_list = Elive::StandardV3::Multimedia->list({multimediaId => $multimedia_id, creatorId => 'elive-standardv3-tester'})} => undef,  'retrieve multimedia - lives');
+    is( exception {$multimedia_list = Elive::StandardV3::Multimedia->list(filter => {multimediaId => $multimedia_id, creatorId => 'elive-standardv3-tester'})} => undef,  'retrieve multimedia - lives');
 
      die 'unable to continue without a multimedia list object'
 	unless $multimedia_list && $multimedia_list->[0]; 
