@@ -386,10 +386,15 @@ sub _readback_check {
     #
     # sessionName is a bit SHOUTY on SAS. Do case insensitive comparision
     #
-    if (my $session_name = delete $updates{sessionName}) {
-        for (map {$_->{sessionName}} @$rows) {
-            die " Update consistancy check failed on sessionName, sent:$session_name, read-back:$_"
-                if $_ and uc $session_name ne uc;
+    if (my $sent = delete $updates{sessionName}) {
+        for my $got (map {$_->{sessionName}} @$rows) {
+	    # normalize strings
+	    for ($sent, $got) {
+		s/\s+/ /g; s/^\s+//; s/\s+$//;
+		$_ = uc($_);
+	    }
+            die " Update consistancy check failed on sessionName, sent:$sent, read-back:$got"
+                if $got && ($sent ne $got);
         }
     }
 

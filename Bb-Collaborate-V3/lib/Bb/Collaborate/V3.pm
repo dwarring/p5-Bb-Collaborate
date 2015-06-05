@@ -4,7 +4,7 @@ use warnings; use strict;
 use Mouse;
 use Mouse::Util::TypeConstraints;
 
-use Elive::DAO '1.35';
+use Elive::DAO 1.35;
 extends 'Elive::DAO';
 
 use Carp;
@@ -15,11 +15,11 @@ Bb::Collaborate::V3 - Perl bindings for the Blackboard Collaborate Standard Brid
 
 =head1 VERSION
 
-Version 0.00_1
+Version 0.0.0_1
 
 =cut
 
-our $VERSION = '0.00_1';
+our $VERSION = '0.0.0_1';
 
 =head1 DESCRIPTION
 
