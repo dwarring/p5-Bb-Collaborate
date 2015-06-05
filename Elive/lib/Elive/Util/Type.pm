@@ -3,6 +3,7 @@ use warnings; use strict;
 
 use Mouse;
 use Mouse::Util::TypeConstraints;
+use Try::Tiny;
 
 our $VERSION = '1.35';
 
@@ -23,18 +24,15 @@ sub BUILDARGS {
     my %info;
 
     #
-    # Bit of a hack, only works on Elive specific types and type unions.
+    # Bit of a hack, tailored for Elive specific types and type unions.
     #
 
     my $array_type;
     my ($elemental_type, @other_types) = split(/\|/, $type);
 
-    if ($type =~ m{^Elive::}) {
-
-	if ($type->can('element_class')) {
-	    ($elemental_type, @other_types) = split(/\|/, $type->element_class || 'Str');
-	    $array_type = $type;
-	}
+    if (try { $type->can('element_class') }) {
+	($elemental_type, @other_types) = split(/\|/, $type->element_class || 'Str');
+	$array_type = $type;
     }
 
     $info{type} = $type;

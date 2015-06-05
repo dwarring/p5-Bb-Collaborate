@@ -1,8 +1,11 @@
 Revision history for Elive
 
-1.35   29th May 2015
+1.35   7th June 2015
+       Support for new module Bb::Collaborate::V3.
        [Elive::DAO]
-       - added list() params options (for Elive::StandardV3)
+       - added list() params options
+       [Elive::Util::Type]
+       - removed Elive:: namespace dependency.
 
 1.34   4th April 2015
        - Update copyright notices
