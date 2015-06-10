@@ -25,14 +25,14 @@ elive_query - simple query shell for Elluminate Live! Manager (ELM)
 
   elive_query   http[s]://myserver.com/my-site[:port]
 
-    -user someuser          # SDK/SOAP username
-    -pass somepass          # SDK/SOAP password
-    -c 'select ....'        # execute command(s), then exit
-    -debug=n                # 1=some, 2=verbose, 3=verbose + soap
-    -dump=yaml              # serialise results as YAML
-    -? -help                # obtain help
-    -v -version             # print Elive version
-    -adapter type           # E.g. -adapter standardv3 (See Elive::StandardV3)
+    --user someuser          # SDK/SOAP username
+    --pass somepass          # SDK/SOAP password
+    --debug=n                # 1=some, 2=verbose, 3=verbose + soap
+    --dump=yaml              # serialise results as YAML
+    --adapter=type-or-class  # E.g. --adapter v3 (Bb::Collaborate::V3)
+    -c 'select ....'         # execute command(s), then exit
+    -? -help                 # obtain help
+    -v -version              # print Elive version
 
 =head1 DESCRIPTION
 
@@ -111,12 +111,10 @@ sub main {
 
 	my $adapter = $options{adapter} || 'default';
 	$adapter_class = {default    => 'Elive::Entity',
-			  standard   => 'Elive::StandardV3',
-			  standardv3 => 'Elive::StandardV3',
-			  standardv2 => 'Elive::StandardV2',
+			  v3 => 'Bb::Collaborate::V3',
 	}->{$adapter};
 	$adapter_class ||= $adapter;
-	
+	warn "adapter class: $adapter_class";
 	eval "require $adapter_class";
 	die $@ if $@;
 
