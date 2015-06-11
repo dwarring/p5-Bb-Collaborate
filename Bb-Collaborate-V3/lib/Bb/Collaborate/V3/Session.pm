@@ -1,6 +1,5 @@
 package Bb::Collaborate::V3::Session;
 use warnings; use strict;
-
 use Mouse;
 
 extends 'Bb::Collaborate::V3';
@@ -529,6 +528,25 @@ Returns an array of session objects. You may filter on:
 =cut
 
 =back
+
+=cut
+
+sub list {
+    my $self = shift;
+    my %opt = @_;
+
+    unless ($opt{filter}) {
+	warn "listing sessions over +/- 3 days (approx)\n";
+	my $one_day = 24 * 60 * 60;
+	my $now = time;
+	$opt{filter} = {
+	    startTime => ($now  -  3 * $one_day).'000',
+	    endTime =>   ($now  +  3 * $one_day).'000',
+	};
+    }
+
+    $self->SUPER::list( %opt );
+}
  
 =head2 delete
 
@@ -601,7 +619,7 @@ sub set_presentation {
 
     return $success;
 }
-			      
+
 =head2 set_multimedia
 
     $session->set_multimedia([$multimedia_1, $multimedia_2]);
@@ -762,7 +780,7 @@ sub remove_multimedia {
     return $success;
 
 }
-			      
+
 =head2 list_recordings
 
     my $recordings = $meeting_obj->list_recordings;
@@ -869,7 +887,7 @@ sub set_api_callback_url {
     return $success;
 }
 
-=head2 attendee_url
+=head2 register_attendee
 
     my %attendee = (userId => 'fred', displayName => 'Fred Nurk', isChair => 0);
     my $attendee_url = $session->register_attendee( \%attendee );
@@ -881,7 +899,7 @@ The user may be added and/or promoted/demoted between the C<chairList> and C<non
 
 =cut
 
-sub attendee_url {
+sub register_attendee {
     my ($self, $_params, %opt) = @_;
     die "usage: \$self->register_attendee({userId => .., displayName => ..., isChar => ...}, \%opt)"
         unless Elive::Util::_reftype( $_params ) eq 'HASH';

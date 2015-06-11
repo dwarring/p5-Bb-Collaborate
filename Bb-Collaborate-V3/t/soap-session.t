@@ -124,7 +124,7 @@ SKIP: {
 
     my %attendee = (userId => 'fred', displayName => 'Frederick Nurk', isChair => 1);
     my $url;
-    is exception {$url = $session->attendee_url(\%attendee)} => undef, 'Register_attendee lives';
+    is exception {$url = $session->register_attendee(\%attendee)} => undef, 'Register_attendee lives';
     note "attendee_url: $url";
     ok $url, "got attendee_url";
 
