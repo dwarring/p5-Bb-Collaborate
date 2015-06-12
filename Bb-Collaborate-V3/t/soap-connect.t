@@ -58,7 +58,7 @@ SKIP: {
 	      '$connection->scheduling_manager - lives');
     isa_ok($scheduling_manager, 'Bb::Collaborate::V3::SchedulingManager','scheduling_manager');
     my %min_version_nums = (ELM => '3.5.0', SAS => '7.2.0-935');
-    my %max_version_nums = (ELM => '3.7.0', SAS => '7.2.2-71');
+    my %max_version_nums = (ELM => '3.7.0', SAS => '7.2.3-74');
 
     ok(my $scheduler_version = $scheduling_manager->version, 'got server version');
     ok(my $scheduler_manager = $scheduling_manager->manager, 'got server manager');
@@ -87,13 +87,13 @@ SKIP: {
 
     my $server_configuration;
     is ( exception {$server_configuration = $connection->server_configuration} => undef, 'get server_configuration - lives');
-    isa_ok($server_configuration, 'Bb::Collaborate::V3::ServerConfiguration','server_configuration');
+    isa_ok($server_configuration, 'Bb::Collaborate::V3::Server::Configuration','server_configuration');
 
 
     my $server_version;
     is ( exception {$server_version = $connection->server_versions} => undef, 'get server_versions - lives');
     if ($server_version) {
-	isa_ok($server_version, 'Bb::Collaborate::V3::ServerVersion','server_version');
+	isa_ok($server_version, 'Bb::Collaborate::V3::Server::Version','server_version');
 
 	note 'Collaborate '.$scheduler_manager.' server '.$server_version->versionName.' ('.$server_version->versionId.')';
     }
