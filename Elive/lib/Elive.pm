@@ -318,7 +318,7 @@ see the README file.
 
 =head2 Related CPAN Modules
 
-L<Elive::StandardV3> - this module implements the alternate Elluminate I<Live!> Standard Bridge API (v3) for C<ELM> and C<SAS>. 
+L<Bb::Collaborate::V3> - this module implements the Blackboard Collaborate Standard Integration API (v3) for C<SAS> servers. 
 
 =head2 Elluminate Documentation
 

@@ -1,4 +1,4 @@
-package Bb::Collaborate::V3::ServerVersion;
+package Bb::Collaborate::V3::Server::Version;
 use warnings; use strict;
 
 use Mouse;
@@ -9,7 +9,7 @@ use Scalar::Util;
 
 =head1 NAME
 
-Bb::Collaborate::V3::ServerVersion - Server Version entity class
+Bb::Collaborate::V3::Server::Version - Server Version entity class
 
 =cut
 
@@ -61,7 +61,7 @@ has 'versionMaxFilmersLimit' => (is => 'rw', isa => 'Int');
 
 =head2 get
 
-    my $server_version = Bb::Collaborate::V3::ServerVersion->get;
+    my $server_version = Bb::Collaborate::V3::Server::Version->get;
     print "ELM version is: ".$server_version->versionName."\n";
 
 Returns the server version information for the current connection.
@@ -70,7 +70,7 @@ Returns the server version information for the current connection.
 
 =head2 list
 
-    my @server_versions = Bb::Collaborate::V3::ServerVersion->list;
+    my @server_versions = Bb::Collaborate::V3::Server::Version->list;
 
 The C<list> method can be used for sites with multiple session servers.
 
@@ -84,7 +84,7 @@ sub _fetch {
     #
 
     $opt{command} ||=
-	['GetServerVersions', 'ListServerVersions'];
+	['GetServerVersions', 'ListServer::Versions'];
 
     return $class->SUPER::_fetch($key, %opt);
 }

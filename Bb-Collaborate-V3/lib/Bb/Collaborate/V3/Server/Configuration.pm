@@ -1,4 +1,4 @@
-package Bb::Collaborate::V3::ServerConfiguration;
+package Bb::Collaborate::V3::Server::Configuration;
 use warnings; use strict;
 
 use Mouse;
@@ -7,7 +7,7 @@ extends 'Elive::DAO::Singleton','Bb::Collaborate::V3';
 
 =head1 NAME
 
-Bb::Collaborate::V3::ServerConfiguration - Server Configuration entity class
+Bb::Collaborate::V3::Server::Configuration - Server Configuration entity class
 
 =cut
 
@@ -93,7 +93,7 @@ has 'timeZone' => (is => 'rw', isa => 'Str');
 
 =head2 get
 
-    my $server_config = Bb::Collaborate::V3::ServerConfiguration->get();
+    my $server_config = Bb::Collaborate::V3::Server::Configuration->get();
     print "Server time-zone is: ".$server_config->timeZone."\n";
 
 Return the server configuration details.

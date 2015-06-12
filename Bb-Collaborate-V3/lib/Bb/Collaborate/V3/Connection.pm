@@ -208,7 +208,7 @@ sub scheduling_manager {
 
 =head2 server_configuration
 
-Returns the server configuration for this connection (see L<Bb::Collaborate::V3::ServerConfiguration>).
+Returns the server configuration for this connection (see L<Bb::Collaborate::V3::Server::Configuration>).
 
 =cut
 
@@ -219,9 +219,9 @@ sub server_configuration {
 
     unless ($server_configuration) {
 
-	require Bb::Collaborate::V3::ServerConfiguration;
+	require Bb::Collaborate::V3::Server::Configuration;
 
-	$server_configuration = Bb::Collaborate::V3::ServerConfiguration->list(connection => $self);
+	$server_configuration = Bb::Collaborate::V3::Server::Configuration->list(connection => $self);
 	$self->_server_configuration($server_configuration);
     }
 
@@ -230,7 +230,7 @@ sub server_configuration {
 
 =head2 server_versions
 
-Returns the server versions for this connection (see L<Bb::Collaborate::V3::ServerVersion>).
+Returns the server versions for this connection (see L<Bb::Collaborate::V3::Server::Version>).
 
 =cut
 
@@ -241,9 +241,9 @@ sub server_versions {
 
     unless ($server_versions) {
 
-	require Bb::Collaborate::V3::ServerVersion;
+	require Bb::Collaborate::V3::Server::Version;
 
-	$server_versions = Bb::Collaborate::V3::ServerVersion->list(connection => $self);
+	$server_versions = Bb::Collaborate::V3::Server::Version->list(connection => $self);
 	$self->_server_versions($server_versions);
     }
 

@@ -90,8 +90,8 @@ sub data_classes {
       Bb::Collaborate::V3::Presentation
       Bb::Collaborate::V3::Recording
       Bb::Collaborate::V3::SchedulingManager
-      Bb::Collaborate::V3::ServerConfiguration
-      Bb::Collaborate::V3::ServerVersion
+      Bb::Collaborate::V3::Server::Configuration
+      Bb::Collaborate::V3::Server::Version
       Bb::Collaborate::V3::Session
       Bb::Collaborate::V3::Session::Attendance
       Bb::Collaborate::V3::Session::Telephony
@@ -321,8 +321,8 @@ L<Bb::Collaborate::V3::Session::Attendance>
 L<Bb::Collaborate::V3::Session::Telephony>
 L<Bb::Collaborate::V3::Presentation>
 L<Bb::Collaborate::V3::SchedulingManager>
-L<Bb::Collaborate::V3::ServerConfiguration>
-L<Bb::Collaborate::V3::ServerVersion>
+L<Bb::Collaborate::V3::Server::Configuration>
+L<Bb::Collaborate::V3::Server::Version>
 L<Bb::Collaborate::V3::Recording>
 
 =head1 AUTHOR

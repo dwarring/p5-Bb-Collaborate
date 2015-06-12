@@ -194,9 +194,9 @@ has 'hideParticipantNames' => (is => 'rw', isa => 'Bool',
 
 Maximum number of simultaneous video cameras to be configured in the Collaborate session at session launch time.
 
-For single server configurations, this value must be between 1 and C<maxAvailableCameras> (as returned from the L<Bb::Collaborate::V3::ServerConfiguration> C<get()> command).
+For single server configurations, this value must be between 1 and C<maxAvailableCameras> (as returned from the L<Bb::Collaborate::V3::Server::Configuration> C<get()> command).
 
-For multiple server configurations, this must be between 1 and versionMaxFilmersLimit for the version you are using (as returned from the L<Bb::Collaborate::V3::ServerVersion> C<get()> command).
+For multiple server configurations, this must be between 1 and versionMaxFilmersLimit for the version you are using (as returned from the L<Bb::Collaborate::V3::Server::Version> C<get()> command).
 
 If you don't specify a value, the default is taken from the C<Maximum Simultaneous Cameras> setting in the Default Session Preferences.
 
@@ -210,9 +210,9 @@ has 'maxCameras' => (is => 'rw', isa => 'Int',
 
 Maximum number of simultaneous talkers to be configured in the Collaborate session at session launch time.
 
-For single server configurations, this value must be between 1 and C<maxAvailableTalkers> property (as returned from the L<Bb::Collaborate::V3::ServerConfiguration> C<get()> command).
+For single server configurations, this value must be between 1 and C<maxAvailableTalkers> property (as returned from the L<Bb::Collaborate::V3::Server::Configuration> C<get()> command).
 
-For multiple server configurations, this must be between 1 and C<versionMaxTalkersLimit> for the version you are using (as returned from the L<Bb::Collaborate::V3::ServerVersion> C<get()> command).
+For multiple server configurations, this must be between 1 and C<versionMaxTalkersLimit> for the version you are using (as returned from the L<Bb::Collaborate::V3::Server::Version> C<get()> command).
 
 If you don't specify a value, the default is taken from the C<Maximum Simultaneous Talkers> setting in the Default Session Preferences.
 

@@ -21,7 +21,8 @@ COMPATIBILITY
       versions 9.5 - 12.5.4.
 
     - does not support access to externally hosted servers deployed with
-      SAS (Session Administration System).
+      SAS (Session Administration System). See also the Bb::Collaborate::V3
+      distribution.
 
 INSTALLATION
 
