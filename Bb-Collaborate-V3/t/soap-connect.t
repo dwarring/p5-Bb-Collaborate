@@ -1,6 +1,6 @@
 #!perl
 use warnings; use strict;
-use Test::More tests => 14;
+use Test::More tests => 16;
 use Test::Fatal;
 
 use lib '.';
@@ -17,7 +17,7 @@ SKIP: {
     my %result = t::Bb::Collaborate::V3->test_connection(noload => 1);
     my $auth = $result{auth};
 
-    skip ($result{reason} || 'skipping live tests', 14)
+    skip ($result{reason} || 'skipping live tests', 16)
 	unless $auth && @$auth;
 
     my $connection_class = $result{class};
@@ -96,6 +96,21 @@ SKIP: {
 	isa_ok($server_version, 'Bb::Collaborate::V3::Server::Version','server_version');
 
 	note 'Collaborate '.$scheduler_manager.' server '.$server_version->versionName.' ('.$server_version->versionId.')';
+    }
+    else {
+	diag "unable to get server versions - are all servers running?";
+	$t->skip ("unable to get server version - skipping");
+    }
+
+    my $quota_limits;
+    is ( exception {$quota_limits = $connection->quota_limits} => undef, 'get quota_limits - lives');
+    if ($quota_limits) {
+	isa_ok($quota_limits->[0], 'Bb::Collaborate::V3::Server::QuotaLimits','quota_limits');
+
+	note 'Bb Collaborate Quota Usage :-';
+	for my $quota (@$quota_limits) {
+	    note '    -- '.$quota->quotaName.': '.$quota->quotaUsage.' used of '.$quota->quotaAvailable.' availiable.';
+	}
     }
     else {
 	diag "unable to get server versions - are all servers running?";

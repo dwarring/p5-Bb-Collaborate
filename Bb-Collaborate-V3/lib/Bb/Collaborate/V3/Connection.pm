@@ -37,6 +37,7 @@ our %KnownCommands = (
 
     ConvertRecording => 'r',
 
+    GetQuotaLimits => 'r',
     GetSchedulingManager => 'r',
     GetServerConfiguration => 'r',
     GetServerVersions => 'r',
@@ -77,7 +78,7 @@ __PACKAGE__->mk_classdata(known_commands => \%KnownCommands);
 #
 # cache singleton records
 #
-__PACKAGE__->mk_accessors( qw{_scheduling_manager _server_configuration _server_versions _authoriz _proxy} );
+__PACKAGE__->mk_accessors( qw{_scheduling_manager _server_configuration _server_versions _quota_limits _authoriz _proxy} );
 
 =head2 connect
 
@@ -248,6 +249,28 @@ sub server_versions {
     }
 
     return wantarray ? @$server_versions : $server_versions->[0];
+}
+
+=head2 quota_limits
+
+Returns a list of available quotas and current usages.
+
+=cut
+
+sub quota_limits {
+    my $self = shift;
+
+    my $quota_limits = $self->_quota_limits;
+
+    unless ($quota_limits) {
+
+	require Bb::Collaborate::V3::Server::QuotaLimits;
+
+	$quota_limits = Bb::Collaborate::V3::Server::QuotaLimits->list(connection => $self);
+	$self->_quota_limits($quota_limits);
+    }
+
+    return wantarray ? @$quota_limits : $quota_limits;
 }
 
 sub _preamble {

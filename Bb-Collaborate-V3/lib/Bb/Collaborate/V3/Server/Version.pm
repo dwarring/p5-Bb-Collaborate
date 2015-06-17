@@ -62,7 +62,7 @@ has 'versionMaxFilmersLimit' => (is => 'rw', isa => 'Int');
 =head2 get
 
     my $server_version = Bb::Collaborate::V3::Server::Version->get;
-    print "ELM version is: ".$server_version->versionName."\n";
+    print "Collaborate version is: ".$server_version->versionName."\n";
 
 Returns the server version information for the current connection.
 
@@ -84,7 +84,7 @@ sub _fetch {
     #
 
     $opt{command} ||=
-	['GetServerVersions', 'ListServer::Versions'];
+	['GetServerVersions', 'ListServerVersions'];
 
     return $class->SUPER::_fetch($key, %opt);
 }
