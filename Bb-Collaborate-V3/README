@@ -45,8 +45,8 @@ LIVE TESTING
 
         perl Makefile.PL
         make
-        export ELIVE_TEST_URL=http://sdk_user@myserver.com/some_instance
-        export ELIVE_TEST_PASS=secret
+        export BBC_TEST_URL=http://sdk_user@myserver.com/some_instance
+        export BBC_TEST_PASS=secret
         make test
 
     WARNING: These tests will both create and delete various entities
@@ -61,7 +61,7 @@ POST INSTALLATION
     The elive_query script can be used to check basic operation of Elive
     and access to your Elluminate server(s).
 
-        % elive_query --adapter=standardv3 http://sdk_user@myserver/mysite
+        % elive_query --adapter=v3 http://sdk_user@myserver/mysite
         Password: ******
 
     You can then try a simple query:
