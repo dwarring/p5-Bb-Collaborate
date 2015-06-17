@@ -72,11 +72,11 @@ Notes:
 
 =over 4
 
-=item * ELM If you don't specify a value, the default is taken from the C<Restrict Session Access> setting in the Default Session Preferences, These preferences are available through the ELM user interface. For more information, see the online help available from the Collaborate Manager user interface.
-
 =item * SAS Use of this parameter should be avoided as this controls
 SAS Native Mode session and recording access. The default value for
 this parameter is 2 (Restricted) and is appropriate for API use.
+
+=item * ELM If you don't specify a value, the default is taken from the C<Restrict Session Access> setting in the Default Session Preferences, These preferences are available through the ELM user interface. For more information, see the online help available from the Collaborate Manager user interface.
 
 =back
 
@@ -90,7 +90,8 @@ has 'accessType' => (is => 'rw', isa => 'Int',
 
 This flag value controls whether or not the chair of this session can send invitations to join the session from within the session.
 
-If you don't specify a value, the default is taken from the C<Enable In-Session Invitations> setting in the Default Session Preferences.
+If you don't specify a value, the default is taken from the C<Allow in-Session
+invites> setting in the Meeting Defaults.
 
 =cut
 
@@ -103,7 +104,7 @@ has 'allowInSessionInvites' => (is => 'rw', isa => 'Bool',
 Boundary time. (Defined as the period before the start of a session in which users can join the session. Used by chairs to preload content and by non-chairs who have never joined a Collabroate session before to download any files and configure their audio.)
 
 Specified in minutes, to a maximum value of 1440 minutes (24 hours).
-If you don't specify a value, the default is taken from the C<Early Session Access Time> setting in the Default Session Preferences.
+If you don't specify a value, the default is taken from the C<Boudary Time> setting in the Meeting Defaults.
 
 =cut
 
@@ -115,7 +116,11 @@ has 'boundaryTime' => (is => 'rw', isa => 'Int',
 
 Array of user identifiers from your system that specifies which users may join the Collaborate session as chairpersons.
 
-Each user identifier in the list may be 1 - 64 characters in length, and each identifier is case sensitive. A userId may not appear in both the chair and non-chair lists.
+Each user identifier in the list may be 1 - 64 characters in length, and each identifier is case sensitive and can include UTF-8 characters.
+
+A userId may not appear in both the chair and non-chair lists.
+
+Note: See also the C<register_atttendee> method, which can be used to add a user to the chair or non-chair list when joining.
 
 =cut
 
@@ -137,7 +142,7 @@ has 'chairNotes' => (is => 'rw', isa => 'Str',
 =head2 creatorId (Str)
 
 Identifier of the session creator as specified by you in your system.
-Case sensitive. 1 - 32 characters in length. May not be updated.
+Case sensitive. 1 - 32 characters in length. Can include UTF-8 characters.
 
 =cut
 
@@ -158,7 +163,7 @@ has 'endTime' => (is => 'rw', isa => 'HiResDate', required => 1,
 
 Array of unique course identifiers from your system with which to associate this Collaborate session.
 
-Each course identifier may be 1 - 32 characters in length, and each identifier is case sensitive.
+Each course identifier may be 1 - 32 characters in length, each identifier is case sensitive and can include UTF-8 characters.
 
 =cut
 
@@ -182,7 +187,8 @@ has 'sessionName' => (is => 'rw', isa => 'Str', required => 1,
 
 This flag value controls whether or not the session participant names are hidden in any session recording that may be made.
 
-If you don't specify a value, the default is taken from the C<Hide Attendee Names> setting in the Default Session Preferences
+If you don't specify a value, the default is taken from the C<Hide Names in
+Recordings> setting in the Meeting Defaults.
 
 =cut
 
@@ -194,11 +200,12 @@ has 'hideParticipantNames' => (is => 'rw', isa => 'Bool',
 
 Maximum number of simultaneous video cameras to be configured in the Collaborate session at session launch time.
 
-For single server configurations, this value must be between 1 and C<maxAvailableCameras> (as returned from the L<Bb::Collaborate::V3::Server::Configuration> C<get()> command).
+For single server configurations, this value must be between 1 and C<maxAvailableCameras> (as returned from the L<Bb::Collaborate::V3::Server::Configuration> C<get()> method).
 
-For multiple server configurations, this must be between 1 and versionMaxFilmersLimit for the version you are using (as returned from the L<Bb::Collaborate::V3::Server::Version> C<get()> command).
+For multiple server configurations, this must be between 1 and versionMaxFilmersLimit for the version you are using (as returned from the L<Bb::Collaborate::V3::Server::Version> C<list()> method).
 
-If you don't specify a value, the default is taken from the C<Maximum Simultaneous Cameras> setting in the Default Session Preferences.
+If you don't specify a value, the default is taken from the C<Max Cameras>
+setting in the Meeting Defaults.
 
 =cut
 
@@ -210,11 +217,11 @@ has 'maxCameras' => (is => 'rw', isa => 'Int',
 
 Maximum number of simultaneous talkers to be configured in the Collaborate session at session launch time.
 
-For single server configurations, this value must be between 1 and C<maxAvailableTalkers> property (as returned from the L<Bb::Collaborate::V3::Server::Configuration> C<get()> command).
+For single server configurations, this value must be between 1 and C<maxAvailableTalkers> property (as returned from the L<Bb::Collaborate::V3::Server::Configuration> C<get()> method).
 
-For multiple server configurations, this must be between 1 and C<versionMaxTalkersLimit> for the version you are using (as returned from the L<Bb::Collaborate::V3::Server::Version> C<get()> command).
+For multiple server configurations, this must be between 1 and C<versionMaxTalkersLimit> for the version you are using (as returned from the L<Bb::Collaborate::V3::Server::Version> C<get()> method).
 
-If you don't specify a value, the default is taken from the C<Maximum Simultaneous Talkers> setting in the Default Session Preferences.
+If you don't specify a value, the default is taken from the C<Max Talkers> setting in the Meeting Defaults.
 
 =cut
 
@@ -225,7 +232,9 @@ has 'maxTalkers' => (is => 'rw', isa => 'Int',
 =head2 mustBeSupervised (Bool)
 
 Permits chairpersons to view all private chat messages in the Collaborate session.
-If you don't specify a value, the default is taken from the Early Session Access Time setting in the Default Session Preferences.
+
+If you don’t specify a value, the default is taken from the C<Session is
+supervised> setting in the Meeting Defaults.
 
 =cut
 
@@ -237,7 +246,11 @@ has 'mustBeSupervised' => (is => 'rw', isa => 'Bool',
 
 Comma-separated list of user identifiers from your system that specifies which users may join the Collaborate session as non-chair participants. (That is assuming that openChair is set to false. If C<openChair> is set to true, then all users will be chairpersons.)
 
-Each user identifier in the list may be 1 - 64 characters in length, and each identifier is case sensitive. A userId may not appear in both the chair and non-chair lists.
+Each user identifier in the list may be 1 - 64 characters in length, and each identifier is case sensitive and can include UTF-8 characters.
+
+A userId may not appear in both the chair and non-chair lists.
+
+Note: See also the C<register_atttendee> method, which can be used to add a user to the chair or non-chair list when joining.
 
 =cut
 
@@ -271,7 +284,8 @@ has 'startTime' => (is => 'rw', isa => 'HiResDate', required => 1,
 
 All users will join the session as a chairperson in the Collaborate session.
 
-If you don't specify a value, the default is taken from the C<Grant All Permissions on Entry> setting in the Default Session Preferences.
+If you don't specify a value, the default is taken from the C<Permissions granted on enter> setting in the
+Meeting Defaults.
 
 =cut
 
@@ -283,7 +297,8 @@ has 'openChair' => (is => 'rw', isa => 'Bool',
 
 All users who join the session as non-chairpersons are granted full permissions to session resources such as audio, whiteboard, etc.
 
-If you don't specify a value, the default is taken from the Make Everyone Moderator setting in the Default Session Preferences.
+If you don't specify a value, the default is taken from the C<Permissions granted on enter> setting in the
+Meeting Defaults.
 
 =cut
 
@@ -295,7 +310,8 @@ has 'permissionsOn' => (is => 'rw', isa => 'Bool',
 
 When users join the Collaborate session, they will automatically raise their hand (this is accompanied by an audible notification).
 
-If you don't specify a value, the default is taken from the Raise Hand on Entry setting in the Default Session Preferences.
+If you don't specify a value, the default is taken from the C<Raise hand on
+enter> setting in the Meeting Defaults.
 
 =cut
 
@@ -317,7 +333,8 @@ The mode of recording in the Collaborate session:
 
 =back
 
-If you don't specify a value, the default is taken from the Session Recording setting in the Default Session Preferences.
+If you don't specify a value, the default is taken from the C<Mode> setting in the
+Meeting Defaults.
 
 =cut
 
@@ -345,7 +362,9 @@ has 'reserveSeats' => (is => 'rw', isa => 'Int',
 
 =head2 secureSignOn (Bool)
 
-This parameter does not apply to ELM.
+The parameter used to indicate  that a session created through the API
+should use the extended  authentication provided by the secure sign-on
+functionality.
 
 =cut
 
@@ -365,7 +384,9 @@ has 'recordings' => (is => 'rw', isa => 'Bool',
 
 =head2 versionId (Int)
 
-This parameter does not apply to ELM.
+The version of  Blackboard Collaborate to use for  this session. Valid
+values  are  retrieved from  the  L<Bb::Collaborate::V3::Server::Versions> C<get()> or C<list()> methods. If  this
+parameter is not supplied the session will use the “default” version.
 
 =cut
 
@@ -439,6 +460,13 @@ sub _readback_check {
 
     my $url = $session->session_url( userId => 'bob', displayName => 'Robert');
     print "bob's session link is: $url\n";
+
+C<register_attendee> calls the C<UpdateSessionAttendees> request. This ensures that the
+user is registered on either the C<chairList> or C<nonChairList> and returns a url for
+joining the session.
+
+    my %late_comer = (userId => 'fred', displayName => 'Fred Nurk', isChair => 1);
+    my $url2 = $session->register_attendee( \%late_comer );
 
 A series of sessions can be created using the C<recurrenceCount> and C<recurrenceDays> parameters.
 
