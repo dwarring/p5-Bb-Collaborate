@@ -85,9 +85,13 @@ SKIP: {
 	diag "************************";
     }
 
-    my $server_configuration;
-    is ( exception {$server_configuration = $connection->server_configuration} => undef, 'get server_configuration - lives');
-    isa_ok($server_configuration, 'Bb::Collaborate::V3::Server::Configuration','server_configuration');
+    my $sc;
+    is ( exception {$sc = $connection->server_configuration} => undef, 'get server_configuration - lives');
+    isa_ok($sc, 'Bb::Collaborate::V3::Server::Configuration','server_configuration');
+    note "server config:-";
+    note "   -- boundary:@{[ $sc->boundaryTime ]}  max-talkers:@{[ $sc->maxAvailableTalkers ]}  max-cameras:@{[ $sc->maxAvailableCameras ]}";
+    note "   -- telephony:@{[ $sc->mayUseTelephony ]}  secure-sign-on:@{[ $sc->mayUseSecureSignOn ]}  must-reserve-seats:@{[ $sc->mustReserveSeats ]}";
+    note "   -- time-zone:@{[ $sc->timeZone ]}";
 
 
     my $server_version;
@@ -109,7 +113,7 @@ SKIP: {
 
 	note 'Bb Collaborate Quota Usage :-';
 	for my $quota (@$quota_limits) {
-	    note '    -- '.$quota->quotaName.': '.$quota->quotaUsage.' used of '.$quota->quotaAvailable.' availiable.';
+	    note '   -- '.sprintf("%-20s", $quota->quotaName).': '.$quota->quotaUsage.' used of '.$quota->quotaAvailable." availiable (@{[ sprintf('%.2f', 100 * $quota->quotaUsage /( $quota->quotaAvailable || 1) ) ]}%).";
 	}
     }
     else {
