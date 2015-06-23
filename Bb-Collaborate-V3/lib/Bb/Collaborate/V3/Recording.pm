@@ -109,10 +109,9 @@ has 'sessionId' => (is => 'rw', isa => 'Int',);
 
 =head2 recording_url
 
-    my $recording_url = $recording->recording_url(user_id => 'bob');
+    my $recording_url = $recording->recording_url();
 
-Returns a URL for the recording. This provides authenthicated access for
-the given user.
+Returns a URL for recording playback.
 
 =cut
 
