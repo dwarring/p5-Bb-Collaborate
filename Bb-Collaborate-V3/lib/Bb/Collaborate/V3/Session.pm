@@ -41,6 +41,14 @@ __PACKAGE__->params(
     isChair => 'Bool',
     );
 
+# mostly to help elive_query
+__PACKAGE__->derivable(
+    attendance => 'attendance',
+    multimedia => 'list_multimedia',
+    presentation => 'list_presentation',
+    recordings => 'list_recordings',
+    telephony => 'telephony',
+    );
 
 =head1 PROPERTIES
 

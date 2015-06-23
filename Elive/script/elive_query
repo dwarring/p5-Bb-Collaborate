@@ -114,7 +114,6 @@ sub main {
 			  v3 => 'Bb::Collaborate::V3',
 	}->{$adapter};
 	$adapter_class ||= $adapter;
-	warn "adapter class: $adapter_class";
 	eval "require $adapter_class";
 	die $@ if $@;
 
