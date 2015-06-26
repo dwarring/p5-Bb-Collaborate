@@ -61,6 +61,7 @@ our %KnownCommands = (
     RemoveSessionTelephony => 'd',
 
     SetApiCallbackUrl => 'r',
+    SetRecordingSecureSignOn => 'r',
     SetSession => 'c',
     SetSessionMultimedia => 'u',
     SetSessionPresentation => 'u',

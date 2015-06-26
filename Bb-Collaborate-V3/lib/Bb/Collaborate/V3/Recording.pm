@@ -63,7 +63,8 @@ has 'recordingURL' => (is => 'rw', isa => 'Str',);
 
 =head2 secureSignOn (Bool)
 
-This parameter does not apply to ELM.
+Flag indicating whether extended validation is required for access
+to the object specified by the recordingId
 
 =cut
 
@@ -169,6 +170,49 @@ Returns an array of recording objects. You may filter on:
 =back
 
 =cut
+
+=head2 set_secure_sign_on
+
+    $recording->set_secure_sign_on(1)
+
+Sets or unsets the recording's secure sign-on flag.
+
+=cut
+
+sub set_secure_sign_on {
+    my $self = shift;
+    my $secure_sign_on = shift;
+    my %opt = @_;
+
+    my $recording_id = $opt{recording_id};
+    $recording_id ||= $self->recordingId
+	if ref($self);
+    die "unable to determine recordingId"
+	unless $recording_id;
+
+    my $connection = $opt{connection};
+    $connection ||= $self->connection
+	if ref($self);
+
+    die "not connected"
+	unless $connection;
+
+    my $params = $self->_freeze({
+	recordingId => $recording_id,
+	secureSignOn => $secure_sign_on,
+    });
+
+    my $command = $opt{command} || 'SetRecordingSecureSignOn';
+
+    my $som = $connection->call($command => %$params);
+
+    my $results = $self->_get_results( $som, $connection );
+
+    my $flag = @$results && $results->[0];
+
+    return $flag;
+}
+
 
 =head2 convert
 

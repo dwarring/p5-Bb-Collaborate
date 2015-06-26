@@ -418,7 +418,7 @@ sub _readback_check {
         for my $got (map {$_->{sessionName}} @$rows) {
 	    # normalize strings
 	    for ($sent, $got) {
-		s/\s+/ /g; s/^\s+//; s/\s+$//;
+		 s/[^\w\s]//g; s/\s+/ /g; s/^\s+//; s/\s+$//;
 		$_ = uc($_);
 	    }
             die " Update consistancy check failed on sessionName, sent:$sent, read-back:$got"
