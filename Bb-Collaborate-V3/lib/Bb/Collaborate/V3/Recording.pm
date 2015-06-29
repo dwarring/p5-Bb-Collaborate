@@ -181,6 +181,8 @@ Sets or unsets the recording's secure sign-on flag.
 
 sub set_secure_sign_on {
     my $self = shift;
+    die 'usage: $obj->set_secure_sign_on($flag, ...)'
+	unless @_;
     my $secure_sign_on = shift;
     my %opt = @_;
 
