@@ -27,7 +27,7 @@ Blackboard Collaborate is software for virtual online classrooms. It is
 suitable for meetings, demonstrations web conferences, seminars, general
 training and support.
 
-Elive-StandardV3 is a set of Perl bindings and entity definitions for the
+Bb-Collaborate-V3 is a set of Perl bindings and entity definitions for the
 Collaborate V3 SOAP services, both on SAS (externally hosted) and ELM
 (self hosted) servers.
 
@@ -331,8 +331,8 @@ David Warring, C<< <david.warring at gmail.com> >>
 
 =head1 BUGS
 
-Please report any bugs or feature requests to C<bug-elive-StandardV3 at rt.cpan.org>, or through
-the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Elive-StandardV3>.  I will be notified, and then you'll
+Please report any bugs or feature requests to C<bug-bb-Collaborate-V3 at rt.cpan.org>, or through
+the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Bb-Collaborate-V3>.  I will be notified, and then you'll
 automatically be notified of progress on your bug as I make changes.
 
 =head1 SUPPORT
@@ -348,19 +348,19 @@ You can also look for information at:
 
 =item * RT: CPAN's request tracker
 
-L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=Elive-StandardV3>
+L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=Bb-Collaborate-V3>
 
 =item * AnnoCPAN: Annotated CPAN documentation
 
-L<http://annocpan.org/dist/Elive-StandardV3>
+L<http://annocpan.org/dist/Bb-Collaborate-V3>
 
 =item * CPAN Ratings
 
-L<http://cpanratings.perl.org/d/Elive-StandardV3>
+L<http://cpanratings.perl.org/d/Bb-Collaborate-V3>
 
 =item * Search CPAN
 
-L<http://search.cpan.org/dist/Elive-StandardV3/>
+L<http://search.cpan.org/dist/Bb-Collaborate-V3/>
 
 =back
 
