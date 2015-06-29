@@ -241,7 +241,7 @@ has 'maxTalkers' => (is => 'rw', isa => 'Int',
 
 Permits chairpersons to view all private chat messages in the Collaborate session.
 
-If you don’t specify a value, the default is taken from the C<Session is
+If you don't specify a value, the default is taken from the C<Session is
 supervised> setting in the Meeting Defaults.
 
 =cut
