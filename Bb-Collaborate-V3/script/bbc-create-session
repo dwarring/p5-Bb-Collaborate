@@ -1,0 +1,322 @@
+#!/usr/bin/perl
+package Bb::Collaborate::script::bb_create_session;
+use warnings; use strict;
+use version;
+
+use Getopt::Long;
+use Date::Parse qw{};
+use Pod::Usage;
+use File::Basename qw{};
+
+use Carp;
+
+use Bb::Collaborate::V3;
+use Bb::Collaborate::V3::Session;
+use Elive::Util;
+
+use URI;
+use URI::Escape;
+
+use YAML::Syck;
+
+=head1 NAME
+
+bb-create-session - Blackboard Collaborate Session Creation (** under construction **)
+
+=head1 SYNOPSIS
+
+  bb-create-session [url] [options] [participants]
+
+=head2 Authentication
+
+ [url]                        # web address and site instance path,
+                              # E.g.: https://myserver.com/mysite 
+ -user <username>             # SDK/SOAP username
+ -pass <password>             # SDK/SOAP password
+
+=head2 Basic Options
+
+ -name         <meeting name> # set meeting name
+ -start  '[YYYY-MM-DD ]HH:MM' # start time
+ -end    '[YYYY-MM-DD ]HH:MM' # end time
+
+=head2 Moderators and Participants
+
+ -moderators user|*group ...
+ -participants user|*group|Display Name(loginName) ...
+
+ Where each participant or moderator can be:
+
+    'user'        - a single Elluminate user. This can be either the
+                    user's username or user-id.
+
+    '*group'      - a group of users. This can be either the group-name
+                    or group-id. (elm3)
+
+    'Display Name(loginName)'
+                  - a guest login, e.g. "Robert(bob@example.com)" (elm3)
+
+=head2 Meeting Setup
+
+ -boundary     0|15|30|..     # minutes participants can arrive before or
+                              # leave after the scheduled meeting times.
+ -max-talkers  <n>            # max no. of simultaneous talkers
+ -max-cameras  <n>            # max no. of simultaneous cameras (elm3)
+ -seats        <n>            # number of seats to reserve on server
+ -recording-status     off|on|manual      # set recording status
+                              #  - off:    recording disabled
+                              #  - on:     starts automatically
+                              #  - manual: recording started by moderator
+ -[no]invites                 # allow in-session invitations
+ -[no]follow                  # lock whiteboard to moderator view (elm3)
+ -[no]private                 # hide from public schedule
+ -[no]restricted              # restrict entry to registered users (elm3)
+ -[no]permissions             # let participants perform activities
+ -[no]raise-hands             # automatically raise hands on entry
+ -[no]supervised              # moderator can see private messages
+ -[no]open-chair              # all participants can chair
+
+ -non-chair-notes <text>      # Set general user notes
+ -chair-notes     <text>      # Set chair-person notes
+ -groups  <code>[,<code>...]  # Set grouping codes
+ -callback-url    <address>   # URL to visit on meeting exit (elm3)
+
+=head2 Compatibility Options
+
+ -use Some::Custom::Class   # create session via a custom session class
+
+=head2 Information
+
+ -? --help                  # print this help
+ -v --version               # print version and exit
+ --dump=yaml                # output created sessions as YAML
+ --debug=n                  # set debug level
+
+=head1 DESCRIPTION
+
+Creates meetings on an Elluminate I<Live!> Manager (ELM) server.
+
+=head1 SEE ALSO
+
+perldoc Elive
+
+http://search.cpan.org/dist/Elive
+
+=cut
+
+my $class;
+
+my $username;
+my $password;
+my $debug;
+my $start_str;
+my $end_str;
+my $url;
+my $help;
+my @moderators;
+my @participants;
+my $dump;
+
+my $version;
+
+main(@ARGV) unless caller;
+
+sub bail {
+    Bb::Collaborate::V3->disconnect;
+    die @_;
+}
+
+sub main {
+
+    local(@ARGV) = @_;
+
+    my %session_data = (
+	name => 'Collaborate test meeting',
+	boundaryTime => 15,
+	);
+
+    my $callback_url;
+    my $upload;
+
+    GetOptions(
+	'username|user=s' => \$username,
+	'password|pass=s' => \$password,
+	'start=s' => \$start_str,
+	'end=s' => \$end_str,
+
+	'chair|chair-list=s{,}' => \@moderators,
+	'non-chair|non-chair-list|plebs|others|other=s{,}' => \@participants,
+	'upload=s' => \$upload,
+	'use=s' => \$class,
+
+	'open-chair!' => \$session_data{openChair},
+	'boundary=i' => \$session_data{boundaryTime},
+	'grouping-list|group=s{,}' => \$session_data{groupingList},
+	'callback-url=s' => \$callback_url,
+	'invites|invitations!' => \$session_data{allowInSessionInvitates},
+	'hide-names!' => \$session_data{hideParticipantNames},
+	'max-cameras|cameras=i' => \$session_data{maxCameras},
+	'max-talkers|talkers=i' => \$session_data{maxTalkers},
+	'chair-notes=s' => \$session_data{chairNotes},
+	'non-chair-notes=s' => \$session_data{nonChairNotes},
+	'name|session-name=s' => \$session_data{sessionName},
+##	'private!' => \$session_data{privateMeeting},
+	'permission!' => \$session_data{permissionsOn},
+	'raisee-hands!' => \$session_data{raiseHandOnEnter},
+##	'restricted!' => \$session_data{restrictedMeeting},
+	'seats=i' => \ $session_data{reserveSeats},
+	'supervised!' => \$session_data{mustBeSupervised},
+
+	'v|version' => \$version,
+	'debug=i' => \$debug,
+	'help|?' => \$help,
+	'dump=s' => \$dump,
+    )
+	or pod2usage(2);
+
+    pod2usage(0) if $help;
+
+    if ($version) {
+	print "Bb::Collaborate::V3 v${Bb::Collaborate::V3::VERSION} (c) 2009 - 2012\n";
+	exit(0);
+    };
+
+    ($url = shift @ARGV)
+	or pod2usage("missing url argument");
+
+    Elive->debug($debug) if defined $debug;
+    # debug may also be set via $ENV{ELIVE_DEBUG}
+    $debug = Elive->debug;
+
+    if ($debug) {
+	$SIG{__WARN__} = \&Carp::cluck if $debug > 1;
+	$SIG{__DIE__} = \&Carp::confess;
+    }
+
+    $url ||= Elive::Util::prompt("Url ('http[s]://...'): ");
+
+    unless ($username && $password) {
+	#
+	# look for credentials encoded in the uri
+	#
+	my $uri_obj = URI->new($url);
+	my $userinfo = $uri_obj->userinfo; # credentials supplied in URI
+
+	if ($userinfo) {
+	    my ($uri_user, $uri_pass) = split(':', $userinfo, 2);
+	    $username ||= URI::Escape::uri_unescape($uri_user);
+	    $password ||= URI::Escape::uri_unescape($uri_pass)
+		if $uri_pass;
+	}
+    }
+
+    $username ||= Elive::Util::prompt('Username: ');
+    $password ||= Elive::Util::prompt('Password: ', password => 1);
+
+    our $connection; 
+    $connection = Bb::Collaborate::V3->connect($url, $username, $password);
+
+    $class ||= 'Bb::Collaborate::V3::Session';
+
+    warn "Session class: $class\n" if $debug;
+
+    eval "use $class";
+    bail("unable to load class $class: $@") if $@;
+
+    bail("class $class: does not implement the 'insert' method")
+	unless eval{ $class->can('insert') };
+
+    for ($session_data{recordingStatus}) {
+	next unless defined;
+	$_ = lc $_;
+	#
+	# accept some of the other synonyms for the various modes as
+	# seen in documentation and Elluminate's web interface.
+	#
+	s{^none|disabled$}{off}x;
+	s{^manual$}{remote}x;
+	s{^auto(matic)?$}{on}x;
+
+	pod2usage("-recording-status must be: on/auto, off/none/disabled or manual/remote\n")
+	    unless m{^on|off|remote$}x;
+    }
+
+    my $start = $start_str
+	? Date::Parse::str2time($start_str)
+	: Elive::Util::nearest_quarter_hour();
+
+    my $end = $end_str
+	? Date::Parse::str2time($end_str)
+	: Elive::Util::nearest_quarter_hour($start);
+
+    bail("end time ($end_str) is not later than start time ($start_str)\n")
+	unless ($end > $start);
+
+    my $upload_data;
+
+    $session_data{startTime} = $start . '000',
+    $session_data{endTime} = $end . '000';
+
+    $session_data{charList} = \@moderators;
+    $session_data{nonCharList} = [ @participants, @ARGV ];
+
+    my @sessions = $class->insert(\%session_data);
+
+    if ($dump && $dump =~ m{yaml}i) {
+	_yaml_dump_sessions( 'Elive::View::Session' => @sessions );
+    }
+    else {
+	warn "ignoring option: -dump=$dump" if $dump;
+	_echo_sessions( @sessions );
+    }
+
+    Elive->disconnect;
+
+    return @sessions;
+}
+
+########################################################################
+
+sub _echo_sessions {
+    my @sessions = @_;
+
+    foreach my $session (@sessions) {
+	print "created meeting: ".$session->name." with id ".$session->sessionId."\n";
+
+	if (@{ $session->chairList }) {
+	    print "\t-- chair list: " . join(", ", @{ $session->chairList });
+	}
+
+	if (@{ $session->nonChairList }) {
+	    print "\t-- non-chair list: " . join(", ", @{ $session->nonChairList });
+	}
+
+	print "session address: ".$session->session_url."\n";
+    }
+
+}
+
+########################################################################
+
+sub _yaml_dump_sessions {
+    my $class = shift;
+    my @sessions = @_;
+
+    my @props = $class->properties;
+    my %derivable = $class->derivable;
+    my $entity_name = $class->entity_name;
+
+    foreach my $session (@sessions) {
+	
+	my %vals = (
+	    map {
+		my $meth = $derivable{$_} || $_;
+		my $val = $session->$meth;
+		$_ => $val,
+	    } (sort (@props, keys %derivable)));
+
+	print YAML::Syck::Dump {$entity_name => \%vals};
+
+    }
+
+}
