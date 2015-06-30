@@ -1,5 +1,13 @@
 Revision history for Bb-Collaborate-V3
 
+0.02 31th June 2015
+     [testing]
+     - fixed smoke-test (wide-character) failures in t/pod.t
+     [scripts]
+     - remove script/bbc-create-session from distribution. accidentally released (coming soon)
+     [documentation]
+     - removed stale references to Elive-StandardV3 - old distro name
+
 0.01 30th June 2015
        Initial construction and release for smoke testing.
        Based on earlier, unreleased Elive::StandardV3 package.
