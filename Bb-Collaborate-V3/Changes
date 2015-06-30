@@ -1,5 +1,9 @@
 Revision history for Bb-Collaborate-V3
 
+0.03 1st July 2015
+     [testing]
+     - culled another 'wide-character' failure in t/pod.t
+
 0.02 31th June 2015
      [testing]
      - fixed smoke-test (wide-character) failures in t/pod.t

@@ -394,7 +394,7 @@ has 'recordings' => (is => 'rw', isa => 'Bool',
 
 The version of  Blackboard Collaborate to use for  this session. Valid
 values  are  retrieved from  the  L<Bb::Collaborate::V3::Server::Versions> C<get()> or C<list()> methods. If  this
-parameter is not supplied the session will use the “default” version.
+parameter is not supplied the session will use the 'default' version.
 
 =cut
 
