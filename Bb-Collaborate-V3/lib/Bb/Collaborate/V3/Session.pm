@@ -581,7 +581,7 @@ sub list {
 	};
     }
 
-    $self->SUPER::list( %opt );
+    return $self->SUPER::list( %opt );
 }
  
 =head2 delete

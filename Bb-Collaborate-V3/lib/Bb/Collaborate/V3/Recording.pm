@@ -235,7 +235,7 @@ sub convert {
 	or die "not connected";
 
     require Bb::Collaborate::V3::Recording::File;
-    Bb::Collaborate::V3::Recording::File->convert_recording( %opts );
+    return Bb::Collaborate::V3::Recording::File->convert_recording( %opts );
 }
 
 =head2 delete

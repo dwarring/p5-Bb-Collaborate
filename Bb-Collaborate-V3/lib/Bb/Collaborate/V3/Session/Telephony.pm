@@ -204,7 +204,7 @@ sub _get_results {
     }
 
     warn "problems unpacking Telephony response";
-    $class->SUPER::_get_results( $som, $connection );
+    return $class->SUPER::_get_results( $som, $connection );
 }
 
 sub update {
@@ -215,7 +215,7 @@ sub update {
     # include the entire record
     my @properties = $self->properties;
 
-    $self->SUPER::update($updates, %opt, changed => \@properties);
+    return $self->SUPER::update($updates, %opt, changed => \@properties);
 }
 
 1;

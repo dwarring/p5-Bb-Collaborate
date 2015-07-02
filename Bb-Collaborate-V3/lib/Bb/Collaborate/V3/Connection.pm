@@ -307,7 +307,7 @@ Return the SOAP end-point URL.
 
 sub url {
     my $self = shift;
-    $self->SUPER::url(@_) . '/v3/webservice.event';
+    return $self->SUPER::url(@_) . '/v3/webservice.event';
 }
 
 sub _check_for_errors {
