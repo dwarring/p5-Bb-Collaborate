@@ -40,7 +40,7 @@ The type of telephony to configure.
 
 =over 4
 
-=item thirdParty - You must use your own teleconference provider. You
+=item thirdParty - You are using your own teleconference provider. You
 must manually configure the teleconference connection information.
 
 =item integrated - The teleconference service is provided by
@@ -49,7 +49,7 @@ automatically generated during session creation and anyone in the
 session can initiate the connection between the session and the
 teleconference by simply dialing in to the teleconference.
 
-=item none - No teleconferencing is supported.
+=item none - Telephony is disabled for this session.
 
 =back
 

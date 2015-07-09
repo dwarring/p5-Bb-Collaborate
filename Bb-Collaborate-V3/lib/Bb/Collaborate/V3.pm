@@ -71,8 +71,6 @@ use 5.008003;
 
 Implements Blackboard Collaborate Standard Bridge V3 API bindings
 
-** DEVELOPER RELEASE - UNDER CONSTRUCTION **
-
 =cut
 
 =head1 METHODS
@@ -364,13 +362,17 @@ L<http://search.cpan.org/dist/Bb-Collaborate-V3/>
 
 =back
 
-=head1 SEE ALSO
+=head1 REFERENCES
 
-I<Standard Integration API Guide V3 for ELM.pdf> - this contains essential
-background information and a full description of the available commands.
+=over 4
 
-=head1 ACKNOWLEDGEMENTS
+=item I<Standard Integration API Guide V3.2 for SAS.DocRev3.pdf> - the main reference used
+in the construction of this module.
 
+=item I<Standard Integration API Guide V3 for ELM.pdf> - supplementry information on the
+ELM specific adapator for V3.
+
+=back
 
 =head1 LICENSE AND COPYRIGHT
 
