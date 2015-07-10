@@ -65,19 +65,18 @@ sub BUILDARGS {
 
 sub _freeze {
     my $class = shift;
-    my $db_data = shift;
+    my %db_data = %{ shift() };
 
-    $db_data = $class->SUPER::_freeze( $db_data );
+    my $content = delete $db_data{content};
+    my $db_data = $class->SUPER::_freeze( \%db_data );
 
-    for (grep {$_} $db_data->{content}) {
-	$db_data->{size} ||= Elive::Util::_freeze( length($_), 'Int');
-
+    if (defined $content) {
 	#
 	# (a bit of layer bleed here...). Do we need a separate data type
 	# for base 64 encoded data?
 	#
-	try {require SOAP::Lite} catch {die $_};
-	$_ = SOAP::Data->type('xs:base64Binary' => MIME::Base64::encode_base64($_,'') );
+	require SOAP::Lite;
+	$db_data->{content} = SOAP::Data->type('xs:base64Binary' => MIME::Base64::encode_base64($content,'') );
     }
 
     return $db_data;

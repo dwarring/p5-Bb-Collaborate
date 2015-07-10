@@ -1,5 +1,11 @@
 Revision history for Bb-Collaborate-V3
 
+0.04 July 2015
+     [testing]
+     - RT#105567 added AUTHOR_TESTS guard to t/pod.t
+     [pod]
+     - No longer a 'DEVELOPMENT RELEASE" + other fossils
+
 0.03 1st July 2015
      [testing]
      - culled another 'wide-character' failure in t/pod.t
@@ -13,6 +19,6 @@ Revision history for Bb-Collaborate-V3
      - removed stale references to Elive-StandardV3 - old distro name
 
 0.01 30th June 2015
-       Initial construction and release for smoke testing.
-       Based on earlier, unreleased Elive::StandardV3 package.
+     Initial construction and release for smoke testing.
+     Based on earlier, unreleased Elive::StandardV3 package.
 
