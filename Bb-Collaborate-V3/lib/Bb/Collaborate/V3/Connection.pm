@@ -1,6 +1,7 @@
 package Bb::Collaborate::V3::Connection;
 use warnings; use strict;
 
+use Bb::Collaborate::V3;
 use Class::Accessor;
 use Class::Data::Inheritable;
 use Scalar::Util;
@@ -42,6 +43,7 @@ our %KnownCommands = (
     GetServerConfiguration => 'r',
     GetServerVersions => 'r',
     GetTelephony => 'r',
+    GetTelephonyLicenseInfo => 'r',
  
     ListRepositoryMultimedia => 'r',
     ListRepositoryPresentation => 'r',
@@ -79,7 +81,8 @@ __PACKAGE__->mk_classdata(known_commands => \%KnownCommands);
 #
 # cache singleton records
 #
-__PACKAGE__->mk_accessors( qw{_scheduling_manager _server_configuration _server_versions _quota_limits _authoriz _proxy} );
+__PACKAGE__->mk_accessors( qw{_scheduling_manager _server_configuration _server_versions _quota_limits
+                              _telephony_license _authoriz _proxy} );
 
 =head2 connect
 
@@ -272,6 +275,45 @@ sub quota_limits {
     }
 
     return wantarray ? @$quota_limits : $quota_limits;
+}
+
+=head2 telephony_license
+
+Returns the servers's telephony license, as a string. One of:
+
+=over 4
+
+=item (*) thirdParty - You must use your own teleconference
+provider. You must manually configure the teleconference connection information.
+
+=item (*) integrated - The teleconference service is provided
+by Blackboard Collaborate. Teleconference phone
+numbers and PINs are automatically generated
+during session creation and anyone in the session can
+initiate the connection between the session and the
+teleconference by simply dialing in to the
+teleconference.
+
+=item (*) none – No teleconferencing is supported.
+
+=back
+
+=cut
+
+sub telephony_license {
+    my $self = shift;
+
+    my $telephony_license = $self->_telephony_license;
+
+    unless ($telephony_license) {
+	my $som = $self->call('GetTelephonyLicenseInfo');
+	my $results = Bb::Collaborate::V3->_get_results( $som, $self );
+
+	$telephony_license = @$results && $results->[0];
+	$self->_telephony_license( $telephony_license );
+    }
+
+    return $telephony_license;
 }
 
 sub _preamble {

@@ -1,6 +1,6 @@
 #!perl
 use warnings; use strict;
-use Test::More tests => 16;
+use Test::More tests => 18;
 use Test::Fatal;
 
 use lib '.';
@@ -58,7 +58,7 @@ SKIP: {
 	      '$connection->scheduling_manager - lives');
     isa_ok($scheduling_manager, 'Bb::Collaborate::V3::SchedulingManager','scheduling_manager');
     my %min_version_nums = (ELM => '3.5.0', SAS => '7.2.0-935');
-    my %max_version_nums = (ELM => '3.7.0', SAS => '7.2.3-74');
+    my %max_version_nums = (ELM => '3.7.0', SAS => '7.3.0-108');
 
     ok(my $scheduler_version = $scheduling_manager->version, 'got server version');
     ok(my $scheduler_manager = $scheduling_manager->manager, 'got server manager');
@@ -117,8 +117,18 @@ SKIP: {
 	}
     }
     else {
-	diag "unable to get server versions - are all servers running?";
-	$t->skip ("unable to get server version - skipping");
+	$t->skip ("unable to get quota limits - skipping");
+    }
+
+    my $telephony_license;
+    is ( exception {$telephony_license = $connection->telephony_license} => undef, 'get telephony_license - lives');
+    if ($telephony_license) {
+	like($telephony_license, qr/thirdParty|integrated|none/,'telephony_license');
+
+	note 'Bb Collaborate Telephony License: ' . $telephony_license;
+    }
+    else {
+	$t->skip ("unable to get telephony license - skipping");
     }
 
     $connection->disconnect;
