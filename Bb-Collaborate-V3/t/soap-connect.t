@@ -58,7 +58,7 @@ SKIP: {
 	      '$connection->scheduling_manager - lives');
     isa_ok($scheduling_manager, 'Bb::Collaborate::V3::SchedulingManager','scheduling_manager');
     my %min_version_nums = (ELM => '3.5.0', SAS => '7.2.0-935');
-    my %max_version_nums = (ELM => '3.7.0', SAS => '7.3.0-108');
+    my %max_version_nums = (ELM => '3.7.0', SAS => '7.4.0-119');
 
     ok(my $scheduler_version = $scheduling_manager->version, 'got server version');
     ok(my $scheduler_manager = $scheduling_manager->manager, 'got server manager');
