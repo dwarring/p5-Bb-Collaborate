@@ -294,7 +294,7 @@ initiate the connection between the session and the
 teleconference by simply dialing in to the
 teleconference.
 
-=item (*) none – No teleconferencing is supported.
+=item (*) none - No teleconferencing is supported.
 
 =back
 

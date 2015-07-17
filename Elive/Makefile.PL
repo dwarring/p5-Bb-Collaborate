@@ -51,9 +51,6 @@ test_requires (
     'version'                      => 0,
     );
 
-#
-# Module::Install::Repository magic
-#
-repository("git://git.code.sf.net/p/elive/git");
+repository("https://github.com/dwarring/p5-Bb-Collaborate.git");
 
 WriteAll;

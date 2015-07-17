@@ -4,6 +4,8 @@ Revision history for Bb-Collaborate-V3
      - added $connection->telephony_license method
      [testing]
      - RT#105567 added AUTHOR_TESTS guard to t/pod.t
+     [distribution]
+       - moved source repository to https://github.com/dwarring/p5-Bb-Collaborate.git
      [pod]
      - No longer a 'DEVELOPMENT RELEASE" + other fossils
 

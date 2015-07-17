@@ -1,5 +1,9 @@
 Revision history for Elive
 
+1.36   tba
+       [distribution]
+       - moved source repository to https://github.com/dwarring/p5-Bb-Collaborate.git
+
 1.35   7th June 2015
        Support for new module Bb::Collaborate::V3.
        [Elive::DAO]
