@@ -17,7 +17,7 @@ SKIP: {
     my %result = t::Bb::Collaborate::V3->test_connection(noload => 1);
     my $auth = $result{auth};
 
-    skip ($result{reason} || 'skipping live tests', 16)
+    skip ($result{reason} || 'skipping live tests', 18)
 	unless $auth && @$auth;
 
     my $connection_class = $result{class};
