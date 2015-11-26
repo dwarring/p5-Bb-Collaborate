@@ -106,10 +106,8 @@ sub connect {
     my $self = $class->SUPER::_connect($url, $user, $pass, %opt);
     bless $self, $class;
 
-    my $ping = $opt{ping};
-    $ping = 1 unless defined $ping;
     $self->scheduling_manager
-	if $ping;
+	if $opt{ping};
 
     return $self;
 }
