@@ -1,5 +1,9 @@
 Revision history for Bb-Collaborate-V3
 
+0.05 November 2015
+     - Bb::Collaborate::V3->connect defaults to ping => 0. Do not
+       issue a `GetSchedulingManager` call to check the connection. 
+
 0.04 July 2015
      - added $connection->telephony_license method
      [testing]
