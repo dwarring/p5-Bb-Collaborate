@@ -29,9 +29,9 @@ requires:
   Class::Accessor: 0
   Class::Data::Inheritable: 0
   Date::Parse: 0
-  Elive::Connection: '1.35'
-  Elive::DAO: '1.35'
-  Elive::Util: '1.35'
+  Elive::Connection: 1.35
+  Elive::DAO: 1.35
+  Elive::Util: 1.35
   File::Basename: 0
   File::Spec: 0
   MIME::Base64: 0
@@ -45,4 +45,4 @@ requires:
 resources:
   license: http://dev.perl.org/licenses/
   repository: https://github.com/dwarring/p5-Bb-Collaborate.git
-version: '0.05'
+version: 0.06

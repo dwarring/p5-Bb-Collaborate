@@ -1,10 +1,13 @@
 Revision history for Bb-Collaborate-V3
 
-0.05 November 2015
+0.06 November 2015
      - Bb::Collaborate::V3->connect defaults to ping => 0. Do not
        issue a `GetSchedulingManager` call to check the connection. 
 
-0.04 July 2015
+0.05 19th July 2015
+     - soap-connect.t - fixed text plan
+
+0.04 17th July 2015
      - added $connection->telephony_license method
      [testing]
      - RT#105567 added AUTHOR_TESTS guard to t/pod.t, t/pod-coverage.t
