@@ -36,14 +36,14 @@ SKIP: {
     my $password = $connection->pass;
 
     is( exception {
-	my $c2 = Bb::Collaborate::V3::Connection->connect($connection->url, $connection->user, $password );
+	my $c2 = Bb::Collaborate::V3::Connection->connect($connection->url, $connection->user, $password, ping => 1 );
 	$c2->disconnect;
 	     } => undef, 'connect/disconnect with good credentials - lives' );
 
     isnt( exception {
 	# add some junk to the password
 	my $bad_password =  $password . t::Bb::Collaborate::V3::generate_id();
-	Bb::Collaborate::V3::Connection->connect($connection->url, $connection->user, $bad_password )
+	Bb::Collaborate::V3::Connection->connect($connection->url, $connection->user, $bad_password, ping => 1 )
 	     } => undef, 'attempted connect with bad password - dies' );
 
     my $good_som;
