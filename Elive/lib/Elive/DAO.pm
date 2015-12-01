@@ -1556,7 +1556,7 @@ sub delete {
     die "entity lacks a primary key - can't delete"
 	unless (@primary_key > 0);
 
-    if (ref($self) || 1) {
+    if (ref($self)) {
 	@id = $self->id;
     }
     elsif ($opt{ $primary_key[0] }) {
