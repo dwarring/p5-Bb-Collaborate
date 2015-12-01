@@ -4,7 +4,7 @@ use warnings; use strict;
 use Mouse;
 use Mouse::Util::TypeConstraints;
 
-use Elive::DAO 1.35;
+use Elive::DAO 1.36;
 extends 'Elive::DAO';
 
 use Carp;
@@ -15,11 +15,11 @@ Bb::Collaborate::V3 - Perl bindings for the Blackboard Collaborate Standard Brid
 
 =head1 VERSION
 
-Version 0.06
+Version 0.07
 
 =cut
 
-our $VERSION = '0.06';
+our $VERSION = '0.07';
 
 =head1 DESCRIPTION
 
@@ -173,6 +173,13 @@ Updates may also be passed as parameters.
    # change and save foo and bar. All in one go.
     $obj->update({foo => 'Foo', bar => 'Bar'});
 
+C<update> can also be called as a class-level method. The primary key and all other
+required fields must be specified.
+
+   my $obj = Bb::Collaborate::V3::Session->update({sessionId => 123456,
+                                                   startTime => '1448922188000',
+                                                   ... });
+
 =cut
 
 sub update {
@@ -285,17 +292,27 @@ sub delete {
     my ($self, %opt) = @_;
 
     my @primary_key = $self->primary_key;
-    my @id = $self->id;
+    my @id;
 
     die "entity lacks a primary key - can't delete"
 	unless (@primary_key > 0);
+
+    if ($opt{ $primary_key[0] }) {
+	# primary key supplied in options
+	@id = map { $opt{$_} } @primary_key;
+    }
+    else {
+	die "can't determine primary key without object or @primary_key"
+	    unless ref $self;
+	@id = $self->id;
+    }
 
     my @params = map {
 	$_ => shift( @id );
     } @primary_key;
 
     my $command = $opt{command} || 'Remove'.$self->entity_name;
-
+    my $connection = $opt{connection} || $self->connection;
     my $som = $self->connection->call($command, @params);
 
     my $results = $self->_get_results( $som, $self->connection );
