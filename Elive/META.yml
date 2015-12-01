@@ -55,5 +55,5 @@ requires:
   perl: 5.8.3
 resources:
   license: http://dev.perl.org/licenses/
-  repository: git://git.code.sf.net/p/elive/git
-version: '1.35'
+  repository: https://github.com/dwarring/p5-Bb-Collaborate.git
+version: '1.36'

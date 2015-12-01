@@ -1,6 +1,9 @@
 Revision history for Elive
 
-1.36   tba
+1.36   1st November 2015
+       [Elive::DAO]
+       - added support for class level invocation of Elive::DAO update and delete methods.
+       Note: that all primary keys and mandatory fields need to be supplied.
        [distribution]
        - moved source repository to https://github.com/dwarring/p5-Bb-Collaborate.git
 

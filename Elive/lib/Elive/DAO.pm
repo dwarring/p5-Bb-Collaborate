@@ -4,7 +4,7 @@ use warnings; use strict;
 use Mouse;
 use Mouse::Util::TypeConstraints;
 
-our $VERSION = '1.35';
+our $VERSION = '1.36';
 
 use parent 'Elive::DAO::_Base';
 
@@ -14,7 +14,7 @@ use Carp;
 use Try::Tiny;
 use URI;
 
-use Elive::Util qw{0.01};
+use Elive::Util qw{1.36};
 
 __PACKAGE__->mk_classdata('_entities' => {});
 __PACKAGE__->mk_classdata('_aliases');
@@ -1242,10 +1242,13 @@ to the object.
     $obj->bar('Bar');     # change bar via its accessor
     $obj->update;         # save
 
- Updates may also be passed as parameters:
+Updates may also be passed as parameters:
 
     # change and save foo and bar. All in one go.
     $obj->update({foo => 'Foo', bar => 'Bar'});
+
+This method can be called from the class level. You will need to
+supply the primary key and all mandatory fields. 
 
 =cut
 
@@ -1256,14 +1259,24 @@ sub update {
 	if ($self->_deleted);
 
     my %params = %{ $opt{param} || {} };
-    my %update_data;
+    my %primary_key = map {$_ => 1} ($self->primary_key);
+    my %updates;
 
-    if ($_update_data) {
+        if (! ref $self) {
+	# class level update
+	$opt{connection} ||= $self->connection
+	    if $self->connection;
+	$self = $self->construct( $_update_data, %opt);
+	for (keys %$self) {
+	    $updates{$_} = $self->$_;
+	}
+    }
+    elsif ($_update_data) {
 
 	croak 'usage: $obj->update( \%data )'
 	    unless (Elive::Util::_reftype($_update_data) eq 'HASH');
 
-	%update_data = %{ $_update_data };
+	my %update_data = %{ $_update_data };
 	#
 	# sift out things which are included in the data payload, but should
 	# be parameters.
@@ -1285,12 +1298,9 @@ sub update {
 			      ? @{$opt{changed}} 
 			      : $self->is_changed);
 
-    my %primary_key = map {$_ => 1} ($self->primary_key);
-
     #
     # merge in pending updates to the current entity.
     #
-    my %updates;
 
     foreach (@updated_properties, keys %primary_key) {
 
@@ -1531,6 +1541,8 @@ sub _retrieve_all {
 
     $user_obj->delete;
 
+    Elive::Entity::Session->delete(sessionId = 123456);
+
 Abstract method to delete an entity.
 
 =cut
@@ -1539,10 +1551,21 @@ sub delete {
     my ($self, %opt) = @_;
 
     my @primary_key = $self->primary_key;
-    my @id = $self->id;
+    my @id;
 
     die "entity lacks a primary key - can't delete"
 	unless (@primary_key > 0);
+
+    if (ref($self) || 1) {
+	@id = $self->id;
+    }
+    elsif ($opt{ $primary_key[0] }) {
+	# class level delete - primary key supplied in options
+	@id = map { $opt{$_} } @primary_key;
+    }
+    else {
+	die "can't determine primary key without object or @primary_key"
+    }
 
     my @params = map {
 	$_ => shift( @id );

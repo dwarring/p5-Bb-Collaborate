@@ -1,7 +1,7 @@
 package Elive::Connection;
 use warnings; use strict;
 
-our $VERSION = '1.35';
+our $VERSION = '1.36';
 
 use Carp;
 use File::Spec::Unix;
