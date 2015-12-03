@@ -710,12 +710,13 @@ See also L<Bb::Collaborate::V3::Multimedia>.
 =cut
 
 sub list_multimedia {
-    my ($self, @args) = @_;
+    my ($self, %opt) = @_;
+    $opt{connection} ||= $self->connection;
+    my $session_id = $opt{sessionId} || $self->sessionId;
 
     return Bb::Collaborate::V3::Multimedia
-        ->list(filter => {sessionId => $self->sessionId},
-	       connection => $self->connection,
-	       @args);
+        ->list(filter => {sessionId => $session_id},
+	       %opt);
 }
 
 =head2 list_presentation
@@ -729,12 +730,13 @@ See also L<Bb::Collaborate::V3::Presentation>.
 =cut
 
 sub list_presentation {
-    my ($self, @args) = @_;
+    my ($self, %opt) = @_;
+    $opt{connection} ||= $self->connection;
+    my $session_id = $opt{sessionId} || $self->sessionId;
 
     return Bb::Collaborate::V3::Presentation
-        ->list(filter => {sessionId => $self->sessionId},
-	       connection => $self->connection,
-	       @args);
+        ->list(filter => {sessionId => $session_id},
+	       %opt);
 }
 
 =head2 remove_presentation
@@ -794,7 +796,7 @@ sub remove_multimedia {
     my $multimedia_id = shift;
     my %opt = @_;
 
-   my $session_id = delete $opt{sessionId};
+    my $session_id = delete $opt{sessionId};
     $session_id ||= $class->sessionId
 	if Scalar::Util::blessed($class);
 
@@ -830,9 +832,10 @@ See also L<Bb::Collaborate::V3::Recording>.
 sub list_recordings {
     my ($self, %opt) = @_;
     $opt{connection} ||= $self->connection;
+    my $session_id = $opt{sessionId} || $self->sessionId;
 
     return Bb::Collaborate::V3::Recording
-        ->list( filter => {sessionId => $self->sessionId}, %opt);
+        ->list( filter => {sessionId => $session_id}, %opt);
 }
 
 =head2 session_url
@@ -927,6 +930,8 @@ sub set_api_callback_url {
 
     my %attendee = (userId => 'fred', displayName => 'Fred Nurk', isChair => 0);
     my $attendee_url = $session->register_attendee( \%attendee );
+    # or to call from the class level
+    $attendee_url = Bb::Collaborate::V3::Session->register_attendee( \%attendee, sessionId => 123456 );
     print "Please go to: $attendee_url";
 
 Ensures that the user is in the chair or non-chair list for this session and returns a join URL for the session.

@@ -246,4 +246,11 @@ Deletes recording content from the server and removes it from any associated ses
 
 =cut
 
+sub delete {
+    my $self = shift;
+    my %opts = @_;
+    $opts{command} ||= 'RemoveRecording';
+    $self->SUPER::delete(%opts)
+}
+
 1;

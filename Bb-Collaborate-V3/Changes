@@ -1,14 +1,13 @@
 Revision history for Bb-Collaborate-V3
 
 0.07 December 2015
+     - Fixed Recording Deletion
      - Allow general class level updates, e.g.:
           my $obj = Bb::Collaborate::V3::Session->update(SessionId => 123456, startTime => '1448922188000', ... )
        Note: primary key and all mandatory fields must be supplied.
 
      - Also, class level deletes:
          Bb::Collaborate::V3::Session->delete(SessionId => 123456);
-     Without the need to prefetch objects. "Optimisation", as requested by Blackboard
-          
 
 0.06 November 2015
      - Bb::Collaborate::V3->connect defaults to ping => 0. Do not

@@ -58,6 +58,7 @@ our %KnownCommands = (
     RemoveRepositoryMultimedia => 'd',
     RemoveRepositoryPresentation => 'd',
     RemoveSession => 'd',
+    RemoveRecording => 'd',
     RemoveSessionMultimedia => 'd',
     RemoveSessionPresentation => 'd',
     RemoveSessionTelephony => 'd',
