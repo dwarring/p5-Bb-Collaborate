@@ -1,6 +1,11 @@
 Revision history for Bb-Collaborate-V3
 
-0.07 December 2015
+0.08 3rd December 2015
+     Bb::Collaborate::V3::_Content work arounds (Presentation and Multimedia)
+     - The upload calls are only suceeding when arguments are given in
+       a particular order, with size following encoded content.
+
+0.07 1st December 2015
      - Fixed Recording Deletion
      - Allow general class level updates, e.g.:
           my $obj = Bb::Collaborate::V3::Session->update(SessionId => 123456, startTime => '1448922188000', ... )

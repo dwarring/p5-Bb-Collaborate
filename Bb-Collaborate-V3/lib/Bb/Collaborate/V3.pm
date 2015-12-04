@@ -4,7 +4,7 @@ use warnings; use strict;
 use Mouse;
 use Mouse::Util::TypeConstraints;
 
-use Elive::DAO 1.36;
+use Elive::DAO 1.37;
 extends 'Elive::DAO';
 
 use Carp;
@@ -15,11 +15,11 @@ Bb::Collaborate::V3 - Perl bindings for the Blackboard Collaborate Standard Brid
 
 =head1 VERSION
 
-Version 0.07
+Version 0.08
 
 =cut
 
-our $VERSION = '0.07';
+our $VERSION = '0.08';
 
 =head1 DESCRIPTION
 
@@ -219,13 +219,12 @@ Abstract method to create new entity instances on the server:
 =cut
 
 sub insert {
-    my ($class, $data, %opt) = @_;
+    my ($class, $data, @params) = @_;
 
-    $opt{command} ||= 'Set'.$class->entity_name;
     #
     # allow for recurring sessions
     #
-    my @sessions =  $class->SUPER::insert($data, %opt);
+    my @sessions =  $class->SUPER::insert($data, command => 'Set'.$class->entity_name, @params);
 
     return wantarray? @sessions : $sessions[0];
 }

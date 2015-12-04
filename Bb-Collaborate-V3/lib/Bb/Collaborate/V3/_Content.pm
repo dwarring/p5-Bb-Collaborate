@@ -85,18 +85,43 @@ sub _freeze {
 sub upload {
     my ($class, $spec, %opt) = @_;
 
-    my $upload_data = $class->BUILDARGS( $spec );
-    $upload_data->{creatorId} ||= do {
-	my $connection = $opt{connection} || $class->connection
-	    or die "not connected";
+    my $command = (delete($opt{command})
+		   || 'UploadRepository' . $class->entity_name);
 
-	$connection->user;
-    };
+    my %upload_data = %{ $class->BUILDARGS( $spec ) };
 
-    $opt{command} ||= 'UploadRepository' . $class->entity_name;
-    my $self = $class->SUPER::insert($upload_data, %opt);
+    my $connection = delete $opt{connection} || $class->connection
+	or die "not connected";
 
-    return $self;
+    $upload_data{creatorId} ||= $connection->user;
+
+    my %params = %{delete $opt{param} || {}};
+
+    my %data_params = %{ $class->_freeze({%upload_data, %params}) };
+
+    #
+    # work around SAS bug. upload commands apear to be order sensitive
+    #
+    my @args;
+    for (qw<creatorId filename description content size>) {
+	push @args, $_ => delete $data_params{$_}
+	    if exists $data_params{$_};
+    }
+
+    # mop up
+    push @args, $_ => $data_params{$_}
+        for keys %data_params;
+
+    $connection->check_command($command => 'c');
+    my $som = $connection->call($command, @args);
+    my @rows = $class->_readback($som, \%upload_data, $connection, %opt);
+
+    my @objs = (map {$class->construct( $_, connection => $connection )}
+		@rows);
+    #
+    # possibly return a list of recurring meetings.
+    #
+    return wantarray? @objs : $objs[0];
 }
 
 sub list {
