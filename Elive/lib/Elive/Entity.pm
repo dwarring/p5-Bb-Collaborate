@@ -6,7 +6,7 @@ use Carp;
 
 extends 'Elive::DAO';
 
-our $VERSION = '1.36';
+our $VERSION = '1.37';
 
 =head1 NAME
 

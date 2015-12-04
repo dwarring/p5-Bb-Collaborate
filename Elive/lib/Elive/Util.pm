@@ -9,7 +9,7 @@ use Clone;
 use YAML::Syck;
 use Try::Tiny;
 
-our $VERSION = '1.36';
+our $VERSION = '1.37';
 
 use Elive::Util::Type;
 

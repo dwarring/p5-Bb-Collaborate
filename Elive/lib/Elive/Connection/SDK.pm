@@ -225,11 +225,8 @@ SOAP::SOM object.
 =cut
 
 sub call {
-    my ($self, $cmd, %params) = @_;
-
-    $params{adapter} ||= 'default';
-
-    return $self->SUPER::call( $cmd, %params );
+    my ($self, $cmd, @params) = @_;
+    return $self->SUPER::call( $cmd, adapter => 'default', @params );
 }
 
 sub _preamble {

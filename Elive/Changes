@@ -1,5 +1,12 @@
 Revision history for Elive
 
+1.37   3rd November 2015
+       [Elive::DAO]
+       - preserve argument order on soap calls.
+         This is work around restrictions with Bb::Collaborate::Multimedia
+         (and Presentation). uploads Seems that arguments needs to supplied
+	 in a particular order (size following upload content).
+
 1.36   1st November 2015
        [Elive::DAO]
        - added support for class level invocation of Elive::DAO update and delete methods.

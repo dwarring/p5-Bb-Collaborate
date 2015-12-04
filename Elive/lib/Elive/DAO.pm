@@ -4,7 +4,7 @@ use warnings; use strict;
 use Mouse;
 use Mouse::Util::TypeConstraints;
 
-our $VERSION = '1.36';
+our $VERSION = '1.37';
 
 use parent 'Elive::DAO::_Base';
 
@@ -14,7 +14,7 @@ use Carp;
 use Try::Tiny;
 use URI;
 
-use Elive::Util qw{1.36};
+use Elive::Util qw{1.37};
 
 __PACKAGE__->mk_classdata('_entities' => {});
 __PACKAGE__->mk_classdata('_aliases');

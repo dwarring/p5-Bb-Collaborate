@@ -1,7 +1,7 @@
 package Elive::Connection;
 use warnings; use strict;
 
-our $VERSION = '1.36';
+our $VERSION = '1.37';
 
 use Carp;
 use File::Spec::Unix;
@@ -267,15 +267,18 @@ SOAP::SOM object.
 =cut
 
 sub call {
-    my ($self, $cmd, %params) = @_;
+    my ($self, $cmd, @params) = @_;
 
-    $cmd = $self->check_command($cmd, undef, \%params);
+    $cmd = $self->check_command($cmd, undef, { @params });
 
     my @soap_params = $self->_preamble($cmd);
+    my %idx;
 
-    foreach my $name (keys %params) {
-
-	my $value = $params{$name};
+    while (@params) {
+	my $name = shift @params;
+	die "odd number of call parameters"
+	    unless @params;
+	my $value = shift @params;
 
 	$value = SOAP::Data->type(string => Elive::Util::string($value))
 	    unless (Scalar::Util::blessed($value)
@@ -283,7 +286,14 @@ sub call {
 
 	my $soap_param = $value->name($name);
 
-	push (@soap_params, $soap_param);
+	if (exists $idx{$name}) {
+	    # duplicate parameter; override earilier value
+	    $soap_params[ $idx{$name} ] = $soap_param
+	}
+	else {
+	    $idx{$name} = scalar @soap_params;
+	    push (@soap_params, $soap_param);
+	}
     }
 
     my $som = $self->soap->call( @soap_params );

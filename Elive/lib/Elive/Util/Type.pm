@@ -5,7 +5,7 @@ use Mouse;
 use Mouse::Util::TypeConstraints;
 use Try::Tiny;
 
-our $VERSION = '1.36';
+our $VERSION = '1.37';
 
 =head1 NAME
 
