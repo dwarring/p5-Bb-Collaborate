@@ -1,6 +1,10 @@
 Revision history for Bb-Collaborate-V3
 
 0.08 3rd December 2015
+     [distribution]
+     - Bump minimum Elive version to 1.37
+
+0.08 3rd December 2015
      Bb::Collaborate::V3::_Content work arounds (Presentation and Multimedia)
      - The upload calls are only suceeding when arguments are given in
        a particular order, with size following encoded content.

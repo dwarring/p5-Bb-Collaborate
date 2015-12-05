@@ -56,4 +56,4 @@ requires:
 resources:
   license: http://dev.perl.org/licenses/
   repository: https://github.com/dwarring/p5-Bb-Collaborate.git
-version: 1.37
+version: '1.37'
