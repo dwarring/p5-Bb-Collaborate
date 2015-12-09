@@ -15,11 +15,11 @@ Bb::Collaborate::V3 - Perl bindings for the Blackboard Collaborate Standard Brid
 
 =head1 VERSION
 
-Version 0.09
+Version 0.10
 
 =cut
 
-our $VERSION = '0.09';
+our $VERSION = '0.10';
 
 =head1 DESCRIPTION
 

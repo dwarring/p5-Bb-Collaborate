@@ -213,7 +213,7 @@ sub update {
     my %opt = @_;
 
     # include the entire record
-    my @properties = $self->properties;
+    my @properties = grep { defined $self->$_ } ($self->properties);
 
     return $self->SUPER::update($updates, %opt, changed => \@properties);
 }
